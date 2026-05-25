@@ -1,0 +1,11 @@
+# Quarantine: Exclude the Drafts folder
+docs_clean/
+
+# macOS / OS generated files
+.DS_Store
+Thumbs.db
+
+# Secrets (Double check)
+*.env
+*.key
+*.pem
