@@ -18,7 +18,7 @@ Walk through the installation steps:
 1. Pick a domain such as `nas.home`.
 2. Set DHCP reservation for the VM.
 3. Create a new user.
-4. Services -> SSH -> Enable.
+4. Services → SSH → Enable.
 5. Assign `_ssh, adm, sudo, users` and add an SSH key.
 
 > [!TIP]
@@ -34,13 +34,13 @@ sudo systemctl enable qemu-guest-agent
 ### SSL Configuration (HTTPS)
 
 **Step 1: Create the Certificate**
-1. Go to **System > Certificates > SSL**.
+1. Go to **System → Certificates → SSL**.
 2. Click **Create (+)**.
 3. Fill in the fields (you can put "OMV" or "Home" for most of them).
 4. Click **Save and Apply**. 
 
 **Step 2: Enable SSL in the Workbench**
-1. Go to **System > Settings > Workbench**.
+1. Go to **System → Settings → Workbench**.
 2. **Secure connection:** Change this to `SSL/TLS`.
 3. **Certificate:** Select the certificate you just created.
 4. **Port:** Usually defaults to `443`.
@@ -53,9 +53,10 @@ sudo systemctl enable qemu-guest-agent
 
 > [!NOTE]
 > **Drives**
+> 
 > OMV requires a _second_ drive to actually store your data. You have two choices here:
 > 
-> 1. **Virtual Data Drive:** While in this "Disks" tab, click **Add -> Hard Disk** and create a large virtual disk (e.g., 2TB) for your storage.
+> 1. **Virtual Data Drive:** While in this "Disks" tab, click **Add → Hard Disk** and create a large virtual disk (e.g., 2TB) for your storage.
 > 2. **Passthrough (Advanced):** If you have physical hard drives plugged into your server, you generally pass those through directly to the VM later (after the VM is created).
 
 ### Attach Data Storage
@@ -69,6 +70,7 @@ sudo systemctl enable qemu-guest-agent
 
 > [!WARNING]
 > **Proxmox Snapshot Flag**
+> 
 > To prevent data loss on a secondary drive when rolling back a VM's OS, apply the `snapshot=0` flag from the Proxmox host:
 > ```bash
 > qm set [VM-ID] --scsi1 [VOLUME],snapshot=0
@@ -124,6 +126,7 @@ notify:inotify = yes
 
 > [!TIP]
 > **The space trick**
+> 
 > In Samba config, ending an IP with a dot (e.g., `192.168.88.`) acts as a wildcard for that entire subnet.
 
 **Windows Access:**
@@ -257,12 +260,13 @@ cp --reflink=always /srv/path/to/videos/MyVideo.mp4 /srv/path/to/nextcloud/data/
 
 **Access Hardening:**
 1. **Firewall:** Run the custom OMV firewall script and apply via Web UI.
-2. **Services -> SSH:** 
+2. **Services → SSH:** 
     - Permit root login: `No`.
     - Password authentication: `No`.
 3. **Web Workbench:** Force SSL/TLS and set the appropriate **Inactivity timeout**.
 
 > [!WARNING]
 > **Firewall script**
-> The script is for IPv4 only, so make sure IPv6 is disabled under Network -> Interfaces
+> 
+> The script is for IPv4 only, so make sure IPv6 is disabled under Network → Interfaces
 
