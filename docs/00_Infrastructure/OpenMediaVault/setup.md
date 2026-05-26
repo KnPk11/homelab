@@ -1,11 +1,11 @@
 # OpenMediaVault Setup & Configuration
 
-> [!info]
+> [!NOTE]
 > **Tags:** #OpenMediaVault #FileSharing #NFS #SMB
 
 ## Installation
 
-> [!tip]
+> [!TIP]
 > Refer to the Debian installation in Proxmox, with a few amendments given below.
 
 ### Hardware Resources
@@ -21,7 +21,7 @@ Walk through the installation steps:
 4. Services -> SSH -> Enable.
 5. Assign `_ssh, adm, sudo, users` and add an SSH key.
 
-> [!tip]
+> [!TIP]
 > Note that VSCode won't be able to SSH into the server because by default OMV only allows creating user folders on an external data drive.
 
 **Enable Guest Additions:**
@@ -66,7 +66,7 @@ sudo systemctl enable qemu-guest-agent
 	- [Discussion](https://www.reddit.com/r/OpenMediaVault/comments/1fbhbpn/ext4_vs_btrfs/) on preference.
 5. **Storage → File Systems → Mount** (the little play button).
 
-> [!warning] Proxmox Snapshot Flag
+> [!WARNING] Proxmox Snapshot Flag
 > To prevent data loss on a secondary drive when rolling back a VM's OS, apply the `snapshot=0` flag from the Proxmox host:
 > ```bash
 > qm set [VM-ID] --scsi1 [VOLUME],snapshot=0
@@ -78,7 +78,7 @@ sudo systemctl enable qemu-guest-agent
 
 ### SMB / CIFS Setup
 
-> [!tip]
+> [!TIP]
 > Web admin ≠ SMB user
 
 1. **Services → SMB/CIFS → Settings → Enabled.**
@@ -120,7 +120,7 @@ notify:inotify = yes
 | Recycle bin          | ✅ Optional; BTRFS snapshots can substitute this |
 | Hosts allow          | `127.0.0.1 192.168.88. 10.5.0.`                 |
 
-> [!tip] The space trick
+> [!TIP] The space trick
 > In Samba config, ending an IP with a dot (e.g., `192.168.88.`) acts as a wildcard for that entire subnet.
 
 **Windows Access:**
@@ -128,7 +128,7 @@ notify:inotify = yes
 \\<omv-ip>\<share_name>
 ```
 
-> [!tip] Credential issues fix
+> [!TIP] Credential issues fix
 > ```powershell
 > net use \\<omv-ip> /delete
 > ```
@@ -148,7 +148,7 @@ sudo mkdir -p /mnt/nas
 sudo chattr +i /mnt/nas            # prevents writes when unmounted
 ```
 
-> [!tip] Resilient Mounting
+> [!TIP] Resilient Mounting
 > Ensure mount exists before services:
 > ```bash
 > RequiresMountsFor=/mnt/nas
@@ -257,6 +257,6 @@ cp --reflink=always /srv/path/to/videos/MyVideo.mp4 /srv/path/to/nextcloud/data/
     - Password authentication: `No`.
 3. **Web Workbench:** Force SSL/TLS and set the appropriate **Inactivity timeout**.
 
-> [!warning] Firewall script
+> [!WARNING] Firewall script
 > The script is for IPv4 only, so make sure IPv6 is disabled under Network -> Interfaces
 
