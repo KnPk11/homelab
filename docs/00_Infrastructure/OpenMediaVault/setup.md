@@ -51,7 +51,8 @@ sudo systemctl enable qemu-guest-agent
 
 ## Storage & File Systems
 
-> [!NOTE] Drives
+> [!NOTE]
+> **Drives**
 > OMV requires a _second_ drive to actually store your data. You have two choices here:
 > 
 > 1. **Virtual Data Drive:** While in this "Disks" tab, click **Add -> Hard Disk** and create a large virtual disk (e.g., 2TB) for your storage.
@@ -66,7 +67,8 @@ sudo systemctl enable qemu-guest-agent
 	- [Discussion](https://www.reddit.com/r/OpenMediaVault/comments/1fbhbpn/ext4_vs_btrfs/) on preference.
 5. **Storage → File Systems → Mount** (the little play button).
 
-> [!WARNING] Proxmox Snapshot Flag
+> [!WARNING]
+> **Proxmox Snapshot Flag**
 > To prevent data loss on a secondary drive when rolling back a VM's OS, apply the `snapshot=0` flag from the Proxmox host:
 > ```bash
 > qm set [VM-ID] --scsi1 [VOLUME],snapshot=0
@@ -120,7 +122,8 @@ notify:inotify = yes
 | Recycle bin          | ✅ Optional; BTRFS snapshots can substitute this |
 | Hosts allow          | `127.0.0.1 192.168.88. 10.5.0.`                 |
 
-> [!TIP] The space trick
+> [!TIP]
+> **The space trick**
 > In Samba config, ending an IP with a dot (e.g., `192.168.88.`) acts as a wildcard for that entire subnet.
 
 **Windows Access:**
@@ -128,7 +131,8 @@ notify:inotify = yes
 \\<omv-ip>\<share_name>
 ```
 
-> [!TIP] Credential issues fix
+> [!TIP]
+> **Credential issues fix**
 > ```powershell
 > net use \\<omv-ip> /delete
 > ```
@@ -148,7 +152,8 @@ sudo mkdir -p /mnt/nas
 sudo chattr +i /mnt/nas            # prevents writes when unmounted
 ```
 
-> [!TIP] Resilient Mounting
+> [!TIP]
+> **Resilient Mounting**
 > Ensure mount exists before services:
 > ```bash
 > RequiresMountsFor=/mnt/nas
@@ -257,6 +262,7 @@ cp --reflink=always /srv/path/to/videos/MyVideo.mp4 /srv/path/to/nextcloud/data/
     - Password authentication: `No`.
 3. **Web Workbench:** Force SSL/TLS and set the appropriate **Inactivity timeout**.
 
-> [!WARNING] Firewall script
+> [!WARNING]
+> **Firewall script**
 > The script is for IPv4 only, so make sure IPv6 is disabled under Network -> Interfaces
 
