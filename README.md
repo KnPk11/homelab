@@ -1,4 +1,4 @@
-# 🚀 Susnode Homelab: Infrastructure & Service Blueprint
+# 🚀 Homelab Blueprint: Infrastructure & Service Documentation
 
 This repository is the central "Source of Truth" for my private cloud infrastructure. It transitions my homelab from a monolithic "manual" setup to a mature, distributed, and documented architecture.
 
