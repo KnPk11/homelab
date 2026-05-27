@@ -131,13 +131,13 @@ notify:inotify = yes
 
 **Windows Access:**
 ```powershell
-\\<omv-ip>\<share_name>
+\\[OMV-IP]\[SHARE-NAME]
 ```
 
 > [!TIP]
 > **Credential issues fix**
 > ```powershell
-> net use \\<omv-ip> /delete
+> net use \\[OMV-IP] /delete
 > ```
 
 ### NFS Setup
@@ -146,7 +146,7 @@ notify:inotify = yes
 
 1. **Services → NFS → Settings → Enabled.** (Select the latest protocol).
 2. **Services → NFS → Shares → Add shared folder.**
-   - **Client:** `192.168.50.95/24` (or your client IP/Subnet).
+   - **Client:** `[CLIENT-IP]/24` (or your client IP/Subnet).
    - **Privilege:** Read/Write.
 
 **Mounting on Client:**
@@ -165,7 +165,7 @@ sudo chattr +i /mnt/nas            # prevents writes when unmounted
 **Persistent Mount (fstab):**
 ```bash
 # Example /etc/fstab entry
-192.168.50.90:/files /mnt/nas nfs _netdev,nofail,x-systemd.automount,x-systemd.idle-timeout=60,noatime,rw,soft,intr 0 0
+[OMV-IP]:/files /mnt/nas nfs _netdev,nofail,x-systemd.automount,x-systemd.idle-timeout=60,noatime,rw,soft,intr 0 0
 ```
 
 ---
