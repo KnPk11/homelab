@@ -14,9 +14,9 @@ graph TD
     end
     
     subgraph Network["🛡️ Network Layer (MikroTik)"]
-        VLAN10["VLAN 10: IoT (Isolated)"]
-        VLAN50["VLAN 50: Homelab (Untrusted)"]
-        VLAN88["VLAN 88: Trusted LAN"]
+        VLAN_IOT["VLAN: IoT (Isolated)"]
+        VLAN_LAB["VLAN: Homelab (Untrusted)"]
+        VLAN_LAN["VLAN: Trusted LAN"]
     end
 
     subgraph Compute["🖥️ Proxmox Hypervisor"]
@@ -35,24 +35,22 @@ graph TD
 ## 📂 Repository Index
 The repository is organized following the dependency chain of a professional environment:
 
-- **[00_Infrastructure](./docs/00_Infrastructure/)**: Bare-metal specs, PVE Map, and Hypervisor/OS setup guides.
-- **[01_Network](./docs/01_Network/)**: Routing logic, VLAN segmentation, Port Knocking, and VPN (WireGuard) configs.
-- **[02_Services](./docs/02_Services/)**: Modular runbooks for 45+ self-hosted applications.
-- **[03_Maintenance](./docs/03_Maintenance/)**: Tiered backup strategy (PBS, Kopia, Restic) and exclusion rules.
+- **[00_Infrastructure](./docs/00_Infrastructure/)**: Bare-metal specs, Inventory, and Hypervisor/OS setup guides.
+- **[01_Network](./docs/01_Network/)**: Routing logic, VLAN segmentation, and VPN configs.
+- **[02_Services](./docs/02_Services/)**: Modular runbooks for self-hosted applications.
+- **[03_Maintenance](./docs/03_Maintenance/)**: Tiered backup strategy and exclusion rules.
 - **[04_Resources](./docs/04_Resources/)**: Linux CLI cheat sheets and external documentation links.
-- **[05_AI_Tools](./docs/05_AI_Tools/)**: Agentic AI setup (Gemini CLI, OpenCode) and IDE integrations.
-- **[99_Archive](./docs/99_Archive/)**: Historical research and deprecated service setups preserved for R&D reference.
+- **[05_AI_Tools](./docs/05_AI_Tools/)**: Agentic AI setup and IDE integrations.
+- **[99_Archive](./docs/99_Archive/)**: Historical research and deprecated setups.
 
 ---
 
 ## 🛠️ Tech Stack
 *   **Hypervisor:** Proxmox VE
-*   **Storage:** OpenMediaVault (SMB/NFS), BTRFS Snapshots
-*   **Networking:** MikroTik RouterOS (VLANs, Port Knocking)
-*   **Ingress:** Caddy (Automated TLS, Fail2Ban integration)
-*   **Security:** CrowdSec (Distributed LAPI), UFW, SSH Key-Auth
-*   **Orchestration:** Docker Compose via Portainer
-*   **AI:** Gemini CLI, OpenClaw, LM Studio, ComfyUI
+*   **Storage:** OpenMediaVault (SMB/NFS)
+*   **Networking:** MikroTik RouterOS (VLANs)
+*   **Ingress:** Caddy (Automated TLS)
+*   **AI:** Gemini CLI, OpenClaw
 
 ---
 
