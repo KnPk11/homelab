@@ -56,3 +56,7 @@ Before committing, ensure all sensitive or personal information is replaced with
 Prefer keeping extended testing and verification notes to ensure configurations can be validated in the future.
 - **Formatting**: If the original verification steps are too messy or contain excessive comments, condense them into a clean, step-by-step format while retaining all critical commands and expected outcomes.
 - **Tooling**: Include specific `nmap`, `curl`, or `ping` commands used for verification.
+
+## 9. Language & Spelling
+- **Locale**: Use **British English** for all documentation.
+  - *Examples*: `utilise` (not utilize), `organise` (not organize), `colour` (not color), `centre` (not center).
