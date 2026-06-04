@@ -17,9 +17,14 @@ Use Obsidian-style callouts for highlights. Keywords must be uppercase.
 Supported types: `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!SUCCESS]`.
 
 ### Hybrid Titling Rule:
-- **Short Titles**: If the title is short, place it on the same line as the content using a colon.
-  - *Example*: `> [!TIP] **Firewall**: Ensure port 514 is open.`
-- **Long Titles**: If the title is long or requires emphasis, place it on its own line followed by a blank line.
+- **Spacing**: ALWAYS place the content on a new line after the callout type (e.g., `> [!NOTE]` followed by a newline).
+- **Short Titles**: If the title is short, place it on the next line using a colon.
+  - *Example*:
+    ```markdown
+    > [!TIP]
+    > **Firewall**: Ensure port 514 is open.
+    ```
+- **Long Titles**: If the title is long or requires emphasis, place it on its own line followed by a blank line and then the content.
   - *Example*:
     ```markdown
     > [!WARNING]
@@ -60,3 +65,7 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 ## 9. Language & Spelling
 - **Locale**: Use **British English** for all documentation.
   - *Examples*: `utilise` (not utilize), `organise` (not organize), `colour` (not color), `centre` (not center).
+
+## 10. Service Documentation
+- **File Separation**: Keep `setup.md` and `security.md` as separate files for each service.
+- **Exception**: If the security section is very small and simple, it may be included within the `setup.md` file to avoid unnecessary file clutter.
