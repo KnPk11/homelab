@@ -13,11 +13,15 @@ This document details the specific Proxmox LXC configuration for the Caddy Rever
 
 ### Resource Allocation
 
-| Resource | Value |
-| :--- | :--- |
-| **CPU Cores** | 2 |
-| **Memory (RAM)** | 1024 MiB (1 GiB) |
-| **Disk Size** | 12 GiB |
+| Setting    | Value                       |
+| ---------- | --------------------------- |
+| OS Type    | Debian 13                   |
+| CPU        | 1-2 cores                   |
+| RAM        | 512 MB - 1 GB               |
+| Disk       | 4-8 GB                      |
+| Privileged | No (unprivileged preferred) |
+| Nesting    | Yes (required for xcaddy)   |
+| Keyctl     | Yes                         |
 
 ### Network Configuration
 
