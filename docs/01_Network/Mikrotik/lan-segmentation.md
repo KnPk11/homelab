@@ -8,27 +8,32 @@
 To make `ether3` and `ether4` talk to each other while sharing the `[HOMELAB-GW]` gateway, you should create a **separate bridge**. This acts as a "physical switch" dedicated to your lab.
 
 ### Create the New Bridge
+
 1. Go to **Bridge** → **New**.
 2. Name: `homelab-bridge`.
 3. Click **OK**.
 
 ### Remove the Ports from Existing Bridge
+
 1. Go to **Bridge** → **Ports**.
 2. Remove `ether3`.
 3. Remove `ether4`.
 
 ### Assign Ports to the New Bridge
+
 1. Go to **Bridge** → **Ports**.
 2. Add `ether3` → Interface: `ether3`, Bridge: `homelab-bridge`.
 3. Add `ether4` → Interface: `ether4`, Bridge: `homelab-bridge`.
 
 ### Create a Subnet for the New Bridge
+
 1. Go to **IP** → **Addresses** → **New**.
 2. Address: `[HOMELAB-GW]/24`.
 3. Network: `[HOMELAB-SUBNET]`.
 4. Interface: `homelab-bridge`.
 
 ### Create a DHCP Server for the New Bridge
+
 1. Go to **IP** → **DHCP Server** → **DHCP Setup**.
 2. DHCP Server Interface: `homelab-bridge`.
 3. DHCP Address Space: It should auto-detect `[HOMELAB-SUBNET]/24`.
@@ -44,6 +49,7 @@ After that, go to the **Networks** tab, select `homelab-bridge` and ensure DNS i
 ## Firewall Rules
 
 ### 1. Block the Homelab from Accessing the MikroTik
+
 ```bash
 # Explicit block rule by subnet
 /ip firewall filter add chain=input src-address=[HOMELAB-SUBNET]/24 action=drop comment="Block Homelab Management Access"
@@ -51,17 +57,21 @@ After that, go to the **Networks** tab, select `homelab-bridge` and ensure DNS i
 # Alternatively, allow only trusted subnets and drop all other traffic
 /ip firewall filter add chain=input action=accept src-address-list="Trusted Subnets" comment="Allow Trusted Admins"
 ```
+
 Move it below any accept rules of the input chain and **ABOVE** the default rule that says `defconf: drop all not coming from LAN`.
 
 ### 2. Block the Homelab from Accessing the Trusted LAN
+
 ```bash
 # Isolate Homelab from Trusted LAN
 /ip firewall filter add chain=forward src-address=[HOMELAB-SUBNET]/24 dst-address=[TRUSTED-LAN-SUBNET]/24 action=drop comment="Isolate Homelab from Trusted LAN"
 ```
+
 Drag this rule above any **Accept** rules for the LAN, but below **Accept Established**.
 
 > [!NOTE]
 > **AdGuard DNS**: To ensure the homelab's DNS doesn't break:
+> 
 > ```bash
 > /ip firewall filter add chain=input src-address=[HOMELAB-SUBNET]/24 protocol=udp dst-port=53 action=accept comment="Allow Homelab DNS UDP"
 > /ip firewall filter add chain=input src-address=[HOMELAB-SUBNET]/24 protocol=tcp dst-port=53 action=accept comment="Allow Homelab DNS TCP"
@@ -77,6 +87,7 @@ Drag this rule above any **Accept** rules for the LAN, but below **Accept Establ
 For devices on the trusted LAN to accept requests from the homelab (e.g., for AI APIs).
 
 ### The "Pinhole" Rule Using Port Translation
+
 You can use the secondary router (Asus) to translate ports, assigning a unique external port to each PC, but mapping them all to internal port `1234`.
 
 > [!NOTE]
@@ -93,6 +104,7 @@ You can use the secondary router (Asus) to translate ports, assigning a unique e
 > - **Source IP:** `[HOMELAB-SERVER-IP]`
 
 Then, add a firewall exception on the MikroTik above the **Isolate Homelab** rule:
+
 ```bash
 /ip firewall filter add chain=forward action=accept src-address=[HOMELAB-SERVER-IP] dst-address=[ROUTER-IP-SECONDARY] protocol=tcp dst-port=1234-1240,8188 comment="Allow Homelab to access AI API" place-before=[find comment="Isolate Homelab"]
 ```
@@ -100,9 +112,11 @@ Then, add a firewall exception on the MikroTik above the **Isolate Homelab** rul
 Update your application's API Base URL to `http://[ROUTER-IP-SECONDARY]:1234/v1`.
 
 ### Zero Trust Architecture
+
 - **Layer 1 (MikroTik):** Network Segmentation.
 - **Layer 2 (Secondary Router):** Port Forwarding/Translation.
 - **Layer 3 (Host OS):** Host-based Firewall.
 
 ### Secondary Router LAN
+
 Since the secondary router receives traffic on its **WAN port**, its firewall blocks it by default. It is still recommended to add an explicit firewall rule on the secondary router if management is enabled.

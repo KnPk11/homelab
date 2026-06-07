@@ -51,13 +51,14 @@ Once the installation finishes, the system will reboot into a CLI login screen. 
 Instead of manually editing repository files, use the community "Proxmox VE Post Install" script (often referred to as the tteck scripts) to configure the system for home use.
 
 1. In the Proxmox Web GUI, click your node (e.g., `pve1`) on the left, then click **>_ Shell**.
+
 2. Paste and run the Proxmox VE Post Install Script:
 
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"
-```
+   ```bash
+   bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"
+   ```
 
-1. **Script prompts**:
+3. **Script prompts**:
     - **Use Correct Sources**: `Yes`
     - **Disable Enterprise Repository**: `Yes` (Removes the paid repo that causes errors).
     - **Add Ceph Package Sources**: `No` (Unless you specifically plan to use Ceph clustering).
@@ -84,6 +85,7 @@ Refresh your browser afterwards.
 
 > [!INFO]
 > To uninstall the script:
+> 
 > ```bash
 > bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh) uninstall
 > ```
@@ -117,7 +119,7 @@ Refresh your browser afterwards.
 ### Access Control
 
 - **Web UI 2FA**: Available but often unnecessary for homelabs if access is restricted to a trusted network.
-- **SSH Rate Limiting**: Can be configured on the Proxmox host, but typically redundant if your firewall already blocks unauthorized access.
+- **SSH Rate Limiting**: Can be configured on the Proxmox host, but typically redundant if your firewall already handles unauthorized access.
 - **RBAC**: Proxmox supports granular user roles. Useful if multiple people access the environment.
 
 ### Network & Firewall
@@ -154,28 +156,29 @@ If Docker starts too quickly before internal IPs are assigned, it may fail to bi
 
 1. **Create Wait Script**: `sudo nano /data/scripts/Utilities/wait_for_network.sh`
 
-```bash
-#!/bin/bash
-while ! ip addr show ens18 | grep -q "[IP]"; do
-    sleep 1
-done
-```
+   ```bash
+   #!/bin/bash
+   while ! ip addr show ens18 | grep -q "[IP]"; do
+       sleep 1
+   done
+   ```
 
 2. **Make Executable**: `sudo chmod +x /data/scripts/Utilities/wait_for_network.sh`
 
 3. **Edit Docker Service**: `sudo systemctl edit docker.service`
 
-```ini
-[Unit]
-After=network-online.target
-Wants=network-online.target
+   ```ini
+   [Unit]
+   After=network-online.target
+   Wants=network-online.target
 
-[Service]
-ExecStartPre=/data/scripts/Utilities/wait_for_network.sh
-```
+   [Service]
+   ExecStartPre=/data/scripts/Utilities/wait_for_network.sh
+   ```
 
 4. **Reload & Reboot**:
-```bash
-sudo systemctl daemon-reload
-sudo reboot
-```
+   
+   ```bash
+   sudo systemctl daemon-reload
+   sudo reboot
+   ```

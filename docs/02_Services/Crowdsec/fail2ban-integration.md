@@ -30,6 +30,7 @@ banaction = crowdsec
 ## 3. Verify the Integration
 
 ### Check Fail2Ban Status
+
 Ensure Fail2Ban has reloaded the configuration:
 
 ```bash
@@ -38,24 +39,34 @@ sudo fail2ban-client status
 ```
 
 ### Manual Test
+
 Simulate a ban and verify it appears in CrowdSec:
 
-1.  **Trigger a Manual Ban**:
+1.  **Trigger a Manual Ban**
+    
     ```bash
     sudo fail2ban-client set [JAIL-NAME] banip 1.2.3.4
     ```
-2.  **Verify in CrowdSec**:
+
+2.  **Verify in CrowdSec**
+    
     ```bash
     sudo cscli decisions list
     ```
+    
     You should see an entry with the reason `Fail2Ban: [JAIL-NAME]`.
-3.  **Verify on MikroTik**:
+
+3.  **Verify on MikroTik**
+    
     Check the Address List `CrowdSec_Blacklist` on the router.
-4.  **Clean Up**:
+
+4.  **Clean Up**
+    
     ```bash
     sudo fail2ban-client set [JAIL-NAME] unbanip 1.2.3.4
     ```
 
 ---
+
 > [!TIP]
 > **Double-Layer Protection**: Detections forwarded via this bridge will be enforced at both the OS level (via the CrowdSec Firewall Bouncer) and the Network level (via the MikroTik Bouncer).

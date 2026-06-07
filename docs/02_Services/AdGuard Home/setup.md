@@ -4,18 +4,23 @@
 > **Tags:** #DNS #AdGuard #Docker #LXC #Monitoring #Security
 
 ## Overview
+
 Primary DNS and Ad-blocking service for the network. This document covers two setup methods: Docker-based and Bare-Metal LXC.
 
 ---
+
 ## Option A: Docker Setup
 
 This method runs AdGuard Home as a container, typically managed via Portainer.
 
 ### 1. Docker Compose
+
 Add the docker compose to Portainer and start the stack.
 
 ### 2. Permissions
+
 If you encounter permission issues:
+
 ```bash
 sudo chown -R root:root /srv/adguard
 sudo chmod -R 755 /srv/adguard
@@ -23,6 +28,7 @@ sudo chmod 644 /srv/adguard/conf/AdGuardHome.yaml
 ```
 
 ---
+
 ## Option B: Bare-Metal LXC Setup
 
 This method runs AdGuard Home directly on a lightweight Debian LXC for better decoupling.
@@ -85,6 +91,7 @@ systemctl status AdGuardHome
 ```
 
 ---
+
 ## General Configuration
 
 ### Web Interface
@@ -102,6 +109,7 @@ Navigate to `http://[ADGUARD-IP]:3000` to complete the setup.
 ### Upstream DNS Servers
 
 Under **Settings** → **DNS settings** → **Upstream DNS servers**, use:
+
 ```text
 9.9.9.9
 149.112.112.112
@@ -121,6 +129,7 @@ To see individual device names/IPs in AdGuard instead of just the router's IP:
 > If you set it under **IP** → **DNS**, the MikroTik acts as a proxy: clients ask the MikroTik, and the MikroTik asks AdGuard. This results in every request in AdGuard showing as coming from `[ROUTER-IP]`.
 
 Add this rule to the top of the NAT firewall list:
+
 ```bash
 /ip firewall nat add chain=dstnat dst-address=[ADGUARD-IP] protocol=udp dst-port=53 action=redirect to-ports=53 comment="AdGuard Failover Trap" disabled=yes
 ```
@@ -185,12 +194,15 @@ On the Asus router, the default settings (`Get the DNS IP from your ISP automati
 To allow isolated subnets (like the Guest VLAN) to utilise the internal AdGuard DNS server (`[ADGUARD-IP]`) without breaking network isolation, a "punch-hole" configuration was implemented.
 
 **1. Address List Definition**
+
 ```bash
 /ip firewall address-list add address=[ADGUARD-IP] list=DNS-Servers comment="AdGuard Home"
 ```
 
 **2. Firewall Punch-Hole Rules**
+
 These rules must be placed **before** the global isolation rule to allow DNS traffic to pass through the forward chain.
+
 ```bash
 /ip firewall filter add chain=forward action=accept protocol=udp \
     dst-address-list=DNS-Servers dst-port=53 \
@@ -202,7 +214,9 @@ These rules must be placed **before** the global isolation rule to allow DNS tra
 ```
 
 **3. DHCP Configuration**
+
 The DHCP server for the `guest-vlan` was updated to point directly to the AdGuard IP.
+
 ```bash
 /ip dhcp-server network set [find address="[GUEST-VLAN-SUBNET]/24"] dns-server=[ADGUARD-IP]
 ```

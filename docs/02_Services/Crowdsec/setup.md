@@ -89,15 +89,15 @@ sudo cscli machines add openclaw --password [SECRET]
 
 On the agent machines, install CrowdSec but disable the local LAPI:
 
-1. Edit `/etc/crowdsec/local_api_credentials.yaml`:
+1.  Edit `/etc/crowdsec/local_api_credentials.yaml`:
+    
+    ```yaml
+    url: http://[LAPI-IP]:8080
+    login: docker-host
+    password: [SECRET]
+    ```
 
-```yaml
-url: http://[LAPI-IP]:8080
-login: docker-host
-password: [SECRET]
-```
-
-2. Restart: `sudo systemctl restart crowdsec`
+2.  Restart: `sudo systemctl restart crowdsec`
 
 ---
 
@@ -160,10 +160,10 @@ sudo cscli machines list
 
 Check if a test IP reaches the router:
 
-1. Add ban: `sudo cscli decisions add --ip 1.2.3.4 --duration 5m`
-2. Verify the ban: `sudo cscli decisions list`
-3. In MikroTik: Check `IP > Firewall > Address Lists` for `CrowdSec_Blacklist`.
-4. Remove ban: `sudo cscli decisions delete --ip 1.2.3.4`
+1.  Add ban: `sudo cscli decisions add --ip 1.2.3.4 --duration 5m`
+2.  Verify the ban: `sudo cscli decisions list`
+3.  In MikroTik: Check `IP > Firewall > Address Lists` for `CrowdSec_Blacklist`.
+4.  Remove ban: `sudo cscli decisions delete --ip 1.2.3.4`
 
 > [!TIP]
 > **Manual Verification**: Another option is to run a command that often gets triggered by crawlers: `curl -A "nikto" "https://filebrowser.example.com/"`, or temporarily stop Fail2Ban and try brute-forcing into a service with no rate limiting, such as File Browser.

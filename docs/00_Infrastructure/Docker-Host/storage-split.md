@@ -19,11 +19,13 @@ A step-by-step runbook for migrating Docker, containerd, and data directories fr
 ## Phase 1: Stop Services & Estimate Space
 
 ### Stop Docker
+
 ```bash
 /data/scripts/Utilities/docker_ctl.sh stop
 ```
 
 ### Clean Up (Optional but Recommended)
+
 ```bash
 sudo docker system prune -a --volumes
 ```
@@ -32,6 +34,7 @@ sudo docker system prune -a --volumes
 > This removes all stopped containers, unused images, and volumes. Only run if you have a registry or can re-pull images easily.
 
 ### Estimate Required Space
+
 ```bash
 sudo du -sh /var/lib/docker
 sudo du -sh /var/lib/containerd
@@ -45,6 +48,7 @@ sudo du -sh /var/lib/containerd
 ## Phase 2: Prepare the New Drive
 
 ### Create Filesystem
+
 If creating as a virtual drive in Proxmox use these flags:
 - SCSI bus
 - SSD Emulation
@@ -59,16 +63,19 @@ sudo mkfs.ext4 /dev/sdb
 > Replace `/dev/sdb` with your actual drive path from `lsblk`.
 
 ### Configure Permanent Mount
+
 ```bash
 sudo blkid /dev/sdb
 ```
 
 Add to `/etc/fstab`:
+
 ```bash
 UUID=[DISK-UUID] /mnt/appdata ext4 defaults,discard 0 2
 ```
 
 ### Mount and Create Directories
+
 ```bash
 sudo systemctl daemon-reload
 sudo mount /mnt/appdata
@@ -98,6 +105,7 @@ sudo rsync -aP /data/              /mnt/appdata/data/
 ## Phase 4: Create Anchor Points
 
 Rename the old directories:
+
 ```bash
 sudo mv /var/lib/docker    /var/lib/docker.bak
 sudo mv /var/lib/containerd /var/lib/containerd.bak
@@ -106,6 +114,7 @@ sudo mv /data              /data.bak
 ```
 
 Create new empty directories:
+
 ```bash
 sudo mkdir -p /var/lib/docker
 sudo mkdir -p /var/lib/containerd
@@ -118,6 +127,7 @@ sudo mkdir /data
 ## Phase 5: Configure Bind Mounts
 
 Add these lines to `/etc/fstab` beneath the base mount:
+
 ```bash
 /mnt/appdata/docker      /var/lib/docker      none  bind  0  0
 /mnt/appdata/containerd  /var/lib/containerd  none  bind  0  0
@@ -126,6 +136,7 @@ Add these lines to `/etc/fstab` beneath the base mount:
 ```
 
 Apply and verify:
+
 ```bash
 sudo systemctl daemon-reload
 sudo mount -a
@@ -138,6 +149,7 @@ df -h
 ---
 
 ## Phase 6: Restart & Verify
+
 ```bash
 /data/scripts/Utilities/docker_ctl.sh start
 ```
@@ -149,6 +161,7 @@ Verify containers start correctly and volumes are accessible.
 ## Phase 7: Cleanup (After Confirmation)
 
 Once everything works, remove the old directories:
+
 ```bash
 sudo rm -rf /var/lib/docker.bak
 sudo rm -rf /var/lib/containerd.bak
@@ -157,6 +170,7 @@ sudo rm -rf /data.bak
 ```
 
 Tell the hypervisor that space has been freed:
+
 ```bash
 sudo fstrim -av
 ```
@@ -169,9 +183,11 @@ sudo fstrim -av
 > Perform these steps only after confirming the migration works.
 
 ### 1. GParted (Live USB)
+
 Resize the drive conservatively, leaving just a little free space. This will be useful to prevent errors when running the Proxmox `lvreduce` command.
 
 ### 2. Proxmox: Reduce LVM
+
 ```bash
 lvm lvreduce -L -48g pve/vm-100-disk-0
 qm rescan
@@ -181,4 +197,5 @@ qm rescan
 > Reduce by an amount **less than or equal** to the unallocated space set in GParted.
 
 ### 3. GParted: Final Resize
+
 Resize the main partition back, leaving a few GB for swap. Create and map the swap partition.
