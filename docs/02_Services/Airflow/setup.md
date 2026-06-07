@@ -3,7 +3,7 @@
 > [!NOTE]
 > **Tags:** #airflow #data_orchestration #analytics #docker_compose #python
 
-## Setup
+## 1. Setup
 
 Create the env file:
 
@@ -68,7 +68,7 @@ docker exec -it airflow_apiserver airflow users create \
     --email [EMAIL]
 ```
 
-## Reverse Proxy Setup
+## 2. Reverse Proxy Setup
 
 Add this variable to the compose:
 
@@ -77,7 +77,7 @@ AIRFLOW__WEBSERVER__BASE_URL=http://example.com/airflow
 AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'True'
 ```
 
-## Docker Operator Integration
+## 3. Docker Operator Integration
 
 Find the group Docker runs on:
 
@@ -114,7 +114,7 @@ Update and launch the stack.
 > [!TIP]
 > **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate compose fragments in the implementation directory: `nodes/homelab-95/services/airflow/docker-compose.flower.yml`.
 
-## Security
+## 4. Security
 
 - Make sure to delete the default user and create a new one with a strong password.
 - Airflow **does not** natively support restricting access by IP or subnet. That kind of network-level filtering needs to happen in your **reverse proxy** (Caddy) or firewall.
