@@ -1,5 +1,6 @@
-# Quarantine: Exclude the Drafts folder
-docs_clean/
+# Private / Untracked Documentation
+docs_private/
+docs_temp/
 
 # macOS / OS generated files
 .DS_Store
