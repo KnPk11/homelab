@@ -138,24 +138,11 @@ api_url: http://[LAPI-IP]:8080/
 
 ---
 
-## 7. Fail2Ban Integration (The Bridge)
+## 7. Fail2Ban Integration
 
-To push Fail2Ban bans to the MikroTik router, we feed them into CrowdSec.
+Fail2Ban detections can be synchronised with the CrowdSec network-wide firewall to ensure IPs caught by Fail2Ban are also blocked at the MikroTik Edge.
 
-1. **Create Action** (`/etc/fail2ban/action.d/crowdsec.conf`):
-
-```ini
-[Definition]
-actionban = cscli decisions add --ip <ip> --duration 1h --reason 'Fail2Ban ban: <jail>'
-actionunban = cscli decisions delete --ip <ip>
-```
-
-2. **Enable Globally** (`/etc/fail2ban/jail.local`):
-
-```ini
-[DEFAULT]
-banaction_allports = crowdsec
-```
+👉 **See the dedicated guide**: [CrowdSec Fail2Ban Integration](./fail2ban-integration.md)
 
 ---
 

@@ -3,75 +3,59 @@
 > [!NOTE]
 > **Tags:** #crowdsec #fail2ban #security #linux
 
-## 1. Setup
+This document describes the "Bridge" architecture used to synchronise Fail2Ban detections with the network-wide CrowdSec firewall. Instead of blocking locally only, Fail2Ban delegates enforcement to CrowdSec, which then pushes the ban to the MikroTik Edge router.
 
-Update and install a collection:
+## 1. Create the CrowdSec Action
 
-```bash
-sudo cscli hub update
-cscli scenarios install crowdsecurity/http-bad-user-agent
-sudo systemctl restart crowdsec
-```
+Create the action file at `/etc/fail2ban/action.d/crowdsec.conf`. This script tells Fail2Ban to use the native CrowdSec CLI (`cscli`) to add or remove decisions.
 
-Setting up the bouncer (the config is created at `/etc/crowdsec/bouncers/crowdsec-fail2ban-bouncer.yaml`):
-
-```bash
-sudo cscli bouncers add fail2ban-bouncer -k [SECRET]
-```
-
-Create a Custom Fail2Ban Action by adding the following to `/etc/fail2ban/action.d/crowdsec-check.conf`:
-
-This configuration sends the detected IP to CrowdSec’s local API for analysis and retrieves a response indicating whether the IP is malicious.
-
-```bash
+```ini
 [Definition]
-actionstart =
-actionstop =
-actionban = curl -s -G "http://127.0.0.1:8080/v1/decisions?ip=<ip>" | jq -r '.[]?.value // empty'
-actionunban =
+# Use <ip> and <bantime> (seconds) from Fail2Ban. 
+# We use 's' suffix for CrowdSec duration.
+actionban = cscli decisions add --ip <ip> --duration <bantime>s --reason 'Fail2Ban: <name>'
+actionunban = cscli decisions delete --ip <ip>
 ```
 
-Define a Fail2Ban Filter in `/etc/fail2ban/filter.d/crowdsec.conf`:
+## 2. Enable the Bridge in Fail2Ban
+
+Update your `/etc/fail2ban/jail.local` to use this new action as the default `banaction`. This ensures that any jail (SSH, Caddy, etc.) automatically pushes its bans to CrowdSec.
+
+```ini
+[DEFAULT]
+banaction = crowdsec
+# ... other default settings
+```
+
+## 3. Verify the Integration
+
+### Check Fail2Ban Status
+Ensure Fail2Ban has reloaded the configuration:
 
 ```bash
-[Definition]
-# failregex = ^<HOST> - .* "(GET|POST).*%%3Cscript.*" .*$
-failregex = ^<HOST> - - .* "(GET|POST).*script.*".*$
-ignoreregex =
+sudo fail2ban-client reload
+sudo fail2ban-client status
 ```
 
-Add the jail configuration to `/etc/fail2ban/jail.local`:
+### Manual Test
+Simulate a ban and verify it appears in CrowdSec:
 
-```bash
-[crowdsec]
-enabled = true
-filter = crowdsec  
-logpath = /srv/caddy/logs/*.log
-port = http,https
-backend = polling
-bantime = 30m
-findtime = 5m
-maxretry = 1
-action = crowdsec-check
-```
+1.  **Trigger a Manual Ban**:
+    ```bash
+    sudo fail2ban-client set [JAIL-NAME] banip 1.2.3.4
+    ```
+2.  **Verify in CrowdSec**:
+    ```bash
+    sudo cscli decisions list
+    ```
+    You should see an entry with the reason `Fail2Ban: [JAIL-NAME]`.
+3.  **Verify on MikroTik**:
+    Check the Address List `CrowdSec_Blacklist` on the router.
+4.  **Clean Up**:
+    ```bash
+    sudo fail2ban-client set [JAIL-NAME] unbanip 1.2.3.4
+    ```
 
-Restart the services:
-
-```bash
-sudo systemctl restart fail2ban
-sudo systemctl restart crowdsec
-```
-
-## 2. Testing
-
-Check that the filter is active:
-
-```bash
-sudo fail2ban-client status crowdsec
-```
-
-Simulate a malicious request:
-
-```bash
-curl -A "malicious-bot" "http://example.com/%3Cscript%3Ealert(1)%3C/script%3E"
-```
+---
+> [!TIP]
+> **Double-Layer Protection**: Detections forwarded via this bridge will be enforced at both the OS level (via the CrowdSec Firewall Bouncer) and the Network level (via the MikroTik Bouncer).
