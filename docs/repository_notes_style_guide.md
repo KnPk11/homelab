@@ -9,6 +9,7 @@ This guide ensures consistency across all documentation in the homelab repositor
   - Keywords (NOTE, TIP, WARNING, etc.) must be **ALL CAPS**.
   - Format: `**Tags:** #Tag1 #Tag2`
 - **H2 (##) & H3 (###)**: Major sections (e.g., Installation, Configuration, Storage).
+- **Heading Continuity**: Never skip header levels (e.g., do not follow an H1 with an H3). Each level must be nested logically.
 - **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. Reference or troubleshooting sections should remain unnumbered.
 - Use horizontal rules (`---`) to separate major conceptual blocks if needed.
 
@@ -39,6 +40,20 @@ Always specify the language for syntax highlighting.
 sudo apt update
 ```
 
+### 5.1 Block Spacing & Lists
+- **Blank Lines**: ALWAYS include exactly one blank line between descriptive text and a code block to ensure clean parsing and readability.
+- **List Alignment**: When a code block is inside a list, ensure the code block fences (```) are aligned with the first character of the text in the list item, preceded by a blank line.
+  - **Numbered Lists (`1. `)**: Use exactly **3 spaces** of indentation.
+  - **Bulleted Lists (`- `)**: Use exactly **2 spaces** of indentation.
+  - *Example*:
+    ```markdown
+    1. **Step Name**
+       
+       ```bash
+       command-here
+       ```
+    ```
+
 ## 6. Tables
 Use tables for comparing options or listing configuration parameters.
 
@@ -60,7 +75,7 @@ Before committing, ensure all sensitive or personal information is replaced with
 
 ## 8. Testing & Verification
 Prefer keeping extended testing and verification notes to ensure configurations can be validated in the future.
-- **Formatting**: If the original verification steps are too messy or contain excessive comments, condense them into a clean, step-by-step format while retaining all critical commands and expected outcomes.
+- **Formatting**: If the original verification steps are too messy or contain excessive comments, condense them into a clean, step-by-step format while retaining all critical comments and expected outcomes.
 - **Tooling**: Include specific `nmap`, `curl`, or `ping` commands used for verification.
 
 ## 9. Language & Spelling
