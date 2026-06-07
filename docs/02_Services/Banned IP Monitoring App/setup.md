@@ -13,8 +13,13 @@ Simple Python web server which parses logs to output IPs banned by Fail2Ban and 
 
 The monitor can be run as a custom-built Docker image.
 
-1. **Build/Run**: Ensure the host's `/var/log/` is mounted into the container.
-2. **Port**: Defaults to `9002`.
+1.  **Build/Run**
+    
+    Ensure the host's `/var/log/` is mounted into the container.
+
+2.  **Port**
+    
+    Defaults to `9002`.
 
 ### Native
 

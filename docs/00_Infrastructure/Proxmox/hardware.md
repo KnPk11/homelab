@@ -10,6 +10,7 @@
 When using thin-provisioned storage pools (LVM-Thin or ZFS), you can safely over-allocate VM disk space. Proxmox only consumes physical space as data is actually written.
 
 #### Maintaining Efficiency (Reclaiming Space)
+
 To ensure deleted files inside a VM actually free up space on the Proxmox host:
 
 1.  **Discard Flag**: Ensure the **Discard** checkbox is enabled in the VM's **Hardware** → **Hard Disk** settings in Proxmox.
@@ -18,6 +19,7 @@ To ensure deleted files inside a VM actually free up space on the Proxmox host:
     - **LXCs**: Not needed; the Proxmox host manages the filesystem for LXCs and handles TRIM globally.
 
 **Enable on Linux VMs:**
+
 ```bash
 sudo systemctl enable --now fstrim.timer
 ```
@@ -27,12 +29,14 @@ sudo systemctl enable --now fstrim.timer
 ### Enlarging a VM Drive
 
 #### Step 1: Expand Disk in Proxmox
+
 1. Log into the **Proxmox Web Interface**.
 2. Navigate to your **VM** → **Hardware** tab.
 3. Select the target **Hard Disk** and choose **Resize** from **Disk Action**.
 4. Specify the **Size Increment**.
 
 #### Step 2: Address Swap Partition Conflict
+
 The swap partition often blocks new space. Temporarily remove and recreate it:
 
 ```bash
@@ -51,11 +55,13 @@ sudo cfdisk /dev/[DEVICE]
 - Write changes and quit.
 
 #### Step 3: Refresh Partition Table
+
 ```bash
 sudo partprobe /dev/[DEVICE]
 ```
 
 #### Step 4: Expand Filesystem
+
 Grow the filesystem to fill the new partition space:
 
 ```bash
@@ -64,26 +70,35 @@ sudo resize2fs /dev/[PARTITION]
 ```
 
 #### Step 5: Reconfigure Swap
+
 1. Enable the swap partition:
-```bash
-sudo mkswap /dev/[SWAP-PARTITION]
-```
+
+   ```bash
+   sudo mkswap /dev/[SWAP-PARTITION]
+   ```
+
 2. Get the new swap UUID:
-```bash
-lsblk -no UUID /dev/[SWAP-PARTITION]
-```
+
+   ```bash
+   lsblk -no UUID /dev/[SWAP-PARTITION]
+   ```
+
 3. Update `/etc/fstab`:
-```bash
-sudo nano /etc/fstab
-```
-Replace the old swap UUID with the new one `[DISK-UUID]`.
+
+   ```bash
+   sudo nano /etc/fstab
+   ```
+
+   Replace the old swap UUID with the new one `[DISK-UUID]`.
 
 4. Update boot image:
-```bash
-sudo update-initramfs -u -k all
-```
+
+   ```bash
+   sudo update-initramfs -u -k all
+   ```
 
 #### Step 6: Verify
+
 ```bash
 # Confirm new size
 df -h
@@ -105,9 +120,11 @@ The classic "NIC hang" manifests as:
 - Network link drops under heavy load
 - Requires physical cable reset to recover
 
-> **Root Cause:** In 90% of Intel e1000e hang cases on Proxmox/Mini-PCs, the issue is the card overwhelming the buffer. Throttling the interrupt rate usually stops the hanging without sacrificing much performance.
+> [!NOTE]
+> **Root Cause**: In 90% of Intel e1000e hang cases on Proxmox/Mini-PCs, the issue is the card overwhelming the buffer. Throttling the interrupt rate usually stops the hanging without sacrificing much performance.
 
 ### Immediate Fix
+
 Disable problematic offload features:
 
 ```bash
@@ -115,6 +132,7 @@ ethtool -K [NIC] tso off gso off
 ```
 
 ### Permanent Fix
+
 Add the following `post-up` commands to your `/etc/network/interfaces` file:
 
 ```cfg
@@ -132,23 +150,25 @@ iface vmbr0 inet static
 ```
 
 ### Auto-Heal Script
+
 Create a script to automatically recover the interface if a ping to the router fails.
 
 1. **Create Script**: `nano /usr/local/bin/fix-network.sh`
-```bash
-#!/bin/bash
 
-ROUTER_IP="[GATEWAY]"
-INTERFACE="[NIC]"
+   ```bash
+   #!/bin/bash
 
-# Check if the Router's MAC address is visible in the ARP table
-if ! ip neigh show $ROUTER_IP | grep -qE "REACHABLE|DELAY|STALE"; then
-    echo "$(date): ARP check failed. NIC $INTERFACE likely hung." >> /var/log/network-repair.log
-    /usr/sbin/ip link set $INTERFACE down
-    sleep 3
-    /usr/sbin/ip link set $INTERFACE up
-fi
-```
+   ROUTER_IP="[GATEWAY]"
+   INTERFACE="[NIC]"
+
+   # Check if the Router's MAC address is visible in the ARP table
+   if ! ip neigh show $ROUTER_IP | grep -qE "REACHABLE|DELAY|STALE"; then
+       echo "$(date): ARP check failed. NIC $INTERFACE likely hung." >> /var/log/network-repair.log
+       /usr/sbin/ip link set $INTERFACE down
+       sleep 3
+       /usr/sbin/ip link set $INTERFACE up
+   fi
+   ```
 
 2. **Make Executable**: `chmod +x /usr/local/bin/fix-network.sh`
 
@@ -160,6 +180,7 @@ fi
 > Always verify the script's logic before scheduling it to avoid accidental network lockouts.
 
 #### 1. Test the Logic (Dry Run)
+
 Ensure the script correctly identifies the current network state as **UP**:
 
 ```bash
@@ -171,28 +192,35 @@ else
     echo "Network looks BAD — Script would RESTART [NIC]."
 fi
 ```
+
 - **Success**: Output says "Network looks GOOD".
 - **Failure**: If it says "BAD", check your gateway IP and ARP table visibility before proceeding.
 
 #### 2. Test the Action (Real Test)
+
 Verify that Proxmox can successfully toggle the interface and recover. Your SSH session will freeze for 2–5 seconds. **Do not close the window.**
 
 ```bash
 ip link set [NIC] down && sleep 2 && ip link set [NIC] up
 ```
+
 - **Success**: Terminal hangs briefly, then reconnects.
 - **Failure**: Connection does not return; physical cable reset required.
 
 #### 3. Full Simulation
+
 To verify the auto-heal trigger works when the network is actually "lost":
 
 1. **Edit Script**: `nano /usr/local/bin/fix-network.sh`
 2. **Change IP**: Set `ROUTER_IP` to a fake IP (e.g., `[IP].254`).
 3. **Run Manually**:
+   
    ```bash
    bash /usr/local/bin/fix-network.sh
    ```
+
 4. **Check Logs**:
+   
    ```bash
    cat /var/log/network-repair.log
    ```

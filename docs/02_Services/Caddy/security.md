@@ -4,13 +4,16 @@
 > **Tags:** #Caddy #Security #Hardening #Proxy
 
 ## Overview
+
 Refer to the guide on hardening Caddy at [Hackvisor - Caddy](https://hackviser.com/tactics/hardening/caddy) and use the [Security Headers](https://securityheaders.com/) website to validate the implementation.
 
 ---
+
 ## SSL & TLS
 
 - **Automatic TLS**: Ensure all Caddy sites have `tls` enabled (automatic with registered domains).
 - **Directory Listing**: Disable directory listing unless intentional by removing the `browse` keyword:
+
 ```caddyfile
 file_server browse  # ← Remove "browse" unless explicitly required
 ```
@@ -19,6 +22,7 @@ file_server browse  # ← Remove "browse" unless explicitly required
 - **Bruteforce Detection**: Install **Fail2Ban** or use Caddy logs with a log analyser (like **CrowdSec**) to detect and block malicious attempts.
 
 ### Security Headers & protocols
+
 Enable HTTP Strict Transport Security (HSTS) and modern TLS protocols in your Caddyfile:
 
 ```caddyfile
@@ -33,15 +37,18 @@ tls {
 ```
 
 ---
+
 ## Authentication & Access Control
 
 ### Basic Auth
+
 Utilise **basic auth** or OAuth (e.g., Authelia or an OIDC plugin) for sensitive paths, especially if the backend service:
 - Lacks built-in authentication.
 - Does not support HTTPS or secure session management.
 - Lacks native brute-force protection.
 
 ### Rate Limiting
+
 Caddy's `rate_limit` directive can be applied to any path or request using matchers (like `path`, `ip`, or `header`).
 
 ```caddyfile
@@ -57,9 +64,11 @@ respond "Rate limited"
 ```
 
 ---
+
 ## IP Filtering & Forwarding
 
 ### Restricted Access
+
 It is possible to restrict which IPs are allowed to access a particular service. Routing even LAN-only services through Caddy centralises logging and adds a layer of security.
 
 > [!NOTE]
@@ -70,16 +79,19 @@ It is possible to restrict which IPs are allowed to access a particular service.
 **Best Practice:** Bind Caddy's internal IP for `X-Forwarded-For` headers instead of a broad range. This prevents an attacker from easily spoofing their IP by pretending to be the reverse proxy.
 
 ---
+
 ## Privacy (Robots.txt)
 
 To enhance privacy, you can add a global `robots.txt` to discourage crawlers from indexing your services.
 
 **1. Create the file:**
+
 ```bash
 echo -e "User-agent: *\nDisallow: /" > /srv/robots.txt
 ```
 
 **2. Add to Caddyfile:**
+
 ```caddyfile
 handle /robots.txt {
     root * /srv

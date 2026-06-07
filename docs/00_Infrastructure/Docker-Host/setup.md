@@ -15,12 +15,14 @@ newgrp docker
 ```
 
 ### Docker Compose
+
 ```bash
 sudo apt update
 sudo apt install docker-compose-plugin
 ```
 
 **Verify Installation:**
+
 ```bash
 docker compose version
 ```
@@ -47,6 +49,7 @@ docker compose version
 > ```
 > 
 > Running `docker info` shouldn't show messages such as:
+> 
 > ```
 > WARNING: No memory limit support
 > WARNING: No swap limit support
@@ -70,4 +73,5 @@ docker compose version
 ## Management Tools
 
 ### Portainer
+
 Refer to the **Portainer** section in the self-hosted directory.

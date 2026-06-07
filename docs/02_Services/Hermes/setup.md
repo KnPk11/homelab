@@ -10,11 +10,13 @@ Hermes is an AI agent dashboard and management system utilised for orchestrating
 ## Installation
 
 ### Deployment Environment
+
 - **Host**: Proxmox VE
 - **Platform**: Bare-metal Ubuntu VM (OpenClaw VM - `.91`)
 - **Method**: Official Hermes installation script
 
 ### Initial Setup
+
 The service was installed utilising the standard installation procedure for Linux environments.
 
 ```bash
@@ -27,6 +29,7 @@ curl -sSL https://hermes.nousresearch.com/install.sh | bash
 ## Configuration
 
 ### AI Providers & Models
+
 Hermes is configured to utilise multiple high-performance providers:
 
 - **NVIDIA Build**: Integrated to leverage specialised model endpoints.
@@ -35,6 +38,7 @@ Hermes is configured to utilise multiple high-performance providers:
 - **Dynamic Model Fetching**: The system is configured to dynamically fetch and update the model list from the providers to ensure access to the latest versions.
 
 ### Setup Commands
+
 After installation, the following commands were utilised to configure the providers:
 
 ```bash
@@ -44,6 +48,7 @@ hermes model
 ```
 
 ### API Key Management
+
 API keys are stored securely within the `~/.hermes/.env` file and managed via the dashboard interface.
 
 ---
@@ -54,12 +59,14 @@ API keys are stored securely within the `~/.hermes/.env` file and managed via th
 > **Authentication**: Hermes uses native `scrypt` authentication to ensure compatibility with password manager auto-fill.
 
 ### Access Details
+
 - **URL**: `https://hermes.[DOMAIN]`
 - **Username**: `[USER]`
 - **Auth Method**: Native Hermes Login (scrypt-hashed)
 - **Session Security**: A stable 32-byte secret is utilised for session signing.
 
 ### Caddy Configuration
+
 Caddy handles TLS termination and restricts access to the LAN. Authentication is delegated to Hermes.
 
 ```caddy
@@ -77,6 +84,7 @@ hermes.[DOMAIN] {
 ```
 
 ### Native Authentication Setup
+
 Authentication is configured via environment variables in `~/.hermes/.env` to separate secrets from the main configuration file.
 
 ```bash
@@ -94,6 +102,7 @@ HERMES_DASHBOARD_BASIC_AUTH_SECRET=[SECRET]
 ---
 
 ## Verification
+
 To verify the service is running and accessible:
 
 ```bash

@@ -9,6 +9,7 @@
 ## Networking
 
 Set a static IP for the secondary router (Asus):
+
 1. **IP** → **DHCP Server**.
 2. Select the device and click **Make Static**.
 3. After doing that, change the IP to `[ROUTER-IP-SECONDARY]` (e.g., `192.168.88.2`) for convenience.

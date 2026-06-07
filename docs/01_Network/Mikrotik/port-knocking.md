@@ -57,11 +57,13 @@ Port knocking acts as an emergency backdoor to your router. It allows you to tem
 From an external machine (e.g., a phone hotspot):
 
 ### Windows (PowerShell)
+
 ```powershell
 @for %p in ([KNOCK-PORT-1] [KNOCK-PORT-2] [KNOCK-PORT-3]) do @(echo Knocking port %p & start /b powershell -c "(New-Object System.Net.Sockets.TcpClient).BeginConnect('[DDNS_NAME].sn.mynetname.net', %p, $null, $null)" >nul 2>&1 & timeout /t 2 /nobreak >nul)
 ```
 
 ### Linux (Bash)
+
 ```bash
 # 1. Confirm SSH is blocked before knocking
 nc -zv [DDNS_NAME].sn.mynetname.net 22
@@ -77,12 +79,15 @@ ssh [USER]@[DDNS_NAME].sn.mynetname.net
 ```
 
 ### Verification
+
 While testing, monitor the address lists in real-time from a WinBox session:
+
 ```bash
 /ip firewall address-list print where list~"knock"
 ```
 
 ## Road Emergency Tips
+
 Install a port knock app on your phone (**"Port Knocker"** on Android, **"Knock on Ports"** on iOS). Save your sequence and the router's DDNS URL.
 
 > [!TIP]
