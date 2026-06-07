@@ -8,8 +8,8 @@ This guide ensures consistency across all documentation in the homelab repositor
   - Use the `[!NOTE]` callout type.
   - Keywords (NOTE, TIP, WARNING, etc.) must be **ALL CAPS**.
   - Format: `**Tags:** #Tag1 #Tag2`
-- **H2 (##)**: Major sections (e.g., Installation, Configuration, Storage).
-- **H3 (###)**: Sub-sections within major sections.
+- **H2 (##) & H3 (###)**: Major sections (e.g., Installation, Configuration, Storage).
+- **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. Reference or troubleshooting sections should remain unnumbered.
 - Use horizontal rules (`---`) to separate major conceptual blocks if needed.
 
 ## 2. Callouts (Admonitions)
@@ -21,7 +21,7 @@ Supported types: `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!SUCCESS]`
 - **Short Titles**: If the title is short, place it on the next line using a colon.
   - *Example*:
     ```markdown
-    > [!TIP]
+    > [!NOTE]
     > **Firewall**: Ensure port 514 is open.
     ```
 - **Long Titles**: If the title is long or requires emphasis, place it on its own line followed by a blank line and then the content.
@@ -32,7 +32,6 @@ Supported types: `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!SUCCESS]`
     > 
     > To prevent data loss...
     ```
-
 
 ## 5. Code Blocks
 Always specify the language for syntax highlighting.
@@ -54,7 +53,9 @@ Before committing, ensure all sensitive or personal information is replaced with
 - **Project/Repo Names**: Replace personal branding (e.g., "Susnode") with generic terms like "Homelab" or "MyLab".
 - **Usernames**: Replace your real username with `[USER]` or `[PERSONAL-USER]`.
 - **UUIDs/Secrets**: Use `[DISK-UUID]`, `[VOLUME-ID]`, or `[SECRET]`.
-- **IP Addresses**: Use internal ranges (e.g., `192.168.1.x`) or generic examples (e.g., `10.x.x.x`).
+- **IP Addresses**: 
+  - Use generic internal ranges (e.g., `192.168.1.x`) for general examples.
+  - **Specific Nodes**: For specific host IP addresses, ALWAYS use bracketed placeholders (e.g., `[SERVICE-IP]`, `[CADDY-IP]`, `[LAPI-IP]`) instead of numeric values.
 - **Domain Names**: Use `.home`, `.local`, or `example.com`.
 
 ## 8. Testing & Verification
@@ -69,3 +70,8 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 ## 10. Service Documentation
 - **File Separation**: Keep `setup.md` and `security.md` as separate files for each service.
 - **Exception**: If the security section is very small and simple, it may be included within the `setup.md` file to avoid unnecessary file clutter.
+
+## 11. Project Workflow & Secrets
+- **Docs First**: The primary repository focus is on sanitised documentation (`docs/`). Operational scripts and compose files are maintained but are secondary during the migration phase.
+- **Script History**: We intentionally maintain multiple versioned files (e.g., `Caddyfile_v1`, `Caddyfile_v2`) in the operational `nodes/` directories to artificially recreate a basic commit history when they are eventually pushed to source control.
+- **SOPS Integration**: Operational files in `nodes/` are intentionally left un-sanitised as they act as the true source for homelab deployments. They are excluded from initial public commits and will be encrypted via **SOPS (Secrets OPerationS)** in the future prior to being committed.
