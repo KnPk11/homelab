@@ -10,7 +10,9 @@ This guide ensures consistency across all documentation in the homelab repositor
   - Format: `**Tags:** #Tag1 #Tag2`
 - **H2 (##) & H3 (###)**: Major sections (e.g., Installation, Configuration, Storage).
 - **Heading Continuity**: Never skip header levels (e.g., do not follow an H1 with an H3). Each level must be nested logically.
-- **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. Reference or troubleshooting sections should remain unnumbered.
+- **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. 
+  - **Subheading Numbering (H3)**: Only number H3 subheadings (e.g., `### 1.1 Step`) if the process is exceptionally long and requires deep nesting for clarity. For most services, keep H3 subheadings unnumbered to avoid implying that alternative paths (e.g., Docker vs. Bare-metal) are sequential steps.
+  - Reference or troubleshooting sections should remain unnumbered.
 - Use horizontal rules (`---`) to separate major conceptual blocks if needed.
 
 ## 2. Callouts (Admonitions)
