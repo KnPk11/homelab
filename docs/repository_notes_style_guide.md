@@ -13,7 +13,8 @@ This guide ensures consistency across all documentation in the homelab repositor
 - **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. 
   - **Subheading Numbering (H3)**: Only number H3 subheadings (e.g., `### 1.1 Step`) if the process is exceptionally long and requires deep nesting for clarity. For most services, keep H3 subheadings unnumbered to avoid implying that alternative paths (e.g., Docker vs. Bare-metal) are sequential steps.
   - Reference or troubleshooting sections should remain unnumbered.
-- Use horizontal rules (`---`) to separate major conceptual blocks if needed.
+- **Horizontal Rules (`---`)**: Use sparingly. Do NOT place horizontal rules between standard H2 sections. They should only be reserved for separating completely distinct conceptual blocks, such as an Appendix or a Troubleshooting guide at the end of a document.
+- **Section Spacing**: Maintain a compact style. Use exactly **ONE blank line** between the H1 title, the Tags callout, and the first major heading.
 
 ## 2. Callouts (Admonitions)
 Use Obsidian-style callouts for highlights. Keywords must be uppercase.
