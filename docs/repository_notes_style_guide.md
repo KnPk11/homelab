@@ -7,7 +7,7 @@ This guide ensures consistency across all documentation in the homelab repositor
 - **Metadata & Tags**: Place the Tags callout immediately AFTER the H1 title.
   - Use the `[!NOTE]` callout type.
   - Keywords (NOTE, TIP, WARNING, etc.) must be **ALL CAPS**.
-  - Format: `**Tags:** #Tag1 #Tag2`
+  - Format: `**Tags:** #Tag1 #Tag2` (Always use **PascalCase** for tags; capitalised, no spaces or underscores).
 - **H2 (##) & H3 (###)**: Major sections (e.g., Installation, Configuration, Storage).
 - **Heading Continuity**: Never skip header levels (e.g., do not follow an H1 with an H3). Each level must be nested logically.
 - **Sequential Steps**: Setup or installation steps that must be followed in order MUST use numbered subheadings (e.g., `## 1. Installation`, `## 2. Configuration`) to visually imply a "Happy Path" and ensure resumability. 
