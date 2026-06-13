@@ -57,6 +57,11 @@ sudo apt update
        ```
     ```
 
+### 5.2 List Spacing (Compact vs. Loose)
+- **Compact Lists**: For simple lists of short items or single sentences, do NOT include blank lines between items. This maintains a clean and professional look.
+- **Loose Lists**: Include exactly one blank line between list items only if the items contain multiple paragraphs, sub-lists, or code blocks. This provides necessary visual separation for complex content.
+- **Consistency**: Do not mix compact and loose styles within the same list level. If one item requires a blank line for a code block, all items in that list should follow the loose style to maintain consistent vertical rhythm.
+
 ## 6. Tables
 Use tables for comparing options or listing configuration parameters.
 
