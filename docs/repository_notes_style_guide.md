@@ -92,6 +92,7 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 
 ## 10. Service Documentation
 - **File Separation**: Keep `setup.md` and `security.md` as separate files for each service.
+- **Required Sections**: Every service setup guide MUST include a `## 1. Description` section immediately after the Tags callout to provide a concise overview of the service's functionality.
 - **Exception**: If the security section is very small and simple, it may be included within the `setup.md` file to avoid unnecessary file clutter.
 
 ## 11. Project Workflow & Secrets
