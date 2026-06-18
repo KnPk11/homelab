@@ -41,13 +41,15 @@ source /data/secrets/storj.env
 
 ### Restic Benchmark Rationale
 
-> [!INFO] Restic backup stats
-> Note on using Restic to back up directories directly versus backing up tar archives of each volume. The tar method is much slower, requires an extra step, and takes up more storage, but it preserves file permission flags better.
+> [!NOTE]
+> **Restic Backup Stats**: Note on using Restic to back up directories directly versus backing up tar archives of each volume.
 > 
-> Docker volumes (direct): `1,689 MB` -> `1,720 MB` = `31 MB`
-> Docker Volumes (tar): `1,557 MB` -> `2,987 MB` = `1,430 MB`
-> Srv (direct): `1,539 MB` -> `1,778 MB` = `239 MB`
-> Srv (tar): `1,430 MB` -> `2,111 MB` = `681 MB`
+> The tar method is much slower, requires an extra step, and takes up more storage, but it preserves file permission flags better.
+> 
+> - **Docker volumes (direct)**: `1,689 MB` -> `1,720 MB` = `31 MB`
+> - **Docker Volumes (tar)**: `1,557 MB` -> `2,987 MB` = `1,430 MB`
+> - **Srv (direct)**: `1,539 MB` -> `1,778 MB` = `239 MB`
+> - **Srv (tar)**: `1,430 MB` -> `2,111 MB` = `681 MB`
 
 ## 3. Rsync Bare-Metal Backup
 
