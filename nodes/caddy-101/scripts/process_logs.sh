@@ -1,8 +1,8 @@
 #!/bin/bash
 : '
-Unified Log Manager v1
+Unified Log Manager - LXC Edition
 --------------------------------------
-Purpose: Initial iteration for log rotation, archival, and retention.
+Purpose: Manages log rotation, archival, and retention for the Caddy LXC environment.
 Requirements: Must be run as root.
 Usage: Usually executed via cron.
 '
@@ -28,7 +28,7 @@ mkdir -p "$ARCHIVE_ROOT"
 if [ -d "$LOG_ROOT/caddy" ]; then
     echo "[Debug] Ensuring Caddy folder permissions..."
     chmod -R 777 "$LOG_ROOT/caddy"
-    chown -R $LOG_USER:$LOG_GROUP "$LOG_ROOT/caddy"
+    chown -R caddy:caddy "$LOG_ROOT/caddy"
 fi
 
 # 2. CADDY: Move rotated logs
@@ -41,11 +41,10 @@ find "$LOG_ROOT/caddy" -type f -name "*.log.gz" -size +0 | while read -r file; d
     mv "$file" "$DEST_DIR/"
 done
 
-# 3. SYSTEM SERVICES: Fail2ban, Crowdsec, ClamAV
+# 3. SYSTEM SERVICES: Fail2ban, Crowdsec
 declare -A SERVICES=(
     [fail2ban]="/var/log/fail2ban.log"
     [crowdsec]="/var/log/crowdsec.log"
-    [clamav]="/var/log/clamav/scan.log"
 )
 
 for svc in "${!SERVICES[@]}"; do
@@ -57,60 +56,61 @@ for svc in "${!SERVICES[@]}"; do
         DST_DIR="$LOG_ROOT/$svc"
         mkdir -p "$DST_DIR"
 
-        dd if="$SRC" of="$DST_DIR/$(basename "$SRC")" status=none
-        dd if="$SRC" status=none | gzip > "$ARCHIVE_SVC_DIR/$(basename "$SRC" .log)-${TIMESTAMP}.gz"
+        cp "$SRC" "$DST_DIR/$(basename "$SRC")"
+        gzip -c "$SRC" > "$ARCHIVE_SVC_DIR/$(basename "$SRC" .log)-${TIMESTAMP}.gz"
         truncate -s 0 "$SRC"
         chown $LOG_USER:$LOG_GROUP "$DST_DIR/$(basename "$SRC")"
     fi
 done
 
-# 4. CUSTOM MIKROTIK LOGIC (The Debug Section)
-MIKROTIK_SRC="/mnt/logs/mikrotik/mikrotik.log"
-THRESHOLD=52428800 # 50MB in Bytes
+# 4. CUSTOM MIKROTIK LOGIC
+MIKROTIK_SRC="$LOG_ROOT/mikrotik/mikrotik.log"
+THRESHOLD=52428800 # 50MB
 
 echo "[Debug] Checking Mikrotik log at: $MIKROTIK_SRC"
 if [[ -f "$MIKROTIK_SRC" ]]; then
     FILE_SIZE=$(stat -c%s "$MIKROTIK_SRC")
-    echo "[Debug] Current Mikrotik size: $FILE_SIZE bytes (Threshold: $THRESHOLD bytes)"
-    
     if [ "$FILE_SIZE" -gt "$THRESHOLD" ]; then
-        echo "[Debug] Mikrotik STATUS: OVER THRESHOLD. Archiving to dedicated folder."
+        echo "[Debug] Mikrotik OVER THRESHOLD. Archiving."
         MK_ARCHIVE_DIR="$ARCHIVE_ROOT/mikrotik"
         mkdir -p "$MK_ARCHIVE_DIR"
-        
-        dd if="$MIKROTIK_SRC" status=none | gzip > "$MK_ARCHIVE_DIR/mikrotik-${TIMESTAMP}.gz"
+        gzip -c "$MIKROTIK_SRC" > "$MK_ARCHIVE_DIR/mikrotik-${TIMESTAMP}.gz"
         truncate -s 0 "$MIKROTIK_SRC"
-        echo "[Debug] Mikrotik archive created and active log truncated."
-    else
-        echo "[Debug] Mikrotik STATUS: UNDER THRESHOLD. Skipping archive, will be caught by Snapshot."
     fi
-else
-    echo "[Debug] Mikrotik log NOT FOUND at $MIKROTIK_SRC"
 fi
 
 # 5. CREATE MASTER SNAPSHOT
 echo "[Snapshot] Creating global archive of active logs..."
 OUTPUT="$ARCHIVE_ROOT/latest-snapshot-${TIMESTAMP}.tar.gz"
-# Note: This finds .log files and bundles them
-find "$LOG_ROOT" -type f -name "*.log" -not -path "*/Archive/*" | tar -czf "$OUTPUT" -C "$LOG_ROOT" --transform 's/^\.//' -T -
-echo "[Debug] Snapshot saved: $(basename "$OUTPUT")"
+LOG_LIST=$(mktemp)
+find "$LOG_ROOT" -type f -name "*.log" 2>/dev/null > "$LOG_LIST" || true
+if [ -s "$LOG_LIST" ]; then
+    tar -czf "$OUTPUT" -C "$LOG_ROOT" --transform "s/^\.//" -T "$LOG_LIST"
+fi
+rm -f "$LOG_LIST"
 
-# 6. FINAL PERMISSIONS (The Windows Visibility Fix)
-echo "[Debug] Finalizing permissions for Windows/Samba..."
+# 6. RETENTION (Cleanup)
+echo "[Cleanup] Enforcing Master Snapshot retention (keeping $SNAPSHOT_KEEP_COUNT)..."
+ls -t "$ARCHIVE_ROOT"/latest-snapshot-*.tar.gz 2>/dev/null | tail -n +$(($SNAPSHOT_KEEP_COUNT + 1)) | while read -r snapshot; do
+    echo "[Cleanup] Deleting old snapshot: $snapshot"
+    rm -f "$snapshot"
+done
 
-# Ensure the main directories exist and are owned by you
-chown -R $LOG_USER:$LOG_GROUP "$LOG_ROOT"
+echo "[Cleanup] Removing individual archives older than $LOG_RETENTION_DAYS days..."
+find "$ARCHIVE_ROOT" -type f -name "*.gz" -not -name "latest-snapshot-*" -mtime +$LOG_RETENTION_DAYS -delete
 
-# Force directories to 775 (Needed for Windows to "enter" folders)
-find "$LOG_ROOT" -type d -exec chmod 775 {} +
+# 7. FINAL PERMISSIONS
+echo "[Debug] Finalizing permissions..."
+for dir in "$LOG_ROOT/caddy" "$LOG_ROOT/fail2ban" "$LOG_ROOT/crowdsec" "$LOG_ROOT/mikrotik" "$ARCHIVE_ROOT"; do
+    if [ -d "$dir" ]; then
+        chown -R "$LOG_USER:$LOG_GROUP" "$dir"
+        find "$dir" -type d -exec chmod 775 {} +
+        find "$dir" -type f -exec chmod 664 {} +
+    fi
+done
 
-# Force files to 664 (Read/Write for you, Read for others)
-find "$LOG_ROOT" -type f -exec chmod 664 {} +
-
-# SPECIFIC CADDY OVERRIDE: 
-# Since you need 777 for the container to work, we re-apply it last 
-# so the general '664' above doesn't break Caddy again.
 if [ -d "$LOG_ROOT/caddy" ]; then
+    chown -R caddy:caddy "$LOG_ROOT/caddy"
     chmod -R 777 "$LOG_ROOT/caddy"
 fi
 
