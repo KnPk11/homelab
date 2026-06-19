@@ -73,7 +73,7 @@ Use tables for comparing options or listing configuration parameters.
 ## 7. Data Sanitization
 Before committing, ensure all sensitive or personal information is replaced with generic placeholders.
 - **Format**: Use square brackets and uppercase for user-specific variables (e.g., `[DISK-UUID]`, `[PERSONAL-USER]`).
-- **Project/Repo Names**: Replace personal branding (e.g., "Homelab") with generic terms like "Homelab" or "MyLab".
+- **Project/Repo Names**: Replace personal branding (e.g., "MyBrand") with generic terms like "Homelab" or "MyLab".
 - **Usernames**: Replace your real username with `[USER]` or `[PERSONAL-USER]`.
 - **UUIDs/Secrets**: Use `[DISK-UUID]`, `[VOLUME-ID]`, or `[SECRET]`.
 - **IP Addresses**: 
