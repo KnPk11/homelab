@@ -1,4 +1,4 @@
-# Caddyfile v2.0 - Core Homelab Proxy
+# Caddyfile v3.0 - Core Homelab Proxy
 # ---- snippets ----
 
 # ---- 🌐 ACCESS + RATE LIMIT SNIPPET ----
@@ -25,8 +25,8 @@
     rate_limit @wan {
         zone wan_zone {
             key {http.request.remote_ip}
-            events {args.0}
-            window {args.1}
+            events {args[0]}
+            window {args[1]}
         }
     }
 
@@ -67,7 +67,7 @@
     encode zstd gzip
     header {
         # Enable XSS protection
-        X-XSS-Protection "1; mode=block"
+        X-X-SS-Protection "1; mode=block"
         # Prevent MIME type sniffing
         X-Content-Type-Options "nosniff"
         # Prevents your site from being embedded in iframes (Clickjacking protection)
@@ -100,7 +100,7 @@
 # Plaintext logging
 (common-logging-plaintext) {
     log {
-        output file /var/log/caddy/plaintext/{args.0}.log {
+        output file /mnt/logs/current/caddy/plaintext/{args[0]}.log {
             roll_size     50MiB
             roll_keep     150
             roll_keep_for 4320h
@@ -113,7 +113,7 @@
 # JSON logging for Crowdsec
 (common-logging) {
     log {
-        output file /var/log/caddy/json/{args.0}.log {
+        output file /mnt/logs/current/caddy/json/{args[0]}.log {
             roll_size     50MiB
             roll_keep     150
             roll_keep_for 4320h
@@ -144,7 +144,13 @@ home.{$DOMAIN_NAME} {
     import common-logging home
     import honeypots-and-traps
 
-    reverse_proxy dashy:8080
+    # reverse_proxy dashy:8080
+    reverse_proxy {$HOMELAB_IP}:9102 localhost:8081 {
+        lb_policy first
+        health_uri /
+        health_interval 10s
+        health_timeout 2s
+    }
 }
 
 cockpit.{$DOMAIN_NAME} {
@@ -154,7 +160,8 @@ cockpit.{$DOMAIN_NAME} {
     import common-logging-plaintext cockpit
     import common-logging cockpit
 
-    reverse_proxy host.docker.internal:9090
+    # reverse_proxy host.docker.internal:9090
+    reverse_proxy {$HOMELAB_IP}:9090
 }
 
 grafana.{$DOMAIN_NAME} {
@@ -164,7 +171,8 @@ grafana.{$DOMAIN_NAME} {
     import common-logging-plaintext grafana
     import common-logging grafana
 
-    reverse_proxy grafana:3000
+    # reverse_proxy grafana:3000
+    reverse_proxy {$HOMELAB_IP}:3005
 }
 
 adguard.{$DOMAIN_NAME} {
@@ -174,7 +182,8 @@ adguard.{$DOMAIN_NAME} {
     import common-logging-plaintext adguard
     import common-logging adguard
 
-    reverse_proxy host.docker.internal:3000
+    # reverse_proxy host.docker.internal:3000
+    reverse_proxy {$DNS_IP}:3000
 }
 
 portainer.{$DOMAIN_NAME} {
@@ -184,7 +193,13 @@ portainer.{$DOMAIN_NAME} {
     import common-logging-plaintext portainer
     import common-logging portainer
 
-    reverse_proxy portainer:9000
+    # reverse_proxy portainer:9000
+    reverse_proxy {$HOMELAB_IP}:9443 {
+        transport http {
+            # This tells Caddy to trust Portainer's self-signed cert
+            tls_insecure_skip_verify
+        }
+    }
 }
 
 influxdb.{$DOMAIN_NAME} {
@@ -194,7 +209,8 @@ influxdb.{$DOMAIN_NAME} {
     import common-logging-plaintext influxdb
     import common-logging influxdb
 
-    reverse_proxy influxdb:8086
+    # reverse_proxy influxdb:8086
+    reverse_proxy {$HOMELAB_IP}:8086
 }
 
 glances.{$DOMAIN_NAME} {
@@ -205,11 +221,12 @@ glances.{$DOMAIN_NAME} {
     import common-logging glances
     
     handle {
-        basicauth {
+        basic_auth {
             k {$GLANCES_HASH}
         }
 
-        reverse_proxy glances:61208
+        # reverse_proxy glances:61208
+        reverse_proxy {$HOMELAB_IP}:61208
     }
 }
 
@@ -221,7 +238,8 @@ filebrowser.{$DOMAIN_NAME} {
     import common-logging-plaintext filebrowser
     import common-logging filebrowser
 
-    reverse_proxy filebrowser-quantum:8080
+    # reverse_proxy filebrowser-quantum:8080
+    reverse_proxy {$HOMELAB_IP}:9101
 }
 
 # copyparty.{$DOMAIN_NAME} {
@@ -274,7 +292,7 @@ nextcloud.{$DOMAIN_NAME} {
     redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
     redir /ocm-provider/ /index.php/ocm-provider/ 301
 
-    reverse_proxy nextcloud:80
+    reverse_proxy {$HOMELAB_IP}:8104
 }
 
 # opencloud.{$DOMAIN_NAME} {
@@ -295,13 +313,24 @@ talk-hpb.{$DOMAIN_NAME} {
     import common-logging-plaintext talk-hpb
     import common-logging talk-hpb
 
-    reverse_proxy nextcloud_talk_hpb:8081 {
+    # reverse_proxy nextcloud_talk_hpb:8081 {
+    reverse_proxy {$HOMELAB_IP}:8105 {
         # Helper to ensure Nextcloud sees the correct headers
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto https
     }
 }
+
+# mediamtx.{$DOMAIN_NAME} {
+#     import common-headers
+#     import common-robots
+#     import access_policy_wan 500 30s
+#     import common-logging-plaintext mediamtx
+#     import common-logging mediamtx
+
+#     reverse_proxy {$HOMELAB_IP}:8888
+# }
 
 # jellyfin.{$DOMAIN_NAME} {
 #     import common-headers
@@ -320,7 +349,8 @@ privatebin.{$DOMAIN_NAME} {
     import common-logging-plaintext privatebin
     import common-logging privatebin
 
-    reverse_proxy privatebin:8080
+    # reverse_proxy privatebin:8080
+    reverse_proxy {$HOMELAB_IP}:8180
 }
 
 banned.{$DOMAIN_NAME} {
@@ -339,7 +369,8 @@ banned.{$DOMAIN_NAME} {
             Content-Security-Policy "frame-ancestors https://*.{$DOMAIN_NAME}"
         }
 
-    reverse_proxy fail2ban_monitor:9002 {
+    # reverse_proxy fail2ban_monitor:9002 {
+    reverse_proxy localhost:9002 {
         header_down -X-Frame-Options
     }
 }
@@ -352,11 +383,12 @@ wud.{$DOMAIN_NAME} {
     import common-logging wud
 
     handle {
-        basicauth {
+        basic_auth {
             k {$WUD_HASH}
         }
 
-        reverse_proxy whats-up-docker:3001
+        # reverse_proxy whats-up-docker:3001
+        reverse_proxy {$HOMELAB_IP}:3001
     }
 }
 
@@ -381,16 +413,6 @@ openclaw.{$DOMAIN_NAME} {
     reverse_proxy {$OPENCLAW_IP}:18789
 }
 
-ocstats.{$DOMAIN_NAME} {
-    import common-headers
-    import common-robots
-    import access_policy_wan 50 30s
-    import common-logging-plaintext pages
-    import common-logging pages
-
-    reverse_proxy {$OPENCLAW_IP}:10482
-}
-
 status.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
@@ -409,13 +431,14 @@ status.{$DOMAIN_NAME} {
 
     # 2. Serve public paths directly to the backend
     handle @public_paths {
-        reverse_proxy uptime-kuma:3001
+        reverse_proxy {$HOMELAB_IP}:3003
     }
 
     # 3. Everything else is restricted to LAN only
     handle {
         import access_policy_lan
-        reverse_proxy uptime-kuma:3001
+        # reverse_proxy uptime-kuma:3001
+        reverse_proxy {$HOMELAB_IP}:3003
     }
 }
 
@@ -426,7 +449,8 @@ dozzle.{$DOMAIN_NAME} {
     import common-logging-plaintext dozzle
     import common-logging dozzle
 
-    reverse_proxy dozzle:8080
+    # reverse_proxy dozzle:8080
+    reverse_proxy {$HOMELAB_IP}:9105
 }
 
 vaultwarden.{$DOMAIN_NAME} {
@@ -451,7 +475,8 @@ vaultwarden.{$DOMAIN_NAME} {
     respond @admin "Unauthorized" 403
 
     # Proxy to Vaultwarden
-    reverse_proxy vaultwarden:80 {
+    # reverse_proxy vaultwarden:80 {
+    reverse_proxy {$HOMELAB_IP}:9103 {
         # Pass the real client IP so Vaultwarden can rate-limit correctly
         header_up X-Real-IP {remote_host}
     }
@@ -464,7 +489,8 @@ my-media.{$DOMAIN_NAME} {
     import common-logging-plaintext webdav
     import common-logging webdav
 
-    reverse_proxy media-webdav:80
+    # reverse_proxy media-webdav:80
+    reverse_proxy {$HOMELAB_IP}:8084
 }
 
 pinchflat.{$DOMAIN_NAME} {
@@ -484,7 +510,8 @@ metube.{$DOMAIN_NAME} {
     import common-logging-plaintext metube
     import common-logging metube
 
-    reverse_proxy metube:8081
+    # reverse_proxy metube:8081
+    reverse_proxy {$HOMELAB_IP}:8181
 }
 
 airflow.{$DOMAIN_NAME} {
@@ -494,7 +521,8 @@ airflow.{$DOMAIN_NAME} {
     import common-logging-plaintext airflow
     import common-logging airflow
 
-    reverse_proxy airflow_apiserver:8080
+    # reverse_proxy airflow_apiserver:8080
+    reverse_proxy {$HOMELAB_IP}:8094
 }
 
 ai.{$DOMAIN_NAME} {
@@ -504,7 +532,8 @@ ai.{$DOMAIN_NAME} {
     import common-logging-plaintext openwebui
     import common-logging openwebui
 
-    reverse_proxy open-webui:8080
+    # reverse_proxy open-webui:8080
+    reverse_proxy {$HOMELAB_IP}:3002
 }
 
 syncthing.{$DOMAIN_NAME} {
@@ -514,9 +543,31 @@ syncthing.{$DOMAIN_NAME} {
     import common-logging-plaintext syncthing
     import common-logging syncthing
 
-    reverse_proxy syncthing:8384 {
+    # reverse_proxy syncthing:8384 {
+    reverse_proxy {$HOMELAB_IP}:8384 {
         header_up Host 127.0.0.1
     }
+}
+
+gatus.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 100 30s
+    import common-logging-plaintext gatus
+    import common-logging gatus
+
+    reverse_proxy localhost:8081
+}
+
+ocstats.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    # import access_policy_wan 50 30s
+    import access_policy_lan
+    import common-logging-plaintext pages
+    import common-logging pages
+
+    reverse_proxy {$OPENCLAW_IP}:10482
 }
 
 import Caddyfile.experimental*
