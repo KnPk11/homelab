@@ -10,3 +10,5 @@ Thumbs.db
 *.env
 *.key
 *.pem
+
+nodes/caddy-101/services/Caddy/Caddyfile.experimental*
