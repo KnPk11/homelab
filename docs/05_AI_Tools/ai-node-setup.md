@@ -9,61 +9,32 @@ A guide for setting up a dedicated AI node as a Proxmox LXC, including the insta
 
 ## 2. Infrastructure Setup (Proxmox LXC)
 
-### 2.1. LXC Creation
+Provision a standard Debian LXC container following the [Debian LXC Provisioning Guide](../../00_Infrastructure/Proxmox/Provisioning/debian-lxc.md). 
 
-1. **Download Template**: Fetch the `Debian 13` template (or latest stable) in the Proxmox local storage.
-2. **Configure General Settings**:
-   - Enable **Unprivileged Container** and **Nesting**.
-   - **Password**: Set a strong root password for the initial login.
-   - **SSH Keys**: Highly recommended. Paste your public key for passwordless access.
-3. **Resources**:
-   - **Disk**: 8 GiB (Default ACLs).
-   - **CPU**: 2 Cores.
-   - **Memory**: 2048 MiB.
-4. **Network**:
-   - **IPv4/CIDR**: Assign a unique static IP (e.g., `[AI-IP]/24`).
-   - **Gateway**: Your router's IP (e.g., `[GATEWAY-IP]`).
-5. **DNS**: Leave as default unless a custom resolver is required.
-
-### 2.2. Initial OS Configuration
-
-Update the system and install essential packages:
-
-```bash
-apt update && apt install sudo curl -y
-```
-
-Set up unattended upgrades to ensure the node stays secure.
+**Resource Overrides for AI Node:**
+- **CPU**: 2 Cores
+- **Memory**: 2048 MiB RAM
+- **Swap**: 2048 MiB (2 GB)
+- **Disk**: 12 GiB
+- **Network**: Assign a static IP (e.g., `[AI-IP]/24`).
 
 ## 3. Agentic Tools Installation
 
-### 3.1. Gemini CLI Setup
+### 3.1. Antigravity Setup
 
-1. **Install Node.js**:
+1. **Install Antigravity**:
    
    ```bash
-   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-   sudo apt install -y nodejs
+   curl -fsSL https://antigravity.google/cli/install.sh | bash
    ```
 
-2. **Install Gemini CLI**:
-   
-   ```bash
-   sudo npm install -g @google/gemini-cli
-   ```
+2. **Authenticate**:
+   Authenticate with Google using the provided code in your terminal.
 
-3. **Initialise**:
-   
-   ```bash
-   gemini
-   ```
-   Follow the setup wizard to sign in with your Google account. Enable **Conseca** and **Auto-Edit** for full agentic capabilities.
-
-4. **YOLO Mode (Optional)**: To allow all permissions without prompts (use with caution):
-   
-   ```bash
-   gemini --yolo
-   ```
+3. **Usage**:
+   - Run the agent using the `agy` command.
+   - Use the `/model` command to set the required model.
+   - Use the `/usage` command to check model usage.
 
 ### 3.2. OpenCode Setup
 
@@ -130,7 +101,7 @@ It is recommended to create a dedicated service key for the AI node to allow it 
 > [!TIP]
 > Start with the root user to ensure a smooth initial setup. Once stable, harden the environment by migrating to a dedicated `gemini` user with scoped sudo access.
 
-## 6. Appendix A: Gemini CLI Tuning & Tips
+## 6. Appendix A: Antigravity & Gemini CLI Tuning & Tips
 
 ### 6.1. Tool Configuration
 
@@ -184,3 +155,33 @@ If you frequently encounter rate limits on specific models (e.g., Flash), Gemini
 
 - **Conseca**: A feature that enhances the agent's ability to maintain state and context across complex tasks.
 - **Auto-Edit**: Allows the agent to automatically apply surgical code changes using the `replace` tool, reducing the need for full file rewrites.
+
+### 6.4. Legacy Gemini CLI Setup
+
+> [!WARNING]
+> Gemini CLI no longer works with standard Google accounts via OAuth. Google requires installing Antigravity instead. The following instructions are preserved for historical reference only.
+
+1. **Install Node.js**:
+   
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+   sudo apt install -y nodejs
+   ```
+
+2. **Install Gemini CLI**:
+   
+   ```bash
+   sudo npm install -g @google/gemini-cli
+   ```
+
+3. **Initialise**:
+   
+   ```bash
+   gemini
+   ```
+
+4. **YOLO Mode (Optional)**: To allow all permissions without prompts:
+   
+   ```bash
+   gemini --yolo
+   ```
