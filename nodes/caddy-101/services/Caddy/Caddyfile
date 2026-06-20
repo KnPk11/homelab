@@ -1,4 +1,7 @@
-# Caddyfile v3.0 - Core Homelab Proxy
+# Caddyfile v3.1 - Core Homelab Proxy
+# Main Caddy configuration for {$DOMAIN_NAME} services
+# Includes security snippets, rate limiting, and reverse proxy definitions.
+
 # ---- snippets ----
 
 # ---- 🌐 ACCESS + RATE LIMIT SNIPPET ----
@@ -413,6 +416,18 @@ openclaw.{$DOMAIN_NAME} {
     reverse_proxy {$OPENCLAW_IP}:18789
 }
 
+hermes.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext hermes
+    import common-logging hermes
+
+    reverse_proxy {$OPENCLAW_IP}:9119 {
+        header_up Host {$OPENCLAW_IP}:9119
+    }
+}
+
 status.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
@@ -551,6 +566,8 @@ syncthing.{$DOMAIN_NAME} {
 
 gatus.{$DOMAIN_NAME} {
     import common-headers
+    header -X-Frame-Options
+    header Content-Security-Policy "frame-ancestors https://home.{$DOMAIN_NAME} https://{$DOMAIN_NAME}"
     import common-robots
     import access_policy_wan 100 30s
     import common-logging-plaintext gatus
