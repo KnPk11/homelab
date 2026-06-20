@@ -1,9 +1,9 @@
-# Fail2Ban Local Configuration - Version 2.0
+# Fail2Ban Local Configuration - Version 2.1
 # Defines jails for sshd and Caddy log monitoring.
 # Includes custom rate limits and IP whitelisting for the LAN.
 
 [DEFAULT]
-banaction = docker-user
+banaction = crowdsec
 backend = systemd
 ignoreip = ${HOMELAB_SUBNETS}
 bantime.increment = true
