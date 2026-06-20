@@ -36,7 +36,23 @@ Provision a standard Debian LXC container following the [Debian LXC Provisioning
    - Use the `/model` command to set the required model.
    - Use the `/usage` command to check model usage.
 
-### 3.2. OpenCode Setup
+### 3.2. Grok CLI Setup
+
+1. **Install Grok CLI**:
+   
+   ```bash
+   curl -fsSL https://x.ai/cli/install.sh | bash
+   ```
+
+2. **Authenticate**:
+   Type `grok` in your terminal and authenticate using the provided code through the xAI website.
+
+3. **Usage**:
+   - Run the agent using the `grok` command.
+   - Use the `/model` command to set the required model (e.g., Grok 2, Grok 4.3).
+   - Use the `/usage` command to check model usage.
+
+### 3.3. OpenCode Setup
 
 1. **Installation**:
    
