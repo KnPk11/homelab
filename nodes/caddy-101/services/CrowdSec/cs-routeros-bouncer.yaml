@@ -1,0 +1,28 @@
+crowdsec:
+  api_url: "http://${CROWDSEC_LAPI_URL_PORT}/"
+  api_key: "${CROWDSEC_ROUTEROS_API_KEY}"
+  reconciliation_interval: 2h
+  origins: ["crowdsec", "cscli"]
+
+mikrotik:
+  address: "${MIKROTIK_ADDRESS}"
+  username: "${MIKROTIK_USERNAME}"
+  password: "${MIKROTIK_PASSWORD}"
+  pool_size: 2
+
+firewall:
+  ipv6:
+    enabled: false
+  raw:
+    enabled: false
+  filter:
+    enabled: true
+    chains: ["input", "forward"]
+  address_list: "CrowdSec_Blacklist"
+
+metrics:
+  enabled: false
+  routeros_poll_interval: 0s
+
+logging:
+  level: "info"
