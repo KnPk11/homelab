@@ -1,0 +1,522 @@
+# Caddyfile v2.0 - Core Homelab Proxy
+# ---- snippets ----
+
+# ---- 🌐 ACCESS + RATE LIMIT SNIPPET ----
+# LAN‑only access policy
+(access_policy_lan) {
+    @not_lan {
+        not remote_ip 192.168.88.0/24 192.168.50.0/24 172.16.0.0/12 10.5.0.0/24 10.6.0.0/24 100.64.0.0/10 ::1 fe80::/10 {$IPV6_PREFIX}
+    }
+    handle @not_lan {
+        respond "LAN party only." 403
+    }
+}
+
+# WAN-allowed access policy (no IP restriction, but rate-limited for WAN)
+(access_policy_wan) {
+
+    # Define a matcher for WAN (non-LAN) IPs
+    # This uses the same logic from your (access_policy_lan) snippet
+    @wan {
+        not remote_ip 192.168.88.0/24 192.168.50.0/24 172.16.0.0/12 10.5.0.0/24 10.6.0.0/24 100.64.0.0/10 ::1 fe80::/10 {$IPV6_PREFIX}
+    }
+
+    # Apply the rate limit ONLY to traffic that matches @wan
+    rate_limit @wan {
+        zone wan_zone {
+            key {http.request.remote_ip}
+            events {args.0}
+            window {args.1}
+        }
+    }
+
+    # WAN kill-switch (uncomment to block all WAN traffic)
+    # handle @wan {
+    #    respond "Public access temporarily disabled" 403
+    # }
+}
+
+# ---- Honeypots & Sensitive File Traps ----
+(honeypots-and-traps) {
+    # Common honeypot paths (fake admin panels, CMS logins, etc.)
+    @honeypots {
+        path /admin/* /user/* /phpmyadmin/* /cgi-bin/* /wp-admin/* /wp-login.php* /xmlrpc.php
+        path /typo3/* /drupal/* /joomla/administrator/* /pgadmin4/* /adminer.php
+    }
+    handle @honeypots {
+        respond "Unauthorized" 403
+        # bogus user to trip scanners
+        basic_auth {
+            user fakeuser
+        }
+    }
+
+    # Sensitive files often probed by bots
+    @sensitive {
+        path /config.cfg /.env /id_rsa /server-status /etc/passwd
+        path /.git/* /composer.json /package.json /Dockerfile
+        path /wp-config.php /db.sql /backup.zip /backup.tar.gz /db_backup.sql.gz
+        path /config.php /local.xml /settings.py
+    }
+    handle @sensitive {
+        respond "Unauthorized" 401
+    }
+}
+
+(common-headers) {
+    encode zstd gzip
+    header {
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Prevents your site from being embedded in iframes (Clickjacking protection)
+        X-Frame-Options "SAMEORIGIN"
+        # HSTS (Strict Transport Security) - tells browsers to ONLY use HTTPS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # "When leaving my site, only tell them the domain name, not the specific page I was on."
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Blocks Google's FLoC tracking, but leaves Camera/Mic open
+        Permissions-Policy "interest-cohort=()"
+    }
+    tls {
+        protocols tls1.3
+    }
+}
+
+# A "Loose" CSP for simple apps that don't provide their own
+(basic-csp) {
+    # Allows scripts/styles from the same domain, plus inline scripts (needed by many dashboards)
+    header Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src * data: blob:; connect-src *; font-src 'self' data:;"
+}
+
+(common-robots) {
+    handle /robots.txt {
+        root * /srv
+        file_server
+    }
+}
+
+# Plaintext logging
+(common-logging-plaintext) {
+    log {
+        output file /var/log/caddy/plaintext/{args.0}.log {
+            roll_size     50MiB
+            roll_keep     150
+            roll_keep_for 4320h
+        }
+        # This specifies the plaintext format you were using before
+        format transform "{common_log}"
+    }
+}
+
+# JSON logging for Crowdsec
+(common-logging) {
+    log {
+        output file /var/log/caddy/json/{args.0}.log {
+            roll_size     50MiB
+            roll_keep     150
+            roll_keep_for 4320h
+        }
+        format json
+    }
+}
+
+# ---- sites ----
+{$DOMAIN_NAME} {
+    import common-headers
+    import basic-csp
+    import common-robots
+    import access_policy_wan 100 30s
+    import common-logging-plaintext main
+    import common-logging main
+    import honeypots-and-traps
+
+    redir https://home.{$DOMAIN_NAME}{uri} permanent
+}
+
+home.{$DOMAIN_NAME} {
+    import common-headers
+    # import basic-csp # Breaks embedding from fail2ban app
+    import common-robots
+    import access_policy_wan 2500 60s
+    import common-logging-plaintext home
+    import common-logging home
+    import honeypots-and-traps
+
+    reverse_proxy dashy:8080
+}
+
+cockpit.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext cockpit
+    import common-logging cockpit
+
+    reverse_proxy host.docker.internal:9090
+}
+
+grafana.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext grafana
+    import common-logging grafana
+
+    reverse_proxy grafana:3000
+}
+
+adguard.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext adguard
+    import common-logging adguard
+
+    reverse_proxy host.docker.internal:3000
+}
+
+portainer.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext portainer
+    import common-logging portainer
+
+    reverse_proxy portainer:9000
+}
+
+influxdb.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext influxdb
+    import common-logging influxdb
+
+    reverse_proxy influxdb:8086
+}
+
+glances.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext glances
+    import common-logging glances
+    
+    handle {
+        basicauth {
+            k {$GLANCES_HASH}
+        }
+
+        reverse_proxy glances:61208
+    }
+}
+
+filebrowser.{$DOMAIN_NAME} {
+    import common-headers
+    import basic-csp
+    import common-robots
+    import access_policy_wan 200 30s
+    import common-logging-plaintext filebrowser
+    import common-logging filebrowser
+
+    reverse_proxy filebrowser-quantum:8080
+}
+
+# copyparty.{$DOMAIN_NAME} {
+#     import common-headers
+#     import common-robots
+#     import access_policy_wan 100 30s
+#     import common-logging-plaintext copyparty
+#     import common-logging copyparty
+
+#     reverse_proxy copyparty:3923
+# }
+
+# photoprism.{$DOMAIN_NAME} {
+#     import common-headers
+#     import common-robots
+#     import access_policy_wan 250 30s
+#     import common-logging-plaintext photoprism
+#     import common-logging photoprism
+
+#     reverse_proxy photoprism:2342
+# }
+
+# immich.{$DOMAIN_NAME} {
+#     import common-headers
+#     import common-robots
+#     import access_policy_wan 250 30s
+#     import common-logging-plaintext immich
+#     import common-logging immich
+
+#     reverse_proxy immich:2283
+# }
+
+nextcloud.{$DOMAIN_NAME} {
+    # import common-headers
+    import common-robots
+    import access_policy_wan 4000 60s
+    import common-logging-plaintext nextcloud
+    import common-logging nextcloud
+
+    header {
+            # Fixes HSTS warning (6 months in seconds)
+            Strict-Transport-Security "max-age=15552000"
+            # Blocks Google's FLoC tracking, but leaves Camera/Mic open for Talk
+            Permissions-Policy "interest-cohort=()"
+        }
+
+    redir /.well-known/carddav /remote.php/dav 301
+    redir /.well-known/caldav /remote.php/dav 301
+    redir /.well-known/webfinger /index.php/.well-known/webfinger 301
+    redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
+    redir /ocm-provider/ /index.php/ocm-provider/ 301
+
+    reverse_proxy nextcloud:80
+}
+
+# opencloud.{$DOMAIN_NAME} {
+#     import common-headers
+#     import basic-csp
+#     import common-robots
+#     import access_policy_wan 200 30s
+#     import common-logging-plaintext opencloud
+#     import common-logging opencloud
+
+#     reverse_proxy opencloud:9200
+# }
+
+talk-hpb.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 200 30s
+    import common-logging-plaintext talk-hpb
+    import common-logging talk-hpb
+
+    reverse_proxy nextcloud_talk_hpb:8081 {
+        # Helper to ensure Nextcloud sees the correct headers
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
+}
+
+# jellyfin.{$DOMAIN_NAME} {
+#     import common-headers
+#     import common-robots
+#     import access_policy_wan 250 30s
+#     import common-logging-plaintext jellyfin
+#     import common-logging jellyfin
+
+#     reverse_proxy jellyfin:8096
+# }
+
+privatebin.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 50 30s
+    import common-logging-plaintext privatebin
+    import common-logging privatebin
+
+    reverse_proxy privatebin:8080
+}
+
+banned.{$DOMAIN_NAME} {
+    import common-headers
+    import basic-csp
+    import common-robots
+    import access_policy_wan 200 30s
+    import common-logging-plaintext banned
+    import common-logging banned
+
+    header {
+            # 1. Remove the strict 'SAMEORIGIN' rule from common-headers
+            -X-Frame-Options
+            
+            # 2. Allow embedding only by your specific subdomains (e.g. Dashy)
+            Content-Security-Policy "frame-ancestors https://*.{$DOMAIN_NAME}"
+        }
+
+    reverse_proxy fail2ban_monitor:9002 {
+        header_down -X-Frame-Options
+    }
+}
+
+wud.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext wud
+    import common-logging wud
+
+    handle {
+        basicauth {
+            k {$WUD_HASH}
+        }
+
+        reverse_proxy whats-up-docker:3001
+    }
+}
+
+n8n.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext n8n
+    import common-logging n8n
+
+    reverse_proxy n8n:5678
+}
+
+openclaw.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext openclaw
+    import common-logging openclaw
+
+    # reverse_proxy openclaw-openclaw-gateway-1:18789
+    reverse_proxy {$OPENCLAW_IP}:18789
+}
+
+ocstats.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 50 30s
+    import common-logging-plaintext pages
+    import common-logging pages
+
+    reverse_proxy {$OPENCLAW_IP}:10482
+}
+
+status.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import common-logging-plaintext uptime-kuma
+    import common-logging uptime-kuma
+
+    # 1. Public paths — anyone can access these
+    @public_paths {
+        path /status/*
+        path /assets/*
+        path /api/status-page/*
+        path /api/status-page/heartbeat/*
+        path /icon.png
+        path /apple-touch-icon.png
+    }
+
+    # 2. Serve public paths directly to the backend
+    handle @public_paths {
+        reverse_proxy uptime-kuma:3001
+    }
+
+    # 3. Everything else is restricted to LAN only
+    handle {
+        import access_policy_lan
+        reverse_proxy uptime-kuma:3001
+    }
+}
+
+dozzle.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext dozzle
+    import common-logging dozzle
+
+    reverse_proxy dozzle:8080
+}
+
+vaultwarden.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 100 30s
+    import common-logging-plaintext vaultwarden
+    import common-logging vaultwarden
+
+    # Add the EXTRA header just for this site
+    header {
+        # Prevent your site from being embedded in an iframe (Clickjacking protection)
+        X-Frame-Options "SAMEORIGIN"
+    }
+
+    # Block external access to the Admin panel
+    # Returns 404 to confuse scanners (or use 403 Forbidden)
+    @admin {
+        path /admin*
+        not remote_ip 192.168.50.0/24 10.0.0.0/8
+    }
+    respond @admin "Unauthorized" 403
+
+    # Proxy to Vaultwarden
+    reverse_proxy vaultwarden:80 {
+        # Pass the real client IP so Vaultwarden can rate-limit correctly
+        header_up X-Real-IP {remote_host}
+    }
+}
+
+my-media.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 1000 30s
+    import common-logging-plaintext webdav
+    import common-logging webdav
+
+    reverse_proxy media-webdav:80
+}
+
+pinchflat.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext pinchflat
+    import common-logging pinchflat
+
+    reverse_proxy vpn-secure-wireguard:8945
+}
+
+metube.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext metube
+    import common-logging metube
+
+    reverse_proxy metube:8081
+}
+
+airflow.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 500 30s
+    import common-logging-plaintext airflow
+    import common-logging airflow
+
+    reverse_proxy airflow_apiserver:8080
+}
+
+ai.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 500 30s
+    import common-logging-plaintext openwebui
+    import common-logging openwebui
+
+    reverse_proxy open-webui:8080
+}
+
+syncthing.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext syncthing
+    import common-logging syncthing
+
+    reverse_proxy syncthing:8384 {
+        header_up Host 127.0.0.1
+    }
+}
+
+import Caddyfile.experimental*
