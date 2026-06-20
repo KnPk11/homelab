@@ -1,0 +1,65 @@
+web:
+  port: 8081
+
+storage:
+  type: sqlite
+  path: /opt/gatus/data.db
+
+ui:
+  title: "${DOMAIN_NAME} Status"
+  header: "System Status"
+
+endpoints:
+  - name: Reverse Proxy
+    url: "tcp://127.0.0.1:80"
+    interval: 1m
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: DNS
+    url: "tcp://${DNS_NODE_IP}:53"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: AI Tools
+    url: "icmp://${AITOOLS_NODE_IP}"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Main Homelab
+    url: "http://${HOMELAB_NODE_IP}:9102"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: OpenClaw
+    url: "http://${OPENCLAW_NODE_IP}:18789"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: OpenMediaVault
+    url: "icmp://${OMV_NODE_IP}"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
