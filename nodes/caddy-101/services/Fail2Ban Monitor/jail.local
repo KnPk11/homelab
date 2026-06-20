@@ -1,0 +1,43 @@
+# Fail2Ban Local Configuration - Version 2.0
+# Defines jails for sshd and Caddy log monitoring.
+# Includes custom rate limits and IP whitelisting for the LAN.
+
+[DEFAULT]
+banaction = docker-user
+backend = systemd
+ignoreip = ${HOMELAB_SUBNETS}
+bantime.increment = true
+bantime.factor = 2
+bantime.maxtime = 3h
+dbpurgeage = 6h
+
+# SSH jail (more tolerant)
+[sshd]
+enabled  = true
+filter   = sshd
+findtime = 10m
+maxretry = 15
+bantime  = 3h
+backend  = systemd
+
+# More sensitive: auth error codes
+[caddy-authcodes]
+enabled = true
+filter = caddy-authcodes
+logpath = /mnt/logs/current/caddy/plaintext/*.log
+port = http,https
+backend = polling
+findtime = 3m
+maxretry = 50
+bantime = 10m
+
+# More relaxed: generic keyword triggers
+[caddy-sensitivepaths]
+enabled = true
+filter = caddy-sensitivepaths
+logpath = /mnt/logs/current/caddy/plaintext/*.log
+port = http,https
+backend = polling
+findtime = 2m
+maxretry = 500
+bantime = 10m
