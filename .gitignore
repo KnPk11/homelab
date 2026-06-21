@@ -12,3 +12,10 @@ Thumbs.db
 *.pem
 
 nodes/caddy-101/services/Caddy/Caddyfile.experimental*
+
+# Private Project Folders
+projects/experimental/
+projects/airflow-dags/
+projects/dbt-project/
+projects/n8n/
+projects/web-apps/
