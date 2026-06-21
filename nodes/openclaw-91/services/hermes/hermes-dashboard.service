@@ -1,0 +1,11 @@
+[Unit]
+Description=Hermes Agent Web Dashboard
+After=network.target
+
+[Service]
+ExecStart=/home/k/.hermes/hermes-agent/venv/bin/hermes dashboard --host 0.0.0.0 
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
