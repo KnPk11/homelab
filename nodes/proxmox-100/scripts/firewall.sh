@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Proxmox Firewall Management Script
-# Version: 1.0 (2026-05-17)
+# Version: 1.1 (2026-05-26)
 # --------------------------------------
 # Run this on the Proxmox Host (pve1)
 
@@ -46,6 +46,7 @@ enable: 1
 main-lan $MAIN_LAN     # Regular PCs & Devices (Most Trusted)
 iot-lan $IOT_LAN     # Untrusted IoT Devices
 homelab-lan $HOMELAB_LAN  # Homelab Subnet (Intermediate Trust)
+homelab-node $HOMELAB_NODE   # Homelab Windows VM
 open-media-vault $OMV_IP # OMV Storage VM
 reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container
@@ -97,8 +98,9 @@ IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
 
 [group file-svc]
 # SMB/NFS Access Rules
-# SMB: Main LAN only (Prevents 50.x cross-talk)
+# SMB: Main LAN and specific Homelab Node
 IN SMB(ACCEPT) -source main-lan -log nolog
+IN SMB(ACCEPT) -source homelab-node -log nolog
 # NFS & RPC Bind: Allow Homelab VMs for cross-storage sharing
 IN ACCEPT -p tcp -dport 2049 -source homelab-lan -log nolog
 IN ACCEPT -p udp -dport 2049 -source homelab-lan -log nolog
@@ -145,7 +147,7 @@ enable: 1
 GROUP ssh-adm
 GROUP proxy-back
 GROUP ping-trusted
-GROUP file-svc      # Access to OMV / Serving Documents
+|GROUP file-svc      # Access to OMV / Serving Documents
 GROUP streaming-pub
 GROUP anytype-pub
 GROUP nc-talk-pub
@@ -166,6 +168,9 @@ GROUP ping-trusted
 # OMV Web UI: Allow from Main LAN
 IN ACCEPT -p tcp -dport 80 -source main-lan -log nolog # OMV Dashboard
 IN ACCEPT -p tcp -dport 443 -source main-lan -log nolog # OMV Dashboard (SSL)
+
+# Allow all from new node
+IN ACCEPT -source homelab-node -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 101 (OMV)."
