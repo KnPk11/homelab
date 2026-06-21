@@ -1,46 +1,16 @@
-# Caddy-101 Deployment Notes
+# Caddy-101 Master Bootstrap Guide
 
-## Log Manager Script
-The `process_logs.sh` script handles log rotation, archival, and retention.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit files directly on the server. Instead, push updates to the Git repository, pull them on the server, and restart the respective services.
 
-### Deployment Strategy
-1. **Clone the repository** to a central location on the node (e.g., `/opt/homelab-repo`).
-2. **Create the Environment File**:
-   Copy the example environment file and update it with local values if needed:
-   ```bash
-   cp /opt/homelab-repo/nodes/caddy-101/scripts/process_logs.env.example /opt/homelab-repo/nodes/caddy-101/scripts/process_logs.env
-   ```
-3. **Symlink to cron**:
-   To run the script automatically (e.g., daily at midnight), create a symlink in the daily cron directory:
-   ```bash
-   sudo ln -s /opt/homelab-repo/nodes/caddy-101/scripts/process_logs.sh /etc/cron.daily/process_logs
-   ```
+If this machine ever suffers a catastrophic failure, follow the deployment guides below in this exact order to nuke-and-pave it back to a working state.
 
-> [!NOTE]
-> The script dynamically discovers its `.env` file via `readlink`, so it can be safely symlinked anywhere on the system without breaking its configuration paths.
+## 1. System Scripts & Cron Jobs
+*   [Process Logs Script](scripts/deployment.md)
 
-## Caddyfile Configuration
-The primary proxy configuration for the node.
+## 2. Reverse Proxy & Security
+*   [Caddy Reverse Proxy](services/Caddy/deployment.md)
+*   [CrowdSec IPS](services/CrowdSec/deployment.md)
+*   [Fail2Ban Monitor](services/Fail2Ban\ Monitor/deployment.md)
 
-### Deployment Strategy
-1. **Clone the repository** to a central location on the node (e.g., `/opt/homelab-repo`).
-2. **Create the Environment File**:
-   Copy the example `.env` template and update it with your actual IPs and secret hashes:
-   ```bash
-   cp /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.env.example /opt/homelab-repo/nodes/caddy-101/services/Caddy/.env
-   ```
-3. **Create the Experimental Configuration** (Optional):
-   Create a local `Caddyfile.experimental` to house your uncommitted, temporary web services:
-   ```bash
-   touch /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.experimental
-   ```
-4. **Symlink the Configuration**:
-   Symlink the repository's Caddyfile over the default system Caddyfile:
-   ```bash
-   sudo rm /srv/caddy/Caddyfile
-   sudo ln -s /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile /srv/caddy/Caddyfile
-   ```
-5. **Apply Configuration**:
-   ```bash
-   sudo systemctl reload caddy
-   ```
+## 3. Observability
+*   [Gatus Status Page](services/Gatus/deployment.md)
