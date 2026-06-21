@@ -1,18 +1,12 @@
-# Caddy-101 Master Bootstrap Guide
+# DNS-102 Master Bootstrap Guide
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit files directly on the server. Instead, push updates to the Git repository, pull them on the server, and restart the respective services.
 
 If this machine ever suffers a catastrophic failure, follow the deployment guides below in this exact order to nuke-and-pave it back to a working state.
 
-## 1. System Bootstrap & Scripts
+## 1. System Bootstrap
 *   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
-*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **32** to stagger network load.
-*   [Process Logs Script](scripts/deployment.md)
+*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **33** to stagger network load.
 
-## 2. Reverse Proxy & Security
-*   [Caddy Reverse Proxy](services/Caddy/deployment.md)
-*   [CrowdSec IPS](services/CrowdSec/deployment.md)
-*   [Fail2Ban Monitor](services/Fail2Ban\ Monitor/deployment.md)
-
-## 3. Observability
-*   [Gatus Status Page](services/Gatus/deployment.md)
+## 2. DNS Services
+*   [AdGuardHome](services/adguard/deployment.md)
