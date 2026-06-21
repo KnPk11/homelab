@@ -1,0 +1,454 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.5.20",
+    "lastTouchedAt": "2026-05-23T18:29:25.661Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-05-19T17:53:26.531Z",
+    "lastRunVersion": "2026.5.18",
+    "lastRunCommand": "doctor",
+    "lastRunMode": "local"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "custom_provider": {
+        "baseUrl": "https://ai.example.com/api/v1",
+        "apiKey": "[REDACTED]",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-oss-20b",
+            "name": "gpt-oss-120b (custom_provider)",
+            "api": "openai-completions",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 200000,
+            "maxTokens": 4096
+          }
+        ]
+      },
+      "openai": {
+        "baseUrl": "https://api.openai.com/v1",
+        "apiKey": "[REDACTED]",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gpt-5-nano",
+            "name": "gpt-5-nano (Custom Provider)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.1,
+              "output": 0.2,
+              "cacheRead": 0.05,
+              "cacheWrite": 0.15
+            },
+            "contextWindow": 128000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "gpt-5-mini",
+            "name": "gpt-5-mini (Custom Provider)",
+            "api": "openai-completions",
+            "reasoning": false,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0.15,
+              "output": 0.3,
+              "cacheRead": 0.08,
+              "cacheWrite": 0.25
+            },
+            "contextWindow": 128000,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "xai": {
+        "baseUrl": "https://api.x.ai/v1",
+        "apiKey": "[REDACTED]",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "grok-4.3",
+            "name": "Grok 4.3",
+            "contextWindow": 1000000,
+            "maxTokens": 30000
+          },
+          {
+            "id": "grok-2-latest",
+            "name": "Grok 2",
+            "contextWindow": 131072,
+            "maxTokens": 4096
+          }
+        ]
+      },
+      "nvidia-build": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "[REDACTED]",
+        "api": "openai-completions",
+        "models": [
+          { "id": "deepseek-ai/deepseek-v3.2", "name": "deepseek-v3.2", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "deepseek-ai/deepseek-v4-pro", "name": "deepseek-v4-pro", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "meta/llama-3.1-70b-instruct", "name": "llama-3.1-70b-instruct", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "meta/llama-3.2-90b-vision-instruct", "name": "llama-3.2-90b-vision-instruct", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192, "input": ["text", "image"] },
+          { "id": "meta/llama-3.3-70b-instruct", "name": "llama-3.3-70b-instruct", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "meta/llama-4-maverick-17b-128e-instruct", "name": "llama-4-maverick", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "qwen/qwen3.5-122b-a10b", "name": "qwen3.5-122b-a10b", "api": "openai-completions", "contextWindow": 1000000, "maxTokens": 16384 },
+          { "id": "qwen/qwen3.5-397b-a17b", "name": "qwen3.5-397b-a17b", "api": "openai-completions", "contextWindow": 1000000, "maxTokens": 16384 },
+          { "id": "qwen/qwen3-coder-480b-a35b-instruct", "name": "qwen3-coder-480b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "qwen/qwen3-next-80b-a3b-instruct", "name": "qwen3-next-80b-a3b-instruct", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "mistralai/mistral-large-3-675b-instruct-2512", "name": "mistral-large-3", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "mistralai/mistral-medium-3.5-128b", "name": "mistral-medium-3.5", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "mistralai/devstral-2-123b-instruct-2512", "name": "devstral-2-123b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "mistralai/mixtral-8x22b-instruct-v0.1", "name": "mixtral-8x22b-instruct", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "nvidia/llama-3.1-nemotron-ultra-253b-v1", "name": "nemotron-ultra-253b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "nvidia/nemotron-4-340b-instruct", "name": "nemotron-4-340b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "nvidia/llama-3.3-nemotron-super-49b-v1.5", "name": "nemotron-super-49b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "nvidia/nemotron-3-super-120b-a12b", "name": "nemotron-3-super-120b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "google/gemma-4-31b-it", "name": "gemma-4-31b-it", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "google/gemma-3-12b-it", "name": "gemma-3-12b-it", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "microsoft/phi-4-multimodal-instruct", "name": "phi-4-multimodal", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "microsoft/phi-4-mini-instruct", "name": "phi-4-mini", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "ibm/granite-3.0-8b-instruct", "name": "granite-3.0-8b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "ibm/granite-34b-code-instruct", "name": "granite-34b-code", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "01-ai/yi-large", "name": "yi-large", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "z-ai/glm-5.1", "name": "glm-5.1", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "z-ai/glm5", "name": "glm5", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "moonshotai/kimi-k2.6", "name": "kimi-k2.6", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 },
+          { "id": "ai21labs/jamba-1.5-large-instruct", "name": "jamba-1.5-large", "api": "openai-completions", "contextWindow": 256000, "maxTokens": 8192 },
+          { "id": "openai/gpt-oss-120b", "name": "gpt-oss-120b", "api": "openai-completions", "contextWindow": 128000, "maxTokens": 8192 }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "nvidia-build/qwen/qwen3.5-122b-a10b"
+      },
+      "models": {
+        "custom_provider/gpt-oss-20b": { "alias": "gpt-oss-20b" },
+        "openai/gpt-5-nano": { "alias": "gpt5-nano" },
+        "openai/gpt-5-mini": { "alias": "gpt5-mini" },
+        "xai/grok-4.3": { "alias": "grok-4" },
+        "xai/grok-2-latest": { "alias": "grok-2" },
+        "nvidia-build/deepseek-ai/deepseek-v3.2": { "alias": "deepseek-v3" },
+        "nvidia-build/deepseek-ai/deepseek-v4-pro": { "alias": "deepseek-v4" },
+        "nvidia-build/meta/llama-3.1-70b-instruct": { "alias": "llama-3.1-70b" },
+        "nvidia-build/meta/llama-3.2-90b-vision-instruct": { "alias": "llama-3.2-90b-vision" },
+        "nvidia-build/meta/llama-3.3-70b-instruct": { "alias": "llama-3.3-70b" },
+        "nvidia-build/meta/llama-4-maverick-17b-128e-instruct": { "alias": "llama-4-maverick" },
+        "nvidia-build/qwen/qwen3.5-122b-a10b": { "alias": "qwen3.5-122b" },
+        "nvidia-build/qwen/qwen3.5-397b-a17b": { "alias": "qwen3.5-397b" },
+        "nvidia-build/qwen/qwen3-coder-480b-a35b-instruct": { "alias": "qwen3-coder-480b" },
+        "nvidia-build/qwen/qwen3-next-80b-a3b-instruct": { "alias": "qwen3-next-80b" },
+        "nvidia-build/mistralai/mistral-large-3-675b-instruct-2512": { "alias": "mistral-large-3" },
+        "nvidia-build/mistralai/mistral-medium-3.5-128b": { "alias": "mistral-medium" },
+        "nvidia-build/mistralai/devstral-2-123b-instruct-2512": { "alias": "devstral-123b" },
+        "nvidia-build/mistralai/mixtral-8x22b-instruct-v0.1": { "alias": "mixtral-8x22b" },
+        "nvidia-build/nvidia/llama-3.1-nemotron-ultra-253b-v1": { "alias": "nemotron-ultra-253b" },
+        "nvidia-build/nvidia/nemotron-4-340b-instruct": { "alias": "nemotron-4-340b" },
+        "nvidia-build/nvidia/llama-3.3-nemotron-super-49b-v1.5": { "alias": "nemotron-super-49b" },
+        "nvidia-build/nvidia/nemotron-3-super-120b-a12b": { "alias": "nemotron-3-120b" },
+        "nvidia-build/google/gemma-4-31b-it": { "alias": "gemma-4-31b" },
+        "nvidia-build/google/gemma-3-12b-it": { "alias": "gemma-3-12b" },
+        "nvidia-build/microsoft/phi-4-multimodal-instruct": { "alias": "phi-4-multimodal" },
+        "nvidia-build/microsoft/phi-4-mini-instruct": { "alias": "phi-4-mini" },
+        "nvidia-build/ibm/granite-3.0-8b-instruct": { "alias": "granite-3.0-8b" },
+        "nvidia-build/ibm/granite-34b-code-instruct": { "alias": "granite-34b-code" },
+        "nvidia-build/01-ai/yi-large": { "alias": "yi-large" },
+        "nvidia-build/z-ai/glm-5.1": { "alias": "glm-5.1" },
+        "nvidia-build/z-ai/glm5": { "alias": "glm5" },
+        "nvidia-build/moonshotai/kimi-k2.6": { "alias": "kimi-k2.6" },
+        "nvidia-build/ai21labs/jamba-1.5-large-instruct": { "alias": "jamba-1.5-large" },
+        "nvidia-build/openai/gpt-oss-120b": { "alias": "gpt-oss-120b" }
+      },
+      "workspace": "/home/k/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      {
+        "id": "main",
+        "model": {
+          "primary": "nvidia-build/qwen/qwen3.5-122b-a10b",
+          "fallbacks": []
+        }
+      }
+    ]
+  },
+  "tools": {
+    "profile": "full",
+    "allow": [
+      "*"
+    ],
+    "exec": {
+      "host": "gateway",
+      "security": "allowlist",
+      "ask": "on"
+    }
+  },
+  "messages": {
+    "ackReaction": "👀",
+    "ackReactionScope": "group-all",
+    "removeAckAfterReply": true
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "ownerDisplay": "raw"
+  },
+  "session": {
+    "dmScope": "per-channel-peer"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "bootstrap-extra-files": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "[REDACTED]",
+      "groups": {
+        "[REDACTED_GROUP_ID]": {
+          "requireMention": false
+        },
+        "[REDACTED_GROUP_ID]": {
+          "requireMention": false
+        },
+        "[REDACTED_GROUP_ID]": {
+          "requireMention": false
+        }
+      },
+      "allowFrom": [
+        "[REDACTED_USER_ID]",
+        "[REDACTED_USER_ID]"
+      ],
+      "groupPolicy": "allowlist",
+      "streaming": "off",
+      "groupAllowFrom": [
+        "[REDACTED_USER_ID]",
+        "[REDACTED_USER_ID]"
+      ]
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "allowedOrigins": [
+        "http://127.0.0.1:18789",
+        "http://localhost:18789",
+        "http://openclaw.example.com",
+        "https://openclaw.example.com"
+      ]
+    },
+    "auth": {
+      "mode": "token",
+      "token": "[REDACTED]"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "nodes": {
+      "denyCommands": [
+        "camera.snap",
+        "camera.clip",
+        "screen.record",
+        "contacts.add",
+        "calendar.add",
+        "reminders.add",
+        "sms.send"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "1password": {
+        "enabled": false
+      },
+      "apple-notes": {
+        "enabled": false
+      },
+      "apple-reminders": {
+        "enabled": false
+      },
+      "bear-notes": {
+        "enabled": false
+      },
+      "blogwatcher": {
+        "enabled": false
+      },
+      "blucli": {
+        "enabled": false
+      },
+      "bluebubbles": {
+        "enabled": false
+      },
+      "camsnap": {
+        "enabled": false
+      },
+      "coding-agent": {
+        "enabled": false
+      },
+      "discord": {
+        "enabled": false
+      },
+      "eightctl": {
+        "enabled": false
+      },
+      "gh-issues": {
+        "enabled": false
+      },
+      "gifgrep": {
+        "enabled": false
+      },
+      "github": {
+        "enabled": false
+      },
+      "gog": {
+        "enabled": false
+      },
+      "goplaces": {
+        "enabled": false
+      },
+      "himalaya": {
+        "enabled": false
+      },
+      "imsg": {
+        "enabled": false
+      },
+      "mcporter": {
+        "enabled": false
+      },
+      "model-usage": {
+        "enabled": false
+      },
+      "nano-pdf": {
+        "enabled": false
+      },
+      "notion": {
+        "enabled": false
+      },
+      "openai-whisper": {
+        "enabled": false
+      },
+      "openai-whisper-api": {
+        "enabled": false
+      },
+      "openhue": {
+        "enabled": false
+      },
+      "oracle": {
+        "enabled": false
+      },
+      "ordercli": {
+        "enabled": false
+      },
+      "peekaboo": {
+        "enabled": false
+      },
+      "sag": {
+        "enabled": false
+      },
+      "session-logs": {
+        "enabled": false
+      },
+      "summarize": {
+        "enabled": false
+      },
+      "things-mac": {
+        "enabled": false
+      },
+      "tmux": {
+        "enabled": false
+      },
+      "trello": {
+        "enabled": false
+      },
+      "video-download": {
+        "enabled": false
+      },
+      "voice-call": {
+        "enabled": false
+      },
+      "wacli": {
+        "enabled": false
+      },
+      "xurl": {
+        "enabled": false
+      },
+      "clawhub": {
+        "enabled": false
+      },
+      "obsidian": {
+        "enabled": false
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true,
+        "config": {}
+      },
+      "xai": {
+        "enabled": true,
+        "config": {}
+      },
+      "openai": {
+        "enabled": true,
+        "config": {
+          "personality": "friendly"
+        }
+      },
+      "bonjour": {
+        "enabled": false
+      },
+      "codex": {
+        "enabled": true
+      }
+    }
+  }
+}
