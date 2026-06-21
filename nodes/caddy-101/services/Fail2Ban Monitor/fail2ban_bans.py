@@ -39,7 +39,7 @@ CS_PATTERN = re.compile(
 # Matches: msg="(user/cscli) Reason here by ip 1.2.3.4 : 1h ban..."
 CS_PATTERN_CLI = re.compile(
     r'time="([^"]+)".*?'
-    r'msg="\([^\)]+\)\s+(.*?)\s+by\s+ip\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+:'
+    r'msg="\([^\)]+\)\s+(.*?)\s+by\s+ip\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?:'
 )
 
 # CrowdSec (Legacy / Fallback)
