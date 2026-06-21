@@ -28,7 +28,7 @@ F2B_PATTERN = re.compile(
 # CrowdSec (Automation/Bouncer Logs)
 CS_PATTERN = re.compile(
     r'time="([^"]+)".*?'
-    r'msg="ip\s+'
+    r'msg="[Ii]p\s+'
     r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+'
     r'performed\s+'
     r'\'([^\']+)\'.*?'
@@ -82,6 +82,8 @@ class Handler(BaseHTTPRequestHandler):
                                     continue
 
                         clean_ts = ts_str.split('.')[0].replace('T', ' ').replace('Z', '')
+                        # Remove timezone offset like +01:00 or -05:00 at the end
+                        clean_ts = clean_ts[:19]
                         dt = None
                         try:
                             dt = datetime.strptime(clean_ts, "%Y-%m-%d %H:%M:%S")
