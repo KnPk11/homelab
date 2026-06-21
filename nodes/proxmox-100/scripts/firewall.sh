@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Proxmox Firewall Management Script
-# Version: 1.1 (2026-05-26)
+# Version: 1.2 (2026-06-09)
 # --------------------------------------
 # Run this on the Proxmox Host (pve1)
 
@@ -91,6 +91,7 @@ IN ACCEPT -source reverse-proxy -log nolog
 IN DNS(ACCEPT) -source homelab-lan -log nolog
 IN DNS(ACCEPT) -source main-lan -log nolog
 IN DNS(ACCEPT) -source iot-lan -log nolog
+IN DNS(ACCEPT) -source vpn-net -log nolog
 
 [group log-svc]
 # Syslog ingestion (e.g., Mikrotik logs to Caddy)
@@ -98,8 +99,9 @@ IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
 
 [group file-svc]
 # SMB/NFS Access Rules
-# SMB: Main LAN and specific Homelab Node
+# SMB: Main LAN, VPN, and specific Homelab Node
 IN SMB(ACCEPT) -source main-lan -log nolog
+IN SMB(ACCEPT) -source vpn-net -log nolog
 IN SMB(ACCEPT) -source homelab-node -log nolog
 # NFS & RPC Bind: Allow Homelab VMs for cross-storage sharing
 IN ACCEPT -p tcp -dport 2049 -source homelab-lan -log nolog
@@ -115,9 +117,10 @@ IN ACCEPT -p tcp -dport 8080 -source homelab-lan -log nolog
 # Allow ICMP (Ping) from trusted subnets for troubleshooting
 IN Ping(ACCEPT) -source main-lan -log nolog
 IN Ping(ACCEPT) -source homelab-lan -log nolog
+IN Ping(ACCEPT) -source vpn-net -log nolog
 EOC
 
-echo "[+] Updated Datacenter Aliases and Groups (OMV and refined file-svc)."
+echo "[+] Updated Datacenter Aliases and Groups (Added VPN to ping and dns)."
 
 # 2. Node Config (pve1/host.fw)
 cat <<EOC > $PVE1_FW
@@ -126,8 +129,9 @@ enable: 1
 log_level_in: err
 
 [RULES]
-# Proxmox UI: Only from Main LAN
+# Proxmox UI: Allow from Main LAN and VPN
 IN ACCEPT -p tcp -dport 8006 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 8006 -source vpn-net -log nolog
 
 # SSH: Only from Admin Group
 GROUP ssh-adm
@@ -136,7 +140,7 @@ GROUP ssh-adm
 IN DROP -log nolog
 EOC
 
-echo "[+] Updated pve1 Node rules."
+echo "[+] Updated pve1 Node rules (Allowed VPN for Proxmox UI)."
 
 # 3. Guest 100: Homelab VM (.95)
 cat <<EOC > $FW_HOMELAB
@@ -165,9 +169,11 @@ GROUP ssh-adm
 GROUP file-svc
 GROUP ping-trusted
 
-# OMV Web UI: Allow from Main LAN
-IN ACCEPT -p tcp -dport 80 -source main-lan -log nolog # OMV Dashboard
-IN ACCEPT -p tcp -dport 443 -source main-lan -log nolog # OMV Dashboard (SSL)
+# OMV Web UI: Allow from Main LAN and VPN
+IN ACCEPT -p tcp -dport 80 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 80 -source vpn-net -log nolog
+IN ACCEPT -p tcp -dport 443 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 443 -source vpn-net -log nolog
 
 # Allow all from new node
 IN ACCEPT -source homelab-node -log nolog
@@ -227,9 +233,10 @@ GROUP ssh-adm
 GROUP dns-svc      # Only DNS
 GROUP ping-trusted
 
-# AdGuard Web UI: Allow from Main LAN and Homelab
-IN ACCEPT -p tcp -dport 3000 -source homelab-lan -log nolog # AdGuard Web UI
-IN ACCEPT -p tcp -dport 3000 -source main-lan -log nolog    # AdGuard Web UI
+# AdGuard Web UI: Allow from Main LAN, Homelab, and VPN
+IN ACCEPT -p tcp -dport 3000 -source homelab-lan -log nolog
+IN ACCEPT -p tcp -dport 3000 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 3000 -source vpn-net -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 106 (DNS)."
