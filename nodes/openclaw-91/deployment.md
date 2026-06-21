@@ -6,5 +6,5 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 
 ## 1. System Bootstrap & Scripts
 *   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
-*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **35** to stagger network load.
+*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **36** to stagger network load.
 *   [Firewall Script](scripts/deployment.md)
