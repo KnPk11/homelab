@@ -1,6 +1,6 @@
 #!/bin/bash
 # ==============================================================================
-# OMV Firewall Rules Generator
+# OMV Firewall Rules Generator (Version 1.2)
 # Generates iptables rules in JSON for OMV and applies them via omv-rpc/omv-salt.
 # ==============================================================================
 
@@ -54,10 +54,10 @@ rules_v4="$rules_v4$(gen_rule 8 "INPUT" "ACCEPT" "tcp" "443" "$LAN_SUBNET" "Web 
 rules_v4="$rules_v4$(gen_rule 9 "INPUT" "ACCEPT" "tcp" "443" "$VPN_SUBNET" "Web UI HTTPS VPN" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 10 "INPUT" "ACCEPT" "tcp" "445" "$LAN_SUBNET" "SMB LAN 445" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 11 "INPUT" "ACCEPT" "tcp" "445" "$VPN_SUBNET" "SMB VPN 445" "" "inet"),"
-rules_v4="$rules_v4$(gen_rule 12 "INPUT" "ACCEPT" "tcp" "445" "$HOMELAB_NODE_IP" "SMB 445 Homelab Node" "" "inet"),"
+rules_v4="$rules_v4$(gen_rule 12 "INPUT" "ACCEPT" "tcp" "445" "$WIN11_VM_IP" "SMB 445 Windows 11 VM" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 13 "INPUT" "ACCEPT" "tcp" "139" "$LAN_SUBNET" "SMB LAN 139" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 14 "INPUT" "ACCEPT" "tcp" "139" "$VPN_SUBNET" "SMB VPN 139" "" "inet"),"
-rules_v4="$rules_v4$(gen_rule 15 "INPUT" "ACCEPT" "tcp" "139" "$HOMELAB_NODE_IP" "SMB 139 Homelab Node" "" "inet"),"
+rules_v4="$rules_v4$(gen_rule 15 "INPUT" "ACCEPT" "tcp" "139" "$WIN11_VM_IP" "SMB 139 Windows 11 VM" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 16 "INPUT" "ACCEPT" "tcp" "2049" "$HOMELAB_SUBNET" "NFS Data" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 17 "INPUT" "ACCEPT" "tcp" "111" "$HOMELAB_SUBNET" "NFS RPC Bind TCP" "" "inet"),"
 rules_v4="$rules_v4$(gen_rule 18 "INPUT" "ACCEPT" "udp" "111" "$HOMELAB_SUBNET" "NFS RPC Bind UDP" "" "inet"),"
