@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Proxmox Scheduled Snapshot Script
-# Version: 1.0 (2026-05-22)
+# Version: 1.1 (2026-06-20)
 # Creates snapshots for all VMs and Containers.
 # Format: S-YYYY-MM-DD
 # Usage: 0 0 */2 * * /path/to/script.sh
@@ -28,17 +28,29 @@ cleanup_old_snapshots() {
     local cutoff_date=$(date -d "$RETENTION_DAYS days ago" +%Y%m%d)
 
     log "[-] Checking for old snapshots for $vmid..."
-    
-    # Extract snapshots starting with 'S-' and having the date format
-    local snaps=$($type listsnapshot $vmid | awk '/^S-[0-9]{4}-[0-9]{2}-[0-9]{2}/ {print $1}')
-    
+
+    # Parse "qm listsnapshot" / "pct listsnapshot" output.
+    # Real format:
+    #   `-> S-2026-05-01    2026-05-01 ... description
+    #   `-> current                             You are here!
+    # Snapshot name is in field $2. We only want our S-YYYY-MM-DD ones.
+    local snaps
+    snaps=$($type listsnapshot "$vmid" 2>/dev/null | \
+            awk 'NF >= 2 && $2 ~ /^S-[0-9]{4}-[0-9]{2}-[0-9]{2}$/ { print $2 }') || true
+
+    if [ -z "$snaps" ]; then
+        log "    [i] No S- snapshots found (or none matching our naming)."
+        return 0
+    fi
+
     for snap in $snaps; do
         # Convert S-YYYY-MM-DD to YYYYMMDD for comparison
-        local snap_date_str=$(echo $snap | cut -d'-' -f2-4 | sed 's/-//g')
-        
+        local snap_date_str
+        snap_date_str=$(echo "$snap" | cut -d'-' -f2-4 | tr -d '-')
+
         if [[ "$snap_date_str" =~ ^[0-9]{8}$ ]] && [ "$snap_date_str" -lt "$cutoff_date" ]; then
             log "    [!] Snapshot $snap is older than $RETENTION_DAYS days. Deleting..."
-            if $type delsnapshot $vmid "$snap"; then
+            if $type delsnapshot "$vmid" "$snap"; then
                 log "    [OK] Deleted $snap."
             else
                 log "    [ERROR] Failed to delete $snap."
