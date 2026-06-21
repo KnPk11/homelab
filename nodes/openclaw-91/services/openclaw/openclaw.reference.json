@@ -1,11 +1,11 @@
 {
   "meta": {
-    "lastTouchedVersion": "2026.6.1",
-    "lastTouchedAt": "2026-06-05T08:11:47.506Z"
+    "lastTouchedVersion": "2026.6.8",
+    "lastTouchedAt": "2026-06-20T22:28:32.092Z"
   },
   "wizard": {
-    "lastRunAt": "2026-06-04T14:41:35.439Z",
-    "lastRunVersion": "2026.6.1",
+    "lastRunAt": "2026-06-20T22:28:17.082Z",
+    "lastRunVersion": "2026.6.8",
     "lastRunCommand": "doctor",
     "lastRunMode": "local"
   },
@@ -357,12 +357,6 @@
         "custom_provider/gpt-oss-20b": {
           "alias": "gpt-oss-20b"
         },
-        "openai/gpt-5-nano": {
-          "alias": "gpt5-nano"
-        },
-        "openai/gpt-5-mini": {
-          "alias": "gpt5-mini"
-        },
         "xai/grok-4.3": {
           "alias": "grok-4"
         },
@@ -467,6 +461,12 @@
         },
         "nvidia-build/stepfun-ai/step-3.7-flash": {
           "alias": "step-3.7"
+        },
+        "openai/gpt-5.4-nano": {
+          "alias": "gpt5-nano"
+        },
+        "openai/gpt-5.4-mini": {
+          "alias": "gpt5-mini"
         }
       },
       "workspace": "/home/k",
@@ -541,10 +541,13 @@
       "dmPolicy": "pairing",
       "botToken": "[REDACTED]",
       "groups": {
-        "[REDACTED_GROUP_ID]": {
+        "[REDACTED_GROUP_ID_1]": {
           "requireMention": false
         },
-        "[REDACTED_GROUP_ID]": {
+        "[REDACTED_GROUP_ID_2]": {
+          "requireMention": false
+        },
+        "[REDACTED_GROUP_ID_3]": {
           "requireMention": false
         }
       },
@@ -761,7 +764,8 @@
         "config": {}
       },
       "xai": {
-        "enabled": true
+        "enabled": true,
+        "config": {}
       }
     }
   },
