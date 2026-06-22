@@ -1,0 +1,11 @@
+# OpenClaw & Homelab VMs
+Host 192.168.50.90 192.168.50.91 192.168.50.95
+    User k
+
+# LXC Containers
+Host 192.168.50.101 192.168.50.105
+    User root
+
+# Default to current user for other 192.168.50.x hosts
+Host 192.168.50.*
+    User root
