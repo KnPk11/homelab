@@ -163,7 +163,6 @@ cockpit.{$DOMAIN_NAME} {
     import common-logging-plaintext cockpit
     import common-logging cockpit
 
-    # reverse_proxy host.docker.internal:9090
     reverse_proxy {$HOMELAB_IP}:9090
 }
 
@@ -174,7 +173,6 @@ grafana.{$DOMAIN_NAME} {
     import common-logging-plaintext grafana
     import common-logging grafana
 
-    # reverse_proxy grafana:3000
     reverse_proxy {$HOMELAB_IP}:3005
 }
 
@@ -185,7 +183,6 @@ adguard.{$DOMAIN_NAME} {
     import common-logging-plaintext adguard
     import common-logging adguard
 
-    # reverse_proxy host.docker.internal:3000
     reverse_proxy {$DNS_IP}:3000
 }
 
@@ -212,7 +209,6 @@ influxdb.{$DOMAIN_NAME} {
     import common-logging-plaintext influxdb
     import common-logging influxdb
 
-    # reverse_proxy influxdb:8086
     reverse_proxy {$HOMELAB_IP}:8086
 }
 
@@ -228,7 +224,6 @@ glances.{$DOMAIN_NAME} {
             k {$GLANCES_HASH}
         }
 
-        # reverse_proxy glances:61208
         reverse_proxy {$HOMELAB_IP}:61208
     }
 }
@@ -241,7 +236,6 @@ filebrowser.{$DOMAIN_NAME} {
     import common-logging-plaintext filebrowser
     import common-logging filebrowser
 
-    # reverse_proxy filebrowser-quantum:8080
     reverse_proxy {$HOMELAB_IP}:9101
 }
 
@@ -352,7 +346,6 @@ privatebin.{$DOMAIN_NAME} {
     import common-logging-plaintext privatebin
     import common-logging privatebin
 
-    # reverse_proxy privatebin:8080
     reverse_proxy {$HOMELAB_IP}:8180
 }
 
@@ -372,7 +365,6 @@ banned.{$DOMAIN_NAME} {
             Content-Security-Policy "frame-ancestors https://*.{$DOMAIN_NAME}"
         }
 
-    # reverse_proxy fail2ban_monitor:9002 {
     reverse_proxy localhost:9002 {
         header_down -X-Frame-Options
     }
@@ -390,7 +382,6 @@ wud.{$DOMAIN_NAME} {
             k {$WUD_HASH}
         }
 
-        # reverse_proxy whats-up-docker:3001
         reverse_proxy {$HOMELAB_IP}:3001
     }
 }
@@ -412,7 +403,6 @@ openclaw.{$DOMAIN_NAME} {
     import common-logging-plaintext openclaw
     import common-logging openclaw
 
-    # reverse_proxy openclaw-openclaw-gateway-1:18789
     reverse_proxy {$OPENCLAW_IP}:18789
 }
 
@@ -464,7 +454,6 @@ dozzle.{$DOMAIN_NAME} {
     import common-logging-plaintext dozzle
     import common-logging dozzle
 
-    # reverse_proxy dozzle:8080
     reverse_proxy {$HOMELAB_IP}:9105
 }
 
@@ -490,7 +479,6 @@ vaultwarden.{$DOMAIN_NAME} {
     respond @admin "Unauthorized" 403
 
     # Proxy to Vaultwarden
-    # reverse_proxy vaultwarden:80 {
     reverse_proxy {$HOMELAB_IP}:9103 {
         # Pass the real client IP so Vaultwarden can rate-limit correctly
         header_up X-Real-IP {remote_host}
@@ -504,7 +492,6 @@ my-media.{$DOMAIN_NAME} {
     import common-logging-plaintext webdav
     import common-logging webdav
 
-    # reverse_proxy media-webdav:80
     reverse_proxy {$HOMELAB_IP}:8084
 }
 
@@ -525,7 +512,6 @@ metube.{$DOMAIN_NAME} {
     import common-logging-plaintext metube
     import common-logging metube
 
-    # reverse_proxy metube:8081
     reverse_proxy {$HOMELAB_IP}:8181
 }
 
@@ -536,7 +522,6 @@ airflow.{$DOMAIN_NAME} {
     import common-logging-plaintext airflow
     import common-logging airflow
 
-    # reverse_proxy airflow_apiserver:8080
     reverse_proxy {$HOMELAB_IP}:8094
 }
 
@@ -547,7 +532,6 @@ ai.{$DOMAIN_NAME} {
     import common-logging-plaintext openwebui
     import common-logging openwebui
 
-    # reverse_proxy open-webui:8080
     reverse_proxy {$HOMELAB_IP}:3002
 }
 
@@ -558,8 +542,7 @@ syncthing.{$DOMAIN_NAME} {
     import common-logging-plaintext syncthing
     import common-logging syncthing
 
-    # reverse_proxy syncthing:8384 {
-    reverse_proxy {$HOMELAB_IP}:8384 {
+    reverse_proxy 192.168.50.105:8384 {
         header_up Host 127.0.0.1
     }
 }
