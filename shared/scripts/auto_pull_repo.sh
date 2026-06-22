@@ -19,4 +19,9 @@ git fetch origin main
 # Hard reset to exactly match the remote, discarding any accidental local changes on the server
 git reset --hard origin/main
 
-echo "[$(date)] Auto-pull complete. Repository is now completely synced with GitHub."
+# Secure all un-tracked local .env files that may exist in this repository
+# NOTE: We explicitly exclude specific secrets that break if they are set to 600.
+# Known legacy exceptions requiring 644: glances.pwd, mediamtx_password, nextcloud_hpb_secrets.env
+find "$REPO_DIR" -type f -name "*.env" ! -name "nextcloud_hpb_secrets.env" -exec chmod 600 {} + 2>/dev/null || true
+
+echo "[$(date)] Auto-pull complete. Repository synced and local secrets secured."
