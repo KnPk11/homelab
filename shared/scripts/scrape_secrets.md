@@ -15,7 +15,7 @@ It vacuums up *only* the `*.env` files across the entire node and downloads them
    ```
 2. **Symlink the Script:** Keep the script tracked in Git, but run it from the vault:
    ```bash
-   ln -s /root/staging/shared/scripts/scrape_secrets.sh /root/secrets_vault/scrape_secrets.sh
+   ln -s /opt/dev/homelab/shared/scripts/scrape_secrets.sh /opt/dev/secrets_vault/scrape_secrets.sh
    ```
 3. **Automate via Cron:** Add the following to the `crontab -e` of your management node to execute the backup automatically every Sunday at 3:00 AM:
    ```text
