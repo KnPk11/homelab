@@ -219,6 +219,15 @@ enable: 1
 [RULES]
 GROUP ssh-adm
 GROUP ping-trusted
+GROUP proxy-back     # Allow Caddy to access the Syncthing Web UI
+
+# Syncthing Sync & Discovery Ports (allow Windows laptop to sync)
+IN ACCEPT -p tcp -dport 22000 -source main-lan -log nolog
+IN ACCEPT -p udp -dport 22000 -source main-lan -log nolog
+IN ACCEPT -p udp -dport 21027 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 22000 -source vpn-net -log nolog
+IN ACCEPT -p udp -dport 22000 -source vpn-net -log nolog
+IN ACCEPT -p udp -dport 21027 -source vpn-net -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 105 (AI Toolbox)."
