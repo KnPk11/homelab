@@ -1,145 +1,88 @@
-#!/bin/bash
-# =================================================================
-#  UFW Firewall Setup Script for Homelab Server
-#  Version 2.0
+#!/usr/bin/env bash
+# ==========================================================
+#  UFW Firewall Setup Script – Homelab Server
+#  Version 3.1
 #  Run as root (automatically upgrades to sudo if needed)
 # ==========================================================
 
+set -euo pipefail
+
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 source "$SCRIPT_DIR/ufw.env"
+   # exit on errors, unset vars, pipelines fail
+
+# If not run as root, re‑execute with sudo
+if [[ $EUID -ne 0 ]]; then
+    exec sudo "$0" "$@"
+fi
 
 echo "--- Starting Firewall Configuration ---"
 
-# 1. RESET UFW TO A CLEAN STATE
-# -----------------------------------------------------------------
-# The --force flag prevents it from asking for confirmation.
+# 1. RESET
 echo "[Step 1] Wiping all existing rules..."
-sudo ufw --force reset
+ufw --force reset
 
-
-# 2. SET SECURE DEFAULTS
-# -----------------------------------------------------------------
-# Deny all incoming traffic, allow all outgoing, and deny forwarding.
+# 2. DEFAULTS
 echo "[Step 2] Setting default policies (deny in, allow out)..."
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
+ufw default deny incoming
+ufw default allow outgoing
+ufw default deny routed
 
-# Without this denied, internal Docker container networking often breaks?
-sudo ufw default deny routed
+# 3. FULL TRUST ZONES
+echo "[Step 3] Allowing full access to LAN 88, Caddy LXC, and Docker..."
+ufw allow from "$MAIN_LAN" comment 'Full Access (Main LAN)'
+ufw allow from "$CADDY_IP" comment 'Full Access (Caddy LXC)'
+ufw allow from "$AITOOLS_IP" comment 'Full Access (AI Tools)'
+ufw allow from "$DOCKER_LAN" comment 'Full Access (Docker Internal LAN)'
 
+# 4. VPN ZONES (RESTRICTED ACCESS)
+echo "[Step 4] Applying limited access for VPNs..."
+# VPN_NETS=""$VPN_NETS" "$WIREGUARD_NET" "$OPENVPN_NET""
+VPN_NETS=""$VPN_NETS""
 
-# 3. ALLOW INTERNAL & VPN ACCESS (TRUSTED NETWORKS)
-# -----------------------------------------------------------------
-echo "[Step 3] Allowing access from internal and VPN networks..."
+for subnet in $VPN_NETS; do
+    ufw allow from $subnet to any port 22 proto tcp comment 'SSH (VPN)'
+    ufw allow from $subnet to any port 9090 proto tcp comment 'Cockpit (VPN)'
+    # ufw allow from $subnet to any port 3000 proto tcp comment 'Adguard (VPN)'
+    ufw allow from $subnet to any port 445 proto tcp comment 'SMB (VPN)'
+    # ufw allow from $subnet to any port 53 comment 'DNS (VPN)'
+    ufw allow from $subnet to any port 8384 proto tcp comment 'Syncthing UI (VPN)'
+    ufw allow from $subnet to any port 22000 comment 'Syncthing Sync (VPN)'
+done
 
-# --- SSH (Port 22) ---
-# sudo ufw allow from "$HOMELAB_LAN" to any port 22 proto tcp comment 'SSH - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 22 proto tcp comment 'SSH - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 22 proto tcp comment 'SSH - LAN'
-# sudo ufw allow from 100.64.0.0/10 to any port 22 proto tcp comment 'SSH - LAN' # Advertise LAN instead?
-sudo ufw allow from "$OPENVPN_NET" to any port 22 proto tcp comment 'SSH - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 22 proto tcp comment 'SSH - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 22 proto tcp comment 'SSH - Wireguard'
+# 5. RESTRICTED SUBNET - Only specific services
+echo "[Step 5] Allowing restricted homelab subnet..."
 
-# --- VNC (Port 5900) ---
-# sudo ufw allow from "$HOMELAB_LAN" to any port 5900 proto tcp comment 'VNC - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 5900 proto tcp comment 'VNC - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 5900 proto tcp comment 'VNC - LAN'
-sudo ufw allow from "$OPENVPN_NET" to any port 5900 proto tcp comment 'VNC - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 5900 proto tcp comment 'VNC - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 5900 proto tcp comment 'VNC - Wireguard'
+# --- MediaMTX ---
+ufw allow 1935/tcp comment 'MediaMTX RTMP'
+ufw allow 8554/tcp comment 'MediaMTX RTSP'
+ufw allow 8888/tcp comment 'MediaMTX HLS'
+ufw allow 8889/tcp comment 'MediaMTX WebRTC'
 
-# --- Samba Network Discovery Ports ---
-sudo ufw allow proto udp from 192.168.0.0/16 to any port 137,138 comment 'NetBIOS - LAN'
+# --- AnyType Sync ---
+ufw allow 1001:1006/tcp comment 'AnyType Sync TCP'
+ufw allow 1011:1016/udp comment 'AnyType Sync UDP'
 
-# --- LAN Discovery for Samba (WSDD & Avahi) ---
-sudo ufw allow from 192.168.0.0/16 to any port 3702 proto udp comment 'WSDD & Avahi - LAN'
+# --- Nextcloud Talk ---
+ufw allow 3478 comment 'Nextcloud Talk STUN/TURN'
+ufw allow 8105/tcp comment 'Nextcloud Talk HPB'
 
-# --- Samba Access Port (445) ---
-sudo ufw allow proto tcp from "$HOMELAB_LAN" to any port 445 comment 'SMB - LAN'
-sudo ufw allow proto tcp from "$MAIN_LAN" to any port 445 comment 'SMB - LAN'
-sudo ufw allow proto tcp from "$GUEST_LAN" to any port 445 comment 'SMB - LAN'
-sudo ufw allow proto tcp from "$OPENVPN_NET" to any port 445 comment 'SMB - OpenVPN'
-sudo ufw allow proto tcp from "$VPN_NETS" to any port 445 comment 'SMB - Wireguard'
-sudo ufw allow proto tcp from "$WIREGUARD_NET" to any port 445 comment 'SMB - Wireguard'
+# ufw allow from "$HOMELAB_LAN" to any port 53 comment 'DNS (Homelab LAN)'
+# ufw allow from "$HOMELAB_LAN" to any port 514 proto udp comment 'Syslog (Homelab LAN)'
+ufw allow from "$HOMELAB_LAN" to any port 445 proto tcp comment 'SMB (Homelab LAN)'
 
-# --- Syncthing Web GUI (Port 8384) ---
-# SECURE: Kept internal only, not exposed to the internet.
-sudo ufw allow from "$HOMELAB_LAN" to any port 8384 proto tcp comment 'Syncthing UI - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 8384 proto tcp comment 'Syncthing UI - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 8384 proto tcp comment 'Syncthing UI - LAN'
-sudo ufw allow from "$OPENVPN_NET" to any port 8384 proto tcp comment 'Syncthing UI - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 8384 proto tcp comment 'Syncthing UI - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 8384 proto tcp comment 'Syncthing UI - Wireguard'
+# 6. PUBLIC SERVICES (only Caddy needs to be public)
+echo "[Step 6] Allowing public web traffic..."
+# ufw allow 80/tcp  comment 'Caddy HTTP (Anywhere)'
+# ufw allow 443/tcp comment 'Caddy HTTPS (Anywhere)'
+# ufw allow 443/udp comment 'Caddy HTTPS QUIC (Anywhere)'
 
-# --- Syncthing Discovery (Port 21027 UDP) ---
-sudo ufw allow from "$HOMELAB_LAN" to any port 21027 proto udp comment 'Syncthing Discovery - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 21027 proto udp comment 'Syncthing Discovery - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 21027 proto udp comment 'Syncthing Discovery - LAN'
-sudo ufw allow from "$OPENVPN_NET" to any port 21027 proto udp comment 'Syncthing Discovery - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 21027 proto udp comment 'Syncthing Discovery - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 21027 proto udp comment 'Syncthing Discovery - Wireguard'
+# 7. IPv6
+echo "[Step 7] Allowing IPv6 Link-Local..."
+ufw allow from fe80::/10 comment 'IPv6 Link-Local'
 
-# --- Syncthing Sync Protocol (Port 22000 TCP/UDP) ---
-sudo ufw allow from "$HOMELAB_LAN" to any port 22000 comment 'Syncthing Sync - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 22000 comment 'Syncthing Sync - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 22000 comment 'Syncthing Sync - LAN'
-sudo ufw allow from "$OPENVPN_NET" to any port 22000 comment 'Syncthing Sync - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 22000 comment 'Syncthing Sync - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 22000 comment 'Syncthing Sync - Wireguard'
-
-# --- Syslog (Port 514 UDP) ---
-sudo ufw allow from "$HOMELAB_LAN" to any port 514 proto udp comment 'Syslog - LAN'
-
-# --- Dozzle (Port 8080 TCP) ---
-sudo ufw allow from "$MAIN_LAN" to any port 8102 proto tcp comment 'Dozzle - LAN'
-
-# --- Cockpit (Port 9090 TCP) ---
-sudo ufw allow from "$MAIN_LAN" to any port 9090 proto tcp comment 'Cockpit - LAN'
-sudo ufw allow from "$DOCKER_LAN" to any port 9090 proto tcp comment 'Cockpit - Docker Internal'
-sudo ufw allow from "$OPENVPN_NET" to any port 9090 proto tcp comment 'Cockpit - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 9090 proto tcp comment 'Cockpit - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 9090 proto tcp comment 'Cockpit - Wireguard'
-
-# --- Adguard Admin Dashboards (Port 3000 TCP) ---
-sudo ufw allow from "$MAIN_LAN" to any port 3000 proto tcp comment 'Adguard - LAN'
-sudo ufw allow from "$DOCKER_LAN" to any port 3000 proto tcp comment 'Cockpit - Docker Internal'
-sudo ufw allow from "$OPENVPN_NET" to any port 3000 proto tcp comment 'Adguard - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 3000 proto tcp comment 'Adguard - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 3000 proto tcp comment 'Adguard - Wireguard'
-
-sudo ufw allow from "$HOMELAB_LAN" to any port 53 comment 'DNS (TCP) - LAN'
-sudo ufw allow from "$MAIN_LAN" to any port 53 comment 'DNS (TCP) - LAN'
-sudo ufw allow from "$GUEST_LAN" to any port 53 comment 'DNS (TCP) - LAN'
-sudo ufw allow from "$OPENVPN_NET" to any port 53 comment 'DNS (TCP) - OpenVPN'
-sudo ufw allow from "$VPN_NETS" to any port 53 comment 'DNS (TCP) - Wireguard'
-sudo ufw allow from "$WIREGUARD_NET" to any port 53 comment 'DNS (TCP) - Wireguard'
-
-
-# 4. PUBLIC SERVICES & DNS
-# -----------------------------------------------------------------
-echo "[Step 5] Allowing Public Web Traffic..."
-
-# --- Caddy Reverse Proxy ---
-
-# IPv4
-sudo ufw allow proto tcp from any to 0.0.0.0/0 port 80 comment 'HTTP (Reverse Proxy)'
-sudo ufw allow proto tcp from any to 0.0.0.0/0 port 443 comment 'HTTPS (Reverse Proxy)'
-
-# IPv6
-sudo ufw allow proto tcp from any to ::/0 port 80 comment 'HTTP (Reverse Proxy IPv6)'
-sudo ufw allow proto tcp from any to ::/0 port 443 comment 'HTTPS (Reverse Proxy IPv6)'
-
-
-# 6. IPv6 & FINALIZATION
-# -----------------------------------------------------------------
-echo "[Step 6] Finalizing configuration..."
-
-# Allow IPv6 Link-Local (Required for network discovery)
-sudo ufw allow from fe80::/10 to any comment 'IPv6 Link-Local'
-
-# Enable Firewall
-sudo ufw enable
-sudo ufw status verbose
+# 8. ENABLE
+ufw enable
+ufw status verbose
 
 echo "--- Firewall configuration complete! ---"
