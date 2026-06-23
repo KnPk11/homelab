@@ -2,7 +2,7 @@
 # Description: Scrapes and backs up all .env files from homelab nodes.
 # Usage: Run via cron (e.g., weekly) on the management node or NAS.
 
-BACKUP_DIR="/root/secrets_vault/backups"
+BACKUP_DIR="/opt/dev/secrets_vault/backups"
 
 # Map Hostnames to IPs (For all nodes)
 declare -A NODES=(
