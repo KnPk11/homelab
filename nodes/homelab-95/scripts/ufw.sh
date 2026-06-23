@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==========================================================
 #  UFW Firewall Setup Script – Homelab Server
-#  Version 3.1
+#  Version 3.2
 #  Run as root (automatically upgrades to sudo if needed)
 # ==========================================================
 
@@ -44,7 +44,7 @@ for subnet in $VPN_NETS; do
     ufw allow from $subnet to any port 22 proto tcp comment 'SSH (VPN)'
     ufw allow from $subnet to any port 9090 proto tcp comment 'Cockpit (VPN)'
     # ufw allow from $subnet to any port 3000 proto tcp comment 'Adguard (VPN)'
-    ufw allow from $subnet to any port 445 proto tcp comment 'SMB (VPN)'
+    # ufw allow from $subnet to any port 445 proto tcp comment 'SMB (VPN)'
     # ufw allow from $subnet to any port 53 comment 'DNS (VPN)'
     ufw allow from $subnet to any port 8384 proto tcp comment 'Syncthing UI (VPN)'
     ufw allow from $subnet to any port 22000 comment 'Syncthing Sync (VPN)'
@@ -69,7 +69,7 @@ ufw allow 8105/tcp comment 'Nextcloud Talk HPB'
 
 # ufw allow from "$HOMELAB_LAN" to any port 53 comment 'DNS (Homelab LAN)'
 # ufw allow from "$HOMELAB_LAN" to any port 514 proto udp comment 'Syslog (Homelab LAN)'
-ufw allow from "$HOMELAB_LAN" to any port 445 proto tcp comment 'SMB (Homelab LAN)'
+# ufw allow from "$HOMELAB_LAN" to any port 445 proto tcp comment 'SMB (Homelab LAN)'
 
 # 6. PUBLIC SERVICES (only Caddy needs to be public)
 echo "[Step 6] Allowing public web traffic..."
