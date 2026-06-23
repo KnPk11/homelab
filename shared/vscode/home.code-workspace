@@ -1,5 +1,7 @@
 {
 	"folders": [
+		{ "name": "dev", "path": "/opt/dev" },
+		{ "name": "homelab_repo", "path": "/opt/dev/homelab_repo" },
 		{ "name": "root", "path": "/root" },
 		{ "name": "home", "path": "/home" },
 		{ "name": "data", "path": "/data" },
