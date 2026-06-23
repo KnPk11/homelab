@@ -1,0 +1,420 @@
+pageInfo:
+  title: K's Homelab Dashboard
+  description: |
+    Self-hosted at home by an Analytics Engineer with an interest in networking & infrastructure. Stack consists of a mini PC running Proxmox, a Raspberry Pi, a Mikrotik router, and a consumer router.
+appConfig:
+  disableConfiguration: true
+  enableMultiTasking: true
+  disableConfigurationForNonAdmin: true
+  auth:
+    enable: true
+    enableGuestAccess: true
+    users:
+      - user: K
+        hash: ${DASHY_AUTH_HASH}
+        type: admin
+  layout: vertical
+  iconSize: medium
+  theme: one-dark
+sections:
+  - name: Current Usage
+    displayData:
+      hideForGuests: true
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+    widgets:
+      - type: gl-current-cpu
+        options:
+          label: CPU Usage
+          hostname: http://glances:61208
+          ignoreErrors: false
+          refreshRate: 1000
+        useProxy: true
+
+      - type: gl-current-mem
+        options:
+          label: RAM Usage
+          hostname: http://glances:61208
+          ignoreErrors: false
+        useProxy: true
+
+      - type: gl-network-interfaces
+        options:
+          label: Network Interfaces
+          hostname: http://glances:61208
+          ignoreErrors: false
+        useProxy: true
+
+      - type: gl-disk-io
+        options:
+          label: Disk I/O
+          hostname: http://glances:61208
+          ignoreErrors: false
+        useProxy: true
+
+      - type: gl-cpu-temp
+        options:
+          label: Temps (°C)
+          hostname: http://glances:61208
+          units: C
+        useProxy: true
+
+      - type: gl-alerts
+        options:
+          label: Resource Usage Alerts
+          hostname: http://glances:61208
+          updateInterval: 60
+        useProxy: true
+
+      - type: uptime-kuma-status-page
+        options:
+          label: Public services status
+          host: https://status.${HOMELAB_DOMAIN}
+          slug: public
+          hideChart: true
+          hideInfo: true
+          hideStatus: true
+          monitorNames:
+            - "Filebrowser"
+            - "Nextcloud"
+            - "Open WebUI"
+            - "PrivateBin"
+            - "Jellyfin"
+            - "Photoprism"
+            - "Immich"
+        useProxy: true
+
+  - name: Recent System Stats
+    displayData:
+      sortBy: default
+      rows: 2
+      cols: 1
+      collapsed: false
+    widgets:
+      - type: gl-cpu-history
+        options:
+          label: CPU Usage History
+          hostname: http://glances:61208
+          limit: 250
+          chartColors:
+            - '#9b5de5'
+            - '#f15bb5'
+            - '#00bbf9'
+            - '#00f5d4'
+          chartHeight: 300
+        useProxy: true
+
+      - type: gl-load-history
+        options:
+          label: System Load History
+          hostname: http://glances:61208
+          limit: 250
+        useProxy: true
+
+      - type: gl-mem-history
+        options:
+          label: RAM Usage History
+          hostname: http://glances:61208
+          limit: 250
+        useProxy: true
+
+      - type: gl-network-traffic
+        options:
+          label: Network Traffic
+          hostname: http://glances:61208
+          limit: 250
+        useProxy: true
+
+  - name: Other Stats
+    displayData:
+      sortBy: default
+      rows: 2
+      cols: 1
+      collapsed: false
+    widgets:
+      # - type: gl-system-load
+      #   options:
+      #     label: System Load
+      #     hostname: http://glances:61208
+      #   useProxy: true
+    
+      - type: gl-disk-space
+        options:
+          label: Drive Space
+          hostname: http://glances:61208
+        useProxy: true
+
+      - type: image
+        options:
+          label: Reverse Proxy Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_reverse-proxy/health/badge.svg
+        useProxy: true
+
+      - type: image
+        options:
+          label: DNS Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_dns/health/badge.svg
+        useProxy: true
+
+      - type: image
+        options:
+          label: AI Tools Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_ai-tools/health/badge.svg
+        useProxy: true
+
+      - type: image
+        options:
+          label: Docker Homelab Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_main-homelab/health/badge.svg
+        useProxy: true
+
+      - type: image
+        options:
+          label: OpenClaw Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openclaw/health/badge.svg
+        useProxy: true
+
+      - type: image
+        options:
+          label: OpenMediaVault Status
+          imagePath: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openmediavault/health/badge.svg
+        useProxy: true
+
+      - type: iframe
+        options:
+          label: Naughty list (last 24h)
+          url: https://banned.${HOMELAB_DOMAIN}/
+          updateInterval: 30
+          frameHeight: 350
+        useProxy: true
+
+
+  - name: Services
+    displayData:
+      hideForGuests: true
+    items:
+      - title: Router Web UI
+        description: Router Admin
+        icon: fas fa-network-wired
+        url: https://${ROUTER_IP}:8443
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+      - title: Proxmox
+        description: Virtualization Hypervisor
+        icon: fas fa-layer-group
+        url: https://${PROXMOX_IP}:8006
+        statusCheck: true
+        statusCheckAllowInsecure: true
+
+      - title: Cockpit
+        description: System Management
+        icon: fas fa-tachometer-alt
+        url: https://cockpit.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Uptime Kuma
+        description: Uptime & Status Monitoring
+        icon: fas fa-heartbeat
+        url: https://status.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Portainer
+        description: Manage Docker containers
+        icon: fab fa-docker
+        url: https://portainer.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: What's Up Docker
+        description: Container Updates
+        icon: fas fa-sync-alt
+        url: https://wud.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+      - title: Dozzle
+        description: Real-time Docker Log Viewer
+        icon: fas fa-terminal
+        url: https://dozzle.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Grafana
+        description: Metrics & Dashboards
+        icon: fas fa-chart-line
+        url: https://grafana.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: InfluxDB
+        description: Time-Series Database
+        icon: fas fa-database
+        url: https://influxdb.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Open WebUI
+        description: Self-hosted AI chat interface (LM Studio + Gemini + APIs)
+        icon: fas fa-tablet-alt
+        url: https://ai.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: OpenClaw
+        description: Self-hosted agentic AI orchestration and automation
+        icon: fas fa-robot
+        url: https://openclaw.${HOMELAB_DOMAIN}
+        statusCheck: true
+        # statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+      - title: Hermes
+        description: AI agent dashboard and orchestration for LLM workflows
+        icon: fas fa-brain
+        url: https://hermes.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: n8n
+        description: Self-hosted automation workflows and integrations
+        icon: fas fa-network-wired
+        url: https://n8n.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+      - title: AdGuard Home
+        description: Network-wide ad blocking
+        icon: fas fa-shield-alt
+        url: https://adguard.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Tailscale
+        description: VPN mesh admin
+        icon: fas fa-lock
+        url: https://login.tailscale.com/login?next_url=%2Fadmin%2Fmachines
+        statusCheck: true
+
+      - title: Vaultwarden
+        description: Self-hosted password manager
+        icon: fas fa-key
+        url: https://vaultwarden.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Glances
+        description: System monitoring
+        icon: fas fa-tachometer-alt
+        url: https://glances.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+      - title: PrivateBin
+        description: Share text snippets securely
+        icon: fas fa-sticky-note
+        url: https://privatebin.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Nextcloud
+        description: Personal cloud storage
+        icon: fas fa-cloud
+        url: https://nextcloud.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: File Browser
+        description: Browse and manage files
+        icon: fas fa-folder
+        url: https://filebrowser.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Copyparty
+        description: Portable file server & web UI
+        icon: fas fa-folder-open
+        url: https://copyparty.${HOMELAB_DOMAIN}=
+        statusCheck: true
+
+      - title: Photoprism
+        description: Photo management
+        icon: fas fa-camera
+        url: https://photoprism.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Immich
+        description: Self-hosted photo and video backup
+        icon: fas fa-images
+        url: https://immich.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Jellyfin
+        description: Media server
+        icon: fas fa-film
+        url: https://jellyfin.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Syncthing
+        description: Continuous file synchronization
+        icon: fas fa-sync
+        url: https://syncthing.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: qBittorrentvpn
+        description: Torrent client with VPN
+        icon: fas fa-cloud-download-alt
+        url: http://${SERVER_IP}:8091/
+        statusCheck: true
+
+      - title: Airflow
+        description: Workflow orchestration & scheduling
+        icon: fas fa-project-diagram
+        url: https://airflow.${HOMELAB_DOMAIN}/
+        statusCheck: true
+
+      - title: Pinchflat
+        description: YouTube archiving
+        icon: fas fa-download
+        url: https://pinchflat.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: TubeSync
+        description: YouTube archiving
+        icon: fas fa-download
+        url: http://${SERVER_IP}:4848/
+        statusCheck: true
+
+      - title: yt-dlp Web UI
+        description: Download videos with yt-dlp
+        icon: fas fa-play-circle
+        url: http://${SERVER_IP}:3033/
+        statusCheck: true
+
+      - title: MeTube
+        description: Web-based YouTube downloader
+        icon: fas fa-play-circle
+        url: https://metube.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+
+  - name: Public Links
+    items:
+      - title: Space photos
+        icon: fas fa-image
+        url: https://nextcloud.${HOMELAB_DOMAIN}/index.php/s/${NEXTCLOUD_SHARE_1}
+        description: Explore cosmic wonders from SpaceHorizon
+
+      - title: Email me
+        icon: fas fa-envelope
+        url: "mailto:${DASHY_EMAIL}"
+        target: newtab
+
+      # - title: Favourite DJ mixes
+      #   icon: fas fa-music
+      #   url: https://nextcloud.${HOMELAB_DOMAIN}/s/${NEXTCLOUD_SHARE_2}
+      #   description: Some of my favourites
+
+    widgets:
+      - type: apod
+        options:
+          updateInterval: 600
+
+      - type: rss-feed
+        options:
+          rssUrl: https://www.politico.eu/feed
+          updateInterval: 600
+          limit: 4
+          showTitle: true
+          showExcerpt: true
+
