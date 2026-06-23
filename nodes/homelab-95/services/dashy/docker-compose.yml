@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    volumes:
+      - ${DASHY_CONFIG_PATH:-/srv/dashy/config.yml}:/app/user-data/conf.yml
+    ports:
+      - "9102:8080"
+    networks:
+      - caddy_public
+      - caddy_private
+    environment:
+      - TZ=Europe/London
+      - NODE_ENV=production
+      - UID=1000
+      - GID=1000
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+      - NET_BIND_SERVICE
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp # Reduce wear & tear and enhance performance
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'node', '/app/services/healthcheck']
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.5'
+          memory: 1024M
+
+
+networks:
+  caddy_public:
+    external: true
+  caddy_private:
+    external: true
