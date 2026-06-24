@@ -1,6 +1,15 @@
 #!/bin/bash
+# Version: 1.1 (2026-06-24)
 # Description: Scrapes and backs up all .env files from homelab nodes.
 # Usage: Run via cron (e.g., weekly) on the management node or NAS.
+#
+# Architecture Notes:
+# Most nodes use the unified GitOps rsync loop, which perfectly mirrors the 
+# /opt/homelab-repo directory structure.
+# 
+# Exceptions:
+# 1. homelab-95: Also blanket-copies the legacy /data/secrets/ folder.
+# 2. openclaw-91: Does not use GitOps; manually scrapes specific config files from /home/k/.
 
 BACKUP_DIR="/opt/dev/secrets_vault/backups"
 
@@ -14,7 +23,7 @@ declare -A NODES=(
 )
 
 # Nodes that use the automated rsync GitOps approach
-GITOPS_HOSTS=("caddy-101" "omv-90" "proxmox-100")
+GITOPS_HOSTS=("caddy-101" "omv-90" "proxmox-100" "homelab-95")
 
 echo "Starting secrets backup... $(date)"
 
@@ -39,17 +48,8 @@ done
 echo "Backing up homelab-95 (legacy)..."
 HOMELAB_95_DIR="$BACKUP_DIR/homelab-95/secrets"
 mkdir -p "$HOMELAB_95_DIR"
-FILES=(
-    "airflow_fernet_key" "airflow_jwt_secret" "airflow_webui_password" "ddns.conf" "filebrowser_password" "gcp-creds.json"
-    "glances.pwd" "grafana_password" "immich_database_password" "influxdb_password" "kopia.env" "mediamtx_password" "n8n_password"
-    "n8n_secret_key" "nextcloud_hpb_secrets.env" "nextcloud_mysql_password" "nextcloud_mysql_root_password" "owncloud_db_password"
-    "owncloud_mysql_root_password" "password_standard" "password_test" "photoprism_database_password" "photoprism_mysql_root_password"
-    "photoprism_password" "pihole_password" "postgres_password" "projectsend_mysql_password" "projectsend_mysql_root_password"
-    "tailscale_nginx_authkey" "tubearchivist_password" "vaultwarden_admin_token" "whats-up-docker-telegram"
-)
-for FILE in "${FILES[@]}"; do
-    ssh -o BatchMode=yes "${NODES["homelab-95"]}" "cat /data/secrets/$FILE" > "$HOMELAB_95_DIR/$FILE" 2>/dev/null || true
-done
+# Legacy /data/secrets/ blanket copy
+rsync -avz "${NODES["homelab-95"]}:/data/secrets/" "$HOMELAB_95_DIR/" 2>/dev/null || true
 
 echo "Backing up openclaw-91..."
 OPENCLAW_DIR="$BACKUP_DIR/openclaw-91/openclaw"
