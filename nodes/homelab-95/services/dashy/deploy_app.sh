@@ -22,7 +22,7 @@ source "$ENV_FILE"
 set +a
 
 # Use envsubst to replace variables and output directly to the destination path
-sudo mkdir -p /srv/dashy
-envsubst < "$TEMPLATE_FILE" | sudo tee "$TARGET_FILE" > /dev/null
+mkdir -p /srv/dashy
+envsubst < "$TEMPLATE_FILE" > "$TARGET_FILE"
 
 echo "Deployment complete! Dashy will automatically hot-reload the changes from $TARGET_FILE."
