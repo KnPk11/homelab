@@ -22,7 +22,6 @@ export DOZZLE_USER_PASSWORD_HASH
 # Use envsubst to deploy users.yml
 envsubst '${DOZZLE_USER_EMAIL} ${DOZZLE_USER_NAME} ${DOZZLE_USER_PASSWORD_HASH}' < "$SCRIPT_DIR/users.yml" | sudo tee "$TARGET_DIR/users.yml" > /dev/null
 
-# Deploy docker-compose.yml
-sudo cp "$SCRIPT_DIR/docker-compose.yml" "$TARGET_DIR/docker-compose.yml"
+
 
 echo "Deployment completed to $TARGET_DIR"

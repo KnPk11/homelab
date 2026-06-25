@@ -17,7 +17,7 @@ services:
       TZ: "Europe/London"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /srv/dozzle/users.yml:/data/users.yml:ro
+      - ${DOZZLE_USERS_PATH:-/srv/dozzle/users.yml}:/data/users.yml:ro
     labels:
       - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
     read_only: true

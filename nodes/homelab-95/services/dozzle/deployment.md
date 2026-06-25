@@ -10,8 +10,4 @@
    ```bash
    ./deploy_app.sh
    ```
-5. Navigate to `/srv/dozzle` and start the container:
-   ```bash
-   cd /srv/dozzle
-   docker compose up -d
-   ```
+5. The `docker-compose.yml` stack should be orchestrated and deployed via Portainer directly from this repository.
