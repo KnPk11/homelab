@@ -1,21 +1,20 @@
 version: '3.8'
 
 services:
-
   dbt:
-    image: dbt:latest
+    image: ghcr.io/dbt-labs/dbt-bigquery:latest # dbt:latest
     container_name: dbt
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/root/.dbt/gcp-creds.json
-    # command: ["dbt", "debug"]
-    command: ["tail", "-f", "/dev/null"]
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["tail -f /dev/null"]
+    # command: ["tail", "-f", "/dev/null"]
     stdin_open: true
     tty: true
     volumes:
       - ${DBT_PROJECT_PATH:-/srv/dbt/dbt_project}:/usr/app
       - ${PROFILES_YML_PATH:-/srv/dbt/profiles.yml}:/root/.dbt/profiles.yml:ro
       - ${GCP_CREDS_PATH:-/data/secrets/gcp-creds.json}:/root/.dbt/gcp-creds.json:ro # GCP service account key
-
     secrets:
       - postgres_password
     networks:
@@ -36,4 +35,4 @@ secrets:
 
 networks:
   dbt_network:
-    external: true
+    # external: true
