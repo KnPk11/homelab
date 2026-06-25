@@ -3,8 +3,8 @@
 # --- Configuration ---
 # Source credentials and domain info dynamically from the local GitOps directory.
 # This file is automatically secured by the auto_pull_repo.sh script.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
-source "$SCRIPT_DIR/.env"
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+source "$SCRIPT_DIR/ddns.env"
 
 # --- Script Settings ---
 LOGFILE="$HOME/ddns-update.log"
