@@ -16,7 +16,7 @@ When the user asks to migrate a script or directory of scripts, execute the foll
 ## 2. File Naming & Secrets
 - The final script must be committed without version suffixes (e.g., `script_name.sh` or `config.yaml`).
 - Extract any hardcoded paths, IPs, IDs, or environment secrets into a safe `script_name.env.example` template.
-- **For File-Based Secrets:** If the original drafts reference file-based secrets in a global directory (e.g., `/data/secrets/...`), update the configurations (like `docker-compose.yml`) to reference a local path within the service directory (e.g., `./.secrets/secret_name`). Ensure these secret files are git-ignored.
+- **For File-Based Secrets:** If the original drafts reference file-based secrets in a global directory (e.g., `/data/secrets/...`), instruct the user to migrate them into a local git-ignored `.secrets/` directory within the service. However, because Portainer deployments do not clone git-ignored files, update the configurations (like `docker-compose.yml` and `.env.example`) to reference an **absolute host path** (e.g., `/srv/[service-name]/.secrets/secret_name`) rather than a relative path.
 - **For Bash Scripts:** Ensure the script dynamically sources the `.env` file using the `readlink` method so it won't break when symlinked on the host:
   ```bash
   SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
@@ -38,6 +38,6 @@ When the user asks to migrate a script or directory of scripts, execute the foll
   2. Copy the `.env.example` to `.env`.
   3. Migrate any file-based secrets from legacy global directories (e.g., `/data/secrets/`) into the service's new local `.secrets/` directory.
   4. **For Scripts:** Create a symlink (e.g., `sudo ln -s /opt/homelab-repo/.../script.sh /etc/cron.daily/script`) and ensure execution permissions.
-  5. **For Config Templates:** Run the associated `deploy_app.sh` script to render the templates with `envsubst`.
+  5. **For Config Templates & Secrets:** Ensure the associated `deploy_app.sh` script renders configuration templates with `envsubst` to the destination path. It MUST also include a step to securely copy the `.secrets/` directory to the absolute host path (e.g., `/srv/[service-name]/.secrets/`) with strict permissions (`chmod -R 600`), so Portainer can access them. Run the deployment script to test.
 - SSH into the target production node and actually execute the deployment strategy to ensure the live environment files reflect the repository and are no longer standalone.
 - Execute a single batch `git push` at the end.
