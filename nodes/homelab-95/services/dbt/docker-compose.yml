@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+
+  dbt:
+    image: dbt:latest
+    container_name: dbt
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/root/.dbt/gcp-creds.json
+    # command: ["dbt", "debug"]
+    command: ["tail", "-f", "/dev/null"]
+    stdin_open: true
+    tty: true
+    volumes:
+      - ${DBT_PROJECT_PATH:-/srv/dbt/dbt_project}:/usr/app
+      - ${PROFILES_YML_PATH:-/srv/dbt/profiles.yml}:/root/.dbt/profiles.yml:ro
+      - ${GCP_CREDS_PATH:-/data/secrets/gcp-creds.json}:/root/.dbt/gcp-creds.json:ro # GCP service account key
+
+    secrets:
+      - postgres_password
+    networks:
+      - dbt_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+
+
+secrets:
+  postgres_password:
+    file: ${POSTGRES_PASSWORD_FILE:-/data/secrets/postgres_password}
+
+networks:
+  dbt_network:
+    external: true
