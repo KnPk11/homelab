@@ -1,0 +1,15 @@
+id: ${CONFIG_ID}
+networkId: ${NETWORK_ID}
+nodes:
+    - peerId: ${PEER_ID}
+      addresses:
+        - quic://${ANYTYPE_DOMAIN}:33020
+        - ${ANYTYPE_DOMAIN}:33010
+        - quic://${SERVER_IP}:33020
+        - ${SERVER_IP}:33010
+      types:
+        - coordinator
+        - consensus
+        - tree
+        - file
+creationTime: 2025-11-05T13:17:07.721820333Z

@@ -1,0 +1,87 @@
+version: '3.8'
+# Example: Any-Sync-Bundle with external MongoDB and Redis services
+#
+# Usage:
+#   docker compose -f compose.external.yml up -d
+#
+# The bundle container runs alongside dedicated MongoDB and Redis instances.
+
+services:
+  mongo:
+    image: docker.io/mongo:7.0
+    container_name: any-sync-bundle-mongo
+    command:
+      - "--replSet"
+      - "rs0"
+      - "--port"
+      - "27017"
+      - "--wiredTigerCacheSizeGB=1"
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - /srv/anytype/mongo:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - |
+          test $$(mongosh --quiet --host localhost:27017 --eval "try { rs.initiate({_id:'rs0', members:[{_id:0, host:'mongo:27017'}]}).ok } catch (e) { rs.status().ok }") -eq 1
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  redis:
+    image: docker.io/redis/redis-stack-server:7.4.0-v7
+    container_name: any-sync-bundle-redis
+    command:
+      - "redis-server"
+      - "--port"
+      - "6379"
+      - "--dir"
+      - "/data/"
+      - "--appendonly"
+      - "yes"
+      - "--maxmemory"
+      - "256mb"
+      - "--maxmemory-policy"
+      - "noeviction"
+      - "--protected-mode"
+      - "no"
+      - "--loadmodule"
+      - "/opt/redis-stack/lib/redisbloom.so"
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - /srv/anytype/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+
+  any-sync-bundle:
+    image: ghcr.io/grishy/any-sync-bundle:1.1.1-2025-10-16-minimal
+    container_name: any-sync-bundle
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "33010:33010"
+      - "33020:33020/udp"
+    volumes:
+      - /srv/anytype/data:/data
+    environment:
+      # Advertise addresses clients should use. Replace with server's hostname/IP.
+      ANY_SYNC_BUNDLE_INIT_EXTERNAL_ADDRS: "${ANYTYPE_DOMAIN},${SERVER_IP}"
+      ANY_SYNC_BUNDLE_INIT_MONGO_URI: "mongodb://mongo:27017/?replicaSet=rs0"
+      ANY_SYNC_BUNDLE_INIT_REDIS_URI: "redis://redis:6379/"
