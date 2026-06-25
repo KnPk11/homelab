@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:v10.0.2
+    restart: unless-stopped
+    ports:
+      - "9105:8080"
+    networks:
+      - caddy_public
+    environment:
+      DOZZLE_LEVEL: "info"
+      DOZZLE_AUTH_PROVIDER: "simple"
+      DOZZLE_NO_ANALYTICS: "true"
+      DOZZLE_TAILSIZE: "300"
+      TZ: "Europe/London"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /srv/dozzle/users.yml:/data/users.yml:ro
+    labels:
+      - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "/dozzle", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+
+
+networks:
+  caddy_public:
+    external: true
