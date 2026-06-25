@@ -1,29 +1,29 @@
 #!/bin/bash
-# Version: 1.1 (2026-06-24)
+# Version: 1.2 (2026-06-25)
 # Description: Scrapes and backs up all .env files from homelab nodes.
 # Usage: Run via cron (e.g., weekly) on the management node or NAS.
+# Prerequisites: 
+#   - `rsync` MUST be installed on BOTH this backup machine and all target remote nodes.
+#   - Passwordless root SSH access is required to all target nodes.
 #
 # Architecture Notes:
 # Most nodes use the unified GitOps rsync loop, which perfectly mirrors the 
 # /opt/homelab-repo directory structure.
-# 
-# Exceptions:
-# 1. homelab-95: Also blanket-copies the legacy /data/secrets/ folder.
-# 2. openclaw-91: Does not use GitOps; manually scrapes specific config files from /home/k/.
 
 BACKUP_DIR="/opt/dev/secrets_vault/backups"
 
 # Map Hostnames to IPs (For all nodes)
 declare -A NODES=(
     ["caddy-101"]="192.168.50.101"
-    ["omv-90"]="192.168.50.90"
-    ["proxmox-100"]="192.168.50.100"
+    ["dns-102"]="192.168.50.102"
     ["homelab-95"]="192.168.50.95"
+    ["omv-90"]="192.168.50.90"
     ["openclaw-91"]="192.168.50.91"
+    ["proxmox-100"]="192.168.50.100"
 )
 
 # Nodes that use the automated rsync GitOps approach
-GITOPS_HOSTS=("caddy-101" "omv-90" "proxmox-100" "homelab-95")
+GITOPS_HOSTS=("caddy-101" "dns-102" "homelab-95" "omv-90" "openclaw-91" "proxmox-100")
 
 echo "Starting secrets backup... $(date)"
 
@@ -43,6 +43,11 @@ for HOST in "${GITOPS_HOSTS[@]}"; do
         echo "Warning: Failed to back up $HOST"
     fi
 done
+
+echo "Backing up ai-tools (local repository)..."
+AITOOLS_DIR="$BACKUP_DIR/ai-tools"
+mkdir -p "$AITOOLS_DIR"
+rsync -avm --include='*.env' --include='*/.secrets/***' --include='*/' --exclude='*' "/opt/dev/homelab_repo/" "$AITOOLS_DIR/"
 
 # Legacy/Specific Nodes:
 echo "Backing up homelab-95 (legacy)..."
