@@ -1,0 +1,7 @@
+users:
+  ${DOZZLE_USER_NAME}:
+    email: ${DOZZLE_USER_EMAIL}
+    name: ${DOZZLE_USER_NAME}
+    password: "${DOZZLE_USER_PASSWORD_HASH}"
+    filter: ""
+    roles: ""
