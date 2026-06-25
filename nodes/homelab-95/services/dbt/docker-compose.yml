@@ -14,7 +14,7 @@ services:
     volumes:
       - ${DBT_PROJECT_PATH:-/srv/dbt/dbt_project}:/usr/app
       - ${PROFILES_YML_PATH:-/srv/dbt/profiles.yml}:/root/.dbt/profiles.yml:ro
-      - ${GCP_CREDS_PATH:-./.secrets/gcp-creds.json}:/root/.dbt/gcp-creds.json:ro # GCP service account key
+      - ${GCP_CREDS_PATH:-/srv/dbt/.secrets/gcp-creds.json}:/root/.dbt/gcp-creds.json:ro # GCP service account key
     secrets:
       - postgres_password
     networks:
@@ -31,7 +31,7 @@ services:
 
 secrets:
   postgres_password:
-    file: ${POSTGRES_PASSWORD_FILE:-./.secrets/postgres_password}
+    file: ${POSTGRES_PASSWORD_FILE:-/srv/dbt/.secrets/postgres_password}
 
 networks:
   dbt_network:

@@ -22,4 +22,12 @@ sudo mkdir -p "$DEST_DIR"
 echo "Deploying profiles.yml to $DEST_DIR/profiles.yml..."
 envsubst < "$SCRIPT_DIR/profiles.yml" | sudo tee "$DEST_DIR/profiles.yml" > /dev/null
 
+# Deploy file-based secrets
+if [ -d "$SCRIPT_DIR/.secrets" ]; then
+    echo "Deploying .secrets to $DEST_DIR/.secrets..."
+    sudo mkdir -p "$DEST_DIR/.secrets"
+    sudo cp -a "$SCRIPT_DIR/.secrets/." "$DEST_DIR/.secrets/"
+    sudo chmod -R 600 "$DEST_DIR/.secrets/"
+fi
+
 echo "Deployment complete."
