@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  copyparty:
+    image: copyparty/ac:latest
+    container_name: copyparty
+    restart: unless-stopped
+    ports:
+      - "3923:3923"
+    volumes:
+      # Change this to the folder you want to share
+      # - /z/Apps/Copyparty:/mnt/vol
+      - /mnt/host/c/Users/K/temp:/mnt/vol
+      # Optional: persistent config/history
+      - ./:/cfg:z
+    command: ["-v", "/mnt/vol::rw"]
+
+volumes:
+  copyparty_data:
