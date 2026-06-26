@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:v2.52.0
+    container_name: filebrowser
+    expose:
+      - "80"
+    user: "1000:1000"
+    networks:
+      - caddy_public
+    volumes:
+      - /srv/filebrowser/database.db:/database/filebrowser.db
+      - /srv/filebrowser/.filebrowser.json:/.filebrowser.json
+      - /mnt/pool:/srv
+    restart: unless-stopped
+    labels:
+      - "wud.tag.include=^v\\d+\\.\\d+\\.\\d+$" # For What's Up Docker
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+        reservations:
+          cpus: '0.50'
+          memory: 256M
+
+networks:
+  caddy_public:
+    external: true
