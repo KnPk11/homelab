@@ -5,10 +5,13 @@ services:
     image: fail2ban_monitor:latest
     container_name: fail2ban_monitor
     restart: unless-stopped
+    ports:
+      - "9002:9002"
     command: ["python3", "/usr/local/bin/fail2ban_bans.py"]
     volumes:
       - /var/log:/var/log:ro
       - /data/custom_images/fail2ban_monitor/fail2ban_bans.py:/usr/local/bin/fail2ban_bans.py:ro
+      - /var/log/crowdsec.log:/var/log/crowdsec.log:ro
     environment:
       - TZ=Europe/London
       - PYTHONUNBUFFERED=1
