@@ -1,0 +1,31 @@
+version: '3.9'
+
+services:
+  opencloud:
+    image: opencloudeu/opencloud-rolling:latest
+    container_name: opencloud
+    restart: unless-stopped
+    expose:
+      - 9200
+    networks:
+      - caddy_public
+    environment:
+      - OC_URL=${OC_URL}
+      - OC_DOMAIN=${OC_DOMAIN}
+      - PROXY_HTTP_ADDR=0.0.0.0:9200
+      - OC_INSECURE=true
+      - PROXY_TLS=false
+      # Add logging config
+      - OC_LOG_LEVEL=info
+      - OC_LOG_OUTPUT=stdout
+      - OC_LOG_PRETTY=true
+    volumes:
+      - /srv/opencloud/.secrets/opencloud.yaml:/etc/opencloud/opencloud.yaml:ro
+      - /srv/opencloud/data:/var/lib/opencloud
+      # Shared storage test
+      # - /mnt/pool/Shared:/data/media/shared
+
+
+networks:
+  caddy_public:
+    external: true
