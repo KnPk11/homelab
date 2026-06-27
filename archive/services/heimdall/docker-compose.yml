@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  heimdall:
+    image: linuxserver/heimdall:latest
+    container_name: heimdall
+    expose:
+      - "80"
+    restart: unless-stopped
+    volumes:
+      - /srv/heimdall/config:/config # consider making read-only :ro
+    networks:
+      - caddy_shared
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
