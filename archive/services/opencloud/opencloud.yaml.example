@@ -1,0 +1,128 @@
+token_manager:
+  jwt_secret: "${OC_JWT_SECRET}"
+machine_auth_api_key: "${OC_MACHINE_AUTH_API_KEY}"
+system_user_api_key: "${OC_SYSTEM_USER_API_KEY}"
+transfer_secret: "${OC_TRANSFER_SECRET}"
+url_signing_secret: "${OC_URL_SIGNING_SECRET}"
+system_user_id: "${OC_SYSTEM_USER_ID}"
+admin_user_id: "${OC_ADMIN_USER_ID}"
+graph:
+  application:
+    id: "${OC_GRAPH_APP_ID}"
+  events:
+    tls_insecure: true
+  spaces:
+    insecure: true
+  identity:
+    ldap:
+      bind_password: "${OC_LDAP_BIND_PASSWORD_1}"
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+idp:
+  ldap:
+    bind_password: "${OC_LDAP_BIND_PASSWORD_2}"
+idm:
+  service_user_passwords:
+    admin_password: "${OC_IDM_ADMIN_PASSWORD}"
+    idm_password: "${OC_LDAP_BIND_PASSWORD_1}"
+    reva_password: "${OC_LDAP_BIND_PASSWORD_3}"
+    idp_password: "${OC_LDAP_BIND_PASSWORD_2}"
+collaboration:
+  wopi:
+    secret: "${OC_WOPI_SECRET}"
+  app:
+    insecure: true
+proxy:
+  oidc:
+    insecure: true
+  insecure_backends: true
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+frontend:
+  app_handler:
+    insecure: true
+  archiver:
+    insecure: true
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+  ocdav:
+    insecure: true
+auth_basic:
+  auth_providers:
+    ldap:
+      bind_password: "${OC_LDAP_BIND_PASSWORD_3}"
+auth_bearer:
+  auth_providers:
+    oidc:
+      insecure: true
+users:
+  drivers:
+    ldap:
+      bind_password: "${OC_LDAP_BIND_PASSWORD_3}"
+groups:
+  drivers:
+    ldap:
+      bind_password: "${OC_LDAP_BIND_PASSWORD_3}"
+ocm:
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+thumbnails:
+  thumbnail:
+    transfer_secret: "${OC_THUMBNAIL_TRANSFER_SECRET}"
+    webdav_allow_insecure: true
+    cs3_allow_insecure: true
+search:
+  events:
+    tls_insecure: true
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+audit:
+  events:
+    tls_insecure: true
+settings:
+  service_account_ids:
+  - "${OC_SERVICE_ACCOUNT_ID}"
+sharing:
+  events:
+    tls_insecure: true
+storage_users:
+  events:
+    tls_insecure: true
+  mount_id: "${OC_STORAGE_MOUNT_ID}"
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+notifications:
+  notifications:
+    events:
+      tls_insecure: true
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+nats:
+  nats:
+    tls_skip_verify_client_cert: true
+gateway:
+  storage_registry:
+    storage_users_mount_id: "${OC_STORAGE_MOUNT_ID}"
+userlog:
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+auth_service:
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+clientlog:
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
+activitylog:
+  service_account:
+    service_account_id: "${OC_SERVICE_ACCOUNT_ID}"
+    service_account_secret: "${OC_SERVICE_ACCOUNT_SECRET}"
