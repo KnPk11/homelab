@@ -154,7 +154,7 @@ Refresh your browser afterwards.
 
 If Docker starts too quickly before internal IPs are assigned, it may fail to bind ports.
 
-1. **Create Wait Script**: `sudo nano /data/scripts/Utilities/wait_for_network.sh`
+1. **Create Wait Script**: `sudo nano /opt/scripts/Utilities/wait_for_network.sh`
 
    ```bash
    #!/bin/bash
@@ -163,7 +163,7 @@ If Docker starts too quickly before internal IPs are assigned, it may fail to bi
    done
    ```
 
-2. **Make Executable**: `sudo chmod +x /data/scripts/Utilities/wait_for_network.sh`
+2. **Make Executable**: `sudo chmod +x /opt/scripts/Utilities/wait_for_network.sh`
 
 3. **Edit Docker Service**: `sudo systemctl edit docker.service`
 
@@ -173,7 +173,7 @@ If Docker starts too quickly before internal IPs are assigned, it may fail to bi
    Wants=network-online.target
 
    [Service]
-   ExecStartPre=/data/scripts/Utilities/wait_for_network.sh
+   ExecStartPre=/opt/scripts/Utilities/wait_for_network.sh
    ```
 
 4. **Reload & Reboot**:
