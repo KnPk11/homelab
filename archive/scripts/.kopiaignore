@@ -1,0 +1,28 @@
+# Data exclusions
+scripts/Downloads/Old/yt-dlp/logs
+
+
+# SRV Exclusions
+pinchflat/
+adguard/work/data/querylog.json.*
+pihole/etc-pihole/pihole-FTL.db
+jellyfin/config/data/metadata
+loki/data/chunks/fake
+filebrowser-quantum/tmp
+qbittorrentvpn/supervisord.log.*
+
+
+# Docker volume exclusions
+influxdb_influxdb-data/_data/engine/
+nextcloud_nextcloud_data/_data/data/appdata_oc4oguxacss8/preview
+nextcloud_nextcloud_data/_data/data/nextcloud.log.*
+open-webui_openwebui_data/_data/uploads
+
+
+# Other common homelab exclusions
+**/cache/**
+**/preview/**
+**/*.tmp
+**/*.temp
+**/*.swp
+**/*.log.*
