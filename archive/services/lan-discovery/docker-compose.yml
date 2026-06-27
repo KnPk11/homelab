@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  avahi:
+    image: epandi/avahi
+    container_name: avahi
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - /srv/avahi/services:/etc/avahi/services:ro
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  wsdd:
+    image: logicer16/wsdd-docker:latest
+    container_name: wsdd
+    network_mode: host
+    restart: unless-stopped
+    entrypoint: ["python3", "/usr/src/app/wsdd.py"]
+    command: ["-n", "k5", "-w", "WORKGROUP"]  # Adjust workgroup if needed
+    environment:
+      - HOSTNAME=K5
+    cap_drop:
+      - ALL
+    read_only: true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
