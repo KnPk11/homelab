@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  netdata:
+    image: netdata/netdata:stable
+    container_name: netdata
+    hostname: netdata
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:19999:19999"
+      - "192.168.50.98:19999:19999"
+    # expose:
+    #   - "80"
+    # environment:
+    # - NETDATA_WEB_BIND_IP=192.168.50.98
+    volumes:
+      - /srv/netdata/config:/etc/netdata
+      - /srv/netdata/lib:/var/lib/netdata
+      - /srv/netdata/cache:/var/cache/netdata
+      - /srv/netdata/host/etc/passwd:/host/etc/passwd:ro
+      - /srv/netdata/host/etc/group:/host/etc/group:ro
+      - /srv/netdata/host/proc:/host/proc:ro
+      - /srv/netdata/host/sys:/host/sys:ro
+      - /srv/netdata/host/etc/os-release:/host/etc/os-release:ro
+    networks:
+      - caddy_shared
+    cap_drop:
+      - MKNOD
+      - SYS_MODULE
+      - SYS_RAWIO
+      - SYS_TIME
+      - AUDIT_CONTROL
+    cap_add:
+      - SYS_PTRACE # Needed for full metrics access
+      - NET_ADMIN
+    security_opt:
+      - apparmor=docker-default  # or use unconfined only if needed
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+# volumes:
+#   netdataconfig:
+#   netdatalib:
+#   netdatacache:
