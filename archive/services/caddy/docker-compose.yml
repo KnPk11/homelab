@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  caddy:
+    image: custom_caddy:latest # My custom version
+    container_name: caddy
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/London
+    networks:
+      - caddy_public # For public-facing services
+      - caddy_private # For LAN-only services
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    volumes:
+      - /srv/caddy/config:/etc/caddy
+      - /srv/caddy/srv:/srv
+      - /mnt/logs/caddy:/var/log/caddy # To store logs for bare Fail2Ban setup
+      - caddy_data:/data
+      - caddy_config:/config
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    cap_drop:
+      - ALL
+    cap_add:
+      # - NET_ADMIN
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.50'
+          memory: 256M
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  caddy_public:
+    external: true
+  caddy_private:
+    external: true
