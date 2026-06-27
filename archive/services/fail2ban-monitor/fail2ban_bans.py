@@ -6,18 +6,28 @@ from datetime import datetime, timedelta
 
 # Configuration
 PORT = 9002
-LOG_FILE = "/var/log/fail2ban.log"
+F2B_LOG_FILE = "/var/log/fail2ban.log"
+CS_LOG_FILE = "/var/log/crowdsec.log"
+DEDUPE_WINDOW = timedelta(minutes=2) # Time window to consider bans "duplicate"
 
-# REGEX EXPLAINED:
-# 1. Matches Timestamp at start
-# 2. Looks for Jail Name (authcode or sensitivepaths, handling plural 's' optionally)
-# 3. Captures the Action keyword ("Ban" OR "Found")
-# 4. Captures the IP Address
-LOG_PATTERN = re.compile(
-    r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),.*?"     # 1. Timestamp & Noise
-    r"\[([^\]]+)\]\s+"                                # 3. Jail Name
+# --- REGEX PATTERNS ---
+
+# Fail2Ban Pattern
+F2B_PATTERN = re.compile(
+    r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),.*?"     # 1. Timestamp
+    r"\[([^\]]+)\]\s+"                                # 2. Jail Name
     r"(Ban)\s+"                                       # 4. Action (Banned, Unbanned, Found, Ignore)
-    r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"           # 5. IP Address
+    r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"           # 4. IP Address
+)
+
+# CrowdSec Pattern (Targeting "Scenario by ip ... ban")
+CS_PATTERN = re.compile(
+    r'time="([^"]+)".*?'                              # 1. Timestamp
+    r'msg=".*?'                                       # Skip start of msg
+    r'(?:crowdsecurity/)?([^\s]+)\s+'                 # 2. Scenario
+    r'by\s+ip\s+'                                     # Anchor text
+    r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?'        # 3. IP Address
+    r'ban'                                            # Ensure it includes "ban"
 )
 
 class Handler(BaseHTTPRequestHandler):
@@ -26,47 +36,98 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.end_headers()
 
-        rows = []
+        events = []
+        # We need a lookup cache to store CrowdSec bans: { '1.2.3.4': [dt1, dt2] }
+        cs_cache = {} 
+        
         cutoff_time = datetime.now() - timedelta(days=1)
         
-        try:
-            with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
-                for line in f:
-                    match = LOG_PATTERN.search(line)
-                    if match:
-                        timestamp_str, jail, action, ip = match.groups()
-                        try:
-                            log_time = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-                            
-                            if log_time > cutoff_time:
-                                # Color code based on action
-                                if action == "Ban":
-                                    color = "#ff4444" # Red
-                                    status = "Banned"
-                                elif action == "Unban":
-                                    color = "#44ff44" # Green (Bright Green)
-                                    status = "Unbanned"
-                                else:
-                                    color = "#ffbb33" # Orange
-                                    status = "Attempt"
+        # --- 1. PARSE CROWDSEC FIRST ---
+        # We parse CS first so we know what to skip in F2B
+        if os.path.exists(CS_LOG_FILE):
+            try:
+                with open(CS_LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+                    for line in f:
+                        match = CS_PATTERN.search(line)
+                        if match:
+                            ts_str, scenario, ip = match.groups()
+                            try:
+                                clean_ts = ts_str.split('.')[0].replace('T', ' ').replace('Z', '')
+                                dt = datetime.strptime(clean_ts, "%Y-%m-%d %H:%M:%S")
+                                
+                                if dt > cutoff_time:
+                                    # Add to display list
+                                    events.append({
+                                        'dt': dt,
+                                        'ip': ip,
+                                        'jail': scenario,
+                                        'source': 'CS',
+                                        'color': '#d63384'
+                                    })
+                                    
+                                    # Add to Cache for Deduplication
+                                    if ip not in cs_cache:
+                                        cs_cache[ip] = []
+                                    cs_cache[ip].append(dt)
 
-                                # Create the row
-                                row_html = f"""
-                                <tr>
-                                    <td>{timestamp_str}</td>
-                                    <td>{ip}</td>
-                                    <td>{jail}</td>
-                                    <td style="color:{color}; font-weight:bold;">{status}</td>
-                                </tr>
-                                """
-                                rows.insert(0, row_html)
-                        except ValueError:
-                            continue
-        except FileNotFoundError:
-            rows.append("<tr><td colspan='4'>Log file not found</td></tr>")
+                            except ValueError: continue
+            except Exception as e:
+                print(f"Error reading CS log: {e}")
 
-        if not rows:
-             rows.append("<tr><td colspan='4'>No activity found in the last 24h</td></tr>")
+        # --- 2. PARSE FAIL2BAN ---
+        if os.path.exists(F2B_LOG_FILE):
+            try:
+                with open(F2B_LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+                    for line in f:
+                        match = F2B_PATTERN.search(line)
+                        if match:
+                            ts_str, jail, action, ip = match.groups()
+                            try:
+                                dt = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+                                
+                                if dt > cutoff_time:
+                                    # --- DEDUPLICATION LOGIC ---
+                                    # Check if this IP was banned by CrowdSec roughly at the same time
+                                    is_duplicate = False
+                                    if ip in cs_cache:
+                                        for cs_dt in cs_cache[ip]:
+                                            # If diff is less than 2 mins, assume it's the same event
+                                            if abs(dt - cs_dt) < DEDUPE_WINDOW:
+                                                is_duplicate = True
+                                                break
+                                    
+                                    if is_duplicate:
+                                        continue
+                                    # ---------------------------
+
+                                    events.append({
+                                        'dt': dt,
+                                        'ip': ip,
+                                        'jail': jail,
+                                        'source': 'F2B',
+                                        'color': '#ff4444'
+                                    })
+                            except ValueError: continue
+            except Exception as e:
+                print(f"Error reading F2B log: {e}")
+
+        # Sort events by time (Newest first)
+        events.sort(key=lambda x: x['dt'], reverse=True)
+
+        # Generate Rows
+        rows = []
+        if not events:
+            rows.append("<tr><td colspan='4'>No bans found in the last 24h</td></tr>")
+        else:
+            for e in events:
+                rows.append(f"""
+                <tr>
+                    <td>{e['dt'].strftime('%Y-%m-%d %H:%M:%S')}</td>
+                    <td>{e['ip']}</td>
+                    <td><span class="badge {e['source']}">{e['source']}</span> {e['jail']}</td>
+                    <td style="color:{e['color']}; font-weight:bold;">Banned</td>
+                </tr>
+                """)
 
         html_content = self.get_html("".join(rows))
         self.wfile.write(html_content.encode('utf-8'))
@@ -84,7 +145,6 @@ class Handler(BaseHTTPRequestHandler):
                   color: #eee; 
                   font-size: 11px;
               }}
-              
               table {{ 
                   border-collapse: collapse; 
                   width: 100%; 
@@ -94,9 +154,19 @@ class Handler(BaseHTTPRequestHandler):
               th, td {{ border: 1px solid #444; padding: 8px; text-align: left; }}
               th {{ background-color: #333; }}
               tr:nth-child(even) {{ background-color: #1e1e1e; }}
-              h2 {{ border-bottom: 1px solid #444; padding-bottom: 10px; }}
+              
+              .badge {{
+                  padding: 2px 5px;
+                  border-radius: 3px;
+                  font-size: 9px;
+                  font-weight: bold;
+                  margin-right: 5px;
+                  color: #fff;
+              }}
+              .F2B {{ background-color: #c0392b; }}
+              .CS  {{ background-color: #8e44ad; }}
             </style>
-            <title>Fail2Ban Monitor</title>
+            <title>Intrusion Monitor</title>
           </head>
           <body>
             <table>
@@ -104,7 +174,7 @@ class Handler(BaseHTTPRequestHandler):
                 <tr>
                     <th>Timestamp</th>
                     <th>IP Address</th>
-                    <th>Jail</th>
+                    <th>Jail / Scenario</th>
                     <th>Status</th>
                 </tr>
               </thead>
