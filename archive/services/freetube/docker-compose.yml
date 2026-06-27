@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  freetube:
+    image: linuxserver/freetube:version-215975145
+    container_name: freetube
+    # security_opt:
+    #   - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /srv/freetube/config:/config
+    ports:
+      - 3003:3000
+      - 3004:3001
+    shm_size: "1gb"
+    restart: unless-stopped
