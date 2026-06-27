@@ -2,27 +2,41 @@
 #
 # Kopia backup script - Single Repository, Modular
 #
-# Usage: sudo ./this_script.sh [all|data|srv|docker|maintenance]
+# This script MUST be run with sudo or as root.
+# Prune unused volumes and use the docker shutdown script before backing up docker directory
+#
+# Usage:
+#   sudo ./homelab_backup_kopia.sh [data|srv|docker|maintenance]
+
 
 set -euo pipefail
 
 # --- Globals ---
-# UPDATE: Moved config to a safer standard location
-KOPIA_CONFIG_FILE="/etc/kopia/repository.config"
-LOGFILE="/mnt/nas/Apps/Kopia/homelab-backup/backup.log"
+REPO_DIR="/mnt/nas/Apps/Kopia/homelab-backup"
+KOPIA_CONFIG_FILE="/opt/scripts/Backups/Kopia/config/main-repo.config"
+LOGFILE="/opt/scripts/Backups/Kopia/logs/backup.log"
+IGNORE_FILE="/opt/scripts/Backups/Kopia/global.kopiaignore"
+REPO_OWNER="1000"
+REPO_GROUP="1000"
+
+# # --- SECRETS ---
+# Source the repository password securely
+# source "/data/secrets/kopia.env" # Automatically fetched from Kopia/config/main-repo.config.kopia-password
+# source "/data/secrets/storj.env"
+# BASE_REPO="s3:https://gateway.storjshare.io/homelab-backup"
 
 # --- Source Paths ---
 SRV_PATH="/srv"
 DATA_PATH="/data"
 DOCKER_VOLS_PATH="/var/lib/docker/volumes"
 
-# --- Retention & Compression Policies ---
-# We add compression here so we can apply it during maintenance
+# --- Retention Policies (Kopia Format) ---
 COMPRESSION_ALGO="zstd"
-RETENTION_ARGS="--keep-latest 10 --compression $COMPRESSION_ALGO"
+RETENTION_SRV="--keep-latest 25 --compression $COMPRESSION_ALGO"
+RETENTION_DATA="--keep-latest 25 --compression $COMPRESSION_ALGO"
+RETENTION_DOCKER="--keep-latest 25 --compression $COMPRESSION_ALGO"
 
-# --- Global array for Docker paths ---
-declare -a docker_paths
+
 
 timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 log() { echo "[$(timestamp)] $*" | tee -a "$LOGFILE"; }
@@ -39,7 +53,10 @@ fi
 
 # --- Back up /data (SAFE to run anytime) ---
 function backup_data() {
-    log "=== Starting 'data' Backup (Docker NOT stopped) ==="
+    log "🔗 Updating exclusion symlink..."
+    # This creates the .kopiaignore file inside /srv pointing to your master list
+    ln -sf "/opt/scripts/Backups/Kopia/global.ignore" "$DATA_PATH/.kopiaignore"
+
     log "📦 Backing up $DATA_PATH..."
     kopia --config-file "$KOPIA_CONFIG_FILE" snapshot create "$DATA_PATH" \
         --tags "type:data" \
@@ -49,154 +66,102 @@ function backup_data() {
 
 # --- Back up /srv (STOPS Docker) ---
 function backup_srv() {
-    log "=== Starting 'srv' Backup (Stopping Docker) ==="
-    log "⏹️ Stopping Docker to safely read volumes..."
-    systemctl stop docker
+    log "🔗 Updating exclusion symlink..."
+    # This creates the .kopiaignore file inside /srv pointing to your master list
+    ln -sf "/opt/scripts/Backups/Kopia/global.ignore" "$SRV_PATH/.kopiaignore"
 
     log "📦 Backing up $SRV_PATH..."
     kopia --config-file "$KOPIA_CONFIG_FILE" snapshot create "$SRV_PATH" \
         --tags "type:srv" \
         | tee -a "$LOGFILE"
 
-    log "▶️ Starting Docker..."
-    systemctl start docker
     log "=== Finished 'srv' Backup ==="
 }
 
 # --- Back up Docker Volumes (STOPS Docker) ---
 function backup_docker() {
-    log "=== Starting 'docker' Backup (Stopping Docker) ==="
-    log "⏹️ Stopping Docker to safely read volumes..."
-    systemctl stop docker
+    log "🔗 Updating exclusion symlink..."
+    ln -sf "/opt/scripts/Backups/Kopia/global.ignore" "$DOCKER_VOLS_PATH/.kopiaignore"
 
     log "📦 Backing up $DOCKER_VOLS_PATH..."
     kopia --config-file "$KOPIA_CONFIG_FILE" snapshot create "$DOCKER_VOLS_PATH" \
-        --tags "type:docker-volume" \
+        --tags "type:docker" \
         | tee -a "$LOGFILE"
 
-    log "▶️ Starting Docker..."
-    systemctl start docker
     log "=== Finished 'docker' Backup ==="
 }
 
-# --- Run Maintenance (Applies Compression & Retention) ---
+
+# --- Run Maintenance (Applies Compression, Retention & Reclaims Space) ---
 function run_maintenance() {
     log "=== Starting Repository Maintenance ==="
-    log "🧹 Applying retention policies and compression ($COMPRESSION_ALGO)..."
-    
-    # Set policy for SRV
-    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$SRV_PATH" $RETENTION_ARGS \
-        | tee -a "$LOGFILE"
 
-    # Set policy for DATA
-    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$DATA_PATH" $RETENTION_ARGS \
-        | tee -a "$LOGFILE"
+    # 1. Update/Sync Policies (Ensuring retention and ignores are active)
+    log "🧹 Syncing policies for srv, data, and docker..."
+    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$SRV_PATH" $RETENTION_SRV > /dev/null
+    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$DATA_PATH" $RETENTION_DATA > /dev/null
+    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$DOCKER_VOLS_PATH" $RETENTION_DOCKER > /dev/null
 
-    # Set policy for DOCKER
-    kopia --config-file "$KOPIA_CONFIG_FILE" policy set "$DOCKER_VOLS_PATH" $RETENTION_ARGS \
-        | tee -a "$LOGFILE"
+    # 2. Expire Snapshots (Marks data for deletion based on retention rules)
+    log "🧹 Expiring old snapshots..."
+    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot expire --all --delete | tee -a "$LOGFILE"
 
-    log "🧹 Pruning old snapshots..."
-    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot expire "$SRV_PATH" --delete | tee -a "$LOGFILE"
-    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot expire "$DATA_PATH" --delete | tee -a "$LOGFILE"
-    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot expire "$DOCKER_VOLS_PATH" --delete | tee -a "$LOGFILE"
+    # 3. Full Maintenance (Physically deletes orphaned data from disk)
+    # Note: This is the command that actually reduces the size of your backup folder. Add --safety=none to override the 24h retention
+    log "🚀 Running FULL maintenance to reclaim disk space..."
+    kopia --config-file "$KOPIA_CONFIG_FILE" maintenance run --full --safety=none | tee -a "$LOGFILE"
 
-    log "Running repository integrity check..."
+    # 4. Integrity Check
+    log "🔍 Running repository integrity check..."
     kopia --config-file "$KOPIA_CONFIG_FILE" snapshot verify | tee -a "$LOGFILE"
+
     log "=== Finished Repository Maintenance ==="
 }
 
+
 # --- Set Final Ownership ---
 function set_ownership() {
-    local original_user="${SUDO_USER:-}"
-    if [ -n "$original_user" ] && [ "$original_user" != "root" ]; then
-        log "🙍 Applying final ownership of repository to user '$original_user'..."
-        # Only change ownership of the log directory, not the repo itself if it's external
-        chown -R "$original_user:$original_user" "$(dirname "$LOGFILE")"
-        log "✅ Ownership set."
-    else
-        log "Script run by root or SUDO_USER not set, skipping ownership change."
-    fi
-}
-
-# --- Full, Optimized Backup ---
-function run_all_backups() {
-    log "================================="
-    log "Starting Full Homelab Kopia Backup"
-    log "================================="
-
-    # NOTE: You were calling 'get_docker_paths' here but the function 
-    # was missing from your upload. I have commented it out to prevent errors.
-    # get_docker_paths
-
-    # === STEP 2: Stop Docker & Run Critical Backups ===
-    log "⏹️ Stopping Docker to safely read volumes..."
-    systemctl stop docker
-
-    log "📦 Backing up $SRV_PATH..."
-    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot create "$SRV_PATH" \
-        --tags "type:srv" \
-        | tee -a "$LOGFILE"
+    log "🙍 Applying final ownership of repository to user '$REPO_OWNER'..."
     
-    # Consolidated Docker Volume Backup
-    log "📦 Backing up Docker Volumes ($DOCKER_VOLS_PATH)..."
-    kopia --config-file "$KOPIA_CONFIG_FILE" snapshot create "$DOCKER_VOLS_PATH" \
-        --tags "type:docker-volume" \
-        | tee -a "$LOGFILE"
-
-    # === STEP 3: Restart Docker (ASAP) ===
-    log "▶️ Starting Docker..."
-    systemctl start docker
-
-    # === STEP 4: Run Non-Critical Backups ===
-    backup_data 
-
-    # === STEP 5: Maintenance ===
-    run_maintenance
-
-    # === STEP 6: Final Cleanup ===
-    set_ownership
-
-    log "================================="
-    log "Homelab Kopia Backup Finished"
-    log "================================="
+    # Change ownership of the repo directory
+    chown -R "$REPO_OWNER:$REPO_GROUP" "$REPO_DIR"
+    log "✅ Ownership set to $REPO_OWNER."
 }
 
 # ===============================================
 # === SCRIPT ROUTER =============================
 # ===============================================
 
+# Use $1 as the command, default to 'all' if not provided
 COMMAND="${1:-all}"
 
 log "Script invoked with command: '$COMMAND'"
 
 case "$COMMAND" in
-    all)
-        run_all_backups
-        ;;
     data)
         backup_data
-        run_maintenance 
         ;;
     srv)
         backup_srv
-        run_maintenance
         ;;
     docker)
         backup_docker
-        run_maintenance
         ;;
     maintenance)
         run_maintenance
         ;;
     *)
         echo "❌ ERROR: Unknown command '$COMMAND'"
-        echo "Usage: $0 [all|data|srv|docker|maintenance]"
+        echo "Usage: $0 [data|srv|docker|maintenance]"
         exit 1
         ;;
 esac
+
+# === FINAL STEPS ===
+# Runs after any command
 
 log "Running final ownership check..."
 set_ownership
 
 log "Script finished command: '$COMMAND'"
+log "Consider running maintenance mode if you're finished"
