@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  kopia:
+    image: kopia/kopia:latest
+    container_name: kopia
+    hostname: K5
+    restart: unless-stopped
+    ports:
+      - "51515:51515"  # Web UI port
+        # Setup the server that provides the web gui
+    command:
+        - server
+        - start
+        - --disable-csrf-token-checks
+        - --insecure
+        - --address=0.0.0.0:51515
+        - --server-username=k # Keep default user or Web UI will be disabled
+        # - --server-password=test
+        - --htpasswd-file=/app/config/htpasswd
+    environment:
+        USER: "k" # Only needed for automatic decryption
+        KOPIA_PASSWORD: ""
+        # KOPIA_PASSWORD_FILE: "/run/secrets/backup_password"
+    secrets:
+      - backup_password
+    # cap_add:
+    #   - SYS_ADMIN
+    # devices:
+    #   - /dev/fuse:/dev/fuse:rwm
+    volumes:
+      # Mount local folders needed by kopia
+      - /srv/kopia/config:/app/config
+      - /srv/kopia/cache:/app/cache
+      - /srv/kopia/logs:/app/logs
+      # Mount local folders to snapshot (Source Data)
+      - /srv:/srv_dir:ro
+      - /data:/data_dir:ro
+      - /var/lib/docker/volumes:/docker_dir:ro
+      # Mount repository location (Backup Destination)
+      - /mnt/pool/Apps/Kopia/backups:/repository
+      # Mount path for browsing mounted snapshots
+      - /mnt/pool/Apps/Kopia:/tmp:shared
+
+
+secrets:
+  backup_password:
+    file: /data/secrets/restic_kopia_password
