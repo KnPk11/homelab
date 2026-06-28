@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  sftpgo:
+    image: drakkan/sftpgo
+    container_name: sftpgo
+    ports:
+      - "2022:2022"
+      - "8086:8080"
+    expose:
+      - "8080"
+    networks:
+      - caddy_shared
+    volumes:
+      - /mnt/pool/Shared:/srv/sftpgo
+      - /srv/sftpgo/home:/var/lib/sftpgo
+    environment:
+      - SFTPGO_HTTPD__BINDINGS__0__PORT=8080
+      - SFTPGO_HTTPD__BINDINGS__0__PROTOCOL=http
+      - SFTPGO_HTTPD__BINDINGS__0__ADDRESS=0.0.0.0
+      - SFTPGO_HTTPD__BINDINGS__0__TLS=false
+      - SFTPGO_HTTPD__PUBLIC_URL=https://example.asuscomm.com
+      - SFTPGO_HTTPD__ROOT_PATH=/sftpgo
