@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: piped-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: piped          # Database user
+      POSTGRES_PASSWORD: piped      # Database password
+      POSTGRES_DB: piped            # Database name
+      POSTGRES_HOST_AUTH_METHOD: md5  # Authentication method (default is usually okay, but explicitly set)
+      POSTGRES_LISTEN_addresses: '*'  # Listen on all network interfaces
+    volumes:
+      - piped-postgres-data:/var/lib/postgresql/data
+
+  piped-backend:
+    image: 1337kavin/piped:latest
+    container_name: piped-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - "8101:8080"
+    environment:
+      PORT: 8080
+      HOSTNAME: http://localhost:8095
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/piped  # Correct URL format using service name 'postgres'
+      POSTGRES_USER: piped
+      POSTGRES_PASSWORD: piped
+      USE_PROXY: true
+
+  piped-frontend:
+    image: 1337kavin/piped-frontend:latest
+    container_name: piped-frontend
+    restart: unless-stopped
+    ports:
+      - "8102:80"
+    environment:
+      BACKEND_HOSTNAME: http://piped-backend:8080
+
+volumes:
+  piped-postgres-data:
