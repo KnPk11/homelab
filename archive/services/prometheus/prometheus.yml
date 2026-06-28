@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s # How often to grab data. 15s is standard.
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+
+  - job_name: 'glances'
+    metrics_path: '/metrics' # Glances puts the data here
+    static_configs:
+      - targets: ['glances:61208']
