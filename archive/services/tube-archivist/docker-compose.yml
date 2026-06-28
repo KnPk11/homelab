@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+    tubearchivist:
+    image: bbilly1/tubearchivist:v0.5.4
+    container_name: tubearchivist
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - ES_URL=http://tubearchivist_es:9200
+      - REDIS_CON=redis://tubearchivist_redis:6379
+      - TA_HOST=http://192.168.50.98:8000
+      - TA_USERNAME=K
+      - TA_PASSWORD=test
+      # - TA_PASSWORD_FILE=/run/secrets/tubearchivist_password
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=test
+      - TZ=Europe/London
+    secrets:
+      - tubearchivist_password
+    volumes:
+      - /mnt/pool/Downloads/TubeArchivist:/youtube
+
+  tubearchivist_es:
+    image: elasticsearch:8.10.4
+    container_name: tubearchivist_es
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=test
+      - path.repo=/usr/share/elasticsearch/data/snapshot
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - /srv/tube_archivist/es:/usr/share/elasticsearch/data
+
+  tubearchivist_redis:
+    image: redis:7-alpine
+    container_name: tubearchivist_redis
+    restart: unless-stopped
+    volumes:
+      - /srv/tube_archivist/redis:/data
+
+secrets:
+  tubearchivist_password:
+    file: /srv/tube-archivist/.secrets/tubearchivist_password.secret
