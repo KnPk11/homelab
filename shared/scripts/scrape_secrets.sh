@@ -34,8 +34,8 @@ for HOST in "${GITOPS_HOSTS[@]}"; do
     HOST_DIR="$BACKUP_DIR/$HOST"
     mkdir -p "$HOST_DIR"
     
-    # Rsync magic: grab only .env files and .secrets directories from their specific node folder in the repo
-    rsync -avm --include='*.env' --include='*/.secrets/***' --include='*/' --exclude='*' "root@$IP:/opt/homelab-repo/nodes/$HOST/" "$HOST_DIR/"
+    # Rsync magic: grab only .env and .secret files and .secrets directories from their specific node folder in the repo
+    rsync -avm --include='*.env' --include='*.secret' --include='*/.secrets/***' --include='*/' --exclude='*' "root@$IP:/opt/homelab-repo/nodes/$HOST/" "$HOST_DIR/"
     
     if [ $? -eq 0 ]; then
         echo "Successfully backed up $HOST"
@@ -44,10 +44,10 @@ for HOST in "${GITOPS_HOSTS[@]}"; do
     fi
 done
 
-echo "Backing up ai-tools (local repository)..."
-AITOOLS_DIR="$BACKUP_DIR/ai-tools"
+echo "Backing up ai-tools-105 (local repository)..."
+AITOOLS_DIR="$BACKUP_DIR/ai-tools-105"
 mkdir -p "$AITOOLS_DIR"
-rsync -avm --include='*.env' --include='*/.secrets/***' --include='*/' --exclude='*' "/opt/dev/homelab_repo/" "$AITOOLS_DIR/"
+rsync -avm --include='*.env' --include='*.secret' --include='*/.secrets/***' --include='*/' --exclude='*' "/opt/dev/homelab_repo/" "$AITOOLS_DIR/"
 
 # Legacy/Specific Nodes:
 echo "Backing up homelab-95 (legacy)..."
