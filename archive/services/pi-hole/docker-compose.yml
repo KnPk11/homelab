@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:2025.07.1
+    environment:
+      - TZ=Europe/London
+      - WEBPASSWORD_FILE=/run/secrets/pihole_password
+      - FTLCONF_LOCAL_IPV4=192.168.50.98        # your Pi-hole IP
+      - DNSMASQ_LISTENING=local
+    secrets:
+      - pihole_password
+    volumes:
+      - /srv/pihole/.secrets/pihole.toml.secret:/etc/pihole/pihole.toml
+      - /srv/pihole/etc-pihole:/etc/pihole
+      - /srv/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    ports:
+      - "127.0.0.1:53:53/tcp"
+      - "127.0.0.1:53:53/udp"
+      - "127.0.0.1:8086:80/tcp"
+      - "192.168.50.98:53:53/tcp"
+      - "192.168.50.98:53:53/udp"
+      - "192.168.50.98:8086:80/tcp"
+      # - "8444:443"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN # Required for full functionality
+    cap_drop:
+      - MKNOD
+      - SYS_MODULE
+      - SYS_RAWIO
+      - SYS_TIME
+      - AUDIT_CONTROL
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 256M
+        reservations:
+          cpus: '0.50'
+          memory: 128M
+
+secrets:
+  pihole_password:
+    file: /srv/pihole/.secrets/pihole_password.secret
