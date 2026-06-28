@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  projectsend:
+    image: lscr.io/linuxserver/projectsend
+    container_name: projectsend
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    depends_on:
+      - projectsend_db
+    volumes:
+      - /srv/projectsend/config:/config
+      - /mnt/kingston_128gb:/data
+    expose:
+      - "80"
+    networks:
+      - projectsend_internal
+      - caddy_shared
+    restart: unless-stopped
+    
+  projectsend_db:
+    image: mariadb:11.7.2
+    container_name: projectsend_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/projectsend_mysql_root_password
+      MYSQL_DATABASE: projectsend
+      MYSQL_USER: projectsend_user
+      MYSQL_PASSWORD_FILE: /run/secrets/projectsend_mysql_password
+    secrets:
+      - projectsend_mysql_root_password
+      - projectsend_mysql_password
+    volumes:
+      - projectsend_db:/var/lib/mysql
+    networks:
+      - projectsend_internal
+
+volumes:
+  projectsend_db:
+
+networks:
+  caddy_shared:
+    external: true
+  projectsend_internal:
+
+secrets:
+  projectsend_mysql_password:
+    file: /srv/projectsend/.secrets/projectsend_mysql_password.secret
+  projectsend_mysql_root_password:
+    file: /srv/projectsend/.secrets/projectsend_mysql_root_password.secret
