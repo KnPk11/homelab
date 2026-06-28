@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  postgres_db:
+    image: postgres:latest
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB=main_db
+    secrets:
+      - postgres_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dbt_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d main_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  data_loader:
+    image: data_loader:latest
+    container_name: data_loader
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+      - POSTGRES_DB=main_db
+      - POSTGRES_HOST=postgres_db # Use the service name of your DB
+    secrets:
+      - postgres_password
+    networks:
+      - dbt_network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+
+secrets:
+  postgres_password:
+    file: /srv/postgres-etl/.secrets/postgres_password.secret
+
+networks:
+  dbt_network:
+    external: true
