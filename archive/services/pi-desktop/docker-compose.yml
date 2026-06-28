@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    pi-desktop:
+    image: carlonluca/vnc-desktop:jammy-lxqt
+    container_name: pi-desktop
+    environment:
+      - USER=user # ubuntu:ubuntu is default
+      - RESOLUTION=1920x1080
+    ports:
+      - "5901:5900"
+    volumes:
+      - desktop-home:/home/pi
+    restart: unless-stopped
+
+volumes:
+  desktop-home:
