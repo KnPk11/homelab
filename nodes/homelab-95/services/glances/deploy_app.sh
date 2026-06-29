@@ -26,12 +26,9 @@ envsubst < "$SCRIPT_DIR/glances.conf" | sudo tee "$DEST_DIR/glances.conf" > /dev
 echo "Symlinking .env to $DEST_DIR/.env..."
 sudo ln -sf "$ENV_FILE" "$DEST_DIR/.env"
 
-# Note: glances.pwd is handled manually or via a separate secrets deployment script.
-# If it lives in $SCRIPT_DIR/glances.pwd, uncomment below:
-# if [ -f "$SCRIPT_DIR/glances.pwd" ]; then
-#     echo "Deploying glances.pwd..."
-#     sudo cp "$SCRIPT_DIR/glances.pwd" "$DEST_DIR/glances.pwd"
-#     sudo chmod 600 "$DEST_DIR/glances.pwd"
-# fi
+if [ -f "$SCRIPT_DIR/glances.pwd" ]; then
+    echo "Symlinking glances.pwd to $DEST_DIR/glances.pwd..."
+    sudo ln -sf "$SCRIPT_DIR/glances.pwd" "$DEST_DIR/glances.pwd"
+fi
 
 echo "Deployment complete."
