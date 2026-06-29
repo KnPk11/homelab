@@ -51,7 +51,7 @@ services:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
-      - ${LOKI_CONFIG_PATH:-/srv/loki/loki-config.yaml}:/etc/loki/local-config.yaml
+      - ${LOKI_CONFIG_PATH:-/srv/grafana/loki-config.yaml}:/etc/loki/local-config.yaml
       - /srv/loki/data:/loki
     networks:
       - caddy_private
@@ -76,7 +76,7 @@ services:
   #   container_name: promtail
   #   restart: unless-stopped
   #   volumes:
-  #     - ${PROMTAIL_CONFIG_PATH:-/srv/promtail/promtail-config.yaml}:/etc/promtail/config.yml
+  #     - ${PROMTAIL_CONFIG_PATH:-/srv/grafana/promtail-config.yaml}:/etc/promtail/config.yml
   #     # - /var/lib/docker/containers:/var/lib/docker/containers:ro
   #     - /mnt/logs/mikrotik:/var/log:ro
   #   networks:
