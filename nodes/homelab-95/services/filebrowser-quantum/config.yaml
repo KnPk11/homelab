@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  baseURL: "/"
+
+  database: /home/filebrowser/db_data/database.db
+  
+  cacheDir: /home/filebrowser/tmp
+
+  sources:
+    - path: /home/filebrowser/public
+      name: "Shared Files"
+      config:
+        defaultEnabled: false
+
+    - path: /home/filebrowser/private
+      name: "My Private Data"
+      config:
+        defaultEnabled: false
+
+  logging:
+    - output: stdout
+      levels: "info|warning|error|debug"

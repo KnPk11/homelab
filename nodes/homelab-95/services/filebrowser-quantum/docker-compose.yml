@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  filebrowser:
+    image: gtstef/filebrowser:1.1.1-stable
+    container_name: filebrowser-quantum
+    restart: unless-stopped
+    expose:
+      - "80"
+    user: "1000:1000"
+    networks:
+      - caddy_public
+    environment:
+      FILEBROWSER_CONFIG: "/home/filebrowser/config.yaml" # overrides the default path which is ./config.yaml
+      TZ: "Europe/London"
+    secrets:
+      - filebrowser_password
+    entrypoint: # Override default password for the initial set-up
+      - /bin/sh
+      - -c
+      - |
+        # Check if the secret file exists
+        if [ -f /run/secrets/filebrowser_password ]; then
+           export FILEBROWSER_ADMIN_PASSWORD=$(cat /run/secrets/filebrowser_password)
+        fi
+        
+        # Start the application
+        filebrowser
+    volumes:
+      - ${FILEBROWSER_DB_PATH:-/srv/filebrowser-quantum/db_data}:/home/filebrowser/db_data # This allows SQLite to create .wal and .shm temporary files inside 'db_data'.
+      - ${FILEBROWSER_CONFIG_PATH:-/srv/filebrowser-quantum/config.yaml}:/home/filebrowser/config.yaml:ro
+      - /tmp/filebrowser_tmp:/home/filebrowser/tmp
+      # Private storage
+      - /mnt/pool/Private:/home/filebrowser/private/Private
+      - /mnt/pool/Media:/home/filebrowser/private/Media
+      - /mnt/pool/Downloads:/home/filebrowser/private/Downloads
+      # Shared storage
+      - /mnt/pool/Shared:/home/filebrowser/public
+    labels:
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$"
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.00'
+          memory: 1G  # Quantum is heavier due to indexing
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+
+networks:
+  caddy_public:
+    external: true
+
+secrets:
+  filebrowser_password:
+    file: ${FILEBROWSER_SECRET_PATH:-/srv/filebrowser-quantum/filebrowser.env}
