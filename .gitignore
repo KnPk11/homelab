@@ -22,3 +22,4 @@ projects/n8n/
 projects/web-apps/
 *.secret
 pihole.toml
+*.pwd
