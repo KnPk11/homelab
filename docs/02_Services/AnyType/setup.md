@@ -11,9 +11,9 @@
 Clone the repository:
 
 ```bash
-cd /data/repositories
-git clone https://github.com/anyproto/any-sync-dockercompose.git
-cd any-sync-dockercompose
+cd /srv
+git clone https://github.com/anyproto/any-sync-dockercompose.git anytype-sync-logic
+cd anytype-sync-logic
 ```
 
 Set the environmental variable overrides in `.env.override`:
@@ -26,14 +26,14 @@ EXTERNAL_LISTEN_HOSTS=example.com
 ANY_SYNC_FILENODE_DEFAULT_LIMIT=10737418240
 
 # Storage location
-STORAGE_DIR=/mnt/pool/Apps/AnyType
+STORAGE_DIR=/srv/anytype
 ```
 
 Set the correct permissions for external storage:
 
 ```bash
-sudo chown -R 1000:1000 /mnt/pool/Apps/AnyType
-sudo chmod -R 755 /mnt/pool/Apps/AnyType
+sudo chown -R 1000:1000 /srv/anytype
+sudo chmod -R 755 /srv/anytype
 ```
 
 Start the service:
@@ -49,7 +49,7 @@ TCP: 1001:1006
 UDP: 1011:1016
 ```
 
-After the first run, import `/data/repositories/any-sync-dockercompose/etc/client.yml` into Anytype apps (in AnyType client select `Self-hosted`).
+After the first run, import `/srv/anytype-sync-logic/etc/client.yml` into Anytype apps (in AnyType client select `Self-hosted`).
 
 If you need to make any changes stop the docker containers and run this to rebuild next time:
 
@@ -60,7 +60,7 @@ sudo rm -rf ./etc/any-sync-filenode
 ## 2. Updating
 
 ```bash
-cd /data/repositories/any-sync-dockercompose
+cd /srv/anytype-sync-logic
 ```
 
 Stop & update:
