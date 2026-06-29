@@ -5,11 +5,11 @@ services:
     image: gtstef/filebrowser:1.1.1-stable
     container_name: filebrowser-quantum
     restart: unless-stopped
-    expose:
-      - "80"
+    ports:
+      - "9101:8080"
     user: "1000:1000"
-    networks:
-      - caddy_public
+    # networks:
+    #   - caddy_public
     environment:
       FILEBROWSER_CONFIG: "/home/filebrowser/config.yaml" # overrides the default path which is ./config.yaml
       TZ: "Europe/London"
@@ -29,13 +29,13 @@ services:
     volumes:
       - ${FILEBROWSER_DB_PATH:-/srv/filebrowser-quantum/db_data}:/home/filebrowser/db_data # This allows SQLite to create .wal and .shm temporary files inside 'db_data'.
       - ${FILEBROWSER_CONFIG_PATH:-/srv/filebrowser-quantum/config.yaml}:/home/filebrowser/config.yaml:ro
-      - /tmp/filebrowser_tmp:/home/filebrowser/tmp
+      - ${FILEBROWSER_TMP_PATH:-/srv/filebrowser-quantum/tmp}:/home/filebrowser/tmp
       # Private storage
-      - /mnt/pool/Private:/home/filebrowser/private/Private
-      - /mnt/pool/Media:/home/filebrowser/private/Media
-      - /mnt/pool/Downloads:/home/filebrowser/private/Downloads
+      - /mnt/nas/Private:/home/filebrowser/private/Private
+      - /mnt/nas/Media:/home/filebrowser/private/Media
+      - /mnt/nas/Downloads:/home/filebrowser/private/Downloads
       # Shared storage
-      - /mnt/pool/Shared:/home/filebrowser/public
+      - /mnt/nas/Shared:/home/filebrowser/public
     labels:
       - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$"
     read_only: true
@@ -60,9 +60,9 @@ services:
           cpus: '0.50'
           memory: 512M
 
-networks:
-  caddy_public:
-    external: true
+# networks:
+#   caddy_public:
+#     external: true
 
 secrets:
   filebrowser_password:
