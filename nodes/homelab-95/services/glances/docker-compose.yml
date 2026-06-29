@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  glances:
+    image: nicolargo/glances:latest
+    container_name: glances
+    restart: unless-stopped
+    ports:
+      - "61208:61208"
+    networks:
+      - caddy_private
+    environment:
+      - GLANCES_OPT=-w
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "0"
+    group_add:
+      - '991' 
+    read_only: true
+    tmpfs:
+      - /tmp # Mount a writable, in-memory temp folder
+    pid: host
+    volumes:
+      - ${GLANCES_CONFIG_PATH:-/srv/glances/glances.conf}:/etc/glances/glances.conf:ro # config file
+      - /var/run/docker.sock:/var/run/docker.sock:ro # access to docker stats
+      - /:/hostfs:ro # access to all drives
+    secrets:
+      - source: glances_password
+        target: /root/.config/glances/glances.pwd
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  glances-full:
+    image: nicolargo/glances:latest-full
+    container_name: glances-full
+    restart: unless-stopped
+    networks:
+      - caddy_private
+    environment:
+      - GLANCES_OPT=--export influxdb2
+    hostname: HomeLab
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "0"
+    group_add:
+      - '991' 
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /root/.cache
+      - /root/.config/glances:mode=1777
+    pid: host
+    volumes:
+      - ${GLANCES_CONFIG_PATH:-/srv/glances/glances.conf}:/etc/glances/glances.conf:ro
+      # - /var/run/docker.sock:/var/run/docker.sock:ro # access to docker stats
+      - /mnt/nas:/mnt/nas:ro # access to external drives
+    secrets:
+      - source: glances_password
+        target: /root/.config/glances/glances.pwd
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+networks:
+  caddy_private:
+    external: true
+
+secrets:
+  glances_password:
+    file: ${GLANCES_PASSWORD_PATH:-/srv/glances/glances.pwd}
