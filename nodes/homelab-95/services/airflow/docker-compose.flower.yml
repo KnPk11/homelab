@@ -1,0 +1,33 @@
+# You can enable flower by adding "--profile flower" option e.g. docker-compose --profile flower up
+# or by explicitly targeted on the command line e.g. docker-compose up flower.
+# See: https://docs.docker.com/compose/profiles/
+services:
+  flower:
+    <<: *airflow-common
+    command: celery flower
+    container_name: airflow_celery_flower
+    profiles:
+      - flower
+    ports:
+      - "5555:5555"
+    networks:
+      - airflow_net
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M 
