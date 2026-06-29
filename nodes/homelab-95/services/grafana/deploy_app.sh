@@ -23,19 +23,15 @@ if [ -f "$SCRIPT_DIR/grafana_password.secret" ]; then
 fi
 
 # Loki Config
-LOKI_DEST="/srv/loki"
-sudo mkdir -p "$LOKI_DEST"
 if [ -f "$SCRIPT_DIR/loki-config.yaml" ]; then
-    echo "Deploying loki-config.yaml to $LOKI_DEST/loki-config.yaml..."
-    sudo cp "$SCRIPT_DIR/loki-config.yaml" "$LOKI_DEST/loki-config.yaml"
+    echo "Symlinking loki-config.yaml to $DEST_DIR/loki-config.yaml..."
+    sudo ln -sf "$SCRIPT_DIR/loki-config.yaml" "$DEST_DIR/loki-config.yaml"
 fi
 
 # Promtail Config
-PROMTAIL_DEST="/srv/promtail"
-sudo mkdir -p "$PROMTAIL_DEST"
 if [ -f "$SCRIPT_DIR/promtail-config.yaml" ]; then
-    echo "Deploying promtail-config.yaml to $PROMTAIL_DEST/promtail-config.yaml..."
-    sudo cp "$SCRIPT_DIR/promtail-config.yaml" "$PROMTAIL_DEST/promtail-config.yaml"
+    echo "Symlinking promtail-config.yaml to $DEST_DIR/promtail-config.yaml..."
+    sudo ln -sf "$SCRIPT_DIR/promtail-config.yaml" "$DEST_DIR/promtail-config.yaml"
 fi
 
 echo "Deployment complete."
