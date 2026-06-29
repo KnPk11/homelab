@@ -69,7 +69,7 @@ ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/.env" > "$HE
 ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/auth.json" > "$HERMES_DIR/auth.json" 2>/dev/null || true
 
 echo "Backing up anytype (on homelab-95)..."
-ANYTYPE_DIR="$BACKUP_DIR/homelab-95/anytype"
+ANYTYPE_DIR="$BACKUP_DIR/homelab-95/services/anytype"
 mkdir -p "$ANYTYPE_DIR"
 rsync -avz "${NODES["homelab-95"]}:/srv/anytype-sync-logic/.env.override" "$ANYTYPE_DIR/.env.override" 2>/dev/null || true
 rsync -avz --exclude='relics' "${NODES["homelab-95"]}:/srv/anytype/docker-generateconfig/" "$ANYTYPE_DIR/docker-generateconfig/" 2>/dev/null || true
