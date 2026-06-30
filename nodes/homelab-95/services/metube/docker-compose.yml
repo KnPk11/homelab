@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  metube:
+    image: ghcr.io/alexta69/metube
+    container_name: metube
+    restart: unless-stopped
+    ports:
+      - "8181:8081"
+    networks:
+      - caddy_private
+    volumes:
+      - /mnt/nas/Downloads/MeTube:/downloads
+    cap_drop:
+      - AUDIT_WRITE
+      - MKNOD
+      - NET_RAW
+      - SYS_CHROOT
+      - SYS_ADMIN
+      - SYS_MODULE
+      - SYS_PTRACE
+      - SYS_RAWIO
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 768M
+        reservations:
+          cpus: '1.0'
+          memory: 256M
+
+networks:
+  caddy_private:
+    external: true
