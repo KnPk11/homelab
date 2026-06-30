@@ -1,0 +1,33 @@
+authMethod: internal
+
+authInternalUsers:
+  - user: kon
+    pass: ${MEDIAMTX_PASSWORD}
+    ips: [192.168.0.0/16]
+    permissions:
+      - action: publish
+        path: live
+      - action: read
+      - action: playback
+
+  - user: any
+    ips: [0.0.0.0/0]
+    permissions:
+      - action: read
+      - action: playback
+
+# Logging - only seems to work in the docker compose env
+logDestinations: [stdout, file]
+logFile: /logs/mediamtx.log
+logLevel: info
+
+# HLS Settings
+hls: yes
+hlsAddress: :8888
+hlsAlwaysRemux: yes
+# Quest 2/3 often prefers mpegts for better compatibility in VRChat
+hlsVariant: mpegts
+
+paths:
+  live:
+    source: publisher
