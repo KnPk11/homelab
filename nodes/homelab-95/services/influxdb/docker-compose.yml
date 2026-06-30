@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:  
+  influxdb:
+    image: influxdb:latest
+    container_name: influxdb
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=k
+      - DOCKER_INFLUXDB_INIT_PASSWORD_FILE=/run/secrets/influxdb_password
+      - DOCKER_INFLUXDB_INIT_ORG=homelab
+      - DOCKER_INFLUXDB_INIT_BUCKET=glances
+    secrets:
+      - influxdb_password
+    networks:
+      - caddy_private
+    volumes:
+      - influxdb-data:/var/lib/influxdb2:rw
+    cap_drop:
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true
+    # read_only: true
+    tmpfs:
+      - /tmp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+
+secrets:
+  influxdb_password:
+    file: ${INFLUXDB_PASSWORD_PATH:-/srv/influxdb/influxdb_password.secret}
+
+networks:
+  caddy_private:
+    external: true
+
+volumes:
+  influxdb-data:
