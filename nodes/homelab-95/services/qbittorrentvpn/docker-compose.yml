@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  qbittorrentvpn:
+    image: binhex/arch-qbittorrentvpn:latest
+    container_name: qbittorrentvpn
+    environment:
+      - VPN_ENABLED=yes
+      - VPN_PROV=custom       # or "pia", "airvpn", etc. (depends on your provider)
+      - VPN_CLIENT=openvpn    # openvpn or wireguard, depending on provider
+      # - VPN_USER=your_vpn_username_here
+      # - VPN_PASS=your_vpn_password_here
+      - STRICT_PORT_FORWARD=yes # VPN kill switch
+      - ENABLE_PRIVOXY=no
+      - WEBUI_PORT=8091
+      - LAN_NETWORK=192.168.50.0/24  # adjust to your LAN so you can reach the UI
+      - NAME_SERVERS=1.1.1.1,8.8.8.8
+      - UMASK=022 # broad read access with owner-only write
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - /srv/qbittorrentvpn:/config
+      - /mnt/pool/Downloads/Torrents:/downloads
+    ports:
+      - 8091:8091     # qBittorrent Web UI
+      - 8999:8999     # TCP torrent port
+      - 8999:8999/udp # UDP torrent port
+    restart: unless-stopped
+    devices:
+      - /dev/net/tun          # VPN tunnel device
+    cap_add:
+      - NET_ADMIN             # needed for VPN
+    security_opt:
+      - no-new-privileges:true
+    # privileged: true # for wireguard, but less secure
+    # sysctls:   # fixes the "src_valid_mark" error
+    #   - net.ipv4.conf.all.src_valid_mark=1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
