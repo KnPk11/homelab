@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:1.35.2
+    container_name: vaultwarden
+    user: 1000:1000
+    ports:
+      - "9103:80"
+    restart: always
+    environment:
+      - DOMAIN=https://${VAULTWARDEN_DOMAIN:-vaultwarden.example.com}
+      - TZ=Europe/London
+      # --- Networking & Proxy ---
+      - WEBSOCKET_ENABLED=true
+      - ROCKET_WORKERS=10  # Slight bump for public handling, though default is usually fine
+      # Tell Vaultwarden to trust Caddy's X-Real-IP header. Without this, rate limiting blocks Caddy, not the attacker.
+      - IP_HEADER=X-Real-IP
+      # --- Access Controls ---
+      - SIGNUPS_ALLOWED=false         # STRICTLY FALSE for public
+      - INVITATIONS_ALLOWED=false     # Disable if you don't need to invite others
+      - EMERGENCY_ACCESS_ALLOWED=false
+      - SENDS_ALLOWED=true            # Bitwarden Send feature (optional)
+      - WEB_VAULT_ENABLED=true
+      # --- Security Hardening ---
+      - SHOW_PASSWORD_HINT=false      # Don't leak hints
+      - ADMIN_TOKEN_FILE=/run/secrets/vaultwarden_admin_token
+      # --- Admin Page Protection ---
+      # Even with a token, it is safer to disable the admin page externally (in Caddy)
+      # or rate limit it heavily here.
+      - ADMIN_RATELIMIT_MAX_BURST=3
+      - ADMIN_RATELIMIT_SECONDS=300
+      # --- Icon Privacy ---
+      # Prevents leaking your vault domains to external icon services
+      # 'internal' uses built-in logic, or disable entirely with 'false'
+      - ICON_SERVICE=internal
+      - SIGNUPS_VERIFY=true # switch to true for extra security
+      - SIGNUPS_VERIFY_RESEND_TIME=3600
+      - SIGNUPS_VERIFY_RESEND_LIMIT=5
+    volumes:
+      - /srv/vaultwarden:/data
+    secrets:
+      - vaultwarden_admin_token
+    networks:
+      - caddy_public
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+networks:
+  caddy_public:
+    external: true
+
+secrets:
+  vaultwarden_admin_token:
+    file: ${VAULTWARDEN_ADMIN_TOKEN_PATH:-/srv/vaultwarden/vaultwarden_admin_token.secret}
