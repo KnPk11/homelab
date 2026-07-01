@@ -1,0 +1,41 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:2.38.0
+    container_name: portainer
+    restart: unless-stopped
+    ports: # To acess via https://IP:9443 if Caddy dies.
+      - "127.0.0.1:9443:9443"
+      - "192.168.50.95:9443:9443"
+    environment:
+      - TRUSTED_ORIGINS=${PORTAINER_DOMAIN:-portainer.example.com}
+    expose:
+      - 9443
+    networks:
+      - caddy_public
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${NEXTCLOUD_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env}:/data/secrets/nextcloud_hpb_secrets.env:ro
+    read_only: true
+    labels:
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$" # For What's Up Docker
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M # Portainer can get hungry with many stacks
+          cpus: '0.5'
+
+
+volumes:
+  portainer_data:
+    external: true
+
+networks:
+  caddy_public:
+    external: true
