@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:    
+  webdav:
+    image: chonjay21/webdav:latest
+    container_name: media-webdav
+    ports:
+      - "8084:80"
+    # networks:
+    #   - caddy_public
+    environment:
+      - APP_UID=1000
+      - APP_GID=1000
+      - TZ=Europe/London
+      - SERVER_NAME=${WEBDAV_DOMAIN:-media-webdav.example.com}
+    # - APP_USER_NAME=
+    # - APP_USER_PASSWD=
+    # - USE_SSL=true
+    # - DIGEST_AUTH_REALM=WebDav
+    # - URL_PREFIX=/webdav
+    secrets:
+      - webdav_password
+    entrypoint: ["/entrypoint.sh"]
+    volumes:
+    # - /data/certs/cert.pem:/usr/local/apache2/conf/server.crt:ro
+    # - /data/certs/key.pem:/usr/local/apache2/conf/server.key:ro
+      - /srv/webdav/entrypoint.sh:/entrypoint.sh:ro
+      - /mnt/nas/Media:/var/webdav/data
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETUID
+      - SETGID
+      - KILL
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+# networks:
+#   caddy_public:
+#     external: true
+
+secrets:
+  webdav_password:
+    file: ${WEBDAV_PASSWORD_PATH:-/srv/webdav/webdav_password.secret}
