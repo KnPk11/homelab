@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  photoprism:
+    image: photoprism/photoprism:250707
+    container_name: photoprism
+    depends_on:
+      - photoprism_db
+    networks:
+      - caddy_public
+      - photoprism_internal
+    expose:
+      - "2342"  # Use expose since Caddy will access it internally
+    environment:
+      - PHOTOPRISM_ADMIN_PASSWORD_FILE=/run/secrets/photoprism_password
+      - PHOTOPRISM_DATABASE_DRIVER=mysql
+      - PHOTOPRISM_DATABASE_SERVER=photoprism_db:3306
+      - PHOTOPRISM_DATABASE_NAME=photoprism
+      - PHOTOPRISM_DATABASE_USER=photoprism
+      - PHOTOPRISM_DATABASE_PASSWORD_FILE=/run/secrets/photoprism_database_password
+      - PUID=1000
+      - PGID=1000
+      - UMASK=0000
+      - TZ=Europe/London
+    secrets:
+      - photoprism_password
+      - photoprism_database_password
+    volumes:
+      - /srv/photoprism/storage:/photoprism/storage
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+      - KILL
+    deploy:
+      resources:
+        limits:
+          cpus: '2.00'
+          memory: 1024M
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+
+
+  photoprism_db:
+    image: mariadb:11
+    container_name: photoprism_db
+    environment:
+      - FILE__MYSQL_ROOT_PASSWORD=/run/secrets/photoprism_mysql_root_password
+      - MYSQL_DATABASE=photoprism
+      - MYSQL_USER=photoprism
+      - FILE__MYSQL_PASSWORD=/run/secrets/photoprism_database_password
+    secrets:
+      - photoprism_mysql_root_password
+      - photoprism_database_password
+    networks:
+      - photoprism_internal
+    volumes:
+      - /srv/photoprism/database:/var/lib/mysql
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+      - KILL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+
+volumes:
+  photoprism_db:
+
+networks:
+  caddy_public:
+    external: true
+  photoprism_internal:
+    driver: bridge
+    internal: true
+
+secrets:
+  photoprism_database_password:
+    file: ${PHOTOPRISM_DB_PASSWORD_PATH:-/srv/photoprism/photoprism_database_password.secret}
+  photoprism_mysql_root_password:
+    file: ${PHOTOPRISM_MYSQL_ROOT_PASSWORD_PATH:-/srv/photoprism/photoprism_mysql_root_password.secret}
+  photoprism_password:
+    file: ${PHOTOPRISM_PASSWORD_PATH:-/srv/photoprism/photoprism_password.secret}
