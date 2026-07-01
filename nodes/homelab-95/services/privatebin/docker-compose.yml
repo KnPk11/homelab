@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  privatebin:
+    image: privatebin/nginx-fpm-alpine
+    container_name: privatebin
+    read_only: true # filesystem is immutable except for volumes
+    user: "1000:1000"  # Run the container with the UID:GID of your Docker user
+    tmpfs:                           # ephemeral storage for temp dirs (auto-wiped)
+      - /tmp:rw,noexec,nosuid,size=64m
+      - /var/tmp:rw,noexec,nosuid,size=64m
+    volumes:
+      - /srv/privatebin/conf.php:/srv/cfg/conf.php:ro # custom configuration file
+      - /srv/privatebin/nginx.conf:/etc/nginx/nginx.conf:ro # custom nginx conf
+      - /srv/privatebin/data:/srv/data # persistent data volume for pastes
+    ports:
+      - "8180:8080"
+    networks:
+      - caddy_public
+    environment:
+      - TZ=Europe/London
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true       # don’t allow privilege escalation
+    cap_drop:                        # drop all Linux capabilities
+      - ALL
+    cap_add: []                      # no extra capabilities
+    healthcheck:                     # simple healthcheck
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8080/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"               # half a CPU core
+          memory: 256M               # max memory
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+
+networks:
+  caddy_public:
+    external: true
