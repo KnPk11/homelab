@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  tailscale-nginx:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    hostname: tailscale-nginx
+    network_mode: host
+    environment:
+      - TS_AUTHKEY_FILE=/run/secrets/tailscale_nginx_authkey
+      # - TS_EXTRA_ARGS=--advertise-tags=tag:container --advertise-exit-node=true --exit-node-allow-lan-access=true
+      # - TS_EXTRA_ARGS=--reset # Run once before changing configs
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    secrets:
+      - tailscale_nginx_authkey
+    volumes:
+      - /srv/tailscale-nginx/state:/var/lib/tailscale
+    command: >
+      sh -c "tailscaled & 
+             sleep 5 && 
+             tailscale up --accept-dns=true --advertise-exit-node --accept-routes --advertise-routes=192.168.50.0/24"
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+    restart: unless-stopped
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    depends_on:
+      - tailscale-nginx
+    network_mode: service:tailscale-nginx
+  
+secrets:
+  tailscale_nginx_authkey:
+    file: ${TAILSCALE_AUTHKEY_PATH:-/srv/tailscale-nginx/tailscale_nginx_authkey.secret}
