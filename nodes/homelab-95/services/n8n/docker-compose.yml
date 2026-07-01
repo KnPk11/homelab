@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n
+    restart: unless-stopped
+    container_name: n8n
+    expose:
+      - "5678"
+    networks:
+      - caddy_private
+    secrets:
+      - n8n_password
+      - n8n_secret_key
+    environment:
+      - N8N_HOST=${N8N_DOMAIN:-n8n.example.com}
+      - N8N_PROTOCOL=https
+      - WEBHOOK_URL=https://${N8N_DOMAIN:-n8n.example.com}/
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=K
+      - N8N_BASIC_AUTH_PASSWORD_FILE=/run/secrets/n8n_password
+      - N8N_ENCRYPTION_KEY_FILE=/run/secrets/n8n_secret_key
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_AUTH_MODE=basic
+      - N8N_PUBLIC_API_DISABLED=true
+      - TZ=Europe/London
+    volumes:
+      - /srv/n8n/data:/home/node/.n8n
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+
+networks:
+  caddy_private:
+    external: true
+
+secrets:
+  n8n_password:
+    file: ${N8N_PASSWORD_PATH:-/srv/n8n/n8n_password.secret}
+  n8n_secret_key:
+    file: ${N8N_SECRET_KEY_PATH:-/srv/n8n/n8n_secret_key.secret}
