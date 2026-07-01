@@ -21,6 +21,7 @@ services:
     volumes:
       - /srv/qbittorrentvpn:/config
       - /mnt/pool/Downloads/Torrents:/downloads
+      - ${QBITTORRENT_VPN_CONFIG_PATH:-/srv/vpn-configs/.secrets/wg0.conf}:/config/wireguard/wg0.conf:ro
     ports:
       - 8091:8091     # qBittorrent Web UI
       - 8999:8999     # TCP torrent port
