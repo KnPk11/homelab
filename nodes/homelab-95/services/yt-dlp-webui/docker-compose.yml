@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  yt-dlp-webui:
+    image: marcobaobao/yt-dlp-webui
+    container_name: yt-dlp-webui
+    ports:
+      - "127.0.0.1:3033:3033"
+      - "192.168.50.98:3033:3033"
+    volumes:
+      - /srv/yt-dlp-webui/config:/config
+      - "/mnt/pool/Downloads/yt-dlp Web UI:/downloads"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: curl -f http://localhost:3033 || exit 1
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.50'
+          memory: 256M
