@@ -2,18 +2,19 @@ version: '3.8'
 
 services: 
   syncthing:
-    image: syncthing/syncthing:2.0.12
+    image: syncthing/syncthing:2.0.14
     container_name: syncthing
-    hostname: K5
+    hostname: homelab
     ports:
-      - "127.0.0.1:22000:22000/tcp" # Sync TCP
-      - "192.168.50.98:22000:22000/tcp" # Sync TCP
-      - "127.0.0.1:22000:22000/udp" # Sync UDP (QUIC)
-      - "192.168.50.98:22000:22000/udp" # Sync UDP (QUIC)
-      - "127.0.0.1:21027:21027/udp" # Discovery
-      - "192.168.50.98:21027:21027/udp" # Discovery
-    networks:
-      - caddy_public
+      - 192.168.50.95:8384:8384
+      - 127.0.0.1:22000:22000/tcp # Sync TCP
+      - 192.168.50.95:22000:22000/tcp # Sync TCP
+      - 127.0.0.1:22000:22000/udp # Sync UDP (QUIC)
+      - 192.168.50.95:22000:22000/udp # Sync UDP (QUIC)
+      - 127.0.0.1:21027:21027/udp # Discovery
+      - 192.168.50.95:21027:21027/udp # Discovery
+    # networks:
+    #  - caddy_public
     environment:
       - PUID=1000
       - PGID=1000
@@ -22,7 +23,7 @@ services:
       - no-new-privileges:true
     volumes:
       - /srv/syncthing/config:/var/syncthing/config
-      - /mnt/pool/Downloads:/var/syncthing/downloads
+      - /mnt/nas/Downloads:/var/syncthing/downloads
     restart: unless-stopped
     deploy:
       resources:
@@ -34,6 +35,6 @@ services:
           memory: 256M
 
 
-networks:
-  caddy_public:
-    external: true
+# networks:
+#   caddy_public:
+#     external: true
