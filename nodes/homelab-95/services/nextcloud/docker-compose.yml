@@ -12,12 +12,12 @@ services:
       - /srv/nextcloud/config/apache2.conf:/etc/apache2/apache2.conf
       - /srv/nextcloud/config/config.php:/var/www/html/config/config.php
       # Shared storage
-      - /mnt/pool/Shared:/data/media/shared
-      - /mnt/pool/Shared_enc:/data/media/shared_enc # encrypted
+      - /mnt/nas/Shared:/data/media/shared
+      - /mnt/nas/Shared_enc:/data/media/shared_enc # encrypted
       # Private storage
-      - /mnt/pool/Private:/data/media/private/Private
-      - /mnt/pool/Downloads:/data/media/private/Downloads
-      - /mnt/pool/Media:/data/media/private/Media
+      - /mnt/nas/Private:/data/media/private/Private
+      - /mnt/nas/Downloads:/data/media/private/Downloads
+      - /mnt/nas/Media:/data/media/private/Media
     environment:
       - MYSQL_PASSWORD_FILE=/run/secrets/nextcloud_mysql_password
       - MYSQL_DATABASE=nextcloud
@@ -26,12 +26,12 @@ services:
       - PHP_UPLOAD_LIMIT=10G
       - PHP_MEMORY_LIMIT=1024M
       - TZ=Europe/London
-    expose:
-      - 80
+    ports:
+      - "8104:80"
     secrets:
       - nextcloud_mysql_password
     networks:
-      - caddy_public
+      # - caddy_public
       - nextcloud_internal
     restart: unless-stopped
     cap_drop:
@@ -146,10 +146,11 @@ services:
     expose:
       - "8081"
     ports:
+      - "8105:8081"
       - "3478:3478/tcp" # TURN server
       - "3478:3478/udp" # TURN server
     networks:
-      - caddy_public
+      # - caddy_public
       - nextcloud_internal
     env_file:
       - ${NC_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env} # Entrypoint is messy
@@ -180,11 +181,11 @@ services:
 
 
 networks:
-  caddy_public:
-    external: true
+  # caddy_public:
+  #   external: true
   nextcloud_internal:
     driver: bridge
-    internal: true 
+    internal: false 
 
 volumes:
   nextcloud_data:
