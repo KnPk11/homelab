@@ -15,7 +15,7 @@ services:
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
-      - ${NEXTCLOUD_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env}:/data/secrets/nextcloud_hpb_secrets.env:ro
+      - /srv:/srv:ro
     read_only: true
     labels:
       - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$" # For What's Up Docker
