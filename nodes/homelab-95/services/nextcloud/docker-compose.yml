@@ -1,0 +1,197 @@
+version: '3.8'
+
+services:
+  nextcloud:
+    image: nextcloud:32.0.3
+    container_name: nextcloud
+    depends_on:
+      - nextcloud_db
+    volumes:
+      - nextcloud_data:/var/www/html
+      # My configs
+      - /srv/nextcloud/config/apache2.conf:/etc/apache2/apache2.conf
+      - /srv/nextcloud/config/config.php:/var/www/html/config/config.php
+      # Shared storage
+      - /mnt/pool/Shared:/data/media/shared
+      - /mnt/pool/Shared_enc:/data/media/shared_enc # encrypted
+      # Private storage
+      - /mnt/pool/Private:/data/media/private/Private
+      - /mnt/pool/Downloads:/data/media/private/Downloads
+      - /mnt/pool/Media:/data/media/private/Media
+    environment:
+      - MYSQL_PASSWORD_FILE=/run/secrets/nextcloud_mysql_password
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=nextcloud_db
+      - PHP_UPLOAD_LIMIT=10G
+      - PHP_MEMORY_LIMIT=1024M
+      - TZ=Europe/London
+    expose:
+      - 80
+    secrets:
+      - nextcloud_mysql_password
+    networks:
+      - caddy_public
+      - nextcloud_internal
+    restart: unless-stopped
+    cap_drop:
+      - AUDIT_CONTROL
+      - MKNOD
+      - NET_RAW
+      - SYS_MODULE
+      - SYS_ADMIN
+      - SYS_PTRACE
+      - SYS_TIME
+      - SYSLOG
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.50'
+          memory: 512M
+
+  cron:
+    image: nextcloud:32.0.3
+    container_name: nextcloud_cron
+    restart: always
+    volumes:
+      - nextcloud_data:/var/www/html
+      - /srv/nextcloud/config/config.php:/var/www/html/config/config.php
+    networks:
+      - nextcloud_internal
+    entrypoint: /cron.sh
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  nextcloud_db:
+    image: mariadb:11.8.5
+    container_name: nextcloud_db
+    command: >
+      --transaction-isolation=READ-COMMITTED 
+      --binlog-format=ROW 
+      --innodb-file-per-table=1 
+      --skip-innodb-read-only-compressed
+    volumes:
+      - nextcloud_db:/var/lib/mysql
+    secrets:
+      - nextcloud_mysql_password
+      - nextcloud_mysql_root_password
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/nextcloud_mysql_root_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/nextcloud_mysql_password
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - nextcloud_internal
+    restart: unless-stopped
+    labels:
+      - "wud.tag.include=^11\\..\\..*" # Prevent WUD alerts as db needs to be a compatible version
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+      - KILL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+
+  nextcloud_redis:
+    image: redis:8.4-bookworm
+    container_name: nextcloud_redis
+    restart: unless-stopped
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    expose:
+      - 6379
+    networks:
+      - nextcloud_internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # labels:
+    #   - "wud.tag.include=^8\\.4\\..*-bookworm"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  talk_hpb:
+    image: ghcr.io/nextcloud-releases/aio-talk:latest
+    container_name: nextcloud_talk_hpb
+    restart: always
+    expose:
+      - "8081"
+    ports:
+      - "3478:3478/tcp" # TURN server
+      - "3478:3478/udp" # TURN server
+    networks:
+      - caddy_public
+      - nextcloud_internal
+    env_file:
+      - ${NC_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env} # Entrypoint is messy
+    environment:
+      - TALK_PORT=3478
+      - NC_DOMAIN=${NC_DOMAIN:-nextcloud.example.com}  # Nextcloud domain
+      - TALK_HOST=${TALK_HOST:-talk-hpb.example.com}   # Subdomain for signaling
+      - TZ=Europe/London
+    security_opt:
+      - no-new-privileges:true  # Prevents gaining root if compromised
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN        # Needed for the startup script to fix file permissions
+      - SETGID       # Needed to switch from Root -> User
+      - SETUID       # Needed to switch from Root -> User
+      - DAC_OVERRIDE # Often needed for file permission fixes during boot
+    tmpfs:
+      - /tmp:mode=1777,size=64M
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+
+networks:
+  caddy_public:
+    external: true
+  nextcloud_internal:
+    driver: bridge
+    internal: true 
+
+volumes:
+  nextcloud_data:
+  nextcloud_db:
+
+secrets:
+  nextcloud_mysql_password:
+    file: ${NC_MYSQL_PASSWORD_PATH:-/srv/nextcloud/nextcloud_mysql_password.secret}
+  nextcloud_mysql_root_password:
+    file: ${NC_MYSQL_ROOT_PASSWORD_PATH:-/srv/nextcloud/nextcloud_mysql_root_password.secret}
