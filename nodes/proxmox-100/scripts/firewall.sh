@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Proxmox Firewall Management Script
-# Version: 1.2 (2026-06-09)
+# Version: 1.3 (2026-07-04)
 # --------------------------------------
 # Run this on the Proxmox Host (pve1)
 
@@ -46,12 +46,14 @@ enable: 1
 main-lan $MAIN_LAN     # Regular PCs & Devices (Most Trusted)
 iot-lan $IOT_LAN     # Untrusted IoT Devices
 homelab-lan $HOMELAB_LAN  # Homelab Subnet (Intermediate Trust)
-homelab-node $HOMELAB_NODE   # Homelab Windows VM
+vpn-net $VPN_NET          # Primary VPN Subnet
+# Note: External VMs/devices need an alias here so they can be referenced as a "-source" in rules.
+# Proxmox guests (like Guest 100 on .95) don't need aliases here; their rules are applied via their specific ID.fw file.
+win11-vm $HOMELAB_NODE       # Windows 11 VM
 open-media-vault $OMV_IP # OMV Storage VM
 reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container
 ai-tools $AITOOLS_IP      # AI Toolbox Container
-vpn-net $VPN_NET          # Primary VPN Subnet
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
@@ -102,7 +104,7 @@ IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
 # SMB: Main LAN, VPN, and specific Homelab Node
 IN SMB(ACCEPT) -source main-lan -log nolog
 IN SMB(ACCEPT) -source vpn-net -log nolog
-IN SMB(ACCEPT) -source homelab-node -log nolog
+IN SMB(ACCEPT) -source win11-vm -log nolog
 # NFS & RPC Bind: Allow Homelab VMs for cross-storage sharing
 IN ACCEPT -p tcp -dport 2049 -source homelab-lan -log nolog
 IN ACCEPT -p udp -dport 2049 -source homelab-lan -log nolog
@@ -176,7 +178,7 @@ IN ACCEPT -p tcp -dport 443 -source main-lan -log nolog
 IN ACCEPT -p tcp -dport 443 -source vpn-net -log nolog
 
 # Allow all from new node
-IN ACCEPT -source homelab-node -log nolog
+IN ACCEPT -source win11-vm -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 101 (OMV)."
