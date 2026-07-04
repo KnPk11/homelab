@@ -68,6 +68,11 @@ ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/config.yaml"
 ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/.env" > "$HERMES_DIR/.env" 2>/dev/null || true
 ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/auth.json" > "$HERMES_DIR/auth.json" 2>/dev/null || true
 
+echo "Backing up nextcloud (on homelab-95)..."
+NEXTCLOUD_DIR="$BACKUP_DIR/homelab-95/services/nextcloud"
+mkdir -p "$NEXTCLOUD_DIR"
+rsync -avz "${NODES["homelab-95"]}:/srv/nextcloud/.env" "$NEXTCLOUD_DIR/.env" 2>/dev/null || true
+
 echo "Backing up anytype (on homelab-95)..."
 ANYTYPE_DIR="$BACKUP_DIR/homelab-95/services/anytype"
 mkdir -p "$ANYTYPE_DIR"
