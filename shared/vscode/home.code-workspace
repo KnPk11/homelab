@@ -1,16 +1,23 @@
 {
 	"folders": [
-		{ "name": "homelab_repo", "path": "/opt/dev/homelab_repo" },
-		{ "name": "root", "path": "/root" },
-		{ "name": "home", "path": "/home" },
-		{ "name": "data", "path": "/data" },
-		{ "name": "srv", "path": "/srv" },
-		{ "name": "mnt", "path": "/mnt" },
-		{ "name": "opt", "path": "/opt" },
-		{ "name": "etc", "path": "/etc" }
+		{ "name": "⭐ Dev Area", "path": "/opt/dev" },
+		{ "name": "⭐ Homelab Repository", "path": "/opt/homelab-repo" },
+		{ "name": "📁 root", "path": "/root" },
+		{ "name": "📁 home", "path": "/home" },
+		{ "name": "📁 data", "path": "/data" },
+		{ "name": "📁 srv", "path": "/srv" },
+		{ "name": "📁 mnt", "path": "/mnt" },
+		{ "name": "📁 opt", "path": "/opt" },
+		{ "name": "📁 etc", "path": "/etc" }
 	],
 	"settings": {
+		"git.scanRepositories": [
+			"/opt/dev/homelab_repo",
+			"/opt/homelab-repo"
+		],
 		"files.exclude": {
+			"dev": true,
+			"homelab-repo": true,
 			"**/.git": true,
 			"**/.svn": true,
 			"**/.hg": true,
