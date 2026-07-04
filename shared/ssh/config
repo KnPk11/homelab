@@ -1,3 +1,7 @@
+# MikroTik Router
+Host 192.168.88.1
+    User gemini
+
 # LXC Containers
 Host 192.168.50.101 192.168.50.105
     User root
