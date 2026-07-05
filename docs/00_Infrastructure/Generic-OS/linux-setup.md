@@ -166,6 +166,17 @@ sudo apt install unattended-upgrades
 sudo dpkg-reconfigure -plow unattended-upgrades
 ```
 
+### Filesystem Trim
+
+Debian does not enable automatic TRIM by default. Enable the built-in weekly timer to keep virtual disks lean and reduce backup sizes:
+
+```bash
+sudo systemctl enable --now fstrim.timer
+```
+
+> [!NOTE]
+> This only applies to VMs. LXC containers share the host's filesystem and cannot trim — the Proxmox host handles it for them. Also ensure **Discard** is ticked on the VM's hard disk settings in Proxmox.
+
 ### Uncomplicated Firewall (UFW)
 
 Install and enable the firewall:
