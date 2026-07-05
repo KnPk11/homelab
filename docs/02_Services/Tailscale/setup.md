@@ -143,6 +143,26 @@ The connection should fail. If it succeeds, verify the SMB whitelist on the targ
 
 ## 6. Troubleshooting
 
+### DNS Fight on Debian (resolv.conf conflict)
+
+> [!WARNING]
+> On Debian hosts, Tailscale's MagicDNS and NetworkManager can fight over `/etc/resolv.conf`. This causes DNS resolution to stall entirely — breaking git pulls, Docker image pulls, apt updates, and all outbound connectivity.
+
+**Symptoms:** Intermittent DNS failures, services unable to resolve hostnames.
+
+**Root Cause:** Debian doesn't ship with a DNS arbiter (like `systemd-resolved`). Both Tailscale and NetworkManager aggressively overwrite `/etc/resolv.conf`, and when one detects its config has been "trampled", DNS stalls during the tug-of-war.
+
+**Fix:** Unless MagicDNS for Tailnet name resolution is needed, disable Tailscale DNS:
+
+```bash
+tailscale set --accept-dns=false
+```
+
+This hands DNS entirely back to NetworkManager → AdGuard, while Tailscale VPN tunnelling continues to work normally. The change persists across reboots.
+
+> [!NOTE]
+> If MagicDNS is needed in the future (e.g., to resolve `*.ts.net` hostnames), the alternative fix is to install a DNS arbiter: `apt-get install resolvconf`.
+
 ### Android App Updates
 
 > [!NOTE]
