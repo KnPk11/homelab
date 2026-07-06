@@ -8,27 +8,15 @@ services:
     environment:
       - MTX_RTSPTRANSPORTS=tcp
       - MTX_WEBRTCADDITIONALHOSTS=${MEDIAMTX_DOMAIN:-mediamtx.example.com}
-      # - MTX_PATHDEFAULTS_PUBLISHUSER=kon
       - MTX_LOGDESTINATIONS=stdout,file
       - MTX_LOGFILE=/logs/mediamtx.log
-    # entrypoint: ["/entrypoint.sh"]
     ports:
       - "8554:8554"               # RTSP (TCP)
       - "1935:1935"               # RTMP (TCP)
       - "8888:8888"               # HTTP (TCP)
-      # - "8889:8889"               # WebRTC HTTP Signaling (TCP)
-      # - "8890:8890/udp"           # WebRTC Media (UDP)
-      # - "8189:8189/udp"           # Optional: used for multicast or alternate UDP streaming 
     volumes:
-      # - /srv/mediamtx:/MediaMTX
       - /srv/mediamtx/mediamtx.yml:/mediamtx.yml:ro
-      - /srv/mediamtx/entrypoint.sh:/entrypoint.sh:ro
       - /srv/mediamtx/logs:/logs
-      # - /mnt/pool/Downloads/YouTube:/videos:ro
-    secrets:
-      - mediamtx_password
-    networks:
-      - mediamtx_net
     restart: unless-stopped
     cap_drop:
       - ALL
@@ -40,11 +28,3 @@ services:
         reservations:
           cpus: '1.0'
           memory: 512M
-
-networks:
-  mediamtx_net:
-    driver: bridge # isolate from default Docker network
-
-secrets:
-  mediamtx_password:
-    file: ${MEDIAMTX_PASSWORD_PATH:-/srv/mediamtx/mediamtx_password.secret}
