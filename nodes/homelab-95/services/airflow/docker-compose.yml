@@ -148,7 +148,7 @@ services:
       - 6379
     networks:
       - airflow_net
-    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --maxmemory 192mb --maxmemory-policy allkeys-lru
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -191,7 +191,7 @@ services:
       resources:
         limits:
           cpus: '2.0'
-          memory: 1536M
+          memory: 1024M
         reservations:
           cpus: '0.5'
           memory: 512M
@@ -278,10 +278,10 @@ services:
       resources:
         limits:
           cpus: '1.5'
-          memory: 2560M
+          memory: 1024M
         reservations:
           cpus: '0.75'
-          memory: 1024M
+          memory: 512M
 
   airflow-triggerer:
     <<: *airflow-common
