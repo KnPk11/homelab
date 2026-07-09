@@ -1,94 +1,68 @@
-# 🚀 Homelab Blueprint: Infrastructure & Service Documentation
+# 🖥️ KP's Homelab Blueprint: Infrastructure & Documentation
 
 This repository is the central "Source of Truth" for my private cloud infrastructure. It transitions my homelab from a monolithic "manual" setup to a mature, distributed, GitOps-driven architecture.
+
+
+## ⚙️ Tech Stack
+*   **Hypervisor:** Proxmox VE
+*   **Storage:** OpenMediaVault (SMB/NFS)
+*   **Networking:** MikroTik RouterOS (VLANs)
+*   **Ingress:** Caddy (Automated TLS)
+*   **AI:** Gemini CLI, OpenClaw
 
 ---
 
 ## 🏗️ The Architecture
-My lab is built on a **Defense-in-Depth** philosophy, utilizing a dual-router physical isolation strategy and a Proxmox hypervisor layer.
+My lab is built on a **Defence-in-Depth** philosophy, utilising a dual-router physical isolation strategy and a Proxmox hypervisor layer.
 
 ```mermaid
-graph TD
-    subgraph WAN["🌐 Public Internet"]
-        Caddy["LXC: Caddy Reverse Proxy"]
-    end
+flowchart TD
+    %%{init: {"flowchart": {"padding": 8, "nodeSpacing": 20, "rankSpacing": 60}}}%%
+    
+    WAN("🌐 Public Internet")
     
     subgraph Network["🛡️ Network Layer (MikroTik)"]
-        VLAN_IOT["VLAN: IoT (Isolated)"]
-        VLAN_LAB["VLAN: Homelab (Untrusted)"]
+        VLAN_MIX["VLANs: IoT (Isolated) & Homelab (Untrusted)"]
         VLAN_LAN["VLAN: Trusted LAN"]
     end
 
     subgraph Compute["🖥️ Proxmox Hypervisor"]
-        L1[Infrastructure: AdGuard, Caddy, AI Tools]
-        L2[Apps: Nextcloud, Immich, Docker VM]
-        L3[Storage: OpenMediaVault NAS]
+        Caddy["Caddy (Reverse Proxy)"]
+        MediaMTX["MediaMTX (Direct Port)"]
+        
+        subgraph Services["Internal Services"]
+            L1["Infrastructure (AdGuard, AI)"]
+            L2_3["Apps (Nextcloud, Docker) & Storage (NAS)"]
+        end
     end
 
-    WAN --> Caddy
-    Caddy --> Network
-    Network --> Compute
+    WAN --> Network
+    Network -->|Ports 80/443| Caddy
+    Network -->|Port Forward| MediaMTX
+    Caddy -->|Internal Routing| Services
+
+    classDef wanLayer fill:#ffe6e6,stroke:#ff6666,stroke-width:2px,color:#000;
+    classDef netLayer fill:#e6f2ff,stroke:#66a3ff,stroke-width:2px,color:#000;
+    classDef compLayer fill:#e6ffe6,stroke:#66ff66,stroke-width:2px,color:#000;
+
+    class WAN wanLayer;
+    class VLAN_MIX,VLAN_LAN netLayer;
+    class Caddy,MediaMTX,L1,L2_3 compLayer;
 ```
 
 ---
 
-## 🤖 Infrastructure as Intent
-Instead of relying on rigid, syntax-heavy Infrastructure as Code (IaC) tools like Ansible, this homelab utilizes **Infrastructure as Intent** and **Agentic Automation**.
-
-By maintaining a highly structured set of Markdown notes, an AI Agent acts as the automation layer. The notes serve a dual purpose: human-readable documentation and machine-executable playbooks.
-*   **Zero Syntax Overhead:** Avoids the rigid syntax of traditional IaC tools. Logic is plain English and standard shell commands.
-*   **Context-Aware Execution:** The agent can diagnose, pivot, and handle unexpected errors on the fly during deployment, ensuring documentation acts as the exact executable "source of truth".
-
-### The "Nuke and Pave" Recovery Workflow
-If a node fails catastrophically:
-1. **Spin up a fresh instance:** Create a new VM/LXC with the same IP.
-2. **Invoke the Agent:** Provide the relevant setup markdown note to rebuild the service from scratch.
-3. **Agent Execution:** The agent connects via SSH, installs packages, writes configurations, and runs verification checks automatically based on the note.
-
----
-
-## 💾 Storage & NAS Directory Layout
+## 💿 Storage & NAS Directory Layout
 The following structure organizes data across the primary storage pool (typically mounted under `/mnt/pool` using a combination of LVM, ZFS, or MergerFS).
 
-```text
-# App-specific metadata (configs, databases, local cache).
-└── Apps/
-    └── photoprism/
-    └── anytype/
-
-# Sensitive and private documents (served via SMB & VPN only).
-└── Private/
-    ├── Documents/
-    ├── Photos/
-    ├── Video/
-    └── Audio/
-
-# Public/Shared media for Jellyfin & Symfonium.
-└── Media/
-    ├── Music/
-    └── Videos/
-
-# Ingest zone for new content.
-└── Downloads/
-    ├── Torrents/
-    └── Youtube/
-
-# Collaboration and public-facing shares.
-└── Shared/
-    ├── Users/
-    │   ├── [USER-A]/
-    │   ├── [USER-B]/
-    │   └── Public/
-    │   └── Recycled
-    └── Content/
-        ├── Public gallery/
-        └── Temporary share/
-
-# Encrypted shares for sensitive remote access (e.g., Nextcloud).
-└── Shared_enc/
-    ├── Photos_[USER-A]/
-    └── Documents_[USER-B]/
-```
+| 📁 Root Directory | 📝 Purpose / Description | 📂 Key Subdirectories |
+| :--- | :--- | :--- |
+| **`Apps`** | App-specific metadata (configs, databases, local cache). | `photoprism`, `anytype` |
+| **`Private`** | Sensitive and private documents (served via SMB & VPN only). | `Documents`, `Photos`, `Video`, `Audio` |
+| **`Media`** | Public/Shared media for Jellyfin & Symfonium. | `Music`, `Videos` |
+| **`Downloads`** | Ingest zone for new content. | `Torrents`, `Youtube` |
+| **`Shared`** | Collaboration and public-facing shares. | `Users` (`[USER-A/B/C]`, `Public`, `Recycled`)<br>`Content` (`Public gallery`, `Temporary share`) |
+| **`Shared_enc`** | Encrypted shares for sensitive remote access (e.g., Nextcloud). | `Users` (`[USER-A/B/C]`)<br>`Private files` |
 
 **Usage Principles:**
 1. **Separation of Concerns:** Apps store their persistent configuration in `/Apps`, keeping `/Media` and `/Private` clean for data only.
@@ -96,42 +70,21 @@ The following structure organizes data across the primary storage pool (typicall
 
 ---
 
-## 🛡️ The Tiered Backup Strategy
-Moving away from a monolithic backup approach, we implement a pyramid where the tool matches the required recovery speed and granularity.
-
-| Tier | Purpose | Recommended Tool | Frequency | Target |
-| :--- | :--- | :--- | :--- | :--- |
-| **1. Infrastructure (Code)** | Scripts, `docker-compose.yml`, configs. | **Git** (Gitea/GitHub) | On Change | Local/Cloud Repo |
-| **2. Disaster Recovery** | Entire VMs and LXC state. | **Proxmox Backup Server (PBS)** | Daily | Dedicated Backup Disk |
-| **3. App Data (State)** | Databases, specific volume bind-mounts. | **Kopia** | Hourly/Daily | NAS / Offsite (S3) |
-| **4. Bulk Storage** | Huge media files, ISOs. | **BTRFS Snapshots** | Daily | Local OMV Storage |
-
-*Note: Stop backing up raw Docker volumes (`/var/lib/docker/volumes`). Rely on PBS for complete VM recovery or Kopia for specific bind-mounted datasets (`/srv/services/app/config`).*
+## 📖 Project History & Intention
+What began in 2014 as a humble Raspberry Pi download server has evolved over a decade into a comprehensive, self-hosted private cloud. Driven by a desire to bypass third-party cloud services, ensure data privacy, and learn modern architectures, this project documents continuous iteration. From early experiments with bare-metal setups and basic port forwarding, the infrastructure has matured through containerisation (Docker), network segmentation (MikroTik/VLANs), and enterprise-grade hypervisors (Proxmox). Today, it serves as a robust playground for deploying everything from self-hosted media servers and personal productivity apps, to experimenting with local LLMs and agentic AI automations.
 
 ---
 
-## ⚙️ Deployment & Workflow
+## 🤖 Infrastructure as Intent
+Instead of relying on rigid, syntax-heavy Infrastructure as Code (IaC) tools like Ansible, this homelab utilises **Infrastructure as Intent** and **Agentic Automation**.
 
-### The "Dev/Prod Split" Workflow
-To avoid "commit spam" when testing Docker configurations:
-1.  **Develop:** Edit `docker-compose.yml` locally via VS Code.
-2.  **Test:** Run `docker compose up -d` in the terminal to verify the change works.
-3.  **Commit:** Push the successful config to GitHub.
-4.  **Deploy:** Portainer (on Polling/Webhook) pulls the official config and manages the container.
-
-### Secrets Management (The "2026 Pro" Standard)
-- **`.env` Files:** Hardcoded paths/IPs are avoided. Dynamic variables are loaded from `.env` files. Ensure `*.env` and `.secrets/` are globally `.gitignore`d.
-- **Centralized Secrets Vault:** Currently, a cron script (`scrape_secrets.sh`) SSHes into nodes to back up `*.env` files to a secure, non-Git vault. 
-- **Future Migration (SOPS):** Eventual goal is to encrypt `.env` values at rest using SOPS and commit them directly into Git, decrypting on the target server via Age keys.
-
-### Script Migration Standards
-- **Symlinking:** Scripts in the repo are symlinked to their intended system paths (e.g., `/usr/local/bin`). A simple `git pull` instantly updates active scripts.
-- **Docstrings & Changelogs:** Keep a concise block at the top explaining purpose and requirements. Rely on Git history, not manual changelogs.
-- **Execution:** Before executing any git operations, the agent must present a clear plan and gain explicit approval. Batched pushes are preferred.
+By maintaining a highly structured set of Markdown notes, an AI Agent acts as the automation layer. The notes serve a dual purpose: human-readable documentation and machine-executable playbooks.
+*   **Zero Syntax Overhead:** Avoids the rigid syntax of traditional IaC tools. Logic is plain English and standard shell commands.
+*   **Context-Aware Execution:** The agent can diagnose, pivot, and handle unexpected errors on the fly during deployment, ensuring documentation acts as the exact executable "source of truth".
 
 ---
 
-## 📂 Repository & Obsidian Vault Index
+## 📂 Repository Index
 The repository is organized following standard DevOps chapters. This structure also mirrors the centralized Obsidian Vault structure.
 
 - **[00_Infrastructure](./docs/00_Infrastructure/)**: Bare-metal specs, Inventory, and Hypervisor/OS setup guides.
@@ -141,15 +94,3 @@ The repository is organized following standard DevOps chapters. This structure a
 - **[04_Resources](./docs/04_Resources/)**: Linux CLI cheat sheets and external documentation links.
 - **[05_AI_Tools](./docs/05_AI_Tools/)**: Agentic AI setup and IDE integrations.
 - **[99_Archive](./docs/99_Archive/)**: Historical research and deprecated setups.
-
----
-
-## 🛠️ Tech Stack
-*   **Hypervisor:** Proxmox VE
-*   **Storage:** OpenMediaVault (SMB/NFS)
-*   **Networking:** MikroTik RouterOS (VLANs)
-*   **Ingress:** Caddy (Automated TLS)
-*   **AI:** Gemini CLI, OpenClaw
-
----
-*Created and maintained with the help of Gemini CLI Agent.*
