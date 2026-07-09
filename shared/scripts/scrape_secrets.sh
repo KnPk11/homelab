@@ -49,6 +49,14 @@ AITOOLS_DIR="$BACKUP_DIR/ai-tools-105"
 mkdir -p "$AITOOLS_DIR"
 rsync -avm --include='*.env' --include='*.secret' --include='*.pwd' --include='*/.secrets/***' --include='*/' --exclude='*' "/opt/dev/homelab_repo/" "$AITOOLS_DIR/"
 
+echo "Backing up MikroTik config export & logs..."
+MIKROTIK_BACKUP_DIR="$BACKUP_DIR/mikrotik-router"
+mkdir -p "$MIKROTIK_BACKUP_DIR"
+cp "/opt/dev/homelab_repo/nodes/mikrotik-router/mikrotik-config-export.rsc" "$MIKROTIK_BACKUP_DIR/mikrotik-config-export.rsc" 2>/dev/null || \
+    echo "Warning: MikroTik config export not found"
+cp "/opt/dev/homelab_repo/nodes/mikrotik-router/CHANGELOG.md" "$MIKROTIK_BACKUP_DIR/CHANGELOG.md" 2>/dev/null || \
+    echo "Warning: MikroTik CHANGELOG.md not found"
+
 # Legacy/Specific Nodes:
 echo "Backing up homelab-95 (legacy)..."
 HOMELAB_95_DIR="$BACKUP_DIR/homelab-95/secrets"

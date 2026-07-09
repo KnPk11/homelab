@@ -150,19 +150,26 @@ qmrestore /var/lib/vz/dump/vzdump-qemu-100-2026_02_08-00_54_24.vma.zst 102
 
 ## 7. MikroTik Backup
 
-Method 1: Binary system backup
+### Method 1: Automated config capture
+
+A cron job on `ai-tools-105` pulls a gitignored RouterOS export every 3 hours and:
+- Saves a full local backup to `nodes/ai-tools-105/backups/mikrotik-config-export.rsc`
+
+### Method 2: Binary system backup
 
 ```bash
 /system backup save name=mybackup password=[SECRET]
 ```
 
-Method 2: Configuration file export
+Download under **Files → File** and store securely. Restores the full router state including secrets, but is not human-readable.
+
+### Method 3: Configuration file export (manual)
 
 ```bash
 /export file=fullconfig
 ```
 
-Download either under Files -> File and store securely.
+Download under **Files → File**. Human-readable RouterOS script, but secrets are excluded.
 
 ## 8. Appendix A: Kopia Exclusions
 

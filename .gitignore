@@ -12,6 +12,10 @@ Thumbs.db
 *.pem
 .secrets/
 
+# MikroTik config & logs — contains sensitive network topology, kept as local backup only
+nodes/mikrotik-router/mikrotik-config-export.rsc
+nodes/mikrotik-router/CHANGELOG.md
+
 nodes/caddy-101/services/Caddy/Caddyfile.experimental*
 
 # Private Project Folders

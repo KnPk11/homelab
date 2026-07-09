@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+# =============================================================================
+# capture-mikrotik-config.sh
+#
+# Pulls a sanitised RouterOS config export from the MikroTik router via SSH
+# and writes it to a local gitignored file for backup by scrape_secrets.sh.
+#
+# Runs as a cron job on ai-tools-105 every 3 hours.
+#
+# Cron entry:
+#   0 */3 * * * /opt/dev/homelab_repo/nodes/mikrotik-router/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+# =============================================================================
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+# Configuration — override via environment if needed
+# ---------------------------------------------------------------------------
+ROUTER_SSH_USER="${ROUTER_SSH_USER:-gemini}"
+ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
+ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
+REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
+LOCAL_BACKUP="${REPO_DIR}/nodes/mikrotik-router/mikrotik-config-export.rsc"
+
+# ---------------------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------------------
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
+
+# ---------------------------------------------------------------------------
+# Pull config from router
+# ---------------------------------------------------------------------------
+log "Connecting to router ${ROUTER_SSH_USER}@${ROUTER_SSH_HOST}:${ROUTER_SSH_PORT}..."
+
+TEMP_EXPORT=$(mktemp /tmp/mikrotik-export.XXXXXX.rsc)
+trap 'rm -f "$TEMP_EXPORT"' EXIT
+
+ROUTER_CMD=$(cat << 'EOF'
+:put "# ============================================================================="
+:put "# 🌐 INTERFACES & VLANS"
+:put "# ============================================================================="
+/interface export
+:put ""
+:put "# ============================================================================="
+:put "# 🗺️ IP ADDRESSING & ROUTING"
+:put "# ============================================================================="
+/ip address export
+/ip route export
+:put ""
+:put "# ============================================================================="
+:put "# 🖥️ DHCP & STATIC LEASES"
+:put "# ============================================================================="
+/ip pool export
+/ip dhcp-server export
+:put ""
+:put "# ============================================================================="
+:put "# 🔎 DNS SETTINGS"
+:put "# ============================================================================="
+/ip dns export
+:put ""
+:put "# ============================================================================="
+:put "# 🛡️ FIREWALL FILTER RULES"
+:put "# ============================================================================="
+/ip firewall filter export
+:put ""
+:put "# ============================================================================="
+:put "# 🔄 FIREWALL NAT RULES"
+:put "# ============================================================================="
+/ip firewall nat export
+:put ""
+:put "# ============================================================================="
+:put "# 📋 FIREWALL ADDRESS LISTS"
+:put "# ============================================================================="
+/ip firewall address-list export
+EOF
+)
+
+ssh \
+  -o BatchMode=yes \
+  -o ConnectTimeout=10 \
+  -o StrictHostKeyChecking=accept-new \
+  -p "${ROUTER_SSH_PORT}" \
+  "${ROUTER_SSH_USER}@${ROUTER_SSH_HOST}" \
+  "${ROUTER_CMD}" \
+  > "${TEMP_EXPORT}"
+
+# Sanity check — a valid export is never empty
+if [[ ! -s "${TEMP_EXPORT}" ]]; then
+  log "ERROR: Export was empty. Aborting."
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Write local backup (gitignored — picked up by scrape_secrets.sh weekly)
+# ---------------------------------------------------------------------------
+if ! cmp -s "${TEMP_EXPORT}" "${LOCAL_BACKUP}" 2>/dev/null; then
+  cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
+  log "Backup updated: ${LOCAL_BACKUP}"
+else
+  log "No changes detected."
+fi
