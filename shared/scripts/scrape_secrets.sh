@@ -8,7 +8,7 @@
 #   - Runtime secrets live under /srv/<service>/ on each node (real files).
 #   - Vault layout mirrors the search path on each host:
 #       BACKUP_DIR/<host>/<absolute-path-without-leading-slash>/...
-#     e.g. /srv/caddy/.env  →  backups/caddy-101/srv/caddy/.env
+#     e.g. /srv/caddy/caddy.env  →  backups/caddy-101/srv/caddy/caddy.env
 #
 # Needs: rsync on every node + passwordless root SSH from this host.
 # Cron:  0 2 * * 0 /opt/dev/homelab_repo/shared/scripts/scrape_secrets.sh >> /var/log/scrape_secrets.log 2>&1

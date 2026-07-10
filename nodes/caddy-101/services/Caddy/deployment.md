@@ -10,7 +10,7 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
 | :--- | :--- |
 | `/opt/homelab-repo/.../Caddy/Caddyfile` | Tracked config (symlinked into `/srv/caddy/`) |
 | `/opt/homelab-repo/.../Caddy/Caddyfile.env.example` | Template only |
-| `/srv/caddy/.env` | Real secrets (gitignored, not in clone) |
+| `/srv/caddy/caddy.env` | Real secrets (not in clone; same `*.env` naming as other services) |
 | `/srv/caddy/Caddyfile.experimental` | Local/experimental sites (not in clone) |
 | `/srv/caddy/Caddyfile` | Symlink → tracked Caddyfile |
 
@@ -20,9 +20,9 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
 2. **Create the environment file** under the service directory (not in the clone):
    ```bash
    sudo mkdir -p /srv/caddy
-   sudo cp /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.env.example /srv/caddy/.env
-   sudo chmod 600 /srv/caddy/.env
-   # edit /srv/caddy/.env with real values
+   sudo cp /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.env.example /srv/caddy/caddy.env
+   sudo chmod 600 /srv/caddy/caddy.env
+   # edit /srv/caddy/caddy.env with real values
    ```
 3. **Experimental config** (optional) — keep only under `/srv/caddy/`:
    ```bash
@@ -33,7 +33,7 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
    sudo mkdir -p /etc/systemd/system/caddy.service.d/
    sudo tee /etc/systemd/system/caddy.service.d/override.conf <<'EOF'
    [Service]
-   EnvironmentFile=/srv/caddy/.env
+   EnvironmentFile=/srv/caddy/caddy.env
    EOF
    ```
 5. **Symlink tracked Caddyfile only**:
