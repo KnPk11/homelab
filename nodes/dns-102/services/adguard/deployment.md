@@ -2,27 +2,33 @@
 
 Because AdGuardHome rewrites its configuration file (`AdGuardHome.yaml`) at runtime whenever you change settings in the web UI, we **cannot** track the live configuration file directly in Git. Doing so would result in constant uncommitted changes on the node. Additionally, the configuration contains a bcrypt password hash which should be kept secret.
 
-## Deployment Strategy
+Secrets live under **`/srv/adguard/`** so the GitOps clone stays disposable. The template and deploy script stay in the repo.
 
-Instead of symlinking, we use a template approach:
+## Layout
 
-1. **`AdGuardHome.template.yaml`**: This file is tracked in Git. It is the full configuration but with the password hash replaced by `{{ADGUARD_PASSWORD_HASH}}`.
-2. **`.env`**: A local secrets file created on the `dns-102` node (not tracked in Git) which contains the actual password hash.
-3. **`deploy_adguard.sh`**: A script that injects the secret from `.env` into the template and overwrites the live configuration file at `/srv/adguard/AdGuardHome.yaml`.
+| Path | Role |
+| :--- | :--- |
+| `.../adguard/AdGuardHome.template.yaml` | Tracked template (`{{ADGUARD_PASSWORD_HASH}}`, IPs, domain) |
+| `.../adguard/adguard.env.example` | Template only |
+| `.../adguard/deploy_adguard.sh` | Injects secrets → live YAML + restarts service |
+| `/srv/adguard/adguard.env` | Real secrets (not in clone) |
+| `/srv/adguard/AdGuardHome.yaml` | Live config (written by deploy + AdGuard UI) |
+| `/srv/adguard/AdGuardHome` | Binary |
 
 ## Setup Instructions
 
-1. On `dns-102`, copy the example secrets file and edit it to include your actual values:
+1. On `dns-102`, create the secrets file under the service directory:
    ```bash
-   cp /opt/homelab-repo/nodes/dns-102/services/adguard/.env.example /opt/homelab-repo/nodes/dns-102/services/adguard/.env
-   nano /opt/homelab-repo/nodes/dns-102/services/adguard/.env
+   sudo mkdir -p /srv/adguard
+   sudo cp /opt/homelab-repo/nodes/dns-102/services/adguard/adguard.env.example /srv/adguard/adguard.env
+   sudo chmod 600 /srv/adguard/adguard.env
+   sudo nano /srv/adguard/adguard.env
    ```
-   *(Ensure you use single quotes for the password hash if it contains special characters)*
+   *(Use single quotes for the password hash if it contains special characters.)*
 
-3. Run the deployment script:
+2. Run the deployment script:
    ```bash
-   cd /opt/homelab-repo/nodes/dns-102/services/adguard
-   ./deploy_adguard.sh
+   sudo /opt/homelab-repo/nodes/dns-102/services/adguard/deploy_adguard.sh
    ```
 
 ## Updating Configuration
