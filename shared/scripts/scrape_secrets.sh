@@ -1,18 +1,25 @@
 #!/bin/bash
-# Version: 1.2 (2026-06-25)
-# Description: Scrapes and backs up all .env files from homelab nodes.
-# Usage: Run via cron (e.g., weekly) on the management node or NAS.
-# Prerequisites: 
-#   - `rsync` MUST be installed on BOTH this backup machine and all target remote nodes.
-#   - Passwordless root SSH access is required to all target nodes.
+# Version: 2.2 (2026-07-10)
 #
-# Architecture Notes:
-# Most nodes use the unified GitOps rsync loop, which perfectly mirrors the 
-# /opt/homelab-repo directory structure.
+# scrape_secrets.sh — centralised secrets backup for the homelab.
+#
+# Architecture (keep simple, no SOPS):
+#   - GitOps clone is disposable: tracked code/templates only (no real secrets).
+#   - Runtime secrets live under /srv/<service>/ on each node (real files).
+#   - Vault layout mirrors the search path on each host:
+#       BACKUP_DIR/<host>/<absolute-path-without-leading-slash>/...
+#     e.g. /srv/caddy/.env  →  backups/caddy-101/srv/caddy/.env
+#
+# Needs: rsync on every node + passwordless root SSH from this host.
+# Cron:  0 2 * * 0 /opt/dev/homelab_repo/shared/scripts/scrape_secrets.sh >> /var/log/scrape_secrets.log 2>&1
+#
+# New node with /srv secrets: add to NODES + SRV_SWEEP_HOSTS.
+# Always use root@ — bare "IP:path" follows ssh_config User and cannot read 0600 root secrets.
+
+set -euo pipefail
 
 BACKUP_DIR="/opt/dev/secrets_vault/backups"
 
-# Map Hostnames to IPs (For all nodes)
 declare -A NODES=(
     ["caddy-101"]="192.168.50.101"
     ["dns-102"]="192.168.50.102"
@@ -22,71 +29,110 @@ declare -A NODES=(
     ["proxmox-100"]="192.168.50.100"
 )
 
-# Nodes that use the automated rsync GitOps approach
-GITOPS_HOSTS=("caddy-101" "dns-102" "homelab-95" "omv-90" "openclaw-91" "proxmox-100")
+# Primary: secrets beside services under /srv/<service>/
+SRV_SWEEP_HOSTS=("caddy-101" "homelab-95")
+
+# Transitional: secrets still overlaid on the GitOps clone (not yet moved to /srv).
+# Overlaps /srv where files are symlinked into the clone — drop a host once migrated.
+LEGACY_CLONE_SECRET_HOSTS=("homelab-95")
+
+# Vault path = <host> + absolute search path (strip leading /).
+vault_path() {
+    local host="$1" abs_path="$2"
+    abs_path="${abs_path#/}"   # /srv → srv
+    echo "$BACKUP_DIR/$host/$abs_path"
+}
 
 echo "Starting secrets backup... $(date)"
 
-for HOST in "${GITOPS_HOSTS[@]}"; do
+echo "Purging previous backups in $BACKUP_DIR..."
+rm -rf "$BACKUP_DIR"
+mkdir -p "$BACKUP_DIR"
+chmod 700 "$BACKUP_DIR"
+
+# --- /srv  →  <host>/srv/
+for HOST in "${SRV_SWEEP_HOSTS[@]}"; do
     IP="${NODES[$HOST]}"
-    echo "Scraping secrets from $HOST ($IP)..."
-    
-    HOST_DIR="$BACKUP_DIR/$HOST"
-    mkdir -p "$HOST_DIR"
-    
-    # Rsync magic: grab only .env, .secret, .pwd files and .secrets directories from their specific node folder in the repo
-    rsync -avm --include='*.env' --include='*.secret' --include='*.pwd' --include='*/.secrets/***' --include='*/' --exclude='*' "root@$IP:/opt/homelab-repo/nodes/$HOST/" "$HOST_DIR/"
-    
-    if [ $? -eq 0 ]; then
-        echo "Successfully backed up $HOST"
-    else
-        echo "Warning: Failed to back up $HOST"
+    SRC="/srv"
+    DEST="$(vault_path "$HOST" "$SRC")"
+    echo "Sweeping $SRC on $HOST ($IP) → $DEST"
+    mkdir -p "$DEST"
+    # find -xtype f skips broken symlinks; grep drops SSH banners from --files-from.
+    if ! ssh -o BatchMode=yes "root@$IP" \
+        "cd $SRC && find . -xtype f \( -name \"*.secret\" -o -name \"*.env\" -o -name \".env\" -o -name \".env.*\" -o -name \"*.pwd\" \)" \
+        | grep '^\./' \
+        | rsync -avL --files-from=- \
+            "root@$IP:$SRC/" \
+            "$DEST/"; then
+        echo "Warning: sweep failed for $SRC on $HOST"
     fi
 done
 
-echo "Backing up ai-tools-105 (local repository)..."
-AITOOLS_DIR="$BACKUP_DIR/ai-tools-105"
-mkdir -p "$AITOOLS_DIR"
-rsync -avm --include='*.env' --include='*.secret' --include='*.pwd' --include='*/.secrets/***' --include='*/' --exclude='*' "/opt/dev/homelab_repo/" "$AITOOLS_DIR/"
+# --- /opt/homelab-repo/nodes/<host>  →  <host>/opt/homelab-repo/nodes/<host>/
+for HOST in "${LEGACY_CLONE_SECRET_HOSTS[@]}"; do
+    IP="${NODES[$HOST]}"
+    SRC="/opt/homelab-repo/nodes/$HOST"
+    DEST="$(vault_path "$HOST" "$SRC")"
+    echo "Legacy clone scrape $SRC on $HOST ($IP) → $DEST"
+    mkdir -p "$DEST"
+    if ! rsync -avm \
+        --include='*.env' --include='*.secret' --include='*.pwd' \
+        --include='*/.secrets/***' --include='*/' --exclude='*' \
+        "root@$IP:$SRC/" "$DEST/"; then
+        echo "Warning: legacy clone scrape failed on $HOST"
+    fi
+done
 
-echo "Backing up MikroTik config export & logs..."
-MIKROTIK_BACKUP_DIR="$BACKUP_DIR/mikrotik-router"
-mkdir -p "$MIKROTIK_BACKUP_DIR"
-cp "/opt/dev/homelab_repo/nodes/mikrotik-router/mikrotik-config-export.rsc" "$MIKROTIK_BACKUP_DIR/mikrotik-config-export.rsc" 2>/dev/null || \
+# --- local /opt/dev/homelab_repo  →  ai-tools-105/opt/dev/homelab_repo/
+echo "Backing up local /opt/dev/homelab_repo..."
+SRC="/opt/dev/homelab_repo"
+DEST="$(vault_path "ai-tools-105" "$SRC")"
+mkdir -p "$DEST"
+rsync -avm \
+    --include='*.env' --include='*.secret' --include='*.pwd' \
+    --include='*/.secrets/***' --include='*/' --exclude='*' \
+    "$SRC/" "$DEST/" || \
+    echo "Warning: local repo secret scrape failed"
+
+# --- Host-local paths outside /srv (same rule: vault path = search path)
+HOMELAB_IP="${NODES["homelab-95"]}"
+OPENCLAW_IP="${NODES["openclaw-91"]}"
+
+echo "Backing up /home/k/.openclaw on openclaw-91..."
+DEST="$(vault_path "openclaw-91" "/home/k/.openclaw")"
+mkdir -p "$DEST"
+ssh -o BatchMode=yes "root@$OPENCLAW_IP" "cat /home/k/.openclaw/openclaw.json" \
+    > "$DEST/openclaw.json" 2>/dev/null || true
+
+echo "Backing up /home/k/.hermes on openclaw-91..."
+DEST="$(vault_path "openclaw-91" "/home/k/.hermes")"
+mkdir -p "$DEST"
+ssh -o BatchMode=yes "root@$OPENCLAW_IP" "cat /home/k/.hermes/config.yaml" \
+    > "$DEST/config.yaml" 2>/dev/null || true
+ssh -o BatchMode=yes "root@$OPENCLAW_IP" "cat /home/k/.hermes/.env" \
+    > "$DEST/.env" 2>/dev/null || true
+ssh -o BatchMode=yes "root@$OPENCLAW_IP" "cat /home/k/.hermes/auth.json" \
+    > "$DEST/auth.json" 2>/dev/null || true
+
+# YAML under /srv (not matched by env/secret globs) — path still = /srv/...
+echo "Backing up /srv/anytype/docker-generateconfig on homelab-95..."
+SRC="/srv/anytype/docker-generateconfig"
+DEST="$(vault_path "homelab-95" "$SRC")"
+mkdir -p "$DEST"
+rsync -avz --exclude='relics' \
+    "root@$HOMELAB_IP:$SRC/" \
+    "$DEST/" 2>/dev/null || true
+
+# MikroTik exports live in the local repo tree — keep that path under ai-tools-105
+echo "Backing up MikroTik artefacts from local repo..."
+SRC="/opt/dev/homelab_repo/nodes/mikrotik-router"
+DEST="$(vault_path "ai-tools-105" "$SRC")"
+mkdir -p "$DEST"
+cp "$SRC/mikrotik-config-export.rsc" "$DEST/mikrotik-config-export.rsc" 2>/dev/null || \
     echo "Warning: MikroTik config export not found"
-cp "/opt/dev/homelab_repo/nodes/mikrotik-router/CHANGELOG.md" "$MIKROTIK_BACKUP_DIR/CHANGELOG.md" 2>/dev/null || \
+cp "$SRC/CHANGELOG.md" "$DEST/CHANGELOG.md" 2>/dev/null || \
     echo "Warning: MikroTik CHANGELOG.md not found"
 
-# Legacy/Specific Nodes:
-echo "Backing up homelab-95 (legacy)..."
-HOMELAB_95_DIR="$BACKUP_DIR/homelab-95/secrets"
-mkdir -p "$HOMELAB_95_DIR"
-# Legacy /data/secrets/ blanket copy
-rsync -avz "${NODES["homelab-95"]}:/data/secrets/" "$HOMELAB_95_DIR/" 2>/dev/null || true
-
-echo "Backing up openclaw-91..."
-OPENCLAW_DIR="$BACKUP_DIR/openclaw-91/openclaw"
-mkdir -p "$OPENCLAW_DIR"
-ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.openclaw/openclaw.json" > "$OPENCLAW_DIR/openclaw.json" 2>/dev/null || true
-
-echo "Backing up hermes (on openclaw-91)..."
-HERMES_DIR="$BACKUP_DIR/openclaw-91/hermes"
-mkdir -p "$HERMES_DIR"
-ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/config.yaml" > "$HERMES_DIR/config.yaml" 2>/dev/null || true
-ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/.env" > "$HERMES_DIR/.env" 2>/dev/null || true
-ssh -o BatchMode=yes "${NODES["openclaw-91"]}" "cat /home/k/.hermes/auth.json" > "$HERMES_DIR/auth.json" 2>/dev/null || true
-
-echo "Backing up nextcloud (on homelab-95)..."
-NEXTCLOUD_DIR="$BACKUP_DIR/homelab-95/services/nextcloud"
-mkdir -p "$NEXTCLOUD_DIR"
-rsync -avz "${NODES["homelab-95"]}:/srv/nextcloud/.env" "$NEXTCLOUD_DIR/.env" 2>/dev/null || true
-
-echo "Backing up anytype (on homelab-95)..."
-ANYTYPE_DIR="$BACKUP_DIR/homelab-95/services/anytype"
-mkdir -p "$ANYTYPE_DIR"
-rsync -avz "${NODES["homelab-95"]}:/srv/anytype-sync-logic/.env.override" "$ANYTYPE_DIR/.env.override" 2>/dev/null || true
-rsync -avz --exclude='relics' "${NODES["homelab-95"]}:/srv/anytype/docker-generateconfig/" "$ANYTYPE_DIR/docker-generateconfig/" 2>/dev/null || true
-# Secure the vault so only root can read it
 chmod -R 600 "$BACKUP_DIR"
 find "$BACKUP_DIR" -type d -exec chmod 700 {} +
 

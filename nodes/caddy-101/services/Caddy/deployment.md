@@ -2,34 +2,45 @@
 
 The primary proxy configuration for the node.
 
+Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked config and examples — real secrets stay outside the repo so the clone stays disposable.
+
+### Layout
+
+| Path | Role |
+| :--- | :--- |
+| `/opt/homelab-repo/.../Caddy/Caddyfile` | Tracked config (symlinked into `/srv/caddy/`) |
+| `/opt/homelab-repo/.../Caddy/Caddyfile.env.example` | Template only |
+| `/srv/caddy/.env` | Real secrets (gitignored, not in clone) |
+| `/srv/caddy/Caddyfile.experimental` | Local/experimental sites (not in clone) |
+| `/srv/caddy/Caddyfile` | Symlink → tracked Caddyfile |
+
 ### Deployment Strategy
-1. **Clone the repository** to a central location on the node (e.g., `/opt/homelab-repo`).
-2. **Create the Environment File**:
-   Copy the example `.env` template and update it with your actual IPs and secret hashes:
+
+1. **Clone the repository** to `/opt/homelab-repo` on the node.
+2. **Create the environment file** under the service directory (not in the clone):
    ```bash
-   cp /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.env.example /opt/homelab-repo/nodes/caddy-101/services/Caddy/.env
+   sudo mkdir -p /srv/caddy
+   sudo cp /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.env.example /srv/caddy/.env
+   sudo chmod 600 /srv/caddy/.env
+   # edit /srv/caddy/.env with real values
    ```
-3. **Create the Experimental Configuration** (Optional):
-   Create a local `Caddyfile.experimental` to house your uncommitted, temporary web services:
+3. **Experimental config** (optional) — keep only under `/srv/caddy/`:
    ```bash
-   touch /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.experimental
+   sudo touch /srv/caddy/Caddyfile.experimental
    ```
-4. **Inject Environment Variables into Systemd**:
-   Create an override file so Caddy knows to load the `.env` file upon startup:
+4. **Inject env into systemd**:
    ```bash
    sudo mkdir -p /etc/systemd/system/caddy.service.d/
-   echo "[Service]" | sudo tee /etc/systemd/system/caddy.service.d/override.conf
-   echo "EnvironmentFile=/opt/homelab-repo/nodes/caddy-101/services/Caddy/.env" | sudo tee -a /etc/systemd/system/caddy.service.d/override.conf
+   sudo tee /etc/systemd/system/caddy.service.d/override.conf <<'EOF'
+   [Service]
+   EnvironmentFile=/srv/caddy/.env
+   EOF
    ```
-5. **Symlink the Configuration**:
-   Symlink the repository's Caddyfile over the default system Caddyfile. Don't forget to symlink the experimental file too so the import directive finds it!
+5. **Symlink tracked Caddyfile only**:
    ```bash
-   sudo rm /srv/caddy/Caddyfile
-   sudo ln -s /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile /srv/caddy/Caddyfile
-   sudo ln -s /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile.experimental /srv/caddy/Caddyfile.experimental
+   sudo ln -sfn /opt/homelab-repo/nodes/caddy-101/services/Caddy/Caddyfile /srv/caddy/Caddyfile
    ```
-6. **Apply Configuration**:
-   Reload the systemd daemon to pick up the override, then restart Caddy:
+6. **Apply**:
    ```bash
    sudo systemctl daemon-reload
    sudo systemctl restart caddy

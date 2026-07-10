@@ -1,22 +1,34 @@
 # CrowdSec Deployment Notes
 
 ## Configuration Templates
-CrowdSec configurations (like `config.yaml` and bouncers) do not natively support reading dynamic variables from a `.env` file. Therefore, they cannot be safely symlinked from the repository while keeping secrets secure.
 
-We use an `envsubst` deployment strategy to inject the secrets directly into the YAML files during deployment.
+CrowdSec configs (e.g. `config.yaml`, bouncers) do not read a `.env` at runtime. We render secrets into `/etc/crowdsec/` with `envsubst` via `deploy_crowdsec.sh`.
+
+Secrets live under **`/srv/crowdsec/`** so the GitOps clone stays disposable. Templates and the deploy script stay in the repo.
+
+### Layout
+
+| Path | Role |
+| :--- | :--- |
+| `.../CrowdSec/*.yaml` (repo) | Tracked templates (`$VAR` placeholders) |
+| `.../CrowdSec/crowdsec.env.example` | Template only |
+| `.../CrowdSec/deploy_crowdsec.sh` | Renders templates → `/etc/crowdsec/` |
+| `/srv/crowdsec/crowdsec.env` | Real secrets (not in clone) |
 
 ### Deployment Strategy
-1. **Clone the repository** to a central location on the node (e.g., `/opt/homelab-repo`).
-2. **Create the Environment File**:
-   Copy the example environment file and fill it with your actual API keys and subnets:
+
+1. **Clone the repository** to `/opt/homelab-repo`.
+2. **Create the environment file** under the service directory:
    ```bash
-   cp /opt/homelab-repo/nodes/caddy-101/services/CrowdSec/crowdsec.env.example /opt/homelab-repo/nodes/caddy-101/services/CrowdSec/crowdsec.env
+   sudo mkdir -p /srv/crowdsec
+   sudo cp /opt/homelab-repo/nodes/caddy-101/services/CrowdSec/crowdsec.env.example /srv/crowdsec/crowdsec.env
+   sudo chmod 600 /srv/crowdsec/crowdsec.env
+   # edit /srv/crowdsec/crowdsec.env with real values
    ```
-3. **Run the Deployment Script**:
-   Execute the `deploy_crowdsec.sh` script to render the YAML templates and restart the CrowdSec services automatically:
+3. **Run the deploy script** (sources `/srv/crowdsec/crowdsec.env`, restarts services):
    ```bash
    sudo /opt/homelab-repo/nodes/caddy-101/services/CrowdSec/deploy_crowdsec.sh
    ```
 
 > [!NOTE]
-> Do NOT symlink these YAML files directly to `/etc/crowdsec/`. Always use the `deploy_crowdsec.sh` script when you pull new updates from the repository.
+> Do **not** symlink rendered YAML into `/etc/crowdsec/` from the repo. Always use `deploy_crowdsec.sh` after template or secret changes.

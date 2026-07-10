@@ -1,15 +1,20 @@
 #!/bin/bash
 # CrowdSec Deployment Script
+# Secrets live under /srv/crowdsec/ (not in the disposable GitOps clone).
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-ENV_FILE="$SCRIPT_DIR/crowdsec.env"
+ENV_FILE="/srv/crowdsec/crowdsec.env"
 
 if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: $ENV_FILE does not exist. Please copy crowdsec.env.example and fill your secrets."
+    echo "Error: $ENV_FILE does not exist. Copy crowdsec.env.example there and fill your secrets:"
+    echo "  sudo mkdir -p /srv/crowdsec"
+    echo "  sudo cp $SCRIPT_DIR/crowdsec.env.example /srv/crowdsec/crowdsec.env"
+    echo "  sudo chmod 600 /srv/crowdsec/crowdsec.env"
     exit 1
 fi
 
 # Load variables
 set -a
+# shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
 
@@ -34,6 +39,11 @@ chmod 600 /etc/crowdsec/bouncers/*.yaml
 echo "Restarting services..."
 systemctl restart crowdsec
 systemctl restart crowdsec-firewall-bouncer
-systemctl restart cs-routeros-bouncer
+# Unit name may be either legacy or mikrotik-prefixed depending on install
+if systemctl list-unit-files cs-routeros-bouncer.service &>/dev/null; then
+    systemctl restart cs-routeros-bouncer
+elif systemctl list-unit-files crowdsec-mikrotik-bouncer.service &>/dev/null; then
+    systemctl restart crowdsec-mikrotik-bouncer
+fi
 
 echo "Deployment complete."
