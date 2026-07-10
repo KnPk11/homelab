@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version: 2.2 (2026-07-10)
+# Version: 2.3 (2026-07-10)
 #
 # scrape_secrets.sh — centralised secrets backup for the homelab.
 #
@@ -30,7 +30,7 @@ declare -A NODES=(
 )
 
 # Primary: secrets beside services under /srv/<service>/
-SRV_SWEEP_HOSTS=("caddy-101" "homelab-95")
+SRV_SWEEP_HOSTS=("caddy-101" "dns-102" "homelab-95")
 
 # Transitional: secrets still overlaid on the GitOps clone (not yet moved to /srv).
 # Overlaps /srv where files are symlinked into the clone — drop a host once migrated.

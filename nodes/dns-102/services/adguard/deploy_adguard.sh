@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
-# Define paths
+# Secrets live under /srv/adguard/ (not in the disposable GitOps clone).
 REPO_DIR="/opt/homelab-repo/nodes/dns-102/services/adguard"
-ENV_FILE="${REPO_DIR}/.env"
+ENV_FILE="/srv/adguard/adguard.env"
 TEMPLATE_FILE="${REPO_DIR}/AdGuardHome.template.yaml"
 LIVE_FILE="/srv/adguard/AdGuardHome.yaml"
 
@@ -13,18 +13,21 @@ if [[ ! -f "$TEMPLATE_FILE" ]]; then
     exit 1
 fi
 
-# 2. Check if .env exists and source it
+# 2. Check if env exists and source it
 if [[ -f "$ENV_FILE" ]]; then
     echo "🔒 Sourcing secrets from $ENV_FILE"
-    # Export the vars so envsubst or sed can see them
+    # shellcheck source=/dev/null
     source "$ENV_FILE"
 else
-    echo "❌ Error: No .env file found at $ENV_FILE"
-    echo "Please create one with ADGUARD_PASSWORD_HASH='...'"
+    echo "❌ Error: No env file found at $ENV_FILE"
+    echo "  sudo mkdir -p /srv/adguard"
+    echo "  sudo cp $REPO_DIR/adguard.env.example /srv/adguard/adguard.env"
+    echo "  sudo chmod 600 /srv/adguard/adguard.env"
+    echo "Please set ADGUARD_PASSWORD_HASH, DOMAIN_NAME, CADDY_NODE_IP, HOMELAB_NODE_IP"
     exit 1
 fi
 
-# 3. Ensure the password hash is provided
+# 3. Ensure required vars are provided
 if [[ -z "$ADGUARD_PASSWORD_HASH" ]]; then
     echo "❌ Error: ADGUARD_PASSWORD_HASH is not set in $ENV_FILE"
     exit 1
@@ -47,8 +50,8 @@ fi
 
 echo "📝 Injecting secrets into AdGuardHome configuration..."
 
-# 4. Replace the placeholder and write directly to the live location.
-# We use awk here to avoid delimiter collisions (bcrypt uses $, / and .)
+# 4. Replace placeholders and write to the live location.
+# awk avoids delimiter collisions (bcrypt uses $, / and .)
 awk -v hash="$ADGUARD_PASSWORD_HASH" \
     -v domain="$DOMAIN_NAME" \
     -v caddy_ip="$CADDY_NODE_IP" \
@@ -60,8 +63,9 @@ awk -v hash="$ADGUARD_PASSWORD_HASH" \
     print
 }' "$TEMPLATE_FILE" > "$LIVE_FILE"
 
-# 5. Fix permissions (AdGuardHome usually runs as root, but double check)
+# 5. Permissions (service user adguard needs to read/rewrite config)
 chmod 644 "$LIVE_FILE"
+chown adguard:adguard "$LIVE_FILE" 2>/dev/null || true
 
 echo "🔄 Restarting AdGuardHome service..."
 systemctl restart AdGuardHome
