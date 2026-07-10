@@ -12,9 +12,9 @@ Instead, a scheduled script pulls a **targeted, segmented backup** of the most c
 
 ## 2. Automated Config Capture (Cron)
 
-A pull script runs every 3 hours on `ai-tools-105`, SSHes into the router, and writes a **local plaintext backup** to `nodes/mikrotik-router/mikrotik-config-export.rsc`. This file is gitignored to prevent leaking network topology to the remote repository.
+A pull script runs every 3 hours on `ai-tools-105`, SSHes into the router, and writes a **local plaintext backup** to `nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc`. This file is gitignored to prevent leaking network topology to the remote repository.
 
-**Script:** `nodes/mikrotik-router/capture-mikrotik-config.sh`
+**Script:** `nodes/ai-tools-105/services/mikrotik-backup/capture-mikrotik-config.sh`
 
 ### One-time cron setup
 
@@ -25,7 +25,7 @@ crontab -e
 Add the following line:
 
 ```
-0 */3 * * * /opt/dev/homelab_repo/nodes/mikrotik-router/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+0 */3 * * * /opt/dev/homelab_repo/nodes/ai-tools-105/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 ```
 
 ### SSH key prerequisite
@@ -40,7 +40,7 @@ ssh-copy-id -i ~/.ssh/id_ed25519.pub gemini@192.168.88.1
 ## 3. Restoring Configs
 
 If you make a mistake or need to rebuild a section of the router:
-1. Open `mikrotik-config-export.rsc` locally.
+1. Open `nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc` locally.
 2. Locate the specific rule or section you need (e.g., under the `🖥️ DHCP & STATIC LEASES` header).
 3. Connect to the router via WinBox or SSH and manually recreate or paste the specific `add` commands.
 
@@ -48,5 +48,5 @@ If you make a mistake or need to rebuild a section of the router:
 
 | File | Purpose |
 |------|---------|
-| `mikrotik-config-export.rsc` | Targeted component backup — **gitignored**, local backup only |
-| `capture-mikrotik-config.sh` | Automated pull script — runs via cron on `ai-tools-105` |
+| `nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc` | Targeted component backup — **gitignored**, local backup only |
+| `nodes/ai-tools-105/services/mikrotik-backup/capture-mikrotik-config.sh` | Automated pull script — runs via cron on `ai-tools-105` |

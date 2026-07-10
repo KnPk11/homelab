@@ -13,8 +13,8 @@ Thumbs.db
 .secrets/
 
 # MikroTik config & logs — contains sensitive network topology, kept as local backup only
-nodes/mikrotik-router/mikrotik-config-export.rsc
-nodes/mikrotik-router/CHANGELOG.md
+nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc
+nodes/ai-tools-105/services/mikrotik-backup/CHANGELOG.md
 
 nodes/caddy-101/services/Caddy/Caddyfile.experimental*
 

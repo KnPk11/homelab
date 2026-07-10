@@ -83,10 +83,10 @@ for HOST in "${LEGACY_CLONE_SECRET_HOSTS[@]}"; do
     fi
 done
 
-# --- local /opt/dev/homelab_repo  →  ai-tools-105/opt/dev/homelab_repo/
+# --- local /opt/dev/homelab_repo  →  ai-tools-105/
 echo "Backing up local /opt/dev/homelab_repo..."
 SRC="/opt/dev/homelab_repo"
-DEST="$(vault_path "ai-tools-105" "$SRC")"
+DEST="$BACKUP_DIR/ai-tools-105"
 mkdir -p "$DEST"
 rsync -avm \
     --include='*.env' --include='*.secret' --include='*.pwd' \
@@ -125,8 +125,8 @@ rsync -avz --exclude='relics' \
 
 # MikroTik exports live in the local repo tree — keep that path under ai-tools-105
 echo "Backing up MikroTik artefacts from local repo..."
-SRC="/opt/dev/homelab_repo/nodes/mikrotik-router"
-DEST="$(vault_path "ai-tools-105" "$SRC")"
+SRC="/opt/dev/homelab_repo/nodes/ai-tools-105/services/mikrotik-backup"
+DEST="$BACKUP_DIR/ai-tools-105/services/mikrotik-backup"
 mkdir -p "$DEST"
 cp "$SRC/mikrotik-config-export.rsc" "$DEST/mikrotik-config-export.rsc" 2>/dev/null || \
     echo "Warning: MikroTik config export not found"

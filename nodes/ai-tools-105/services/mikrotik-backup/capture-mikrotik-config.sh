@@ -8,7 +8,7 @@
 # Runs as a cron job on ai-tools-105 every 3 hours.
 #
 # Cron entry:
-#   0 */3 * * * /opt/dev/homelab_repo/nodes/mikrotik-router/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+#   0 */3 * * * /opt/dev/homelab_repo/nodes/ai-tools-105/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 # =============================================================================
 
 set -euo pipefail
@@ -20,7 +20,7 @@ ROUTER_SSH_USER="${ROUTER_SSH_USER:-gemini}"
 ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
 ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
 REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
-LOCAL_BACKUP="${REPO_DIR}/nodes/mikrotik-router/mikrotik-config-export.rsc"
+LOCAL_BACKUP="${REPO_DIR}/nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc"
 
 # ---------------------------------------------------------------------------
 # Logging
