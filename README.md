@@ -4,11 +4,13 @@ This repository is the central "Source of Truth" for my private cloud infrastruc
 
 
 ## ⚙️ Tech Stack
+*   **Compute:** Lenovo M70Q Tiny + Raspberry Pi 5
 *   **Hypervisor:** Proxmox VE
 *   **Storage:** OpenMediaVault (SMB/NFS)
-*   **Networking:** MikroTik RouterOS (VLANs)
+*   **Networking:** MikroTik (RouterOS) + ASUS (Asuswrt-Merlin)
+*   **DNS:** AdGuard Home (Network-wide)
 *   **Ingress:** Caddy (Automated TLS)
-*   **AI:** Gemini CLI, OpenClaw
+*   **AI:** Gemini CLI, Grok Build, OpenClaw, Hermes
 
 ---
 
