@@ -7,7 +7,8 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 ## 1. System Bootstrap & Scripts
 *   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 *   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **32** to stagger network load.
-*   [Process Logs Script](scripts/deployment.md)
+*   **Process Logs Script:** The log rotation script runs daily at midnight via the root user's `crontab`. Add the following entry:
+    `0 0 * * * /opt/homelab-repo/nodes/caddy-101/scripts/process_logs.sh`
 
 ## 2. Reverse Proxy & Security
 *   [Caddy Reverse Proxy](services/Caddy/deployment.md)
