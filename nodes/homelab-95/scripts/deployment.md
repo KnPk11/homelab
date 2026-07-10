@@ -32,3 +32,7 @@ Host-local security scripts live under `/opt/scripts/Security/`. The GitOps clon
    sudo firewall
    # or: sudo /opt/scripts/Security/ufw.sh
    ```
+
+## Kopia backups
+
+See [kopia/deployment.md](kopia/deployment.md) — scripts under `scripts/kopia/`, secrets under `/opt/scripts/Backups/Kopia/config/`.

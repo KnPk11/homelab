@@ -1,5 +1,5 @@
 #!/bin/bash
-# Version: 2.5 (2026-07-10)
+# Version: 2.8 (2026-07-10)
 #
 # scrape_secrets.sh — centralised secrets backup for the homelab.
 #
@@ -35,6 +35,8 @@ PATH_SWEEPS=(
     "dns-102:/srv"
     "homelab-95:/srv"
     "homelab-95:/opt/scripts/Security"
+    # Kopia client config + password (next to backup scripts)
+    "homelab-95:/opt/scripts/Backups/Kopia"
 )
 
 # Vault path = <host> + absolute search path (strip leading /).
@@ -45,23 +47,38 @@ vault_path() {
 }
 
 # Remote find + rsync of secret globs; vault dest mirrors SRC under the host.
-# Also picks up gcp-creds.json / raw files under .secrets/ via name globs below.
+# Only creates DEST when at least one file matches (no empty root/home/kopia dirs).
 sweep_remote_path() {
     local HOST="$1" SRC="$2"
     local IP="${NODES[$HOST]}"
-    local DEST
+    local DEST list
     DEST="$(vault_path "$HOST" "$SRC")"
     echo "Sweeping $SRC on $HOST ($IP) → $DEST"
+
+    # Capture remote file list (drop SSH banners). Empty list = nothing to do.
+    list="$(
+        ssh -o BatchMode=yes "root@$IP" \
+            "test -d \"$SRC\" || exit 0; cd \"$SRC\" && find . -xtype f \( \
+                -name \"*.secret\" -o -name \"*.env\" -o -name \".env\" -o -name \".env.*\" \
+                -o -name \"*.pwd\" -o -name \"gcp-creds.json\" -o -name \"postgres_password\" \
+                -o -name \"*.config\" -o -name \"*.kopia-password\" -o -name \"*kopia-password*\" \
+                -o -name \"main-repo.config\" -o -name \"repository.config\" \
+            \)" 2>/dev/null | grep '^\./' || true
+    )"
+    if [[ -z "$list" ]]; then
+        echo "  (no matching files under $SRC — skipped)"
+        return 0
+    fi
+
     mkdir -p "$DEST"
-    # find -xtype f skips broken symlinks; grep drops SSH banners from --files-from.
-    # Include common secret filenames under /srv (env, secret, pwd, json creds).
-    if ! ssh -o BatchMode=yes "root@$IP" \
-        "cd $SRC && find . -xtype f \( -name \"*.secret\" -o -name \"*.env\" -o -name \".env\" -o -name \".env.*\" -o -name \"*.pwd\" -o -name \"gcp-creds.json\" -o -name \"postgres_password\" \)" \
-        | grep '^\./' \
-        | rsync -avL --files-from=- \
+    if ! printf '%s\n' "$list" | rsync -avL --files-from=- \
             "root@$IP:$SRC/" \
             "$DEST/"; then
-        echo "Warning: sweep failed or empty for $SRC on $HOST"
+        echo "Warning: rsync failed for $SRC on $HOST"
+    else
+        # Show what landed (paths only; useful for dotdirs like .config/kopia)
+        echo "  files:"
+        printf '%s\n' "$list" | sed 's|^\./|    |'
     fi
 }
 
