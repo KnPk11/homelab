@@ -17,8 +17,13 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # --- Configuration ---
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-source "$SCRIPT_DIR/process_logs.env"
+LOG_ROOT="/mnt/logs/current"
+ARCHIVE_ROOT="/mnt/logs/archive"
+LOG_USER="1000"
+LOG_GROUP="1000"
+SNAPSHOT_KEEP_COUNT=1
+LOG_RETENTION_DAYS=365
+
 TIMESTAMP="$(date +%F_%H%M%S)"
 
 echo "--- Starting Log Process: $TIMESTAMP ---"
