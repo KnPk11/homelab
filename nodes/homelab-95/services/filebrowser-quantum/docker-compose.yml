@@ -66,4 +66,4 @@ services:
 
 secrets:
   filebrowser_password:
-    file: ${FILEBROWSER_SECRET_PATH:-/srv/filebrowser-quantum/filebrowser.env}
+    file: ${FILEBROWSER_SECRET_PATH:-/srv/filebrowser-quantum/filebrowser_password.secret}

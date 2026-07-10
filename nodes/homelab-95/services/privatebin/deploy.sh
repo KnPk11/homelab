@@ -1,31 +1,32 @@
 #!/bin/bash
-# Simple script to template the Privatebin configs using .env variables
+# Template PrivateBin configs using /srv/privatebin/.env (not the GitOps clone)
 
-if [ ! -f ".env" ]; then
-    echo "Error: .env file not found. Please create one from .env.example."
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+ENV_FILE="/srv/privatebin/.env"
+TARGET_DIR="/srv/privatebin"
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "Error: $ENV_FILE not found. Copy .env.example there:"
+    echo "  sudo mkdir -p $TARGET_DIR"
+    echo "  sudo cp $SCRIPT_DIR/.env.example $ENV_FILE"
+    echo "  sudo chmod 600 $ENV_FILE"
     exit 1
 fi
 
-# Load variables from .env
 set -a
-source .env
+# shellcheck source=/dev/null
+source "$ENV_FILE"
 set +a
 
-# Destination directory
-TARGET_DIR="/srv/privatebin"
 mkdir -p "$TARGET_DIR"
 
-# Template conf.php
 echo "Templating conf.php..."
-envsubst < conf.template.php > "$TARGET_DIR/conf.php"
+envsubst < "$SCRIPT_DIR/conf.template.php" > "$TARGET_DIR/conf.php"
 
-# Template nginx.conf (even if it currently has no variables, this supports future vars)
 echo "Templating nginx.conf..."
-# We must carefully escape Nginx variables like $remote_addr or they'll be replaced by envsubst!
-# To do this safely, we tell envsubst to ONLY replace $PRIVATEBIN_DOMAIN
-envsubst '${PRIVATEBIN_DOMAIN}' < nginx.template.conf > "$TARGET_DIR/nginx.conf"
+# Only replace our vars; leave Nginx $remote_addr etc. alone
+envsubst '${PRIVATEBIN_DOMAIN}' < "$SCRIPT_DIR/nginx.template.conf" > "$TARGET_DIR/nginx.conf"
 
-# Fix permissions for the Privatebin container user (1000:1000)
 chown -R 1000:1000 "$TARGET_DIR"
 
-echo "Privatebin configuration deployed to $TARGET_DIR successfully!"
+echo "PrivateBin configuration deployed to $TARGET_DIR successfully!"

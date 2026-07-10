@@ -1,11 +1,11 @@
 #!/bin/bash
-# Version: 2.3 (2026-07-10)
+# Version: 2.5 (2026-07-10)
 #
 # scrape_secrets.sh — centralised secrets backup for the homelab.
 #
 # Architecture (keep simple, no SOPS):
 #   - GitOps clone is disposable: tracked code/templates only (no real secrets).
-#   - Runtime secrets live under /srv/<service>/ on each node (real files).
+#   - Runtime secrets live under host paths like /srv/<service>/ or /opt/scripts/...
 #   - Vault layout mirrors the search path on each host:
 #       BACKUP_DIR/<host>/<absolute-path-without-leading-slash>/...
 #     e.g. /srv/caddy/caddy.env  →  backups/caddy-101/srv/caddy/caddy.env
@@ -13,7 +13,7 @@
 # Needs: rsync on every node + passwordless root SSH from this host.
 # Cron:  0 2 * * 0 /opt/dev/homelab_repo/shared/scripts/scrape_secrets.sh >> /var/log/scrape_secrets.log 2>&1
 #
-# New node with /srv secrets: add to NODES + SRV_SWEEP_HOSTS.
+# New sweep root: add "host:/abs/path" to PATH_SWEEPS.
 # Always use root@ — bare "IP:path" follows ssh_config User and cannot read 0600 root secrets.
 
 set -euo pipefail
@@ -29,18 +29,40 @@ declare -A NODES=(
     ["proxmox-100"]="192.168.50.100"
 )
 
-# Primary: secrets beside services under /srv/<service>/
-SRV_SWEEP_HOSTS=("caddy-101" "dns-102" "homelab-95")
-
-# Transitional: secrets still overlaid on the GitOps clone (not yet moved to /srv).
-# Overlaps /srv where files are symlinked into the clone — drop a host once migrated.
-LEGACY_CLONE_SECRET_HOSTS=("homelab-95")
+# host:/absolute/path — find secret-like files under each root, vault path = same path
+PATH_SWEEPS=(
+    "caddy-101:/srv"
+    "dns-102:/srv"
+    "homelab-95:/srv"
+    "homelab-95:/opt/scripts/Security"
+)
 
 # Vault path = <host> + absolute search path (strip leading /).
 vault_path() {
     local host="$1" abs_path="$2"
     abs_path="${abs_path#/}"   # /srv → srv
     echo "$BACKUP_DIR/$host/$abs_path"
+}
+
+# Remote find + rsync of secret globs; vault dest mirrors SRC under the host.
+# Also picks up gcp-creds.json / raw files under .secrets/ via name globs below.
+sweep_remote_path() {
+    local HOST="$1" SRC="$2"
+    local IP="${NODES[$HOST]}"
+    local DEST
+    DEST="$(vault_path "$HOST" "$SRC")"
+    echo "Sweeping $SRC on $HOST ($IP) → $DEST"
+    mkdir -p "$DEST"
+    # find -xtype f skips broken symlinks; grep drops SSH banners from --files-from.
+    # Include common secret filenames under /srv (env, secret, pwd, json creds).
+    if ! ssh -o BatchMode=yes "root@$IP" \
+        "cd $SRC && find . -xtype f \( -name \"*.secret\" -o -name \"*.env\" -o -name \".env\" -o -name \".env.*\" -o -name \"*.pwd\" -o -name \"gcp-creds.json\" -o -name \"postgres_password\" \)" \
+        | grep '^\./' \
+        | rsync -avL --files-from=- \
+            "root@$IP:$SRC/" \
+            "$DEST/"; then
+        echo "Warning: sweep failed or empty for $SRC on $HOST"
+    fi
 }
 
 echo "Starting secrets backup... $(date)"
@@ -50,37 +72,10 @@ rm -rf "$BACKUP_DIR"
 mkdir -p "$BACKUP_DIR"
 chmod 700 "$BACKUP_DIR"
 
-# --- /srv  →  <host>/srv/
-for HOST in "${SRV_SWEEP_HOSTS[@]}"; do
-    IP="${NODES[$HOST]}"
-    SRC="/srv"
-    DEST="$(vault_path "$HOST" "$SRC")"
-    echo "Sweeping $SRC on $HOST ($IP) → $DEST"
-    mkdir -p "$DEST"
-    # find -xtype f skips broken symlinks; grep drops SSH banners from --files-from.
-    if ! ssh -o BatchMode=yes "root@$IP" \
-        "cd $SRC && find . -xtype f \( -name \"*.secret\" -o -name \"*.env\" -o -name \".env\" -o -name \".env.*\" -o -name \"*.pwd\" \)" \
-        | grep '^\./' \
-        | rsync -avL --files-from=- \
-            "root@$IP:$SRC/" \
-            "$DEST/"; then
-        echo "Warning: sweep failed for $SRC on $HOST"
-    fi
-done
-
-# --- /opt/homelab-repo/nodes/<host>  →  <host>/opt/homelab-repo/nodes/<host>/
-for HOST in "${LEGACY_CLONE_SECRET_HOSTS[@]}"; do
-    IP="${NODES[$HOST]}"
-    SRC="/opt/homelab-repo/nodes/$HOST"
-    DEST="$(vault_path "$HOST" "$SRC")"
-    echo "Legacy clone scrape $SRC on $HOST ($IP) → $DEST"
-    mkdir -p "$DEST"
-    if ! rsync -avm \
-        --include='*.env' --include='*.secret' --include='*.pwd' \
-        --include='*/.secrets/***' --include='*/' --exclude='*' \
-        "root@$IP:$SRC/" "$DEST/"; then
-        echo "Warning: legacy clone scrape failed on $HOST"
-    fi
+for entry in "${PATH_SWEEPS[@]}"; do
+    HOST="${entry%%:*}"
+    SRC="${entry#*:}"
+    sweep_remote_path "$HOST" "$SRC"
 done
 
 # --- local /opt/dev/homelab_repo  →  ai-tools-105/

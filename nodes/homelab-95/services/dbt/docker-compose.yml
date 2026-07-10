@@ -31,7 +31,7 @@ services:
 
 secrets:
   postgres_password:
-    file: ${POSTGRES_PASSWORD_FILE:-/srv/dbt/.secrets/postgres_password}
+    file: ${POSTGRES_PASSWORD_FILE:-/srv/dbt/.secrets/postgres_password.secret}
 
 networks:
   dbt_network:

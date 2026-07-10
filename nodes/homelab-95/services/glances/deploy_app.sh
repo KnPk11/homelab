@@ -1,34 +1,37 @@
 #!/bin/bash
-# deploy_app.sh
-# Renders templates and deploys config files to destination paths
+# deploy_app.sh — render glances.conf; secrets live under /srv/glances/ only.
+#
+# Expects:
+#   /srv/glances/glances_influx_token.secret  (raw token, one line)
+#   /srv/glances/glances.pwd                  (web UI password file; optional at deploy)
+
+set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-ENV_FILE="$SCRIPT_DIR/.env"
+DEST_DIR="/srv/glances"
+TOKEN_FILE="$DEST_DIR/glances_influx_token.secret"
+PWD_FILE="$DEST_DIR/glances.pwd"
 
-if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: .env file not found. Please copy .env.example to .env and configure it."
+if [[ ! -f "$TOKEN_FILE" ]]; then
+    echo "Error: $TOKEN_FILE not found."
+    echo "  sudo mkdir -p $DEST_DIR"
+    echo "  sudo cp $SCRIPT_DIR/glances_influx_token.secret.example $TOKEN_FILE"
+    echo "  sudo chmod 600 $TOKEN_FILE"
+    echo "  # put the raw Influx token in that file (no KEY=value)"
     exit 1
 fi
 
-# Export variables from .env so envsubst can use them
-set -a
-source "$ENV_FILE"
-set +a
+# conf template uses ${GLANCES_INFLUX_TOKEN}
+export GLANCES_INFLUX_TOKEN
+GLANCES_INFLUX_TOKEN="$(tr -d '\n\r' < "$TOKEN_FILE")"
 
-DEST_DIR="/srv/glances"
 sudo mkdir -p "$DEST_DIR"
 
-# Deploy glances.conf
 echo "Deploying glances.conf to $DEST_DIR/glances.conf..."
 envsubst < "$SCRIPT_DIR/glances.conf" | sudo tee "$DEST_DIR/glances.conf" > /dev/null
 
-# Symlink .env
-echo "Symlinking .env to $DEST_DIR/.env..."
-sudo ln -sf "$ENV_FILE" "$DEST_DIR/.env"
-
-if [ -f "$SCRIPT_DIR/glances.pwd" ]; then
-    echo "Symlinking glances.pwd to $DEST_DIR/glances.pwd..."
-    sudo ln -sf "$SCRIPT_DIR/glances.pwd" "$DEST_DIR/glances.pwd"
+if [[ ! -f "$PWD_FILE" ]]; then
+    echo "Warning: $PWD_FILE missing (web UI password). Compose expects it at that path."
 fi
 
-echo "Deployment complete."
+echo "Deployment complete. Secrets stay under $DEST_DIR (not the GitOps clone)."

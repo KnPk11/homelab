@@ -1,33 +1,35 @@
 #!/bin/bash
-# deploy_app.sh
-# Renders templates and deploys config files to destination paths
+# deploy_app.sh — renders profiles; secrets live under /srv/dbt/
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-ENV_FILE="$SCRIPT_DIR/.env"
+ENV_FILE="/srv/dbt/.env"
+DEST_DIR="/srv/dbt"
 
 if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: .env file not found. Please copy .env.example to .env and configure it."
+    echo "Error: $ENV_FILE not found. Copy .env.example there and configure it:"
+    echo "  sudo mkdir -p $DEST_DIR"
+    echo "  sudo cp $SCRIPT_DIR/.env.example $DEST_DIR/.env"
+    echo "  sudo chmod 600 $DEST_DIR/.env"
     exit 1
 fi
 
-# Export variables from .env so envsubst can use them
 set -a
+# shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
 
-DEST_DIR="/srv/dbt"
 sudo mkdir -p "$DEST_DIR"
 
-# Deploy profiles.yml
 echo "Deploying profiles.yml to $DEST_DIR/profiles.yml..."
 envsubst < "$SCRIPT_DIR/profiles.yml" | sudo tee "$DEST_DIR/profiles.yml" > /dev/null
 
-# Deploy file-based secrets
-if [ -d "$SCRIPT_DIR/.secrets" ]; then
-    echo "Deploying .secrets to $DEST_DIR/.secrets..."
-    sudo mkdir -p "$DEST_DIR/.secrets"
-    sudo cp -a "$SCRIPT_DIR/.secrets/." "$DEST_DIR/.secrets/"
-    sudo chmod -R 600 "$DEST_DIR/.secrets/"
+# Expect secrets already on the host under /srv/dbt/.secrets/ (not in the clone):
+#   postgres_password.secret, gcp-creds.json
+if [ ! -f "$DEST_DIR/.secrets/postgres_password.secret" ]; then
+    echo "Warning: $DEST_DIR/.secrets/postgres_password.secret missing"
+fi
+if [ ! -f "$DEST_DIR/.secrets/gcp-creds.json" ]; then
+    echo "Warning: $DEST_DIR/.secrets/gcp-creds.json missing"
 fi
 
 echo "Deployment complete."

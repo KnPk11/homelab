@@ -1,13 +1,17 @@
 #!/bin/bash
 # Deploy Dashy Config Template
+# Secrets: /srv/dashy/dashy.env (not in the disposable GitOps clone)
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-ENV_FILE="$SCRIPT_DIR/dashy.env"
+ENV_FILE="/srv/dashy/dashy.env"
 TEMPLATE_FILE="$SCRIPT_DIR/config.yml.tmpl"
 TARGET_FILE="/srv/dashy/config.yml"
 
 if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: Environment file $ENV_FILE not found. Please copy dashy.env.example to dashy.env and fill it out."
+    echo "Error: $ENV_FILE not found. Copy dashy.env.example there and fill it out:"
+    echo "  sudo mkdir -p /srv/dashy"
+    echo "  sudo cp $SCRIPT_DIR/dashy.env.example /srv/dashy/dashy.env"
+    echo "  sudo chmod 600 /srv/dashy/dashy.env"
     exit 1
 fi
 
@@ -18,10 +22,10 @@ fi
 
 echo "Injecting variables from $ENV_FILE into $TEMPLATE_FILE..."
 set -a
+# shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
 
-# Use envsubst to replace variables and output directly to the destination path
 mkdir -p /srv/dashy
 envsubst < "$TEMPLATE_FILE" > "$TARGET_FILE"
 
