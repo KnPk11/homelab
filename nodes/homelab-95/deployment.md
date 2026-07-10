@@ -46,6 +46,10 @@ Docker Compose only auto-loads a file named **`.env`** for `${VAR}` interpolatio
 
 See [scripts/deployment.md](scripts/deployment.md) — env under `/opt/scripts/Security/ufw.env`.
 
+## Kopia backups
+
+See [scripts/kopia/deployment.md](scripts/kopia/deployment.md) — client config + password under `/opt/scripts/Backups/Kopia/config/` (not in Git).
+
 ## DBT service
 
 1. Place secrets on the host:
