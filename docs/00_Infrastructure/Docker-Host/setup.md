@@ -3,6 +3,10 @@
 > [!NOTE]
 > **Tags:** #Docker #Infrastructure #Linux #RaspberryPi
 
+## Provisioning Setup
+
+Please refer to the [Proxmox VM Spec](proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
+
 ## Installation
 
 ```bash
