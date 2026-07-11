@@ -20,6 +20,9 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 - **SOPS**: We intend to utilise SOPS (Secrets Operations) for the `nodes/` directory. 
 - **Current State**: Until SOPS is implemented, keep real credentials in the `nodes/` folder but ensure it is excluded from public pushes (or handled via force-pushes if accidents occur).
 
+### 3. AI Agent Authentication
+- **SSH Access**: The AI agent operates using the dedicated SSH username `gemini` to access local network resources. Ensure this is considered when developing operational scripts. See [`shared/ssh/config`](./shared/ssh/config) for the SSH configuration details.
+
 ## 🎨 Standards & Conventions
 All documentation must adhere to the formatting and linguistic rules defined in:
 👉 **[Homelab Documentation Style Guide](./docs/repository_notes_style_guide.md)**
