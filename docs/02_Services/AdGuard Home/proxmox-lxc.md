@@ -13,11 +13,15 @@ This document details the specific Proxmox LXC configuration for the AdGuard Hom
 
 ### Resource Allocation
 
-| Resource | Value |
-| :--- | :--- |
-| **CPU Cores** | 1 |
-| **Memory (RAM)** | 512 MiB |
-| **Disk Size** | 8 GiB |
+| Setting    | Value                       |
+| ---------- | --------------------------- |
+| OS Type    | Debian 13                   |
+| CPU        | 1 core                      |
+| RAM        | 512 MB                      |
+| Disk       | 8 GB                        |
+| Privileged | No (unprivileged preferred) |
+| Nesting    | Yes                         |
+| Keyctl     | No                          |
 
 ### Network Configuration
 

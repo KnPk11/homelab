@@ -8,11 +8,9 @@
 > [!TIP]
 > Refer to the Debian installation in Proxmox, with a few amendments given below.
 
-### Hardware Resources
+### Infrastructure Setup
 
-- **Disk Size:** **16GB** or even **8GB** is enough.
-- **Memory:** **2GB** is perfect for a base install.
-	- _Note:_ If you plan to use the "ZFS" file system plugin inside OMV, you will want to bump this to **8GB+**.
+Please refer to the [Proxmox VM Spec](proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
 
 ### Initial OMV Installation
 

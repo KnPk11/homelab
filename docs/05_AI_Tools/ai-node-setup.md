@@ -7,16 +7,9 @@
 
 A guide for setting up a dedicated AI node as a Proxmox LXC, including the installation and configuration of agentic tools such as Gemini CLI and OpenCode.
 
-## 2. Infrastructure Setup (Proxmox LXC)
+## 2. Infrastructure Setup
 
-Provision a standard Debian LXC container following the [Debian LXC Provisioning Guide](../../00_Infrastructure/Proxmox/Provisioning/debian-lxc.md). 
-
-**Resource Overrides for AI Node:**
-- **CPU**: 2 Cores
-- **Memory**: 2048 MiB RAM
-- **Swap**: 2048 MiB (2 GB)
-- **Disk**: 12 GiB
-- **Network**: Assign a static IP (e.g., `[AI-IP]/24`).
+Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource allocation and provisioning details for this node.
 
 ## 3. Agentic Tools Installation
 
