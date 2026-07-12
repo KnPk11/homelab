@@ -99,6 +99,26 @@ On the agent machines, install CrowdSec but disable the local LAPI:
 
 2.  Restart: `sudo systemctl restart crowdsec`
 
+3.  **Fix boot ordering** (required on sentinels):
+
+    The default CrowdSec unit only waits for `network.target`, which does not guarantee the interface has a routable address. If the sentinel boots before the LAPI on caddy is reachable, CrowdSec will crash and stay dead. Apply a systemd drop-in override to fix this:
+    
+    ```bash
+    sudo mkdir -p /etc/systemd/system/crowdsec.service.d
+    cat << 'EOF' | sudo tee /etc/systemd/system/crowdsec.service.d/wait-for-network.conf
+    [Unit]
+    After=network-online.target
+    Wants=network-online.target
+
+    [Service]
+    Restart=on-failure
+    RestartSec=10
+    EOF
+    sudo systemctl daemon-reload
+    ```
+
+    This ensures CrowdSec waits for full network connectivity before starting, and automatically retries if it still fails for a transient reason.
+
 ---
 
 ## 5. MikroTik Edge Bouncer (The Precise Shield)
