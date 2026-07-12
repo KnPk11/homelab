@@ -1,6 +1,6 @@
 # Homelab Repository: Project Mandates
 
-This document serves as the primary instruction set for the Gemini CLI agent and any other contributors. It defines the current project phase, deployment philosophy, and technical standards.
+This document serves as the primary instruction set for all AI agents (Antigravity, Grok, OpenCode) and any human contributors. It defines the current project phase, deployment philosophy, and technical standards.
 
 ## 🚀 Current Project Phase: Documentation Migration
 We are currently in the **Documentation & Sanitisation Phase**.
