@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
 # capture-mikrotik-config.sh
+# Version: 1.2
+# Date: 2026-07-12
 #
 # Pulls a sanitised RouterOS config export from the MikroTik router via SSH
 # and writes it to a local gitignored file for backup by scrape_secrets.sh.
@@ -72,6 +74,11 @@ ROUTER_CMD=$(cat << 'EOF'
 :put "# 📋 FIREWALL ADDRESS LISTS"
 :put "# ============================================================================="
 /ip firewall address-list export
+:put ""
+:put "# ============================================================================="
+:put "# 🔧 FIREWALL MANGLE RULES"
+:put "# ============================================================================="
+/ip firewall mangle export
 EOF
 )
 
