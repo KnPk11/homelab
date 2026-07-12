@@ -1,0 +1,33 @@
+# Antigravity Ignore File (.agignore)
+# Focuses on security and privacy, preventing the agent from reading sensitive files.
+
+# ------------------------------------
+# Security & Privacy (Live Secrets)
+# ------------------------------------
+# Ignore all environment variable files
+.env
+.env.*
+.env.local
+.env.production
+
+# Ignore all secret files and directories
+*.secret
+*.secrets
+.secrets/
+credentials.json
+*.pem
+*.key
+
+# ------------------------------------
+# Allow Example/Template Secrets
+# ------------------------------------
+# Explicitly allow reading example/template files
+!.env.example
+!.env.template
+!*.secret.example
+!*.secret.template
+
+# ------------------------------------
+# Version Control
+# ------------------------------------
+.git/

@@ -1,7 +1,7 @@
 # AI Node Setup
 
 > [!NOTE]
-> **Tags:** #Ai #Lxc #Proxmox #Gemini #OpenCode #AgenticAi #Infrastructure
+> **Tags:** #Ai #Lxc #Proxmox #Gemini #Grok #OpenCode #AgenticAi #Infrastructure #Security
 
 ## 1. Description
 
@@ -45,6 +45,7 @@ Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource
    - Use the `/model` command to set the required model (e.g., Grok 2, Grok 4.3).
    - Use the `/usage` command to check model usage.
 
+
 ### 3.3. OpenCode Setup
 
 1. **Installation**:
@@ -56,9 +57,7 @@ Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource
 2. **Configuration**:
    Navigate to your project directory and run `/connect` to configure a provider.
 
-## 4. Advanced Configuration
-
-### 4.1. Local LLM Providers (OpenCode)
+#### 3.3.1. Local LLM Providers (OpenCode)
 
 Custom OpenAI-compatible endpoints (e.g., Open WebUI) require explicit mapping in the configuration.
 
@@ -94,13 +93,14 @@ Custom OpenAI-compatible endpoints (e.g., Open WebUI) require explicit mapping i
    }
    ```
 
-## 5. Security Best Practices
 
-### 5.1. Access Strategy
+## 4. Security Best Practices
+
+### 4.1. Access Strategy
 
 It is recommended to create a dedicated service key for the AI node to allow it to interact securely with other homelab services.
 
-### 5.2. User Permissions
+### 4.2. User Permissions
 
 | Approach | Pros | Cons |
 |----------|------|------|
@@ -110,9 +110,132 @@ It is recommended to create a dedicated service key for the AI node to allow it 
 > [!TIP]
 > Start with the root user to ensure a smooth initial setup. Once stable, harden the environment by migrating to a dedicated `gemini` user with scoped sudo access.
 
-## 6. Appendix A: Antigravity & Gemini CLI Tuning & Tips
+### 4.3. AI Safeguards & Context Boundaries
 
-### 6.1. Tool Configuration
+When deploying autonomous AI agents, it is crucial to establish strict boundaries to prevent unintended access to sensitive information.
+
+#### Antigravity Safeguards (`.agignore`)
+
+Always implement and maintain an `.agignore` file at the root of your projects. This explicitly blocks live secrets while allowing templates so agents can understand configurations without seeing actual credentials.
+
+**Example `/opt/dev/homelab_repo/.agignore`:**
+
+```agignore
+# Security & Privacy (Live Secrets)
+.env
+.env.*
+*.secret
+*.secrets
+.secrets/
+credentials.json
+*.pem
+*.key
+
+# Allow Example/Template Secrets
+!.env.example
+!.env.template
+!*.secret.example
+!*.secret.template
+
+# Version Control
+.git/
+```
+
+#### Grok Safeguards (Bubblewrap Sandbox)
+
+   Grok has no `.grokignore` equivalent of `.geminiignore`. Use config + sandbox instead so tools skip gitignored files and the OS blocks live secrets.
+
+   1. **Install bubblewrap** (required on Linux for sandbox `deny` lists):
+
+      ```bash
+      sudo apt install -y bubblewrap
+      ```
+
+   2. **`~/.grok/config.toml`** — respect `.gitignore` and default to the homelab sandbox profile:
+
+      ```toml
+      [tools]
+      respect_gitignore = true
+
+      [sandbox]
+      profile = "homelab"
+      ```
+
+   3. **`~/.grok/sandbox.toml`** — custom profile that extends `workspace`, allows writes under `/opt/dev`, and kernel-denies the vault / VPN secrets / `/srv` secret globs:
+
+      ```toml
+      [profiles.homelab]
+      extends = "workspace"
+      read_write = ["/opt/dev"]
+
+      deny = [
+        "/opt/dev/secrets_vault",
+        "/opt/dev/homelab_repo/shared/vpn-configs/.secrets",
+        "/srv/**/.env",
+        "/srv/**/*.env",
+        "/srv/**/*.secret",
+        "/srv/**/*.key",
+        "/srv/**/*.pem",
+        "/srv/**/*.pwd",
+        "/srv/**/.secrets",
+        "/srv/**/.secrets/**",
+        "**/.env",
+        "**/*.env",
+        "**/*.secret",
+        "**/*.key",
+        "**/*.pem",
+        "**/*.pwd",
+        "**/.secrets",
+        "**/.secrets/**",
+      ]
+      ```
+
+> [!IMPORTANT]
+> **Grok sandbox caveats**
+>
+> - Sandbox is fixed at process start. Change profile only on a **new** session (`grok --sandbox off` / `homelab` / `workspace`).
+> - Relative globs (`**/…`) are anchored at the **session workspace CWD**. Absolute directory denies (vault, VPN `.secrets`) always apply.
+> - Do **not** use a broad absolute pattern like `/opt/dev/**/*.env` if you have project fixtures with a **directory** named `.env` (e.g. dbt under `/opt/dev/projects/`) — bubblewrap can fail closed and refuse to start.
+> - Patterns like `*.env` / `*.secret` do **not** match templates (`*.env.example`, `*.secret.example`).
+> - Repo secrets policy still lives in `.gitignore` (`*.env`, `*.secret`, `*.key`, `*.pem`, `.secrets/`). Live credentials should stay under `/srv` on nodes and the central vault, not in Git.
+
+#### Auditing
+
+Periodically review the files and permissions available to the AI node to ensure they align with the principle of least privilege.
+
+## 5. Appendix A: Legacy Gemini CLI Reference
+
+> [!WARNING]
+> Gemini CLI no longer works with standard Google accounts via OAuth. Google requires installing Antigravity instead. The following instructions are preserved for historical reference only.
+
+### 5.1. Installation & Setup
+
+1. **Install Node.js**:
+   
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+   sudo apt install -y nodejs
+   ```
+
+2. **Install Gemini CLI**:
+   
+   ```bash
+   sudo npm install -g @google/gemini-cli
+   ```
+
+3. **Initialise**:
+   
+   ```bash
+   gemini
+   ```
+
+4. **YOLO Mode (Optional)**: To allow all permissions without prompts:
+   
+   ```bash
+   gemini --yolo
+   ```
+
+### 5.2. Tool Configuration
 
 To enable interactive shell capabilities and allow specific system commands without constant prompts, update your `tools` configuration in `/root/.gemini/settings.json`:
 
@@ -139,7 +262,7 @@ To enable interactive shell capabilities and allow specific system commands with
 }
 ```
 
-### 6.2. Model Assignment & Quotas
+### 5.3. Model Assignment & Quotas
 
 If you frequently encounter rate limits on specific models (e.g., Flash), Gemini may continue spawning sub-agents using that model even if other models have available quota. You can force specific model assignments in `settings.json`:
 
@@ -160,37 +283,7 @@ If you frequently encounter rate limits on specific models (e.g., Flash), Gemini
 }
 ```
 
-### 6.3. Advanced Features
+### 5.4. Advanced Features
 
 - **Conseca**: A feature that enhances the agent's ability to maintain state and context across complex tasks.
 - **Auto-Edit**: Allows the agent to automatically apply surgical code changes using the `replace` tool, reducing the need for full file rewrites.
-
-### 6.4. Legacy Gemini CLI Setup
-
-> [!WARNING]
-> Gemini CLI no longer works with standard Google accounts via OAuth. Google requires installing Antigravity instead. The following instructions are preserved for historical reference only.
-
-1. **Install Node.js**:
-   
-   ```bash
-   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-   sudo apt install -y nodejs
-   ```
-
-2. **Install Gemini CLI**:
-   
-   ```bash
-   sudo npm install -g @google/gemini-cli
-   ```
-
-3. **Initialise**:
-   
-   ```bash
-   gemini
-   ```
-
-4. **YOLO Mode (Optional)**: To allow all permissions without prompts:
-   
-   ```bash
-   gemini --yolo
-   ```
