@@ -30,13 +30,13 @@ This document details the specific Proxmox LXC configuration for the AI Node (`a
 | **IPv4/CIDR** | Static `192.168.50.105/24` |
 | **Gateway** | `192.168.50.1` (MikroTik homelab bridge) |
 | **DNS** | **Do not use “Default” (host)** — host used to be router-only |
-| **DNS servers** | `192.168.50.102` (AdGuard) then `1.1.1.1` (Cloudflare) |
+| **DNS servers** | `[ADGUARD-IP]` (AdGuard) then `1.1.1.1` (Cloudflare) |
 | **Search domain** | `example.com` |
 | **Firewall** | ✅ Enabled |
 
 ```bash
 # On Proxmox host
-pct set 105 -nameserver "192.168.50.102 1.1.1.1" -searchdomain example.com
+pct set 105 -nameserver "[ADGUARD-IP] 1.1.1.1" -searchdomain example.com
 ```
 
 Guest `/etc/resolv.conf` (PVE-managed block) should look like:
@@ -44,7 +44,7 @@ Guest `/etc/resolv.conf` (PVE-managed block) should look like:
 ```text
 # --- BEGIN PVE ---
 search example.com
-nameserver 192.168.50.102
+nameserver [ADGUARD-IP]
 nameserver 1.1.1.1
 # --- END PVE ---
 # Primary: AdGuard (dns-102). Secondary: Cloudflare public DNS.
@@ -53,14 +53,6 @@ nameserver 1.1.1.1
 > [!IMPORTANT]
 > **Why not the router (`192.168.50.1`) as DNS?**  
 > House DHCP already uses AdGuard + `1.1.1.1`. Using the MikroTik as secondary forced Homelab → router DNS input rules and tied lab DNS to the edge box. Prefer the same dual list as DHCP.
-
-### Related CTs on the same node (same DNS pattern)
-
-| CT | Hostname | IP | DNS in PVE |
-|----|----------|-----|------------|
-| 104 | caddy | `192.168.50.101` | `192.168.50.102` `1.1.1.1` |
-| 105 | ai-tools | `192.168.50.105` | `192.168.50.102` `1.1.1.1` |
-| 106 | dns (AdGuard) | `192.168.50.102` | `1.1.1.1` `9.9.9.9` (public only — avoid chicken-and-egg) |
 
 Proxmox **host** `/etc/resolv.conf` should also prefer AdGuard + Cloudflare so new CTs with “use host DNS” do not inherit router-only DNS.
 
