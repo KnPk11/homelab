@@ -70,8 +70,39 @@ make stop
 make update
 ```
 
-## 3. Troubleshooting
+## 3. DNS & Reachability (WAN / LAN / VPN)
 
-### Sync Issues
+`EXTERNAL_LISTEN_HOSTS` uses a **single hostname** (`[DOMAIN]`) for multiple backends:
+- **Caddy (TCP 80, 443):** `[CADDY-IP]`
+- **AnyType (TCP 1001–1006, UDP 1011–1016):** `[ANYTYPE-IP]`
 
-Make sure the router firewall is not blocking return traffic from the homelab subnet, and AdGuard's static `/etc/hosts` entry is routing `example.com` to the reverse proxy container instead of the AnyType server. Fixed by adding firewall exceptions for AnyType (`[ANYTYPE-IP]`) and AdGuard DNS (`[ADGUARD-IP]`), removing the DNS override on AdGuard, and relying on MikroTik's hairpin NAT to route traffic by port: `443` → Caddy, `1001-1006` → AnyType, `media ports` → MediaMTX.
+Because one domain resolves to multiple servers, **port-based DSTNAT on the router** (`dst-address-type=local`) is required instead of local DNS rewrites.
+
+### DNS Resolution Behavior
+
+| Client/Resolver | `[DOMAIN]` Resolves To | Routing Path |
+|-----------------|------------------------|--------------|
+| **WAN / Public DNS** | `[PUBLIC-IP]` / DDNS | WAN → MikroTik DSTNAT by port |
+| **LAN / AdGuard (`[ADGUARD-IP]`)** | `[PUBLIC-IP]` (No rewrite) | Hairpin NAT → MikroTik DSTNAT by port |
+| **VPN / MikroTik DNS (`[WG-GW-IP]`)** | `[ROUTER-IP]` | Hits local address → MikroTik DSTNAT by port |
+
+> [!WARNING]
+> **Do not rewrite `[DOMAIN]` directly to `[CADDY-IP]`.** 
+> Doing so bypasses the router's DSTNAT, routing AnyType sync traffic (ports 1001+) directly to Caddy, causing connection timeouts (especially for VPN clients).
+
+### Firewall Requirements
+
+1. **DSTNAT**: Caddy ports → `[CADDY-IP]`; AnyType ports → `[ANYTYPE-IP]`.
+2. **Hairpin NAT**: Required for Homelab loopback and VPN masquerading.
+3. **Pinhole Rules**: Allow DSTNAT traffic and restrict AnyType outbound strictly to VPN clients (`[ANYTYPE-IP]` → `[VPN-SUBNET]`).
+4. **Avoid Anti-patterns**: Do not use broad "allow all" filters or stack competing DNS rewrites on both AdGuard and MikroTik.
+
+### Quick Verification
+
+```bash
+# Verify VPN DNS (should return router gateway)
+dig +short [DOMAIN] @[WG-GW-IP]          # Expect: [ROUTER-IP]
+
+# Verify LAN DNS (should return public IP)
+dig +short [DOMAIN] @[ADGUARD-IP]        # Expect: [PUBLIC-IP]
+```
