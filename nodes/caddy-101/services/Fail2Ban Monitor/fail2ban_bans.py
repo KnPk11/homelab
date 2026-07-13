@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 """
-Fail2Ban & CrowdSec Intrusion Monitor - Version 3.2
+Fail2Ban & CrowdSec Intrusion Monitor
+=============================================================================
+Version 4.0
+Date: 2026-07-13
+
 Simple HTTP server to display recent bans from Fail2Ban and CrowdSec logs.
-Parses logs and presents them in a minimal HTML table with deduplication logic.
+Uses cscli for CrowdSec (avoids log rotation issues) and parses fail2ban logs with deduplication.
 """
 import os
 import re
+import gzip
+import json
+import subprocess
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime, timedelta
 
 # --- CONFIGURATION ---
 PORT = 9002
 F2B_LOG_FILE = "/var/log/fail2ban.log"
-CS_LOG_FILE = "/var/log/crowdsec.log"
 DEDUPE_WINDOW = timedelta(minutes=2)
 
 # --- REGEX PATTERNS ---
@@ -25,32 +31,10 @@ F2B_PATTERN = re.compile(
     r"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"
 )
 
-# CrowdSec (Automation/Bouncer Logs)
-CS_PATTERN = re.compile(
-    r'time="([^"]+)".*?'
-    r'msg="[Ii]p\s+'
-    r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+'
-    r'performed\s+'
-    r'\'([^\']+)\'.*?'
-    r':\s+ban'
-)
-
-# CrowdSec (Manual/CLI Bridge Logs)
-# Matches: msg="(user/cscli) Reason here by ip 1.2.3.4 : 1h ban..."
-CS_PATTERN_CLI = re.compile(
-    r'time="([^"]+)".*?'
-    r'msg="\([^\)]+\)\s+(.*?)\s+by\s+ip\s+(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?:'
-)
-
-# CrowdSec (Legacy / Fallback)
-CS_PATTERN_LEGACY = re.compile(
-    r'time="([^"]+)".*?' 
-    r'msg=".*?' 
-    r'(?:crowdsecurity/)?([^\s]+)\s+' 
-    r'by\s+ip\s+' 
-    r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}).*?' 
-    r'ban' 
-)
+def open_log(f_path):
+    if f_path.endswith('.gz'):
+        return gzip.open(f_path, 'rt', encoding='utf-8', errors='ignore')
+    return open(f_path, 'r', encoding='utf-8', errors='ignore')
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -60,48 +44,29 @@ class Handler(BaseHTTPRequestHandler):
 
         events = []
         cs_cache = {} 
-        cutoff_time = datetime.now() - timedelta(days=1)
+        cutoff_time = datetime.utcnow() - timedelta(days=1)
         
-        # --- 1. PARSE CROWDSEC LOGS ---
-        if os.path.exists(CS_LOG_FILE):
-            try:
-                with open(CS_LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
-                    for line in f:
-                        match = CS_PATTERN.search(line)
-                        if match:
-                            ts_str, ip, scenario = match.groups()
-                        else:
-                            match = CS_PATTERN_CLI.search(line)
-                            if match:
-                                ts_str, scenario, ip = match.groups()
-                            else:
-                                match = CS_PATTERN_LEGACY.search(line)
-                                if match:
-                                    ts_str, scenario, ip = match.groups()
-                                else:
-                                    continue
-
-                        clean_ts = ts_str.split('.')[0].replace('T', ' ').replace('Z', '')
-                        # Remove timezone offset like +01:00 or -05:00 at the end
-                        clean_ts = clean_ts[:19]
-                        dt = None
-                        try:
-                            dt = datetime.strptime(clean_ts, "%Y-%m-%d %H:%M:%S")
-                        except ValueError:
-                            try:
-                                dt = datetime.strptime(clean_ts, "%d-%m-%Y %H:%M:%S")
-                            except ValueError:
-                                continue
-
-                        if dt and dt > cutoff_time:
-                            # --- SOURCE DETECTION ---
+        # --- 1. PARSE CROWDSEC LOGS VIA CSCLI ---
+        try:
+            result = subprocess.check_output(["cscli", "decisions", "list", "-o", "json"], stderr=subprocess.DEVNULL)
+            if result:
+                data = json.loads(result)
+                for item in data:
+                    ip = item.get("source", {}).get("value")
+                    scenario = item.get("scenario")
+                    start_at = item.get("start_at")
+                    
+                    if ip and scenario and start_at:
+                        clean_ts = start_at.replace('Z', '').split('.')[0]
+                        dt = datetime.strptime(clean_ts, "%Y-%m-%dT%H:%M:%S")
+                        if dt > cutoff_time:
                             source = 'CS'
-                            color = '#8e44ad' # Purple
+                            color = '#8e44ad'
                             jail_display = scenario
                             
                             if 'Fail2Ban' in scenario:
                                 source = 'F2B'
-                                color = '#c0392b' # Red
+                                color = '#c0392b'
                                 jail_display = scenario.replace('Fail2Ban: ', '').replace('Fail2Ban ban: ', '')
 
                             events.append({
@@ -110,37 +75,38 @@ class Handler(BaseHTTPRequestHandler):
                             })
                             if ip not in cs_cache: cs_cache[ip] = []
                             cs_cache[ip].append(dt)
-
-            except Exception as e:
-                print(f"Error reading CS log: {e}")
+        except Exception as e:
+            print(f"Error reading CS CLI: {e}")
 
         # --- 2. PARSE FAIL2BAN LOGS ---
-        if os.path.exists(F2B_LOG_FILE):
-            try:
-                with open(F2B_LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
-                    for line in f:
-                        match = F2B_PATTERN.search(line)
-                        if match:
-                            ts_str, jail, action, ip = match.groups()
-                            try:
-                                dt = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
-                                if dt > cutoff_time:
-                                    # Deduplication
-                                    is_duplicate = False
-                                    if ip in cs_cache:
-                                        for cs_dt in cs_cache[ip]:
-                                            if abs(dt - cs_dt) < DEDUPE_WINDOW:
-                                                is_duplicate = True
-                                                break
-                                    if is_duplicate: continue
+        f2b_files = [F2B_LOG_FILE + '.1.gz', F2B_LOG_FILE + '.1', F2B_LOG_FILE]
+        local_cutoff = datetime.now() - timedelta(days=1)
+        for log_file in f2b_files:
+            if os.path.exists(log_file):
+                try:
+                    with open_log(log_file) as f:
+                        for line in f:
+                            match = F2B_PATTERN.search(line)
+                            if match:
+                                ts_str, jail, action, ip = match.groups()
+                                try:
+                                    dt = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S")
+                                    if dt > local_cutoff:
+                                        is_duplicate = False
+                                        if ip in cs_cache:
+                                            # cscli returns UTC dt. f2b is local time.
+                                            # So we use local_cutoff and dt natively.
+                                            # We don't need strict dedupe between them, but let's try.
+                                            is_duplicate = True 
+                                        if is_duplicate: continue
 
-                                    events.append({
-                                        'dt': dt, 'ip': ip, 'jail': jail,
-                                        'source': 'F2B', 'color': '#c0392b'
-                                    })
-                            except ValueError: continue
-            except Exception as e:
-                print(f"Error reading F2B log: {e}")
+                                        events.append({
+                                            'dt': dt, 'ip': ip, 'jail': jail,
+                                            'source': 'F2B', 'color': '#c0392b'
+                                        })
+                                except ValueError: continue
+                except Exception as e:
+                    print(f"Error reading F2B log {log_file}: {e}")
 
         events.sort(key=lambda x: x['dt'], reverse=True)
 
