@@ -3,6 +3,8 @@
 
 # Virtual Private Networks (VPN)
 
+**Current edge VPN:** MikroTik WireGuard on WAN (`listen-port` **51821**). Asus is **AP mode** — do not forward WG/OpenVPN to the Asus.
+
 ## WireGuard Server Setup
 
 ### 1. Create WireGuard Interface
@@ -19,46 +21,50 @@
 
 ### 3. Add WireGuard to LAN Interface List
 
+Treats WG clients as trusted for management (same as main LAN list membership):
+
 ```bash
 /interface list member add interface=wireguard1 list=LAN
 ```
 
-### 4. Add Client Peer
-
-Set up WireGuard on the client device, inputting the public key under the `peer` section.
-
-### 5. Add Client Peer
-
-On the MikroTik:
+### 4–5. Client peer on phone/laptop and on MikroTik
 
 ```bash
-/interface wireguard peers add interface=wireguard1 public-key="[CLIENT-PUBLIC-KEY]" allowed-address=[WG-SUBNET].2/32 comment="[CLIENT-NAME]"
+/interface wireguard peers add interface=wireguard1 public-key="[CLIENT-PUBLIC-KEY]" \
+    allowed-address=[WG-SUBNET].2/32 comment="[CLIENT-NAME]"
 ```
 
-### 6. Firewall Configuration
+### 6. Firewall & NAT (current)
 
-**Allow WireGuard Handshake (WAN Input):**
+**Allow WireGuard handshake (WAN input):**
 
 ```bash
-/ip firewall filter add action=accept chain=input protocol=udp dst-port=51821 in-interface-list=WAN comment="Allow WireGuard handshake" place-before=1
+/ip firewall filter add action=accept chain=input protocol=udp dst-port=51821 \
+    in-interface-list=WAN comment="Allow WireGuard handshake" log=yes log-prefix=wg_handshake
 ```
 
-**Allow WireGuard Clients to Access Router Services:**
+**Internet for WG clients (srcnat):**
 
 ```bash
-/ip firewall filter add action=accept chain=input src-address=[WG-SUBNET].0/24 in-interface=wireguard1 comment="Allow WG client to access router services" place-before=1
+/ip firewall nat add action=masquerade chain=srcnat src-address=[WG-SUBNET].0/24 \
+    out-interface-list=WAN comment="WireGuard VPN NAT"
 ```
 
-**NAT for Internet Access:**
+**Optional — access a homelab host by LAN IP over WG (hairpin):**
 
 ```bash
-/ip firewall nat add action=masquerade chain=srcnat src-address=[WG-SUBNET].0/24 out-interface-list=WAN comment="WireGuard VPN NAT"
+/ip firewall nat add action=masquerade chain=srcnat src-address=[WG-SUBNET].0/24 \
+    dst-address=[HOMELAB-HOST] comment="WireGuard to Homelab Hairpin NAT"
 ```
 
-**Ensure DMZ Rule Does Not Interfere:**
+**MSS clamp** (avoids TCP black holes on the tunnel):
 
 ```bash
-/ip firewall nat add action=accept chain=dstnat protocol=udp dst-port=51821 in-interface-list=WAN comment="Don't DMZ WireGuard" place-before=0
+/ip firewall mangle
+add action=change-mss chain=forward in-interface=wireguard1 new-mss=clamp-to-pmtu \
+    protocol=tcp tcp-flags=syn comment="Clamp TCP MSS for WireGuard (in)"
+add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pmtu \
+    protocol=tcp tcp-flags=syn comment="Clamp TCP MSS for WireGuard (out)"
 ```
 
 ---
@@ -66,7 +72,8 @@ On the MikroTik:
 ## Client Configuration (Example)
 
 - **Addresses:** `[WG-SUBNET].2/32`
-- **DNS Servers:** `[WG-SUBNET].1` (or your internal AdGuard IP)
-- **Allowed IPs:** `0.0.0.0/0` (for full tunnel)
+- **DNS:** Prefer **`[ADGUARD-IP]`** then **`1.1.1.1`** (same as house DHCP). Using only `[WG-SUBNET].1` forces router DNS (`allow-remote-requests`).
+- **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed
 - **Endpoint:** `[DDNS_NAME].sn.mynetname.net:51821`
 - **Public Key:** `[ROUTER-WG-PUBLIC-KEY]`
+

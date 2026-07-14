@@ -72,86 +72,105 @@ Enable HTTPS for the admin interface and disable HTTP.
 
 **IP** → **SSH**:
 - Enable **Strong Crypto**.
-- Change Host Key Type to **Ed25519**.
+- Host key type **Ed25519**.
 
-**Rate Limiting**
+**Input policy (current intent):**
+
+| Source | SSH to router |
+|--------|----------------|
+| `LAN` list (main bridge + WireGuard) | Allow (rate-limited) |
+| Port knock | Temporary allow |
+| Agent host (e.g. ai-tools on Homelab) | Explicit allow |
+| Everyone else | Drop |
 
 ```bash
-/ip firewall filter add action=accept chain=input connection-state=new dst-limit=2/1m,5,src-address/1m40s dst-port=22 in-interface-list=LAN protocol=tcp comment="Accept rate-limited SSH from LAN"
-
-/ip firewall filter add action=drop chain=input dst-port=22 protocol=tcp comment="Drop ALL other SSH"
+/ip firewall filter
+add action=accept chain=input connection-state=new dst-limit=2/1m,5,src-address/1m40s \
+    dst-port=22 in-interface-list=LAN protocol=tcp comment="Accept rate-limited SSH from LAN"
+add action=accept chain=input protocol=tcp src-address=[AGENT-CONTAINER-IP] dst-port=22 \
+    comment="Agent SSH (ai-tools)"
+add action=drop chain=input protocol=tcp dst-port=22 comment="Drop ALL other SSH" log=yes
 ```
+
+Do **not** publish SSH with DSTNAT. Prefer VPN for admin; knock only as break-glass (`port-knocking.md`).
 
 > [!NOTE]
 > **Same-subnet limitation**
-> 
-> MikroTik firewall rules (forward chain) only apply to traffic **routed between subnets**.
-> Devices on the same subnet communicate at layer 2 (switched), bypassing the router entirely.
-> SSH rate-limiting must be enforced on each device individually, or via a hypervisor-level
-> firewall (e.g. Proxmox) if the devices are VMs.
+>
+> **Forward** rules never see SSH between two hosts on the same L2 segment. Host keys / fail2ban / CrowdSec on the servers still matter.
+
+### Management services (www-ssl / Winbox)
+
+- **www-ssl** on **8443** (HTTPS WebFig) — leave `address=""` if port-knock Web UI must work from arbitrary public IPs after knock.
+- **Winbox** — may restrict sources e.g. `192.168.88.0/24,10.5.0.0/24` (main LAN + WG); keep for LAN-cable recovery.
+- Disable **www** (HTTP).
 
 ### Unused Services
 
 **IP** → **Services**:
-- Disable `api`, `api-ssl`, `telnet`, and `www`.
-- **Tools** → **BTest Server**: Disable the service.
-- **IP** → **UPnP**: Ensure it is disabled to prevent internal devices from opening ports automatically.
-- **IP** → **Socks** / **Web Proxy**: Ensure these are disabled.
+
+| Service | Guidance |
+|---------|----------|
+| `telnet`, `www`, `api-ssl` | Disable |
+| `ftp` | Disable |
+| **`reverse-proxy`** | Disable if using Caddy for HTTPS (not the same as www-ssl) |
+| **`api`** | Disable **unless** CrowdSec bouncer needs it — then bind `address=` to bouncer IP only (e.g. Caddy host) |
+| Bandwidth-test server | Disable or restrict |
+| UPnP / SOCKS / web proxy | Off |
 
 > [!TIP]
-> **Why disable proxy services?**
-> These are legacy features that allow your router to act as a proxy server. If left enabled, your router becomes an "Open Proxy," allowing actors to route their traffic through your connection to hide their identity.
+> RouterOS **`reverse-proxy`** is a built-in SNI proxy on :443. Public apps should use **Caddy + DSTNAT**, not this service.
 
 ---
 
-## Firewall Strategies
+## Firewall Strategies (current)
 
 > [!WARNING]
-> **Performance Implications**: Having a large number of firewall rules can impact the router's bandwidth throughput. Best practice is to keep the default "drop" rule at the bottom and add specific exceptions above it.
+> Prefer a **final drop** on `forward` and tight `input` after explicit allows. Large rule sets cost CPU; keep comments clear.
 
-### Method 1: Interface Lists (Recommended)
+### Interface lists (primary)
 
-Group logical interfaces (e.g., `vlan10`, `ether2`) into lists (e.g., `LAN_TRUSTED`, `LAN_UNTRUSTED`).
+| List | Members (example) |
+|------|-------------------|
+| **LAN** | main `bridge`, `wireguard1` |
+| **WAN** | `ether1`, `pppoe-out1` |
+| **Untrusted** | `homelab-bridge`, `guest-vlan` |
 
-**Why this is superior:**
-- **Anti-Spoofing**: Security is bound to the physical/virtual entry point. A malicious actor cannot bypass the firewall by simply assigning themselves a "Trusted" IP address.
-- **Simplicity**: Survivors IP scheme changes without requiring rule rewrites.
+### Forward skeleton
 
-#### Configuration Example
+1. CrowdSec / established / fasttrack / invalid  
+2. Pinholes (DNS to AdGuard, AI API, AnyType→WG, Untrusted hairpin DSTNAT, …)  
+3. **Untrusted → WAN** accept  
+4. **Isolate Homelab & IoT** (`Untrusted` → `All private subnets` drop)  
+5. **LAN → WAN** and **LAN → other** accepts  
+6. **DSTNAT** accept  
+7. **Drop WAN not DSTNAT** (stock)  
+8. **Drop all other forward** (default deny)
+
+### Input skeleton
+
+1. Established / invalid / ICMP / loopback  
+2. WG handshake; pinholes (CrowdSec API, agent SSH, …)  
+3. Port knock + rate-limited SSH from LAN + drop other SSH  
+4. **`drop !LAN`**  
+5. **Allow LAN remaining input** + **drop all other input**
+
+### Address lists
+
+Use for pinholes (`AI servers`, `DNS-Servers`) and isolation (`All private subnets`). Weaker alone than interface lists (IP spoofing) but fine for exceptions.
+
+### detect-internet
 
 ```bash
-# 1. Input Chain: Only allow management from specific interfaces
-/ip firewall filter add chain=input action=accept in-interface-list=Trusted_LAN comment="Allow management from Trusted LAN"
-
-# 2. Forward Chain: Isolate subnets while allowing internet access
-/ip firewall filter add chain=forward action=drop in-interface-list=LAN_UNTRUSTED out-interface-list=!WAN comment="Drop untrusted to any local interface"
-
-# 3. Block all other traffic
-/ip firewall filter add chain=input action=drop comment="Implicit Deny all other input"
+/interface detect-internet set detect-interface-list=none
 ```
 
-### Method 2: IP Address Lists
-
-Used for granularity within the same subnet or when interface lists are too broad.
-
-**Risk**: Vulnerable to IP spoofing if Layer 2 safeguards (DHCP Snooping) are absent, as it relies entirely on Layer 3 headers.
-
-#### Configuration Example
-
-```bash
-# 1. Forward Chain: Isolate Homelab using a "blanket drop" against RFC1918 subnets
-/ip firewall filter add chain=forward action=drop src-address-list=Untrusted_Subnets dst-address-list=All_Private_Subnets comment="Force local isolation"
-
-# 2. WAN Protection: Drop all from WAN not DSTNATed
-/ip firewall filter add chain=forward action=drop connection-state=new connection-nat-state=!dstnat in-interface-list=WAN comment="Drop unsolicited WAN traffic"
-
-# 3. Block all other traffic
-/ip firewall filter add chain=input action=drop comment="Implicit Deny all other input"
-```
+Do not auto-classify interfaces when lists are hand-maintained.
 
 ### Resources
 
-- [**MikroTik RouterOS 6.49.19 default firewall rules**](https://forum.mikrotik.com/t/buying-rb1100ahx4-dude-edition-questions-about-firewall/148996/4)
+- [MikroTik default firewall discussion](https://forum.mikrotik.com/t/buying-rb1100ahx4-dude-edition-questions-about-firewall/148996/4)
+- Private audit: `docs_private/security/mikrotik-firewall-audit.md` (if present in vault)
 
 ---
 
@@ -184,10 +203,9 @@ MikroTik can detect and blacklist IPs after multiple failed attempts. This is hi
 
 **Applicable Services:**
 - **WinBox** (TCP/8291)
-- **HTTPS Management** (TCP/443)
-- **SSH**
-- **Port-scan detection**
-- **SYN flood protection**
+- **HTTPS WebFig** (TCP/**8443** — not public 443; that is Caddy)
+- **SSH** (should not be WAN-open)
+- **Port-scan detection** / **SYN flood** (optional extras)
 
 **The Logic:**
 1. 1st failed attempt → `stage1` address list.
@@ -200,11 +218,27 @@ A "Physical Security" best practice. Disabling unused ports (`etherX`) prevents 
 
 ### DNS Hardening
 
-To prevent DNS Cache Poisoning (DNS Spoofing), shorten the maximum TTL:
-
 ```bash
 /ip dns set cache-max-ttl=24h
 ```
+
+Clients: DHCP dual DNS (`[ADGUARD-IP],1.1.1.1`) — see [setup.md](setup.md). Do not rely on the router as the house resolver.
+
+### NTP
+
+```bash
+/system ntp client set enabled=yes
+/system ntp client servers add address=time.cloudflare.com
+/system ntp client servers add address=0.uk.pool.ntp.org
+```
+
+### Winbox source restriction (optional)
+
+```bash
+/ip service set winbox address=[LAN-SUBNET],[WG-SUBNET]
+```
+
+(www-ssl often left unrestricted at the service layer so port-knock Web UI works; firewall still gates WAN.)
 
 ---
 
@@ -239,3 +273,26 @@ smbclient -L //[TRUSTED-IP] -N
 ```
 
 - **Expected**: `Connection failed (Error NT_STATUS_IO_TIMEOUT)`.
+
+---
+
+## Appendix A: Legacy hardening snippets
+
+### Forward SSH rate-limit (retired / disabled)
+
+Optional cross-subnet throttle; little value if SSH is not WAN-published. Same-subnet SSH never hits `forward`.
+
+```bash
+/ip firewall filter add chain=forward action=accept connection-state=new protocol=tcp \
+    dst-port=22 dst-limit=2/1m,5,src-address/1m40s comment="RATE LIMIT: Accept SSH within limit"
+/ip firewall filter add chain=forward action=drop connection-state=new protocol=tcp \
+    dst-port=22 comment="RATE LIMIT: Drop excessive SSH attempts"
+```
+
+### Disable API entirely
+
+Older guidance said disable `api`. **Current:** CrowdSec RouterOS bouncer uses API from the Caddy host — keep `api` bound to that IP only, or break the bouncer.
+
+### Full ASUS DMZ + “Don’t DMZ WireGuard”
+
+See [setup.md Appendix A](setup.md) and [vpn-setup.md Appendix A](vpn-setup.md).

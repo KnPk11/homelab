@@ -3,7 +3,9 @@
 
 # Port Knocking Configuration
 
-Port knocking acts as an emergency backdoor to your router. It allows you to temporarily whitelist your current IP address to access management services (like SSH or the Web UI) from the internet.
+Port knocking is an **emergency backdoor** only: temporarily whitelist your public IP for **SSH** and **WebFig (www-ssl :8443)**. Prefer **WireGuard** for daily admin. Knock is obscurity + friction, not a password — services still need keys/strong credentials.
+
+**Note:** If `/ip service` `www-ssl` has a restricted `address=` list, knock from the internet will pass the firewall but the service may still refuse the client. Leave www-ssl `address=""` if you rely on knock for Web UI.
 
 ## RouterOS Firewall Rules
 

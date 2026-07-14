@@ -16,46 +16,45 @@ Set a static IP for the secondary router (Asus):
 
 ## DNS
 
-To allow access to the homelab domain from within the LAN and to differentiate between various services.
+### Client DNS (DHCP — preferred)
+
+Hand clients **AdGuard first**, public DNS second (survives dns-102 / homelab outages without a scheduler script):
 
 ```bash
-# Exact match (must be listed first)
-/ip dns static add name=stream.[DOMAIN] address=[SERVER-IP]
-
-# RegEx catch-all for everything else
-/ip dns static add regexp=".*\\.[DOMAIN]" address=[DNS-SERVER-IP]
+/ip dhcp-server network
+set [find comment=defconf] dns-server=[ADGUARD-IP],1.1.1.1
+set [find comment=homelab] dns-server=[ADGUARD-IP],1.1.1.1
+set [find comment=guest-vlan] dns-server=[ADGUARD-IP],1.1.1.1
 ```
 
-To make the secondary router's VPN work from within the home network:
-- **Name:** `[ASUS-DDNS]`
-- **Address:** `[ROUTER-IP-SECONDARY]`
+See also [AdGuard Home setup](../../02_Services/AdGuard%20Home/setup.md) (upstream resolvers, punch-hole rules).
 
-Interfaces → `pppoe-out` → **Dial Out** → Uncheck **Use Peer DNS**.
-**IP** → **DHCP Client** → `ether1` → Uncheck **Use Peer DNS** (Optional).
+### Router DNS service
+
+Interfaces → `pppoe-out` → **Dial Out** → Uncheck **Use Peer DNS**.  
+**IP** → **DHCP Client** → `ether1` → Uncheck **Use Peer DNS** (optional).
+
 **IP** → **DNS**:
-- Ensure **Dynamic Servers** is empty now.
-- Add Servers: `[ADGUARD-IP]`
-- Tick **Allow Remote Requests**.
+- Ensure **Dynamic Servers** is empty.
+- **Servers:** `[ADGUARD-IP]` (router’s own lookups).
+- **Allow Remote Requests:** only if something must query the MikroTik (e.g. some WireGuard peer configs). Not required for normal DHCP clients when they use AdGuard directly.
+
+### Split-horizon / hairpin statics (current)
+
+LAN/VPN access to your public hostname via the router (port-based DSTNAT: 80/443 → Caddy, app ports → services):
+
+```bash
+/ip dns static add name=[DOMAIN] address=[HOMELAB-GW] match-subdomain=yes \
+    comment="Hairpin via GW for port-based DSTNAT"
+```
+
+Older name-based splits (per-host A records only) — see Appendix B.
 
 ## DDNS
 
 1. **IP** → **Cloud** → **DDNS Enabled**.
 2. **DDNS Update Interval**: `(not required)`.
 3. Wait until a domain is generated under **DNS Name**: `[DDNS_NAME].sn.mynetname.net`.
-
-## DMZ
-
-**IP** → **Firewall** → **NAT** → **Add New (+)**.
-
-**General Tab:**
-- **Chain**: `dstnat`
-- **In. Interface**: `pppoe-out1` (Your WAN connection)
-
-**Action Tab:**
-- **Action**: `dst-nat`
-- **To Addresses**: `[ROUTER-IP-SECONDARY]`
-
-Drag and drop your new DMZ rule so it sits below your homelab rules (Port 80/443) but above your Masquerade rules.
 
 ## Port Forwarding
 
@@ -149,3 +148,38 @@ Set the connection type to **Native** (recommended) or **Passthrough**.
 Ensure you periodically check for and install updates:
 - **RouterOS**: **System** → **Packages** → **Check For Updates**.
 - **Firmware**: **System** → **RouterBOARD**.
+
+---
+
+## Appendix B: Legacy DNS static patterns
+
+```bash
+# Exact match first
+/ip dns static add name=stream.[DOMAIN] address=[SERVER-IP]
+# Regexp catch-all to reverse proxy only (breaks multi-host port split on one name)
+/ip dns static add regexp=".*\\.[DOMAIN]" address=[CADDY-IP]
+```
+
+Prefer **gateway IP + DSTNAT by port** when one hostname serves Caddy and other host ports (e.g. AnyType).
+
+ASUS DDNS internal resolve (if needed):
+
+- **Name:** `[ASUS-DDNS]` → **Address:** `[ROUTER-IP-SECONDARY]`
+
+---
+
+## Appendix A: Legacy — full ASUS DMZ (retired)
+
+> [!WARNING]
+> **Not used** with Asus in **AP mode**. A full WAN DMZ to the secondary router was removed (security audit / changelog 2026-07). Prefer explicit DSTNAT pinholes (Caddy, apps) and MikroTik WireGuard.
+
+Historical recipe (do **not** re-enable casually):
+
+**IP** → **Firewall** → **NAT** → **Add**:
+
+- **Chain**: `dstnat`
+- **In. Interface**: `pppoe-out1`
+- **Action**: `dst-nat`
+- **To Addresses**: `[ROUTER-IP-SECONDARY]`
+
+Place below specific homelab pinholes (80/443, etc.) and above masquerade. Pair with care so MikroTik WireGuard `:51821` is not swallowed (old “Don’t DMZ WireGuard” accept is also retired).
