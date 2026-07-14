@@ -27,14 +27,14 @@ Treats WG clients as trusted for management (same as main LAN list membership):
 /interface list member add interface=wireguard1 list=LAN
 ```
 
-### 4–5. Client peer on phone/laptop and on MikroTik
+### 4. Client peer on phone/laptop and on MikroTik
 
 ```bash
 /interface wireguard peers add interface=wireguard1 public-key="[CLIENT-PUBLIC-KEY]" \
     allowed-address=[WG-SUBNET].2/32 comment="[CLIENT-NAME]"
 ```
 
-### 6. Firewall & NAT (current)
+### 5. Firewall & NAT (current)
 
 **Allow WireGuard handshake (WAN input):**
 
