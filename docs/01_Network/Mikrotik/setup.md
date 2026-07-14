@@ -151,23 +151,6 @@ Ensure you periodically check for and install updates:
 
 ---
 
-## Appendix B: Legacy DNS static patterns
-
-```bash
-# Exact match first
-/ip dns static add name=stream.[DOMAIN] address=[SERVER-IP]
-# Regexp catch-all to reverse proxy only (breaks multi-host port split on one name)
-/ip dns static add regexp=".*\\.[DOMAIN]" address=[CADDY-IP]
-```
-
-Prefer **gateway IP + DSTNAT by port** when one hostname serves Caddy and other host ports (e.g. AnyType).
-
-ASUS DDNS internal resolve (if needed):
-
-- **Name:** `[ASUS-DDNS]` → **Address:** `[ROUTER-IP-SECONDARY]`
-
----
-
 ## Appendix A: Legacy — full ASUS DMZ (retired)
 
 > [!WARNING]
@@ -183,3 +166,20 @@ Historical recipe (do **not** re-enable casually):
 - **To Addresses**: `[ROUTER-IP-SECONDARY]`
 
 Place below specific homelab pinholes (80/443, etc.) and above masquerade. Pair with care so MikroTik WireGuard `:51821` is not swallowed (old “Don’t DMZ WireGuard” accept is also retired).
+
+---
+
+## Appendix B: Legacy DNS static patterns
+
+```bash
+# Exact match first
+/ip dns static add name=stream.[DOMAIN] address=[SERVER-IP]
+# Regexp catch-all to reverse proxy only (breaks multi-host port split on one name)
+/ip dns static add regexp=".*\\.[DOMAIN]" address=[CADDY-IP]
+```
+
+Prefer **gateway IP + DSTNAT by port** when one hostname serves Caddy and other host ports (e.g. AnyType).
+
+ASUS DDNS internal resolve (if needed):
+
+- **Name:** `[ASUS-DDNS]` → **Address:** `[ROUTER-IP-SECONDARY]`
