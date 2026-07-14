@@ -30,15 +30,20 @@ sudo systemctl enable --now syncthing@syncthing.service
 
 #### Directory Permissions
 
-Since Syncthing runs as a non-root user, the synced directories must be owned by the `syncthing` user. Root can still read and write everything regardless of ownership.
+Since Syncthing runs as a non-root user, the synced directories must be owned by the `syncthing` user. Furthermore, if you edit files as `root` (or another user), those new files might be created with permissions that block Syncthing from updating them later.
+
+To prevent this, we use Access Control Lists (ACLs) to ensure the `syncthing` user always retains read, write, and execute permissions on all newly created files and directories.
 
 ```bash
-# Set ownership of synced directories
+# 1. Install ACL package (if on Debian/Ubuntu)
+sudo apt-get install acl -y
+
+# 2. Set base ownership to syncthing
 chown -R syncthing:syncthing /opt/dev/projects /opt/dev/docs_private
 
-# Ensure group-writability and setgid so new files from root remain accessible
-chmod -R g+rwX /opt/dev/projects /opt/dev/docs_private
-find /opt/dev/projects /opt/dev/docs_private -type d -exec chmod g+s {} +
+# 3. Apply ACLs to existing files and set default ACLs for future files
+setfacl -R -m u:syncthing:rwx /opt/dev/projects /opt/dev/docs_private
+setfacl -R -d -m u:syncthing:rwx /opt/dev/projects /opt/dev/docs_private
 ```
 
 ### Option B: Docker Compose (Legacy / General Use)
