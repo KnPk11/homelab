@@ -30,11 +30,11 @@ Add the following line:
 
 ### SSH key prerequisite
 
-The script uses key-based auth (`gemini@192.168.88.1`). Ensure the executing user's public key is authorised on the router:
+The script uses key-based auth (`svc_backup@192.168.88.1`). Ensure the executing user's public key is authorised on the router:
 
 ```bash
 # Copy public key to the router
-ssh-copy-id -i ~/.ssh/id_ed25519.pub gemini@192.168.88.1
+ssh-copy-id -i ~/.ssh/id_ed25519.pub svc_backup@192.168.88.1
 ```
 
 ## 3. Restoring Configs

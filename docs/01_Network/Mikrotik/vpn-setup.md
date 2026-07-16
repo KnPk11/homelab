@@ -43,19 +43,6 @@ Treats WG clients as trusted for management (same as main LAN list membership):
     in-interface-list=WAN comment="Allow WireGuard handshake" log=yes log-prefix=wg_handshake
 ```
 
-**Internet for WG clients (srcnat):**
-
-```bash
-/ip firewall nat add action=masquerade chain=srcnat src-address=[WG-SUBNET].0/24 \
-    out-interface-list=WAN comment="WireGuard VPN NAT"
-```
-
-**Optional — access a homelab host by LAN IP over WG (hairpin):**
-
-```bash
-/ip firewall nat add action=masquerade chain=srcnat src-address=[WG-SUBNET].0/24 \
-    dst-address=[HOMELAB-HOST] comment="WireGuard to Homelab Hairpin NAT"
-```
 
 **MSS clamp** (avoids TCP black holes on the tunnel):
 

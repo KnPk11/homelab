@@ -44,6 +44,73 @@ Put the lab (and guest VLAN) on **Untrusted**:
 
 ---
 
+## Bridge VLAN filtering (Guest + Asus trunk)
+
+> [!IMPORTANT]
+> `vlan-filtering=yes` on main `bridge`. Without this, `/interface bridge vlan` is only partly enforced and Guest VLAN frames can flood onto other bridge ports (e.g. `ether5`, `sfp1`). Firewall isolation still applies to **routed** traffic; filtering hardens **L2**.
+
+### Topology (why this is needed)
+
+```text
+Main SSID  ── untagged ──┐
+                         ├── Asus (AP mode) ── trunk ── ether2 ── MikroTik bridge
+Guest SSID ── VLAN 10 ───┘
+```
+
+| Path | Role |
+|------|------|
+| `ether2` | Trunk to Asus: **untagged** main LAN + **tagged** VLAN 10 (guest) |
+| `ether5`, `sfp1` | Access ports: main LAN only (untagged / PVID 1) |
+| `guest-vlan` | VLAN interface on `bridge`, `vlan-id=10`, list **Untrusted** |
+| `homelab-bridge` | Separate bridge (ether3/4) — **not** affected by main-bridge filtering |
+
+Asus must tag the guest (and any IoT-as-guest) SSID as **VLAN 10**. If both networks leave the AP untagged, MikroTik cannot separate them.
+
+### Target config (RouterOS 7)
+
+```bash
+# Access / trunk port roles (main bridge only)
+/interface bridge port
+set [find where bridge=bridge and interface=ether2] \
+    pvid=1 frame-types=admit-all \
+    comment="Trunk to Asus AP (untagged main + VLAN 10 guest)"
+set [find where bridge=bridge and interface=ether5] \
+    pvid=1 frame-types=admit-only-untagged-and-priority-tagged \
+    comment="Main LAN access"
+set [find where bridge=bridge and interface=sfp1] \
+    pvid=1 frame-types=admit-only-untagged-and-priority-tagged \
+    comment="Main LAN access"
+
+# VLAN table
+/interface bridge vlan
+# Main LAN (untagged / PVID 1) — CPU + all main ports
+add bridge=bridge comment="Main LAN (untagged)" \
+    untagged=bridge,ether2,ether5,sfp1 vlan-ids=1
+# Guest — tagged on CPU + Asus trunk only (no ether5/sfp1)
+add bridge=bridge comment="Guest VLAN" \
+    tagged=bridge,ether2 vlan-ids=10
+
+# Enable enforcement LAST
+/interface bridge set [find name=bridge] vlan-filtering=yes
+```
+
+If a row already exists, use `set [find ...]` instead of `add`.
+
+### Safe apply order
+
+1. Manage the router from **homelab** (`[HOMELAB-GW]` / `192.168.50.1`) or another path that does **not** depend on the main-bridge port you might mis-tag.  
+2. Set **port PVIDs / frame-types** and **bridge vlan** rows first.  
+3. Enable **`vlan-filtering=yes` last**.  
+4. Verify: main Wi‑Fi DHCP, guest Wi‑Fi DHCP on guest subnet, guest cannot reach main LAN / lab private ranges, `ether5`/`sfp1` do not carry VLAN 10.
+
+### What this does *not* replace
+
+- Firewall **Isolate Homelab & IoT** (Untrusted → private) still required for L3.  
+- Homelab isolation remains the **separate bridge**, not guest VLAN filtering.  
+- ASUS guest isolation / client isolation is optional extra, not a substitute for tagging + filtering.
+
+---
+
 ## Firewall (current model)
 
 ### Isolation: Untrusted → private
@@ -110,8 +177,9 @@ After intentional accepts (LAN→WAN, LAN→other, DSTNAT, Untrusted→WAN, pinh
 
 ## Zero Trust layers
 
-- **Layer 1 (MikroTik):** Interface lists + isolate + pinholes  
-- **Layer 2 (Asus AP / main LAN):** Host placement on trusted L2  
+- **Layer 1 (MikroTik L3):** Interface lists + isolate + pinholes  
+- **Layer 1b (MikroTik L2):** Bridge **VLAN filtering** on main `bridge` (guest trunk vs access ports) — see above  
+- **Layer 2 (Asus AP / main LAN):** Correct SSID→VLAN tagging; host placement on trusted L2  
 - **Layer 3 (Host OS):** Host firewall / app auth  
 
 ---
