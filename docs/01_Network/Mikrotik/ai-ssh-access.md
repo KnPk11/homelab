@@ -3,7 +3,7 @@
 
 # MikroTik Remote Access Setup Guide
 
-Secure SSH access for the automation agent (live: user `gemini` on `ai-tools` / `[AGENT-CONTAINER-IP]`) to the MikroTik router.
+Secure SSH access for the automation agent (live: user `svc_ai` or `svc_backup` on `ai-tools` / `[AGENT-CONTAINER-IP]`) to the MikroTik router.
 
 ## Intent
 
@@ -20,7 +20,7 @@ Secure SSH access for the automation agent (live: user `gemini` on `ai-tools` / 
 /user add name=[AGENT-USER] group=full comment="CLI Agent"
 ```
 
-> **Future:** product-agnostic name + two users (ops read-only / admin full disabled by default). See security audit M5 / mikrotik-backup CHANGELOG.
+> **Note:** The architecture uses two users: `svc_backup` (read-only, passwordless) and `svc_ai` (full admin, passphrase-protected key).
 
 ## 2. SSH Key Authentication
 
@@ -47,17 +47,32 @@ Place it **before** any rule that drops remaining SSH or non-LAN input, or the a
 ## 4. Connection Verification
 
 ```bash
-ssh -i /root/.ssh/id_ed25519 [AGENT-USER]@[ROUTER-IP] "/ip firewall filter print"
+ssh -i /root/.ssh/id_ed25519_ai [AGENT-USER]@[ROUTER-IP] "/ip firewall filter print"
 ```
 
-## 5. Security Notes (current)
+## 5. Operational unlock on ai-tools-105 (TTL)
+
+Router admin (`svc_ai`) uses the **same** passphrase-protected God Mode key as other privileged targets: `~/.ssh/id_ed25519_ai`. That key is also trusted on LXCs/VMs — it is **not** MikroTik-only.
+
+On **ai-tools-105**, unlock with the host-wide TTL helpers (default **1 hour**):
+
+```bash
+ai-key-unlock
+ai-key-status
+source ~/.ssh/ai-key-agent.sh
+ssh 192.168.88.1 '/system identity print'
+ai-key-lock    # when finished (or wait for TTL)
+```
+
+## 6. Security Notes (current)
 
 | Item | Value |
 |------|--------|
-| User | `[AGENT-USER]` (live: `gemini`) |
-| Group | `full` (planned least-privilege later) |
-| Auth | SSH key (Ed25519) |
-| Source IP | `[AGENT-CONTAINER-IP]` |
+| User | `[AGENT-USER]` (live: `svc_ai` / `svc_backup`) |
+| Group | `full` (for `svc_ai`), `read` (for `svc_backup`) |
+| Auth | SSH key (Ed25519); God Mode key is passphrase-protected |
+| Source IP | `[AGENT-CONTAINER-IP]` (live: ai-tools-105) |
 | Port | 22 |
+| Admin key ops | Host-wide TTL unlock on ai-tools-105 (`ai-key-*`, default 1h) — see §5 |
 
-Backup cron: `capture-mikrotik-config.sh` uses `ROUTER_SSH_USER` (default `gemini`).
+Backup cron: `capture-mikrotik-config.sh` uses `ROUTER_SSH_USER` (default `svc_backup`) and is **independent** of the God Mode TTL unlock.

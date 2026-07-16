@@ -17,6 +17,22 @@ This relies on logical firewall rules to separate the homelab from the trusted L
 
 - **Security Factor**: Even if MikroTik firewall rules are deleted, the trusted LAN remains protected as the secondary router blocks incoming traffic from its WAN port (where the MikroTik resides) by default.
 
+### Bridge VLAN filtering (main `bridge`)
+
+**Status:** Enabled (`vlan-filtering=yes`) so Guest VLAN 10 from the Asus AP trunk is enforced at L2.
+
+| Concern | Control |
+|---------|---------|
+| Guest/IoT SSID + main SSID on same Asus uplink | Trunk on `ether2`: untagged main + tagged VLAN 10 |
+| Guest frames leaking to `ether5` / `sfp1` | VLAN filtering + guest only `tagged=bridge,ether2` |
+| Guest/lab → private subnets at IP layer | Firewall **Untrusted** isolate (unchanged) |
+| Homelab vs main LAN | Separate **`homelab-bridge`** (physical ports), not VLAN filtering |
+
+Without filtering, firewall still stops most **routed** untrusted→private traffic, but the bridge can still flood VLAN traffic between ports. See full procedure and port roles in [lan-segmentation.md — Bridge VLAN filtering](lan-segmentation.md#bridge-vlan-filtering-guest--asus-trunk).
+
+> [!WARNING]
+> Apply while managing via **homelab** (`[HOMELAB-GW]`), not only a main-LAN Wi‑Fi client. Set PVID / `bridge vlan` rows **before** `vlan-filtering=yes`.
+
 ---
 
 ## Tailscale Security
@@ -136,10 +152,12 @@ Do **not** publish SSH with DSTNAT. Prefer VPN for admin; knock only as break-gl
 | **WAN** | `ether1`, `pppoe-out1` |
 | **Untrusted** | `homelab-bridge`, `guest-vlan` |
 
+Main `bridge` also uses **VLAN filtering** (guest trunk on `ether2`). Homelab stays on `homelab-bridge`. Details: [lan-segmentation.md](lan-segmentation.md#bridge-vlan-filtering-guest--asus-trunk).
+
 ### Forward skeleton
 
 1. CrowdSec / established / fasttrack / invalid  
-2. Pinholes (DNS to AdGuard, AI API, AnyType→WG, Untrusted hairpin DSTNAT, …)  
+2. Pinholes (DNS to AdGuard, AI API, Untrusted hairpin DSTNAT, …)  
 3. **Untrusted → WAN** accept  
 4. **Isolate Homelab & IoT** (`Untrusted` → `All private subnets` drop)  
 5. **LAN → WAN** and **LAN → other** accepts  
