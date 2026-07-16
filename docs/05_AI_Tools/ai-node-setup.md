@@ -98,8 +98,32 @@ Custom OpenAI-compatible endpoints (e.g., Open WebUI) require explicit mapping i
 
 ### 4.1. Access Strategy
 
-It is recommended to create a dedicated service key for the AI node to allow it to interact securely with other homelab services.
+We utilise a **multi-key** model so privileges stay separated:
 
+1. **Job / automation keys** (passwordless where appropriate): e.g. MikroTik config capture via `svc_backup`, other read-only jobs. **Not** for interactive git or God Mode.
+2. **God Mode key** — `~/.ssh/id_ed25519_ai` (comment `svc_ai`): passphrase-protected. Privileged SSH across the homelab (MikroTik `svc_ai`, LXC/VM accounts that trust this key). **Not** left loaded permanently.
+3. **Git SSH key** — `~/.ssh/id_ed25519` (comment `git`): passphrase-protected. **GitHub only** (`git@github.com`).
+
+#### Unlock bundle (ai-tools-105)
+
+TTL helpers load **God Mode + Git SSH** into one agent (default **2 hours**, then auto-unload):
+
+```bash
+ai-key-unlock           # passphrase per key; starts 2h TTL
+ai-key-status           # which keys loaded / remaining time
+# AI or shell work — other shells / Grok need:
+#   source ~/.ssh/ai-key-agent.sh
+ai-key-lock             # unload both early when done
+```
+
+| Detail | Location |
+|--------|----------|
+| Scripts + install | [ai-ssh-key deployment](../../nodes/ai-tools-105/services/ai-ssh-key/deployment.md) |
+| Router-side setup (MikroTik users/firewall) | [MikroTik AI SSH access](../01_Network/Mikrotik/ai-ssh-access.md) |
+| Low-level `ssh-add` reference | [SSH agent cheat sheet](../04_Resources/linux-cheat-sheet.md) |
+
+> [!TIP]
+> Use `ai-key-unlock` / `ai-key-lock`, not a bare `ssh-add` in a random terminal. Only the unlock script records TTL state so `ai-key-status` and the cron watchdog work.
 ### 4.2. User Permissions
 
 | Approach | Pros | Cons |
@@ -108,7 +132,7 @@ It is recommended to create a dedicated service key for the AI node to allow it 
 | **Dedicated User** | Limited permissions, standard practice | May require `NOPASSWD` sudo setup |
 
 > [!TIP]
-> Start with the root user to ensure a smooth initial setup. Once stable, harden the environment by migrating to a dedicated `gemini` user with scoped sudo access.
+> Start with the root user to ensure a smooth initial setup. Once stable, harden the environment by migrating to a dedicated `svc_ai` user with scoped sudo access.
 
 ### 4.3. AI Safeguards & Context Boundaries
 
