@@ -59,7 +59,7 @@ add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pm
 ## Client Configuration (Example)
 
 - **Addresses:** `[WG-SUBNET].2/32`
-- **DNS:** Prefer **`[ADGUARD-IP]`** then **`1.1.1.1`** (same as house DHCP). Using only `[WG-SUBNET].1` forces router DNS (`allow-remote-requests`).
+- **DNS:** Prefer **`[ADGUARD-IP]`** only (same as house DHCP). Using only `[WG-SUBNET].1` forces all client queries through the router.
 - **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed
 - **Endpoint:** `[DDNS_NAME].sn.mynetname.net:51821`
 - **Public Key:** `[ROUTER-WG-PUBLIC-KEY]`
