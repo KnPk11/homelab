@@ -18,14 +18,19 @@ Set a static IP for the secondary router (Asus):
 
 ### Client DNS (DHCP — preferred)
 
-Hand clients **AdGuard first**, public DNS second (survives dns-102 / homelab outages without a scheduler script):
+Hand clients **only AdGuard** so filtering and local rewrites always apply (no public secondary that clients can race to):
 
 ```bash
 /ip dhcp-server network
-set [find comment=defconf] dns-server=[ADGUARD-IP],1.1.1.1
-set [find comment=homelab] dns-server=[ADGUARD-IP],1.1.1.1
-set [find comment=guest-vlan] dns-server=[ADGUARD-IP],1.1.1.1
+set [find comment=defconf] dns-server=[ADGUARD-IP]
+set [find comment=homelab] dns-server=[ADGUARD-IP]
+set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
 ```
+
+**Resilience when dns-102 is down:** MikroTik script `CheckAdGuard` + scheduler `DNS_Health_Check` (every 1m) plus the **AdGuard Failover Trap** NAT. See [AdGuard Home setup — DNS failover](../../02_Services/AdGuard%20Home/setup.md#client-dns-via-mikrotik-dhcp-current).
+
+> [!NOTE]
+> Dual DHCP DNS (`[ADGUARD-IP],1.1.1.1`) was tried for simple client failover but causes **random AdGuard bypass** (clients often query both resolvers). Prefer AdGuard-only + router health script.
 
 See also [AdGuard Home setup](../../02_Services/AdGuard%20Home/setup.md) (upstream resolvers, punch-hole rules).
 
@@ -36,8 +41,8 @@ Interfaces → `pppoe-out` → **Dial Out** → Uncheck **Use Peer DNS**.
 
 **IP** → **DNS**:
 - Ensure **Dynamic Servers** is empty.
-- **Servers:** `[ADGUARD-IP]` (router’s own lookups).
-- **Allow Remote Requests:** only if something must query the MikroTik (e.g. some WireGuard peer configs). Not required for normal DHCP clients when they use AdGuard directly.
+- **Servers:** `[ADGUARD-IP]` while healthy; script may switch to `9.9.9.9` during failover.
+- **Allow Remote Requests:** **yes** (needed so the Failover Trap can answer client queries redirected to the router). Normal clients still use `[ADGUARD-IP]` from DHCP; they only hit the router when the trap is enabled.
 
 ### Split-horizon / hairpin statics (current)
 

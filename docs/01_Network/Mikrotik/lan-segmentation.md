@@ -25,10 +25,10 @@ To make `ether3` and `ether4` talk to each other while sharing the `[HOMELAB-GW]
 
 ```bash
 /ip dhcp-server network set [find comment=homelab] \
-    dns-server=[ADGUARD-IP],1.1.1.1
+    dns-server=[ADGUARD-IP]
 ```
 
-Same dual-DNS pattern as main LAN and guest (see [setup.md](setup.md) / AdGuard docs).
+Same AdGuard-only DHCP DNS as main LAN and guest (see [setup.md](setup.md) / AdGuard docs). Failover is router-side (`CheckAdGuard`), not a public secondary on DHCP.
 
 ### Interface list
 
@@ -188,7 +188,7 @@ After intentional accepts (LAN→WAN, LAN→other, DSTNAT, Untrusted→WAN, pinh
 
 ### Homelab DHCP DNS = gateway
 
-Old text set DNS to `[HOMELAB-GW]`. **Retired** — use AdGuard + `1.1.1.1` on the DHCP network.
+Old text set DNS to `[HOMELAB-GW]`. **Retired** — use AdGuard only on the DHCP network (+ router health script for outages).
 
 ### Input allows for Homelab → router DNS
 

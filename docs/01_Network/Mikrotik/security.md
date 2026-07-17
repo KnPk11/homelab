@@ -240,7 +240,7 @@ A "Physical Security" best practice. Disabling unused ports (`etherX`) prevents 
 /ip dns set cache-max-ttl=24h
 ```
 
-Clients: DHCP dual DNS (`[ADGUARD-IP],1.1.1.1`) — see [setup.md](setup.md). Do not rely on the router as the house resolver.
+Clients: DHCP **AdGuard only** (`[ADGUARD-IP]`) plus router `CheckAdGuard` / Failover Trap when dns-102 is down — see [setup.md](setup.md). Avoid dual public DNS on DHCP (clients bypass filtering).
 
 ### NTP
 
