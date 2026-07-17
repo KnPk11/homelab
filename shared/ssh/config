@@ -1,15 +1,29 @@
-# MikroTik Router
+# God Mode: ~/.ssh/id_ed25519_ai (svc_ai)  |  Git SSH: ~/.ssh/id_ed25519 (comment: git)
+# Both passphrase-protected. Unlock bundle: ai-key-unlock
+# Then: source ~/.ssh/ai-key-agent.sh
+# See nodes/ai-tools-105/services/ai-ssh-key/deployment.md
+# Note: former name "svc_automation" for the git key is deprecated.
+
+# GitHub — Git SSH key only (not God Mode)
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    IdentitiesOnly yes
+
+# MikroTik Router (svc_ai full admin; use agent after ai-key-unlock)
 Host 192.168.50.1 192.168.88.1
-    User gemini
+    User svc_ai
+    IdentityFile ~/.ssh/id_ed25519_ai
+    IdentitiesOnly yes
 
-# LXC Containers
-Host 192.168.50.101 192.168.50.105
+# Caddy, DNS LXC Containers
+Host 192.168.50.101 192.168.50.102
     User root
+    IdentityFile ~/.ssh/id_ed25519_ai
 
-# Homelab & OpenClaw VMs
+# OpenMediaVault, Homelab, OpenClaw VMs
 Host 192.168.50.90 192.168.50.91 192.168.50.95
-    User k
-
-# Default to current user for other 192.168.50.x hosts
-Host 192.168.50.*
     User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
