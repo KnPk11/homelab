@@ -45,7 +45,7 @@ make start
 ```
 
 > [!TIP]
-> **Merge Behavior**: The override merges with your main `.env.override` (`STORAGE_DIR=/srv/anytype`), but specifically routes Minio to the NAS path.
+> **Merge Behavior**: Compose merges this with the main stack; keep `STORAGE_DIR=/srv/anytype` in **`.env`**. The volume line below only redirects Minio blobs to the NAS path.
 
 ### Option B: Symlink
 

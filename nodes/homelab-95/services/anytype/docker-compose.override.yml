@@ -1,0 +1,174 @@
+# =============================================================================
+# AnyType (any-sync-dockercompose) — homelab hardening override
+# =============================================================================
+# Place next to upstream compose so Docker Compose merges automatically:
+#
+#   ln -sfn /opt/dev/homelab_repo/nodes/homelab-95/services/anytype/docker-compose.override.yml \
+#           /srv/anytype-sync-logic/docker-compose.override.yml
+#
+# Or:  cp this file → /srv/anytype-sync-logic/docker-compose.override.yml
+#
+# Then:  cd /srv/anytype-sync-logic && docker compose up -d
+#        (or make stop && make start / make update)
+#
+# Upstream docker-compose.yml stays untouched for git pull.
+# Re-test after every upstream compose layout change (service renames).
+#
+# Intentional NON-goals (will break any-sync if applied blindly):
+#   - read_only: true on daemons (they write state/logs/networkStore)
+#   - user: non-root without upstream support (images expect their layout)
+#   - cap_drop: ALL on mongo/redis/any-sync (often needs more than CAP_CHOWN)
+#   - binding client ports 1001–1006 / 1011–1016 to 127.0.0.1 only (clients need host access)
+# =============================================================================
+
+x-hardening: &hardening
+  security_opt:
+    - no-new-privileges:true
+  # Drop high-risk capabilities; keep default set otherwise (safer than cap_drop: ALL here).
+  cap_drop:
+    - AUDIT_CONTROL
+    - AUDIT_WRITE
+    - BLOCK_SUSPEND
+    - DAC_READ_SEARCH
+    - IPC_LOCK
+    - IPC_OWNER
+    - LEASE
+    - LINUX_IMMUTABLE
+    - MAC_ADMIN
+    - MAC_OVERRIDE
+    - NET_BROADCAST
+    - NET_RAW
+    - SYS_ADMIN
+    - SYS_BOOT
+    - SYS_MODULE
+    - SYS_NICE
+    - SYS_PACCT
+    - SYS_PTRACE
+    - SYS_RAWIO
+    - SYS_RESOURCE
+    - SYS_TIME
+    - SYS_TTY_CONFIG
+    - SYSLOG
+    - WAKE_ALARM
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+x-hardening-light: &hardening-light
+  # One-shot / init jobs — still no privilege escalation
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: "5m"
+      max-file: "2"
+
+services:
+  # ---------------------------------------------------------------------------
+  # Init / one-shot
+  # ---------------------------------------------------------------------------
+  any-sync-init:
+    <<: *hardening-light
+
+  any-sync-coordinator_bootstrap:
+    <<: *hardening-light
+
+  create-bucket:
+    <<: *hardening-light
+
+  # ---------------------------------------------------------------------------
+  # Data plane (long-running)
+  # ---------------------------------------------------------------------------
+  mongo-1:
+    <<: *hardening
+    # Upstream already binds 127.0.0.1 — keep metrics of success via compose config
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  redis:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 128M
+
+  minio:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          memory: 128M
+
+  # ---------------------------------------------------------------------------
+  # any-sync daemons (client-facing ports stay host-wide for DSTNAT / LAN / WG)
+  # Metrics / node API are already 127.0.0.1 in .env — do not re-publish them.
+  # ---------------------------------------------------------------------------
+  any-sync-coordinator:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  any-sync-filenode:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  any-sync-node-1:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  any-sync-node-2:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  any-sync-node-3:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  any-sync-consensusnode:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: ${ANY_SYNC_DAEMONS_MEMORY_LIMIT:-500M}
+
+  netcheck:
+    <<: *hardening
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
