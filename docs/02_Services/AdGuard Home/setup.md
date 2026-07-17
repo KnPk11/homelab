@@ -115,35 +115,54 @@ Under **Settings** → **DNS settings** → **Upstream DNS servers**, use two **
 9.9.9.9
 ```
 
-`upstream_mode: load_balance` is fine. Bootstrap can use the same pair. These only matter while AdGuard itself is up; they are **not** a substitute for client-side failover when dns-102 is offline.
+`upstream_mode: load_balance` is fine. Bootstrap can use the same pair. These only matter while AdGuard itself is up; they are **not** a substitute for when **dns-102 is offline**.
 
 ### Client DNS via MikroTik DHCP (current)
 
-Clients should query **AdGuard directly** (so logs show real device IPs), with a **public secondary** if AdGuard is unreachable:
+Clients should query **AdGuard only** (so logs show real device IPs and filtering is not bypassed):
 
 1. **IP** → **DHCP Server** → **Networks** (main LAN, homelab, guest — all of them).
-2. **DNS Servers** (comma-separated list):
+2. **DNS Servers:**
 
 ```bash
 /ip dhcp-server network
-set [find comment=defconf] dns-server=[ADGUARD-IP],1.1.1.1
-set [find comment=homelab] dns-server=[ADGUARD-IP],1.1.1.1
-set [find comment=guest-vlan] dns-server=[ADGUARD-IP],1.1.1.1
+set [find comment=defconf] dns-server=[ADGUARD-IP]
+set [find comment=homelab] dns-server=[ADGUARD-IP]
+set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
 ```
 
 | Order | Server | Role |
 |-------|--------|------|
-| 1 | `[ADGUARD-IP]` | Filtering, rewrites, lab DNS |
-| 2 | `1.1.1.1` | Browse the internet if AdGuard/homelab is down (no filtering) |
+| 1 | `[ADGUARD-IP]` | Filtering, rewrites, lab DNS — sole resolver advertised to clients |
 
-Clients need a **new DHCP lease** after this change.
+Clients need a **new DHCP lease** (or renew) after this change.
+
+> [!WARNING]
+> Do **not** put `1.1.1.1` (or other public DNS) as a DHCP secondary. Many clients query both resolvers and **bypass AdGuard** even while dns-102 is healthy.
+
+#### Router-side failover when AdGuard is down
+
+When DHCP only advertises AdGuard, a dead dns-102 would otherwise break name resolution house-wide. The MikroTik health path restores browsing **without** dual DHCP DNS:
+
+| Piece | Role |
+|-------|------|
+| Script **`CheckAdGuard`** | Every run: `:resolve google.com server=[ADGUARD-IP]` |
+| Scheduler **`DNS_Health_Check`** | Interval **1m**, on-event `CheckAdGuard` (**enabled**) |
+| NAT **AdGuard Failover Trap** (UDP + TCP) | `dstnat` redirect `[ADGUARD-IP]:53` → router DNS; **disabled** while healthy |
+| Router **IP → DNS** | Servers = `[ADGUARD-IP]` when healthy; `9.9.9.9` when failed |
+| **Allow remote requests** | **yes** so redirected client queries can be answered during failover |
+
+On failure: set router DNS to `9.9.9.9`, **enable** traps, flush cache.  
+On recovery: set router DNS back to `[ADGUARD-IP]`, **disable** traps, flush cache.
+
+Clients keep using `[ADGUARD-IP]` from DHCP; while the trap is on, those packets are answered by the MikroTik (via public upstream). **Filtering is off during failover** — acceptable trade for outage resilience.
+
+Full script source: [Appendix A](#appendix-a-mikrotik-adguard-health-script).
 
 > [!NOTE]
 > **DNS proxying**
 >
-> If DHCP still pointed at the **router** and only **IP → DNS** listed AdGuard, the MikroTik would proxy every query and AdGuard would show only `[ROUTER-IP]`. Prefer DHCP → AdGuard as above.
->
-> Router **IP → DNS** can still list `[ADGUARD-IP]` for the router's own lookups, with **Allow Remote Requests** only if something (e.g. WireGuard peers) must query the MikroTik. Split-horizon hostnames for hairpin may live as router statics and/or AdGuard rewrites — see MikroTik setup / AnyType docs.
+> If DHCP pointed at the **router** and only **IP → DNS** listed AdGuard, AdGuard would show only `[ROUTER-IP]`. Prefer DHCP → AdGuard as above for normal operation.
 
 ### Asus AP Mode
 
@@ -151,9 +170,6 @@ On the Asus router (when running in AP mode off the MikroTik), the default setti
 
 > [!NOTE]
 > **ASUS Merlin**: If the Asus router handles its own DHCP and uses the Merlin firmware, turn off "Advertise router's IP in addition to user-specified DNS".
-
-> [!NOTE]
-> **Legacy:** An older design used a scheduled MikroTik script (`CheckAdGuard`) plus an "AdGuard Failover Trap" NAT redirect. That is **retired** in favour of dual DHCP DNS. See [Appendix A](#appendix-a-legacy-mikrotik-adguard-health-script) if you need the old procedure.
 
 ### AdGuard Home DNS "Punch-Hole"
 
@@ -185,10 +201,10 @@ The DHCP server for the `guest-vlan` was updated to point directly to the AdGuar
 
 ```bash
 /ip dhcp-server network set [find address="[GUEST-VLAN-SUBNET]/24"] \
-    dns-server=[ADGUARD-IP],1.1.1.1
+    dns-server=[ADGUARD-IP]
 ```
 
-(Same dual-DNS pattern as the other networks.)
+(Same AdGuard-only DHCP DNS as the other networks.)
 
 ### Reverse Proxy & Real IPs
 
@@ -211,24 +227,25 @@ Also enable:
 
 ---
 
-## Appendix A: Legacy MikroTik AdGuard health script
+## Appendix A: MikroTik AdGuard health script
 
-> [!WARNING]
-> **Retired.** Prefer dual DHCP DNS (`[ADGUARD-IP],1.1.1.1`). This appendix is kept only for historical rebuilds or if you deliberately want router-centric failover again.
->
-> Live status (2026-07): scheduler `DNS_Health_Check` is **disabled**; "AdGuard Failover Trap" NAT was **removed**.
+### Why it exists
 
-### Why it existed
+When DHCP only advertises AdGuard, a downed dns-102 box means no name resolution for the whole house. The script probes AdGuard every minute; on failure it points the **router's** resolver at a public IP and enables a NAT redirect so queries aimed at `[ADGUARD-IP]:53` are answered by the MikroTik instead.
 
-When DHCP only advertised AdGuard, a downed dns-102 box meant no name resolution for the whole house. The script probed AdGuard every minute; on failure it pointed the **router's** resolver at a public IP and enabled a NAT redirect so queries aimed at `[ADGUARD-IP]:53` were answered by the MikroTik instead.
-
-### Failover trap NAT (disabled by default; script toggled it)
+### Failover trap NAT (disabled by default; script toggles it)
 
 ```bash
-/ip firewall nat add chain=dstnat dst-address=[ADGUARD-IP] protocol=udp \
+/ip firewall nat
+add chain=dstnat dst-address=[ADGUARD-IP] protocol=udp \
     dst-port=53 action=redirect to-ports=53 \
     comment="AdGuard Failover Trap" disabled=yes
+add chain=dstnat dst-address=[ADGUARD-IP] protocol=tcp \
+    dst-port=53 action=redirect to-ports=53 \
+    comment="AdGuard Failover Trap TCP" disabled=yes
 ```
+
+Also: **IP → DNS → Allow Remote Requests = yes** (so redirected queries can be answered).
 
 ### Script `CheckAdGuard`
 
@@ -243,29 +260,24 @@ When DHCP only advertised AdGuard, a downed dns-102 box meant no name resolution
 :local backupIP "9.9.9.9"
 :local testDomain "google.com"
 
-# --- DIAGNOSTIC RUN ---
 :do {
     :log info "Script: Testing AdGuard connection to $adguardIP..."
     :resolve $testDomain server=$adguardIP
 
-    # --- SUCCESS BRANCH (AdGuard is UP) ---
     :local currentDNS [/ip dns get servers]
     :if ($currentDNS != $adguardIP) do={
         /ip dns set servers=$adguardIP
-        # Disable the "Trap" so clients talk to AdGuard directly
-        /ip firewall nat disable [find comment="AdGuard Failover Trap"]
+        /ip firewall nat disable [find where comment~"AdGuard Failover Trap"]
         /ip dns cache flush
         :log warning "Script: AdGuard RESTORED. Disabling NAT Trap."
     }
 } on-error={
     :log error "Script: AdGuard FAILED to resolve $testDomain."
 
-    # --- FAILURE BRANCH (AdGuard is DOWN) ---
     :local currentDNS [/ip dns get servers]
     :if ($currentDNS != $backupIP) do={
         /ip dns set servers=$backupIP
-        # Enable the "Trap" to hijack traffic intended for AdGuard
-        /ip firewall nat enable [find comment="AdGuard Failover Trap"]
+        /ip firewall nat enable [find where comment~"AdGuard Failover Trap"]
         /ip dns cache flush
         :log warning "Script: AdGuard DOWN. Enabling NAT Trap to $backupIP."
     }
@@ -280,8 +292,9 @@ When DHCP only advertised AdGuard, a downed dns-102 box meant no name resolution
 - **Interval:** `00:01:00`
 - **Policy:** `read`, `write`, `test`, `policy`
 - **On Event:** `CheckAdGuard`
+- **Disabled:** no (enabled)
 
-To re-disable without deleting:
+To pause without deleting:
 
 ```bash
 /system scheduler set [find name=DNS_Health_Check] disabled=yes
