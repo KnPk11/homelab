@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
 # capture-mikrotik-config.sh
-# Version: 1.3
-# Date: 2026-07-14
+# Version: 1.4
+# Date: 2026-07-15
 #
 # Pulls a sanitised RouterOS config export from the MikroTik router via SSH
 # and writes it to a local gitignored file for backup by scrape_secrets.sh.
@@ -18,7 +18,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 # Configuration — override via environment if needed
 # ---------------------------------------------------------------------------
-ROUTER_SSH_USER="${ROUTER_SSH_USER:-gemini}"
+ROUTER_SSH_USER="${ROUTER_SSH_USER:-svc_backup}"
 ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
 ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
 REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
@@ -79,6 +79,11 @@ ROUTER_CMD=$(cat << 'EOF'
 :put "# 📋 FIREWALL ADDRESS LISTS"
 :put "# ============================================================================="
 /ip firewall address-list export
+:put ""
+:put "# ============================================================================="
+:put "# 🌐 IPv6 FIREWALL RULES"
+:put "# ============================================================================="
+/ipv6 firewall export
 EOF
 )
 
