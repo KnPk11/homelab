@@ -22,8 +22,7 @@ Host 192.168.50.101 192.168.50.102
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
 
-# OpenMediaVault, Homelab, OpenClaw VMs
+# OpenMediaVault, OpenClaw, Main Homelab VMs
 Host 192.168.50.90 192.168.50.91 192.168.50.95
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
-
