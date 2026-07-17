@@ -13,13 +13,13 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** where it applies (this host may already be the Git source of truth rather than a pure pull-only node).
 *   Clone or restore **`/opt/dev/homelab_repo`** (and remotes) as your working tree.
 *   **Cron (examples already used on this host):**
-    *   Secrets scrape (weekly):  
-        `0 2 * * 0 /opt/dev/homelab_repo/shared/scripts/scrape_secrets.sh >> /var/log/scrape_secrets.log 2>&1`
+    *   *Security Note: Do NOT schedule `scrape_secrets.sh` in crontab anymore. Run it purely on-demand so you can immediately move the generated vault offline, minimizing the window that secrets sit on this AI host.*
     *   MikroTik capture (every 3 hours): see service guide below.
 
 ## 2. Services on this node
 
 *   [MikroTik config capture](services/mikrotik-backup/deployment.md) — scheduled export of critical router config into a **gitignored** local `.rsc` file.
+*   [God Mode + Git SSH key TTL unlock](services/ai-ssh-key/deployment.md) — passphrase-unlock `id_ed25519_ai` (lab) and `id_ed25519` (GitHub; formerly `svc_automation`) into ssh-agent with a **2h TTL** auto-unload watchdog.
 
 ## 3. Related shared tooling
 
