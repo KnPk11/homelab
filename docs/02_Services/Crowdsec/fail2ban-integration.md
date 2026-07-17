@@ -13,7 +13,11 @@ Create the action file at `/etc/fail2ban/action.d/crowdsec.conf`. This script te
 [Definition]
 # Use <ip> and <bantime> (seconds) from Fail2Ban. 
 # We use 's' suffix for CrowdSec duration.
-actionban = cscli decisions add --ip <ip> --duration <bantime>s --reason 'Fail2Ban: <name>'
+# Prefer Fail2Ban ban duration on the CrowdSec/MikroTik path: remove any
+# existing CS decisions for this IP, then add with F2B bantime.
+# Race: if CrowdSec later creates a longer native decision (e.g. 4h profile),
+# the edge ban may lengthen again until that decision expires.
+actionban = cscli decisions delete --ip <ip> ; cscli decisions add --ip <ip> --duration <bantime>s --reason 'Fail2Ban: <name>'
 actionunban = cscli decisions delete --ip <ip>
 ```
 
