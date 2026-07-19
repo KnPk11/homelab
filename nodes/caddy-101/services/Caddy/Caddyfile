@@ -156,6 +156,16 @@ home.{$DOMAIN_NAME} {
     }
 }
 
+pulse.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext pulse
+    import common-logging pulse
+
+    reverse_proxy {$PULSE_IP}:7655
+}
+
 cockpit.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
