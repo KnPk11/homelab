@@ -164,39 +164,15 @@ filtering:
   parental_block_host: family-block.dns.adguard.com
   safebrowsing_block_host: standard-block.dns.adguard.com
   rewrites:
-    - domain: hermes.{{DOMAIN_NAME}}
+    - domain: '*.{{DOMAIN_NAME}}'
       answer: {{CADDY_NODE_IP}}
       enabled: true
-    - domain: status.{{DOMAIN_NAME}}
+    - domain: '{{DOMAIN_NAME}}'
       answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: nextcloud.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: ai.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: nc.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: open-webui.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: immich.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: jellyfin.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: filebrowser.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: privatebin.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
-    - domain: photoprism.{{DOMAIN_NAME}}
-      answer: {{CADDY_NODE_IP}}
-      enabled: false
+      enabled: true
+    - domain: anytype.{{DOMAIN_NAME}}
+      answer: {{HOMELAB_NODE_IP}}
+      enabled: true
   safe_fs_patterns: []
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
