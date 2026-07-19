@@ -568,11 +568,21 @@ gatus.{$DOMAIN_NAME} {
     header -X-Frame-Options
     header Content-Security-Policy "frame-ancestors https://home.{$DOMAIN_NAME} https://{$DOMAIN_NAME}"
     import common-robots
-    import access_policy_lan
     import common-logging-plaintext gatus
     import common-logging gatus
 
-    reverse_proxy localhost:8081
+    @public_badges {
+        path_regexp ^/api/v1/endpoints/.*/badge\.svg$
+    }
+
+    handle @public_badges {
+        reverse_proxy localhost:8081
+    }
+
+    handle {
+        import access_policy_lan
+        reverse_proxy localhost:8081
+    }
 }
 
 ocstats.{$DOMAIN_NAME} {
