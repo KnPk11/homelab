@@ -81,3 +81,21 @@ endpoints:
       hide-hostname: true
     conditions:
       - "[STATUS] == 200"
+
+  - name: OpenWebUI
+    url: "http://${HOMELAB_NODE_IP}:3002"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: PrivateBin
+    url: "http://${HOMELAB_NODE_IP}:8180"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
