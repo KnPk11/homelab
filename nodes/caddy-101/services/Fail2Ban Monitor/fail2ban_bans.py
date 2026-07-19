@@ -138,10 +138,10 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 print(f"Error reading F2B log {log_file}: {e}")
 
-        # Prefer Fail2Ban when both sources report the same IP, then list F2B first
+        # Prefer Fail2Ban when both sources report the same IP, then sort by timestamp descending
         events = prefer_f2b(events)
         events.sort(
-            key=lambda e: (SOURCE_RANK.get(e["source"], 99), -e["dt"].timestamp())
+            key=lambda e: e["dt"].timestamp(), reverse=True
         )
 
         rows = []
