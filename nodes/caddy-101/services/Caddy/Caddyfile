@@ -568,6 +568,7 @@ gatus.{$DOMAIN_NAME} {
     header -X-Frame-Options
     header Content-Security-Policy "frame-ancestors https://home.{$DOMAIN_NAME} https://{$DOMAIN_NAME}"
     import common-robots
+    import access_policy_wan 300 30s
     import common-logging-plaintext gatus
     import common-logging gatus
 
