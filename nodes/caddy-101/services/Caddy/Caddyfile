@@ -572,7 +572,9 @@ gatus.{$DOMAIN_NAME} {
     import common-logging gatus
 
     @public_badges {
-        path_regexp ^/api/v1/endpoints/.*/badge\.svg$
+        path /api/v1/endpoints/*/health/badge.svg
+        path /api/v1/endpoints/*/response-times/*/badge.svg
+        path /api/v1/endpoints/*/uptimes/*/badge.svg
     }
 
     handle @public_badges {
