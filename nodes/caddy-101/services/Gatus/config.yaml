@@ -63,3 +63,12 @@ endpoints:
       hide-hostname: true
     conditions:
       - "[CONNECTED] == true"
+
+  - name: Filebrowser
+    url: "http://${HOMELAB_NODE_IP}:9101"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
