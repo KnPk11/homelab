@@ -17,7 +17,7 @@ set -a
 # shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
-export DOMAIN_NAME DNS_NODE_IP AITOOLS_NODE_IP HOMELAB_NODE_IP OPENCLAW_NODE_IP OMV_NODE_IP
+export DOMAIN_NAME DNS_NODE_IP AITOOLS_NODE_IP HOMELAB_NODE_IP OPENCLAW_NODE_IP OMV_NODE_IP PULSE_NODE_IP
 
 # Deploy config.yaml via envsubst
 echo "Deploying config.yaml..."
