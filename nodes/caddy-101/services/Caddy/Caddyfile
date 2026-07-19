@@ -131,8 +131,8 @@
     import basic-csp
     import common-robots
     import access_policy_wan 100 30s
-    import common-logging-plaintext main
-    import common-logging main
+    import common-logging-plaintext root_redirect
+    import common-logging root_redirect
     import honeypots-and-traps
 
     redir https://home.{$DOMAIN_NAME}{uri} permanent
@@ -143,8 +143,8 @@ home.{$DOMAIN_NAME} {
     # import basic-csp # Breaks embedding from fail2ban app
     import common-robots
     import access_policy_wan 2500 60s
-    import common-logging-plaintext home
-    import common-logging home
+    import common-logging-plaintext dashy
+    import common-logging dashy
     import honeypots-and-traps
 
     # Dashy static build — served directly by Caddy (no Node.js runtime)
