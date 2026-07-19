@@ -47,13 +47,13 @@ endpoints:
       - "[CONNECTED] == true"
 
   - name: OpenClaw
-    url: "http://${OPENCLAW_NODE_IP}:18789"
+    url: "icmp://${OPENCLAW_NODE_IP}"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[STATUS] == 200"
+      - "[CONNECTED] == true"
 
   - name: OpenMediaVault
     url: "icmp://${OMV_NODE_IP}"
@@ -101,10 +101,10 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Pulse
-    url: "http://${PULSE_NODE_IP}:7655"
+    url: "icmp://${PULSE_NODE_IP}"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[STATUS] == 200"
+      - "[CONNECTED] == true"
