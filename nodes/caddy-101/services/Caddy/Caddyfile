@@ -130,7 +130,7 @@
     import common-headers
     import basic-csp
     import common-robots
-    import access_policy_wan 100 30s
+    import access_policy_wan 150 60s
     import common-logging-plaintext root_redirect
     import common-logging root_redirect
     import honeypots-and-traps
@@ -142,7 +142,8 @@ home.{$DOMAIN_NAME} {
     import common-headers
     # import basic-csp # Breaks embedding from fail2ban app
     import common-robots
-    import access_policy_wan 2500 60s
+    # import access_policy_wan 2500 60s
+    import access_policy_wan 200 60s
     import common-logging-plaintext dashy
     import common-logging dashy
     import honeypots-and-traps
