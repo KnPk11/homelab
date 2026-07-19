@@ -163,7 +163,15 @@ pulse.{$DOMAIN_NAME} {
     import common-logging-plaintext pulse
     import common-logging pulse
 
-    reverse_proxy {$PULSE_IP}:7655
+    header {
+        -X-Frame-Options
+        Content-Security-Policy "frame-ancestors https://*.{$DOMAIN_NAME} http://192.168.50.95"
+    }
+
+    reverse_proxy {$PULSE_IP}:7655 {
+        header_down -X-Frame-Options
+        header_down -Content-Security-Policy
+    }
 }
 
 cockpit.{$DOMAIN_NAME} {
