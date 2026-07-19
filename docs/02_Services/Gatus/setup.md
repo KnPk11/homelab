@@ -7,7 +7,7 @@
 
 ## Introduction
 
-This document outlines the manual installation and configuration of Gatus to provide a high-availability status page and automatic failover for `home.example.com`.
+This document outlines the manual installation and configuration of Gatus to provide a standalone status page.
 
 ---
 
@@ -85,20 +85,20 @@ endpoints:
     conditions: ["[CONNECTED] == true"]
 
   - name: Main Homelab
-    url: "http://[HOMELAB-IP]:9102"
+    url: "icmp://[HOMELAB-IP]"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
-    conditions: ["[STATUS] == 200"]
+    conditions: ["[CONNECTED] == true"]
 
   - name: OpenClaw
-    url: "http://[OPENCLAW-IP]:18789"
+    url: "icmp://[OPENCLAW-IP]"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
-    conditions: ["[STATUS] == 200"]
+    conditions: ["[CONNECTED] == true"]
 
   - name: OMV
     url: "icmp://[OMV-IP]"
@@ -141,27 +141,15 @@ sudo systemctl enable --now gatus
 
 ---
 
-## 4. Caddy Failover Configuration
+## 4. Caddy Configuration
 
-Update the `home.example.com` block in `/srv/caddy/Caddyfile`:
+Add a block for `gatus.example.com` in `/srv/caddy/Caddyfile` to expose Gatus securely within the LAN:
 
 ```caddyfile
-home.example.com {
-    # ... other imports ...
-    
-    # Try Dashy first, failover to Gatus on localhost
-    reverse_proxy [HOMELAB-IP]:9102 localhost:8081 {
-        lb_policy first
-        health_uri /
-        health_interval 10s
-        health_timeout 2s
-    }
-}
-
 gatus.example.com {
     import common-headers
     import common-robots
-    import access_policy_wan 100 30s
+    import access_policy_lan
     import common-logging-plaintext gatus
     import common-logging gatus
 
