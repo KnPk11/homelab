@@ -140,9 +140,7 @@
 
 home.{$DOMAIN_NAME} {
     import common-headers
-    # import basic-csp # Breaks embedding from fail2ban app
     import common-robots
-    # import access_policy_wan 2500 60s
     import access_policy_wan 200 60s
     import common-logging-plaintext dashy
     import common-logging dashy
@@ -152,6 +150,17 @@ home.{$DOMAIN_NAME} {
     root * /srv/dashy/dist
     try_files {path} /index.html
     file_server
+}
+
+dashy.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext dashy
+    import common-logging dashy
+    import honeypots-and-traps
+
+    reverse_proxy {$HOMELAB_IP}:9102
 }
 
 pulse.{$DOMAIN_NAME} {
