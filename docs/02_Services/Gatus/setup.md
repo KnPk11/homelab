@@ -24,7 +24,7 @@ Since standard binary downloads can sometimes be blocked, building from source e
 2. Download Gatus Source
 
    ```bash
-   mkdir -p /opt/gatus
+   mkdir -p /srv/gatus
    cd /tmp
    curl -L https://github.com/TwiN/gatus/archive/refs/tags/v5.35.0.tar.gz -o gatus.tar.gz
    tar -xzf gatus.tar.gz
@@ -35,8 +35,8 @@ Since standard binary downloads can sometimes be blocked, building from source e
 
    ```bash
    go build -o gatus .
-   cp gatus /opt/gatus/gatus
-   chmod +x /opt/gatus/gatus
+   cp gatus /srv/gatus/gatus
+   chmod +x /srv/gatus/gatus
    ```
 
 ---
@@ -45,7 +45,7 @@ Since standard binary downloads can sometimes be blocked, building from source e
 
 Gatus is configured to run on port **8081** (since 8080 is used by CrowdSec):
 
-`/opt/gatus/config.yaml`
+`/srv/gatus/config.yaml`
 
 ```yaml
 web:
@@ -53,12 +53,12 @@ web:
 
 storage:
   type: sqlite
-  path: /opt/gatus/data.db
-
+  path: /srv/gatus/data.db
+  
 ui:
   title: "Homelab Status"
   header: "System Status"
-
+  
 endpoints:
   - name: Reverse Proxy
     url: "tcp://127.0.0.1:80"
@@ -125,9 +125,9 @@ After=network.target
 [Service]
 Type=simple
 User=root
-WorkingDirectory=/opt/gatus
-Environment=GATUS_CONFIG_PATH=/opt/gatus/config.yaml
-ExecStart=/opt/gatus/gatus
+WorkingDirectory=/srv/gatus
+Environment=GATUS_CONFIG_PATH=/srv/gatus/config.yaml
+ExecStart=/srv/gatus/gatus
 Restart=always
 
 [Install]

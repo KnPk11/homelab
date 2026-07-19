@@ -21,8 +21,8 @@ export DOMAIN_NAME DNS_NODE_IP AITOOLS_NODE_IP HOMELAB_NODE_IP OPENCLAW_NODE_IP 
 
 # Deploy config.yaml via envsubst
 echo "Deploying config.yaml..."
-mkdir -p /opt/gatus
-envsubst < "$SCRIPT_DIR/config.yaml" > /opt/gatus/config.yaml
+mkdir -p /srv/gatus
+envsubst < "$SCRIPT_DIR/config.yaml" > /srv/gatus/config.yaml
 
 echo "Restarting gatus..."
 systemctl restart gatus
