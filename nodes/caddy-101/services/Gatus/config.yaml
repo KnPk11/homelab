@@ -38,13 +38,13 @@ endpoints:
       - "[CONNECTED] == true"
 
   - name: Main Homelab
-    url: "http://${HOMELAB_NODE_IP}:9102"
+    url: "icmp://${HOMELAB_NODE_IP}"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[STATUS] == 200"
+      - "[CONNECTED] == true"
 
   - name: OpenClaw
     url: "http://${OPENCLAW_NODE_IP}:18789"
