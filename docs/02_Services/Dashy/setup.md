@@ -5,27 +5,40 @@
 
 ## 1. Installation
 
-1. Create a config file for managing widgets and other things
+### Option A: Docker (Portainer)
 
-   ```bash
-   sudo nano /srv/dashy/config.yml
-   ```
-
-   ```bash
-   sudo chmod 644 /srv/dashy/config.yml
-   ```
-
-2. Create a secure password and hash it
-
+1. Create a secure password and hash it:
    ```bash
    read -s -p "Enter password: " pass; echo -n "$pass" | sha256sum
    ```
+2. Create a config file (`/srv/dashy/config.yml`) and insert your configuration and hash.
+3. Deploy the `lissy93/dashy:latest` image via Portainer stack, mounting your config file to `/app/user-data/conf.yml`.
+4. Add a `reverse_proxy` entry to your Caddyfile pointing to the container's port.
 
-   > [!NOTE]
-   > It's safe to expose the hash in the config file. However plaintext passwords would be best moved to another file, but that seems impossible to do.
+### Option B: Static Build (Bare Metal / LXC)
 
-3. Add the stack in Portainer
-4. Add an entry to Caddyfile
+For resource-constrained nodes, Dashy can be compiled into a static site and served directly by a web server like Caddy. This eliminates the need for Node.js at runtime.
+
+1. **Build the application** (on a node with Node.js installed):
+   ```bash
+   git clone --depth 1 https://github.com/lissy93/dashy.git
+   cd dashy
+   npm install
+   npm run build
+   ```
+2. **Transfer the files** to your target node (e.g., into `/opt/dashy/dist/`).
+3. **Template the configuration:** Create a `config.yml.tmpl` replacing secrets with variables (e.g., `${DASHY_AUTH_HASH}`), and inject real values from a `.env` file using `envsubst`:
+   ```bash
+   envsubst < config.yml.tmpl > /opt/dashy/dist/conf.yml
+   ```
+4. **Configure Caddy:** Add a block in your Caddyfile to serve the static directory:
+   ```caddy
+   home.example.com {
+       root * /opt/dashy/dist
+       try_files {path} /index.html
+       file_server
+   }
+   ```
 
 ## 2. Configuration
 
