@@ -48,11 +48,22 @@ export AI_GIT_KEY_PATH=~/.ssh/id_ed25519     # default; omit file to skip git ke
 export AI_KEY_TTL_SECONDS=7200               # default 2h
 ```
 
-### Other shells / Grok
+### Other shells / AI tools
+
+For any **new shell** (Grok, Gemini CLI, Antigravity, VS Code terminals, etc.) to inherit the agent automatically, add this line to `~/.bashrc`:
+
+```bash
+# Auto-load SSH agent env (written by ai-key-unlock)
+[[ -r "$HOME/.ssh/ai-key-agent.sh" ]] && source "$HOME/.ssh/ai-key-agent.sh"
+```
+
+> [!IMPORTANT]
+> Without this line, AI tool sessions spawn without `SSH_AUTH_SOCK` set, causing `git push` and SSH commands to prompt for the key passphrase even when the agent is already running with the key loaded.
+
+To verify manually or in a one-off shell:
 
 ```bash
 source ~/.ssh/ai-key-agent.sh
-ssh root@[HOST-IP] hostname
 ssh -T git@github.com
 git -C /opt/dev/homelab_repo fetch
 ```
