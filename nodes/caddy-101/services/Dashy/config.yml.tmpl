@@ -46,7 +46,7 @@ sections:
             data:text/html;charset=utf-8,<body style="margin:0;display:flex;align-content:flex-start;justify-content:flex-start;height:100%;gap:15px;font-family:sans-serif;color:lightgray;flex-wrap:wrap;padding:10px;">
             <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">Internet</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_internet/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_internet/uptimes/7d/badge.svg"></div>
             </body>
-          frameHeight: 50
+          frameHeight: 20
 
       - type: iframe
         options:
@@ -61,12 +61,11 @@ sections:
             <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">OpenMediaVault</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openmediavault/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openmediavault/uptimes/7d/badge.svg"></div>
             <div style="display:flex;align-items:center;gap:10px;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">Hermes/OpenClaw</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openclaw/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openclaw/uptimes/7d/badge.svg"></div>
             </body>
-          frameHeight: 270
-
+          frameHeight: 260
 
       - type: iframe
         options:
-          label: Services Status (incomplete list)
+          label: Services Status (Main List)
           url: >-
             data:text/html;charset=utf-8,<body style="margin:0;display:flex;align-content:flex-start;justify-content:flex-start;height:100%;gap:15px;font-family:sans-serif;color:lightgray;flex-wrap:wrap;padding:10px;">
             <a href="https://nextcloud.${HOMELAB_DOMAIN}" target="_parent" style="text-decoration:none;display:flex;align-items:center;gap:10px;color:inherit;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">Nextcloud</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_nextcloud/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_nextcloud/uptimes/7d/badge.svg"></a>
@@ -74,7 +73,7 @@ sections:
             <a href="https://ai.${HOMELAB_DOMAIN}" target="_parent" style="text-decoration:none;display:flex;align-items:center;gap:10px;color:inherit;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">OpenWebUI</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openwebui/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_openwebui/uptimes/7d/badge.svg"></a>
             <a href="https://privatebin.${HOMELAB_DOMAIN}" target="_parent" style="text-decoration:none;display:flex;align-items:center;gap:10px;color:inherit;"><span style="font-size:14px;font-weight:200;width:140px;text-align:left;">PrivateBin</span><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_privatebin/health/badge.svg"><img src="https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/_privatebin/uptimes/7d/badge.svg"></a>
             </body>
-          frameHeight: 170
+          frameHeight: 180
 
   - name: IP Banlist
     widgets:
@@ -83,5 +82,5 @@ sections:
           label: Naughty list (last 24h)
           url: https://banned.${HOMELAB_DOMAIN}/
           updateInterval: 30
-          frameHeight: 450
+          frameHeight: 500
         useProxy: true
