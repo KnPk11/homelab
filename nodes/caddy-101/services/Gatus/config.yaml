@@ -3,7 +3,7 @@ web:
 
 storage:
   type: sqlite
-  path: /opt/gatus/data.db
+  path: /srv/gatus/data.db
 
 ui:
   title: "${DOMAIN_NAME} Status"

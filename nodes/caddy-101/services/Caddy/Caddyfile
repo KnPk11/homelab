@@ -148,7 +148,7 @@ home.{$DOMAIN_NAME} {
     import honeypots-and-traps
 
     # Dashy static build — served directly by Caddy (no Node.js runtime)
-    root * /opt/dashy/dist
+    root * /srv/dashy/dist
     try_files {path} /index.html
     file_server
 }

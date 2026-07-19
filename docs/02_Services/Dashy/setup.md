@@ -26,15 +26,15 @@ For resource-constrained nodes, Dashy can be compiled into a static site and ser
    npm install
    npm run build
    ```
-2. **Transfer the files** to your target node (e.g., into `/opt/dashy/dist/`).
+2. **Transfer the files** to your target node (e.g., into `/srv/dashy/dist/`).
 3. **Template the configuration:** Create a `config.yml.tmpl` replacing secrets with variables (e.g., `${DASHY_AUTH_HASH}`), and inject real values from a `.env` file using `envsubst`:
    ```bash
-   envsubst < config.yml.tmpl > /opt/dashy/dist/conf.yml
+   envsubst < config.yml.tmpl > /srv/dashy/dist/conf.yml
    ```
 4. **Configure Caddy:** Add a block in your Caddyfile to serve the static directory:
    ```caddy
    home.example.com {
-       root * /opt/dashy/dist
+       root * /srv/dashy/dist
        try_files {path} /index.html
        file_server
    }
