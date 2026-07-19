@@ -99,3 +99,12 @@ endpoints:
       hide-hostname: true
     conditions:
       - "[STATUS] == 200"
+
+  - name: Pulse
+    url: "http://${PULSE_NODE_IP}:7655"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
