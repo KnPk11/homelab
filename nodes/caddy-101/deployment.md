@@ -24,3 +24,7 @@ Per-service guides cover `/srv/...` secrets, templates in the clone, and deploy/
 ## 3. Observability
 
 *   [Gatus Status Page](services/Gatus/deployment.md) — `/srv/gatus/`
+
+## 4. Dashboard
+
+*   [Dashy Homepage](services/Dashy/deployment.md) — static build served by Caddy from `/opt/dashy/dist`

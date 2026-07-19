@@ -147,13 +147,10 @@ home.{$DOMAIN_NAME} {
     import common-logging home
     import honeypots-and-traps
 
-    # reverse_proxy dashy:8080
-    reverse_proxy {$HOMELAB_IP}:9102 localhost:8081 {
-        lb_policy first
-        health_uri /
-        health_interval 10s
-        health_timeout 2s
-    }
+    # Dashy static build — served directly by Caddy (no Node.js runtime)
+    root * /opt/dashy/dist
+    try_files {path} /index.html
+    file_server
 }
 
 pulse.{$DOMAIN_NAME} {
