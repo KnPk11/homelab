@@ -19,6 +19,15 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  - name: Internet
+    url: "icmp://1.1.1.1"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
   - name: DNS
     url: "tcp://${DNS_NODE_IP}:53"
     interval: 30s
