@@ -173,6 +173,9 @@ filtering:
     - domain: anytype.{{DOMAIN_NAME}}
       answer: {{HOMELAB_NODE_IP}}
       enabled: true
+    - domain: mediamtx.{{DOMAIN_NAME}}
+      answer: {{HOMELAB_NODE_IP}}
+      enabled: true
   safe_fs_patterns: []
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
