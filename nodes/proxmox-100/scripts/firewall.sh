@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Proxmox Firewall Management Script
-# Version: 1.3 (2026-07-04)
+# Version: 1.4 (2026-07-20)
 # --------------------------------------
 # Run this on the Proxmox Host (pve1)
 
@@ -21,6 +21,7 @@ FW_OPENCLAW="/etc/pve/firewall/103.fw"
 FW_CADDY="/etc/pve/firewall/104.fw"
 FW_AI_TOOLS="/etc/pve/firewall/105.fw"
 FW_DNS="/etc/pve/firewall/106.fw"
+FW_PULSE="/etc/pve/firewall/107.fw"
 
 
 # Backup Configuration
@@ -32,7 +33,7 @@ echo "--- Initializing Firewall Update ---"
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS"; do
+for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
@@ -54,6 +55,7 @@ open-media-vault $OMV_IP # OMV Storage VM
 reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container
 ai-tools $AITOOLS_IP      # AI Toolbox Container
+pulse-monitor $PULSE_MONITOR_IP   # Pulse monitoring LXC (CT 107)
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
@@ -122,7 +124,7 @@ IN Ping(ACCEPT) -source homelab-lan -log nolog
 IN Ping(ACCEPT) -source vpn-net -log nolog
 EOC
 
-echo "[+] Updated Datacenter Aliases and Groups (Added VPN to ping and dns)."
+echo "[+] Updated Datacenter Aliases and Groups."
 
 # 2. Node Config (pve1/host.fw)
 cat <<EOC > $PVE1_FW
@@ -132,6 +134,7 @@ log_level_in: err
 
 [RULES]
 # Proxmox UI: Allow from Main LAN and VPN
+IN ACCEPT -p tcp -dport 8006 -source pulse-monitor -log nolog
 IN ACCEPT -p tcp -dport 8006 -source main-lan -log nolog
 IN ACCEPT -p tcp -dport 8006 -source vpn-net -log nolog
 
@@ -142,7 +145,7 @@ GROUP ssh-adm
 IN DROP -log nolog
 EOC
 
-echo "[+] Updated pve1 Node rules (Allowed VPN for Proxmox UI)."
+echo "[+] Updated pve1 Node rules"
 
 # 3. Guest 100: Homelab VM (.95)
 cat <<EOC > $FW_HOMELAB
@@ -153,7 +156,7 @@ enable: 1
 GROUP ssh-adm
 GROUP proxy-back
 GROUP ping-trusted
-|GROUP file-svc      # Access to OMV / Serving Documents
+GROUP file-svc
 GROUP streaming-pub
 GROUP anytype-pub
 GROUP nc-talk-pub
@@ -252,9 +255,22 @@ EOC
 
 echo "[+] Generated rules for Guest 106 (DNS)."
 
+# 9. Guest 107: Pulse monitoring LXC (.88)
+# ssh-adm + ping; UI only through Caddy (GROUP proxy-back → reverse-proxy).
+# No broad :7655 from main-lan/vpn/homelab-lan — use https://pulse.<domain>.
+cat <<EOC > $FW_PULSE
+[OPTIONS]
+enable: 1
 
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP proxy-back
+EOC
 
-# 9. Apply / Restart Service
+echo "[+] Generated rules for Guest 107 (Pulse)."
+
+# 10. Apply / Restart Service
 echo "--- Validating Configuration ---"
 if pve-firewall compile > /dev/null; then
     echo "[+] Validation successful. Reloading firewall..."
