@@ -215,12 +215,21 @@ else
     echo "Warning: skipped AnyType trees (root SSH to homelab-95 failed)"
 fi
 
-# Pulse (pulse-88) — Entire /etc/pulse/ directory (nodes.enc, system.json, .env, metrics DB)
+# Pulse (pulse-88) — Explicit bare-minimum secrets, keys, and configs
 if require_root_ssh "pulse-88" "${NODES["pulse-88"]}"; then
     echo "Backing up /etc/pulse on pulse-88..."
     DEST="$(vault_path "pulse-88" "/etc/pulse")"
     mkdir -p "$DEST"
-    rsync -avz -e "$RSYNC_RSH" "root@${NODES["pulse-88"]}:/etc/pulse/" "$DEST/" || \
+    rsync -avz -e "$RSYNC_RSH" \
+        --include='/.env' \
+        --include='/.encryption.key' \
+        --include='/.install_id' \
+        --include='/nodes.enc' \
+        --include='/system.json' \
+        --include='/org.json' \
+        --include='/api_tokens.json' \
+        --exclude='*' \
+        "root@${NODES["pulse-88"]}:/etc/pulse/" "$DEST/" || \
         echo "Warning: rsync failed for /etc/pulse on pulse-88"
 else
     echo "Warning: skipped Pulse tree (root SSH to pulse-88 failed)"
