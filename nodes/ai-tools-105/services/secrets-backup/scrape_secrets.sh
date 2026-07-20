@@ -57,15 +57,14 @@ require_root_ssh() {
 }
 
 declare -A NODES=(
+    ["proxmox-100"]="192.168.50.100"
+    ["pulse-88"]="192.168.50.88"
     ["caddy-101"]="192.168.50.101"
     ["dns-102"]="192.168.50.102"
     ["homelab-95"]="192.168.50.95"
     ["omv-90"]="192.168.50.90"
     ["openclaw-91"]="192.168.50.91"
-    ["proxmox-100"]="192.168.50.100"
 )
-
-# host:/absolute/path — find secret-like files under each root, vault path = same path
 PATH_SWEEPS=(
     "caddy-101:/srv"
     "dns-102:/srv"
@@ -214,6 +213,17 @@ if require_root_ssh "homelab-95" "$HOMELAB_IP"; then
     done
 else
     echo "Warning: skipped AnyType trees (root SSH to homelab-95 failed)"
+fi
+
+# Pulse (pulse-88) — Entire /etc/pulse/ directory (nodes.enc, system.json, .env, metrics DB)
+if require_root_ssh "pulse-88" "${NODES["pulse-88"]}"; then
+    echo "Backing up /etc/pulse on pulse-88..."
+    DEST="$(vault_path "pulse-88" "/etc/pulse")"
+    mkdir -p "$DEST"
+    rsync -avz -e "$RSYNC_RSH" "root@${NODES["pulse-88"]}:/etc/pulse/" "$DEST/" || \
+        echo "Warning: rsync failed for /etc/pulse on pulse-88"
+else
+    echo "Warning: skipped Pulse tree (root SSH to pulse-88 failed)"
 fi
 
 # MikroTik exports live in the local repo tree — keep that path under ai-tools-105
