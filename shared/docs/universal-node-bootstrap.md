@@ -8,10 +8,10 @@ Ensure the machine has `git` installed:
 
 ```bash
 # Debian/Ubuntu / Proxmox LXC
-apt-get update && apt-get install -y git
+apt-get update && apt-get install -y git rsync
 
 # Alpine
-apk add git
+apk add git rsync
 ```
 
 ## 2. Clone the Repository
