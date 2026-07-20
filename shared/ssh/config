@@ -17,8 +17,8 @@ Host 192.168.50.1 192.168.88.1
     IdentityFile ~/.ssh/id_ed25519_ai
     IdentitiesOnly yes
 
-# Caddy, DNS LXC Containers
-Host 192.168.50.101 192.168.50.102
+# Caddy, DNS, Pulse LXC Containers
+Host 192.168.50.101 192.168.50.102 192.168.50.88
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
 
