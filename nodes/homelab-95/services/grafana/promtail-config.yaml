@@ -15,4 +15,4 @@ scrape_configs:
       - localhost
     labels:
       job: mikrotik
-      __path__: /mnt/logs/mikrotik/*.log
+      __path__: /mnt/logs/current/mikrotik/*.log
