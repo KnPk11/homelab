@@ -57,13 +57,20 @@ write_agent_env() {
 }
 
 load_agent_env() {
+  # Always return 0: "no agent" is a normal state (status/lock must still print).
+  # With set -e, a failing last command in this function would abort callers silently.
   if _file_usable "$AGENT_ENV_FILE"; then
     # shellcheck disable=SC1090
     source "$AGENT_ENV_FILE"
-    agent_alive && return 0
+    if agent_alive; then
+      return 0
+    fi
+    # Stale env file (agent died / rebooted) — ignore sock and keep looking
+    unset SSH_AUTH_SOCK SSH_AGENT_PID || true
   fi
   # Last resort: find a live agent that already has the God Mode key
-  discover_agent_with_key
+  discover_agent_with_key || true
+  return 0
 }
 
 agent_alive() {

@@ -21,10 +21,10 @@ echo "Agent env:  $AGENT_ENV_FILE"
 echo "State file: $UNLOCK_STATE_FILE"
 echo
 
-if ! agent_alive; then
-  echo "Agent:      not connected"
-else
+if agent_alive; then
   echo "Agent:      alive (SSH_AUTH_SOCK=$SSH_AUTH_SOCK)"
+else
+  echo "Agent:      not connected (run: ai-key-unlock)"
 fi
 
 echo "Managed keys:"
@@ -55,7 +55,7 @@ if read_unlock_state; then
     echo "Remaining:  $(format_duration "$left")"
   fi
 else
-  if any_managed_key_loaded 2>/dev/null; then
+  if any_managed_key_loaded; then
     echo "Unlock state: missing (keys may have been loaded outside ai-key-unlock — no TTL)"
   else
     echo "Unlock state: none"
