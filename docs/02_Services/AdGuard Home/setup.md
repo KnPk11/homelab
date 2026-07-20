@@ -261,7 +261,7 @@ Also: **IP → DNS → Allow Remote Requests = yes** (so redirected queries can 
 :local testDomain "google.com"
 
 :do {
-    :log info "Script: Testing AdGuard connection to $adguardIP..."
+    # :log info "Script: Testing AdGuard connection to $adguardIP..."
     :resolve $testDomain server=$adguardIP
 
     :local currentDNS [/ip dns get servers]
