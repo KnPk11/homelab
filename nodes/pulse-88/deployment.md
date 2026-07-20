@@ -13,4 +13,4 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 2. Services
 
-*(Add specific service deployment guides here once services are configured)*
+*   [Pulse](../../docs/02_Services/Pulse/setup.md) — Main monitoring application configuration and deployment
