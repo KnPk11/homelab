@@ -16,9 +16,16 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 - **Goal**: This is a deliberate strategy to allow for the reconstruction of a basic commit history when we eventually move these scripts to a Git repository.
 - **Rule**: Do NOT delete legacy versions of files in the `nodes/` directory unless explicitly instructed.
 
-### 2. Secrets Management (Future)
-- **SOPS**: We intend to utilise SOPS (Secrets Operations) for the `nodes/` directory. 
-- **Current State**: Until SOPS is implemented, keep real credentials in the `nodes/` folder but ensure it is excluded from public pushes (or handled via force-pushes if accidents occur).
+### 2. Secrets Management (SOPS + age)
+- **Active System**: SOPS with node-scoped `age` keys is active across all nodes.
+- **Security Architecture**:
+  - Each node possesses its own private key (`/root/.config/sops/age/keys.txt`).
+  - `.sops.yaml` encrypts `.env` files for both the target node and the Master Admin key.
+  - AI agents on `ai-tools` can ENCRYPT secrets, but CANNOT DECRYPT secrets for other nodes.
+  - Human admins unlock the Master Admin key into RAM on `ai-tools` via `sops-key-unlock` (15-min TTL).
+- **Configuration File Secret Strategy**:
+  1. **Primary Strategy (Default)**: Extract sensitive values into `.env` files (encrypted with SOPS) and use `${VAR}` substitution inside `.yml` / `.yaml` application configs. This keeps config files clean and unencrypted in Git.
+  2. **Fallback Strategy**: For applications that do not support environment variable substitution, use SOPS `encrypted_regex` to encrypt specific YAML fields in-place.
 
 ### 3. AI Agent Authentication
 - **SSH Access**: Prefer dedicated service users where configured (`svc_ai` / `svc_backup` on MikroTik; root or node-specific users on LXCs/VMs per [`shared/ssh/config`](./shared/ssh/config)).
