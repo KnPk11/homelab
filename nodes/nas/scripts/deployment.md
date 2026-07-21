@@ -1,9 +1,8 @@
 # OMV Firewall Deployment
 
-1. On `nas`, copy the example environment file and edit it to include your actual values:
+1. On `nas`, decrypt the SOPS-encrypted firewall environment file:
    ```bash
-   cp /opt/homelab-repo/nodes/nas/scripts/firewall.env.example /opt/homelab-repo/nodes/nas/scripts/firewall.env
-   nano /opt/homelab-repo/nodes/nas/scripts/firewall.env
+   sops -d /opt/homelab-repo/nodes/nas/scripts/firewall.env > /opt/homelab-repo/nodes/nas/scripts/firewall.env
    ```
 
 2. Symlink the script to an execution path:

@@ -17,12 +17,11 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
 ### Deployment Strategy
 
 1. **Clone the repository** to `/opt/homelab-repo` on the node.
-2. **Create the environment file** under the service directory (not in the clone):
+2. **Decrypt the environment file** from the repository into the service directory:
    ```bash
    sudo mkdir -p /srv/caddy
-   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile.env.example /srv/caddy/caddy.env
+   sops -d /opt/homelab-repo/nodes/reverse-proxy/services/caddy/caddy.env > /srv/caddy/caddy.env
    sudo chmod 600 /srv/caddy/caddy.env
-   # edit /srv/caddy/caddy.env with real values
    ```
 3. **Experimental config** (optional) — keep only under `/srv/caddy/`:
    ```bash
