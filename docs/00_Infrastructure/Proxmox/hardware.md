@@ -158,6 +158,12 @@ Create a script to automatically recover the interface if a ping to the router f
    ```bash
    #!/bin/bash
 
+   # Prevent multiple instances; enforces the 5-minute cooldown
+   exec 9>/var/lock/fix-network.lock
+   if ! flock -n 9; then
+       exit 0
+   fi
+
    ROUTER_IP="[GATEWAY]"
    INTERFACE="[NIC]"
 
@@ -167,12 +173,16 @@ Create a script to automatically recover the interface if a ping to the router f
        /usr/sbin/ip link set $INTERFACE down
        sleep 3
        /usr/sbin/ip link set $INTERFACE up
+       
+       # 10-minute cooldown: script sleeps while holding the lock, 
+       # causing any new cron triggers to silently exit.
+       sleep 600 
    fi
    ```
 
 2. **Make Executable**: `chmod +x /usr/local/bin/fix-network.sh`
 
-3. **Schedule via Crontab**: `*/2 * * * * /usr/local/bin/fix-network.sh`
+3. **Schedule via Crontab**: `* * * * * /usr/local/bin/fix-network.sh`
 
 ### Verification & Testing
 
