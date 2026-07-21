@@ -1,0 +1,47 @@
+keys:
+  - &master_admin age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895
+  - &proxmox_host age1q30qfyjrc0zkvdm4783c5t4qta08zsenx8h9vfwfhay682czpaaqsyvjs8
+  - &docker_services age1ys2a57md4tw5hmad3v532gjzgxn2krznf07tgwyhekhcu5j5m9rs3gskq4
+  - &nas age1sd36le2my5trpf8qnq2ckvs9nd3jus7ezwmqerpx096kmpq0e9yq8uq5ez
+  - &lab_vm age1m7fv5sk2ndcydksm2x96qsd8v3lx0el8rczl8pp8jvuga7906qpqkcsx25
+  - &reverse_proxy age1rz3pdwcfupv6746rx350wf2v9ku2225ngl535sqm7znm2l573yjs6akhk4
+  - &ai_tools age1p5nkwme342u5vwxaxfeaajxdwkqquda06td8lu6lajwd776l7vdsjzpdsj
+  - &dns age1x0p5xz6z9qs9vnux58a6qzgt75hrllr3jsk3lslgu4fs7a89gspqaq6sq0
+  - &pulse age12sgcvdgl2fwt0prkuuq6mw7ycc6hwuguzplyxf0q70cjyk323vcskxx9hw
+  - &vpns age1mg3eflfslnexwupxjkd20c20fuhej5n8f0epuekne7uxtpk6cfeq0mj85m
+  - &pbs age1scvtgz068fe48zjwpzape0y9p8r3pyynrcw3xlwc8afsyvusry8s2chuk4
+
+creation_rules:
+  - path_regex: nodes/proxmox-host/.*\.env$
+    age: *master_admin, *proxmox_host
+
+  - path_regex: nodes/docker-services/.*\.env$
+    age: *master_admin, *docker_services
+
+  - path_regex: nodes/nas/.*\.env$
+    age: *master_admin, *nas
+
+  - path_regex: nodes/lab-vm/.*\.env$
+    age: *master_admin, *lab_vm
+
+  - path_regex: nodes/reverse-proxy/.*\.env$
+    age: *master_admin, *reverse_proxy
+
+  - path_regex: nodes/ai-tools/.*\.env$
+    age: *master_admin, *ai_tools
+
+  - path_regex: nodes/dns/.*\.env$
+    age: *master_admin, *dns
+
+  - path_regex: nodes/pulse/.*\.env$
+    age: *master_admin, *pulse
+
+  - path_regex: nodes/vpns/.*\.env$
+    age: *master_admin, *vpns
+
+  - path_regex: nodes/pbs/.*\.env$
+    age: *master_admin, *pbs
+
+  # Default fallback for any other .env file in the repository
+  - path_regex: .*\.env$
+    age: *master_admin
