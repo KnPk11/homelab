@@ -6,8 +6,10 @@ docs_temp/
 .DS_Store
 Thumbs.db
 
-# Secrets (Double check)
-*.env
+# Secrets (SOPS Encrypted files are tracked; raw/decrypted stubs ignored)
+*.env.dec
+*.env.raw
+*.env.unencrypted
 *.key
 *.pem
 .secrets/
