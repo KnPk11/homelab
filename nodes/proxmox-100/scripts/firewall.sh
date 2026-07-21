@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # Proxmox Firewall Management Script
-# Version: 1.4 (2026-07-20)
+# Version: 1.5 (2026-07-20)
 # --------------------------------------
 # Run this on the Proxmox Host (pve1)
+# v1.5: CT 108 vpns (Tailscale UDP 41641), CT 109 PBS (:8007), aliases + tailscale-wg group
 
 set -e
 
@@ -22,6 +23,8 @@ FW_CADDY="/etc/pve/firewall/104.fw"
 FW_AI_TOOLS="/etc/pve/firewall/105.fw"
 FW_DNS="/etc/pve/firewall/106.fw"
 FW_PULSE="/etc/pve/firewall/107.fw"
+FW_VPNS="/etc/pve/firewall/108.fw"
+FW_PBS="/etc/pve/firewall/109.fw"
 
 
 # Backup Configuration
@@ -33,7 +36,7 @@ echo "--- Initializing Firewall Update ---"
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE"; do
+for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
@@ -56,12 +59,15 @@ reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container
 ai-tools $AITOOLS_IP      # AI Toolbox Container
 pulse-monitor $PULSE_MONITOR_IP   # Pulse monitoring LXC (CT 107)
+vpns $VPNS_IP             # VPN / Tailscale LXC (CT 108)
+pbs $PBS_IP               # Proxmox Backup Server LXC (CT 109)
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
 IN SSH(ACCEPT) -source main-lan -log nolog
 IN SSH(ACCEPT) -source vpn-net -log nolog
 IN SSH(ACCEPT) -source ai-tools -log nolog
+IN SSH(ACCEPT) -source vpns -log nolog
 
 [group web-pub]
 # Traffic allowed from anywhere to the Proxy
@@ -107,6 +113,7 @@ IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
 IN SMB(ACCEPT) -source main-lan -log nolog
 IN SMB(ACCEPT) -source vpn-net -log nolog
 IN SMB(ACCEPT) -source win11-vm -log nolog
+IN SMB(ACCEPT) -source vpns -log nolog
 # NFS & RPC Bind: Allow Homelab VMs for cross-storage sharing
 IN ACCEPT -p tcp -dport 2049 -source homelab-lan -log nolog
 IN ACCEPT -p udp -dport 2049 -source homelab-lan -log nolog
@@ -122,6 +129,11 @@ IN ACCEPT -p tcp -dport 8080 -source homelab-lan -log nolog
 IN Ping(ACCEPT) -source main-lan -log nolog
 IN Ping(ACCEPT) -source homelab-lan -log nolog
 IN Ping(ACCEPT) -source vpn-net -log nolog
+IN Ping(ACCEPT) -source vpns -log nolog
+
+[group tailscale-wg]
+# Direct peer path for Tailscale (WireGuard). Falls back to DERP if blocked.
+IN ACCEPT -p udp -dport 41641 -log nolog
 EOC
 
 echo "[+] Updated Datacenter Aliases and Groups."
@@ -137,6 +149,7 @@ log_level_in: err
 IN ACCEPT -p tcp -dport 8006 -source pulse-monitor -log nolog
 IN ACCEPT -p tcp -dport 8006 -source main-lan -log nolog
 IN ACCEPT -p tcp -dport 8006 -source vpn-net -log nolog
+IN ACCEPT -p tcp -dport 8006 -source vpns -log nolog
 
 # SSH: Only from Admin Group
 GROUP ssh-adm
@@ -270,7 +283,38 @@ EOC
 
 echo "[+] Generated rules for Guest 107 (Pulse)."
 
-# 10. Apply / Restart Service
+# 10. Guest 108: VPN / Tailscale LXC (.87)
+cat <<EOC > $FW_VPNS
+[OPTIONS]
+enable: 1
+
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP tailscale-wg   # UDP 41641 for Tailscale direct connections
+EOC
+
+echo "[+] Generated rules for Guest 108 (vpns / Tailscale)."
+
+# 11. Guest 109: Proxmox Backup Server LXC (.86)
+cat <<EOC > $FW_PBS
+[OPTIONS]
+enable: 1
+
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP proxy-back     # Caddy reverse-proxy if you front :8007 later
+
+# PBS API / Web UI (default port); pve1 is inside homelab-lan
+IN ACCEPT -p tcp -dport 8007 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 8007 -source vpn-net -log nolog
+IN ACCEPT -p tcp -dport 8007 -source homelab-lan -log nolog
+EOC
+
+echo "[+] Generated rules for Guest 109 (PBS)."
+
+# 12. Apply / Restart Service
 echo "--- Validating Configuration ---"
 if pve-firewall compile > /dev/null; then
     echo "[+] Validation successful. Reloading firewall..."
