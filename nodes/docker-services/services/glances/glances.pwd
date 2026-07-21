@@ -1,0 +1,24 @@
+{
+	"data": "ENC[AES256_GCM,data:UFi7GVgpI2CGomc6Ysjw5wJv4h/s7/jE0zH3Txm041wK3T7KlnLuqbOF2ROBS6RFu0x2e87pUWh9dYWsNbwkzSL4uBCuSyBx7SjKOjKDx1OmSj0rMz8n94eC3zQI7d7X83M31kfRrvMO+gJAl2BxY9shRIiIq8eikREHmxx3/w+yDf2Q5ccmD9sWPJ/zDIzDHtQhbmawP82CfDw+bDpmm9l1WqiWOMQMcDRjVKHLjPcRfYPJC50wng84Z9+g43H5FS4TURglyYEgT4VHUQQZ5hVJMXB95KbjsTXidoxA3oY/aGwc0DT3OnrkjCKKKgS3RVIRE9T5v1+e9KuqjjnWZqSgx8XhHdXm5Xb4OqYiv6OAU3rf5pctcGguVCL0LGrwOg==,iv:3491ssxXVZIrb0J2+19d38d+pw3w1+mhpufzxcEg9XE=,tag:pCJPbPRDeKKbaDOmtOmzTA==,type:str]",
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": [
+			{
+				"recipient": "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBDSTRxNUpZUjNVbmFxQmQ5\nWkd5NkRRZFppVUcraFRDWTcyKzhwQUIzOWprCklhWUtsK1lTOUxVQUNiYnVzZWpD\nYmFKdlJtYXlHbUt3WGg1RGFoUGFuOTQKLS0tIDFhbjBXZXpTK1dsRGVXK0NHbUZG\nU2wraStoclVNdjcwN0NjZVBXVWloUTAKfvT9UrnCjXjbl/Oj7d2IPo4ax7c+ycnG\njx0CoT3/r1qChTyZMeLm91fwC6tvTSlcw+GBCV7ZpGHs91tOTYkPkQ==\n-----END AGE ENCRYPTED FILE-----\n"
+			},
+			{
+				"recipient": "age1ys2a57md4tw5hmad3v532gjzgxn2krznf07tgwyhekhcu5j5m9rs3gskq4",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBKbUtwdTF3RjNuOU5FVmIx\nOHMrdnQxZkk3YmtsS3lHcHdKM29SUjArQ3l3Cm9hV3NIUkhUU1ozcTV6cFIyYzdW\ndDZacDRQVUdKY2FmY0tRTisrMnJKczgKLS0tIFhyODZ3Y0hJSzlhcE0yQmZCWTRE\nS1ovNjBwOUFjdnd6RTZVZXZrR2dCWlkK7uv6kH/gDgHFX3yFsn6CrBtArR+V8b71\n6JSdceDXaPc3lvwaZlpDrkBmveMS2ob8gSEoVUw/ef52n7gnWYKJ9w==\n-----END AGE ENCRYPTED FILE-----\n"
+			}
+		],
+		"lastmodified": "2026-07-21T20:19:27Z",
+		"mac": "ENC[AES256_GCM,data:gpTuLYWd5Dg3IhQ3Rst1s+/ss9YEoj0iMRAifhXF7H39OwKoewS3m990BxTF23ggcnOqFvYB330jAyAAJU/gr4vmwEyRDGdmue1onHbNbx8gd07ENCddtXTtCKiQK7xj/zbBYvCZKLlxqggHDW+RfLownrJ+7cVxmcp8jGx5wTA=,iv:Sm0pSELM7suhKWWv786WrnH4QUqEvW8oWuo1lx1Bujw=,tag:y7iQAaMb+Xvkr3GTOEmaTg==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.4"
+	}
+}
