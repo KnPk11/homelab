@@ -279,6 +279,8 @@ enable: 1
 GROUP ssh-adm
 GROUP ping-trusted
 GROUP proxy-back
+IN ACCEPT -source homelab-lan -p tcp -dport 7655 -log nolog
+IN ACCEPT -source main-lan -p tcp -dport 7655 -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 107 (Pulse)."
