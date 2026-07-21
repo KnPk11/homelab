@@ -22,7 +22,7 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 
 ### 3. AI Agent Authentication
 - **SSH Access**: Prefer dedicated service users where configured (`svc_ai` / `svc_backup` on MikroTik; root or node-specific users on LXCs/VMs per [`shared/ssh/config`](./shared/ssh/config)).
-- **God Mode key (`~/.ssh/id_ed25519_ai`)**: Passphrase-protected identity for **privileged** AI/admin SSH across the homelab (MikroTik, LXCs, VMs — not router-only). On ai-tools-105: unlock with `ai-key-unlock` (default 1h TTL), check `ai-key-status`, unload with `ai-key-lock`. Before SSH that needs this key, `source ~/.ssh/ai-key-agent.sh`. See [`nodes/ai-tools-105/services/ai-ssh-key/deployment.md`](./nodes/ai-tools-105/services/ai-ssh-key/deployment.md) and [`docs/05_AI_Tools/ai-node-setup.md`](./docs/05_AI_Tools/ai-node-setup.md).
+- **God Mode key (`~/.ssh/id_ed25519_ai`)**: Passphrase-protected identity for **privileged** AI/admin SSH across the homelab (MikroTik, LXCs, VMs — not router-only). On ai-tools: unlock with `ai-key-unlock` (default 1h TTL), check `ai-key-status`, unload with `ai-key-lock`. Before SSH that needs this key, `source ~/.ssh/ai-key-agent.sh`. See [`nodes/ai-tools/services/ai-ssh-key/deployment.md`](./nodes/ai-tools/services/ai-ssh-key/deployment.md) and [`docs/05_AI_Tools/ai-node-setup.md`](./docs/05_AI_Tools/ai-node-setup.md).
 
 ## 🎨 Standards & Conventions
 All documentation must adhere to the formatting and linguistic rules defined in:

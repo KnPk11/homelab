@@ -104,7 +104,7 @@ We utilise a **multi-key** model so privileges stay separated:
 2. **God Mode key** — `~/.ssh/id_ed25519_ai` (comment `svc_ai`): passphrase-protected. Privileged SSH across the homelab (MikroTik `svc_ai`, LXC/VM accounts that trust this key). **Not** left loaded permanently.
 3. **Git SSH key** — `~/.ssh/id_ed25519` (comment `git`): passphrase-protected. **GitHub only** (`git@github.com`).
 
-#### Unlock bundle (ai-tools-105)
+#### Unlock bundle (ai-tools)
 
 TTL helpers load **God Mode + Git SSH** into one agent (default **2 hours**, then auto-unload):
 
@@ -118,7 +118,7 @@ ai-key-lock             # unload both early when done
 
 | Detail | Location |
 |--------|----------|
-| Scripts + install | [ai-ssh-key deployment](../../nodes/ai-tools-105/services/ai-ssh-key/deployment.md) |
+| Scripts + install | [ai-ssh-key deployment](../../nodes/ai-tools/services/ai-ssh-key/deployment.md) |
 | Router-side setup (MikroTik users/firewall) | [MikroTik AI SSH access](../01_Network/Mikrotik/ai-ssh-access.md) |
 
 > [!TIP]

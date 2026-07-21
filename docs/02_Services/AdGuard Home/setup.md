@@ -115,7 +115,7 @@ Under **Settings** → **DNS settings** → **Upstream DNS servers**, use two **
 9.9.9.9
 ```
 
-`upstream_mode: load_balance` is fine. Bootstrap can use the same pair. These only matter while AdGuard itself is up; they are **not** a substitute for when **dns-102 is offline**.
+`upstream_mode: load_balance` is fine. Bootstrap can use the same pair. These only matter while AdGuard itself is up; they are **not** a substitute for when **dns is offline**.
 
 ### Client DNS via MikroTik DHCP (current)
 
@@ -138,11 +138,11 @@ set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
 Clients need a **new DHCP lease** (or renew) after this change.
 
 > [!WARNING]
-> Do **not** put `1.1.1.1` (or other public DNS) as a DHCP secondary. Many clients query both resolvers and **bypass AdGuard** even while dns-102 is healthy.
+> Do **not** put `1.1.1.1` (or other public DNS) as a DHCP secondary. Many clients query both resolvers and **bypass AdGuard** even while dns is healthy.
 
 #### Router-side failover when AdGuard is down
 
-When DHCP only advertises AdGuard, a dead dns-102 would otherwise break name resolution house-wide. The MikroTik health path restores browsing **without** dual DHCP DNS:
+When DHCP only advertises AdGuard, a dead dns would otherwise break name resolution house-wide. The MikroTik health path restores browsing **without** dual DHCP DNS:
 
 | Piece | Role |
 |-------|------|
@@ -231,7 +231,7 @@ Also enable:
 
 ### Why it exists
 
-When DHCP only advertises AdGuard, a downed dns-102 box means no name resolution for the whole house. The script probes AdGuard every minute; on failure it points the **router's** resolver at a public IP and enables a NAT redirect so queries aimed at `[ADGUARD-IP]:53` are answered by the MikroTik instead.
+When DHCP only advertises AdGuard, a downed dns box means no name resolution for the whole house. The script probes AdGuard every minute; on failure it points the **router's** resolver at a public IP and enables a NAT redirect so queries aimed at `[ADGUARD-IP]:53` are answered by the MikroTik instead.
 
 ### Failover trap NAT (disabled by default; script toggles it)
 

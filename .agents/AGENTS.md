@@ -8,7 +8,7 @@ The following rules dictate how the homelab repository is structured and managed
 
 ## 2. Secrets Management (Nested Private Repositories)
 - Passwords, API keys, and VPN configurations (`.env`, `*.conf`) are NOT encrypted with SOPS. 
-- Instead, sensitive directories (e.g., `nodes/homelab-95/secrets/`) are added to the root `.gitignore`.
+- Instead, sensitive directories (e.g., `nodes/docker-services/secrets/`) are added to the root `.gitignore`.
 - These directories act as standalone nested Git repositories that push to completely separate, private GitHub repositories for automated backup.
 
 ## 3. Safe Information

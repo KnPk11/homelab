@@ -50,11 +50,11 @@ Place it **before** any rule that drops remaining SSH or non-LAN input, or the a
 ssh -i /root/.ssh/id_ed25519_ai [AGENT-USER]@[ROUTER-IP] "/ip firewall filter print"
 ```
 
-## 5. Operational unlock on ai-tools-105 (TTL)
+## 5. Operational unlock on ai-tools (TTL)
 
 Router admin (`svc_ai`) uses the **same** passphrase-protected God Mode key as other privileged targets: `~/.ssh/id_ed25519_ai`. That key is also trusted on LXCs/VMs — it is **not** MikroTik-only.
 
-On **ai-tools-105**, unlock with the host-wide TTL helpers (default **1 hour**):
+On **ai-tools**, unlock with the host-wide TTL helpers (default **1 hour**):
 
 ```bash
 ai-key-unlock
@@ -71,8 +71,8 @@ ai-key-lock    # when finished (or wait for TTL)
 | User | `[AGENT-USER]` (live: `svc_ai` / `svc_backup`) |
 | Group | `full` (for `svc_ai`), `read` (for `svc_backup`) |
 | Auth | SSH key (Ed25519); God Mode key is passphrase-protected |
-| Source IP | `[AGENT-CONTAINER-IP]` (live: ai-tools-105) |
+| Source IP | `[AGENT-CONTAINER-IP]` (live: ai-tools) |
 | Port | 22 |
-| Admin key ops | Host-wide TTL unlock on ai-tools-105 (`ai-key-*`, default 1h) — see §5 |
+| Admin key ops | Host-wide TTL unlock on ai-tools (`ai-key-*`, default 1h) — see §5 |
 
 Backup cron: `capture-mikrotik-config.sh` uses `ROUTER_SSH_USER` (default `svc_backup`) and is **independent** of the God Mode TTL unlock.

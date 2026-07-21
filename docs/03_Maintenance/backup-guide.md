@@ -152,8 +152,8 @@ qmrestore /var/lib/vz/dump/vzdump-qemu-100-2026_02_08-00_54_24.vma.zst 102
 
 ### Method 1: Automated config capture
 
-A cron job on `ai-tools-105` pulls a gitignored RouterOS export every 3 hours and:
-- Saves a full local backup to `nodes/ai-tools-105/backups/mikrotik-config-export.rsc`
+A cron job on `ai-tools` pulls a gitignored RouterOS export every 3 hours and:
+- Saves a full local backup to `nodes/ai-tools/backups/mikrotik-config-export.rsc`
 
 ### Method 2: Binary system backup
 

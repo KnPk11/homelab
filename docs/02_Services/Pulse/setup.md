@@ -38,7 +38,7 @@ curl -fsSL 'http://<PULSE_IP>:<PORT>/api/setup-script?type=pve&host=https%3A%2F%
   | env PULSE_SETUP_TOKEN='<from-ui>' bash
 ```
 
-**Firewall (required):** PVE host must allow this CT to reach **TCP 8006**. Repo source of truth: `nodes/proxmox-100/scripts/firewall.sh` (alias `pulse-monitor` + host rule). Guest firewall: SSH (`ssh-adm`), ping, **`proxy-back` only** for the UI (Caddy; no direct LAN/VPN to the port).
+**Firewall (required):** PVE host must allow this CT to reach **TCP 8006**. Repo source of truth: `nodes/proxmox-host/scripts/firewall.sh` (alias `pulse-monitor` + host rule). Guest firewall: SSH (`ssh-adm`), ping, **`proxy-back` only** for the UI (Caddy; no direct LAN/VPN to the port).
 
 ## Day-2 ops
 
@@ -61,7 +61,7 @@ Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metr
 
 ## Related
 
-- Firewall: `nodes/proxmox-100/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
+- Firewall: `nodes/proxmox-host/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
 - Private notes: `docs_private/services/public-homepage-and-host-monitoring.md`
 - Upstream: [Install](https://github.com/rcourtman/Pulse/blob/main/docs/INSTALL.md), [Configuration](https://github.com/rcourtman/Pulse/blob/main/docs/CONFIGURATION.md)
 ```

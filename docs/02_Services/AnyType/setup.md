@@ -3,10 +3,10 @@
 > [!NOTE]
 > **Tags:** #anytype #productivity #sync #docker_repository
 
-Host: **homelab-95** (`[ANYTYPE-IP]`). Upstream stack is cloned under `/srv/anytype-sync-logic`; persistent data under `/srv/anytype`.
+Host: **docker-services** (`[ANYTYPE-IP]`). Upstream stack is cloned under `/srv/anytype-sync-logic`; persistent data under `/srv/anytype`.
 
 Node-specific notes (hardening override, secrets paths):  
-`nodes/homelab-95/services/anytype/README.md`
+`nodes/docker-services/services/anytype/README.md`
 
 ## 1. Installation
 
@@ -60,21 +60,21 @@ sudo chmod -R 755 /srv/anytype
 
 ### Hardening override (recommended)
 
-Homelab overlay: `nodes/homelab-95/services/anytype/docker-compose.override.yml`  
+Homelab overlay: `nodes/docker-services/services/anytype/docker-compose.override.yml`  
 (no-new-privileges, selective `cap_drop`, log rotation, resource limits). It does **not** change client port publishes.
 
 On the AnyType host, place it next to upstream compose (copy if this repo is not mounted on the node):
 
 ```bash
 # From a machine that has the GitOps repo (e.g. ai-tools):
-scp .../nodes/homelab-95/services/anytype/docker-compose.override.yml \
+scp .../nodes/docker-services/services/anytype/docker-compose.override.yml \
     root@[ANYTYPE-IP]:/srv/anytype-sync-logic/docker-compose.override.yml
 
 cd /srv/anytype-sync-logic
 docker compose config >/dev/null   # merge sanity-check
 ```
 
-Details: `nodes/homelab-95/services/anytype/README.md`.
+Details: `nodes/docker-services/services/anytype/README.md`.
 
 ### Start
 

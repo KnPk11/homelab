@@ -47,7 +47,7 @@ search example.com
 nameserver [ADGUARD-IP]
 nameserver 1.1.1.1
 # --- END PVE ---
-# Primary: AdGuard (dns-102). Secondary: Cloudflare public DNS.
+# Primary: AdGuard (dns). Secondary: Cloudflare public DNS.
 ```
 
 > [!IMPORTANT]
