@@ -22,7 +22,8 @@ ROUTER_SSH_USER="${ROUTER_SSH_USER:-svc_backup}"
 ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
 ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
 REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
-LOCAL_BACKUP="${REPO_DIR}/nodes/ai-tools-105/services/mikrotik-backup/mikrotik-config-export.rsc"
+LOCAL_BACKUP_DIR="/opt/dev/secrets_vault/mikrotik-backups"
+LOCAL_BACKUP="${LOCAL_BACKUP_DIR}/mikrotik-config-export-$(date +%Y%m%d-%H%M%S).rsc"
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -88,6 +89,8 @@ EOF
 )
 
 ssh \
+  -i ~/.ssh/id_ed25519 \
+  -o IdentitiesOnly=yes \
   -o BatchMode=yes \
   -o ConnectTimeout=10 \
   -o StrictHostKeyChecking=accept-new \
@@ -103,11 +106,32 @@ if [[ ! -s "${TEMP_EXPORT}" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Write local backup (gitignored — picked up by scrape_secrets.sh weekly)
+# Write local backup (directly to secrets_vault with timestamp)
 # ---------------------------------------------------------------------------
-if ! cmp -s "${TEMP_EXPORT}" "${LOCAL_BACKUP}" 2>/dev/null; then
+mkdir -p "${LOCAL_BACKUP_DIR}"
+
+# Get the most recent backup to check for changes
+LATEST_BACKUP=$(ls -t "${LOCAL_BACKUP_DIR}"/mikrotik-config-export-*.rsc 2>/dev/null | head -n 1 || true)
+
+hash_config() {
+  grep -v "^#" "$1" | md5sum | awk '{print $1}'
+}
+
+if [[ -n "${LATEST_BACKUP}" ]]; then
+  NEW_HASH=$(hash_config "${TEMP_EXPORT}")
+  OLD_HASH=$(hash_config "${LATEST_BACKUP}")
+  
+  if [[ "${NEW_HASH}" == "${OLD_HASH}" ]]; then
+    log "No changes detected (hashes match exactly). Skipping."
+  else
+    cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
+    log "Backup updated: ${LOCAL_BACKUP}"
+  fi
+else
   cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
   log "Backup updated: ${LOCAL_BACKUP}"
-else
-  log "No changes detected."
 fi
+
+# Clean up backups older than 30 days
+find "${LOCAL_BACKUP_DIR}" -type f -name "mikrotik-config-export-*.rsc" -mtime +30 -delete
+log "Cleaned up backups older than 30 days."
