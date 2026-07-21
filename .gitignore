@@ -16,6 +16,7 @@ Thumbs.db
 *.pwd.raw
 *.key.dec
 *.pem.dec
+shared/vpn-configs/.secrets/
 
 # MikroTik config & logs — contains sensitive network topology, kept as local backup only
 nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc
