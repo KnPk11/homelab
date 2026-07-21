@@ -235,14 +235,7 @@ else
     echo "Warning: skipped Pulse tree (root SSH to pulse-88 failed)"
 fi
 
-# MikroTik exports now save directly to the vault.
-# Keeping CHANGELOG.md sync for reference, if needed.
-echo "Backing up MikroTik CHANGELOG from local repo..."
-SRC="/opt/dev/homelab_repo/nodes/ai-tools-105/services/mikrotik-backup"
-DEST="$BACKUP_DIR/ai-tools-105/services/mikrotik-backup"
-mkdir -p "$DEST"
-cp "$SRC/CHANGELOG.md" "$DEST/CHANGELOG.md" 2>/dev/null || \
-    echo "Warning: MikroTik CHANGELOG.md not found"
+
 
 chmod -R 600 "$BACKUP_DIR"
 find "$BACKUP_DIR" -type d -exec chmod 700 {} +
