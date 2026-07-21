@@ -4,7 +4,7 @@ set -e
 
 RAM_KEY_PATH="/dev/shm/.sops_master_key"
 STATE_FILE="/dev/shm/.sops_unlock.state"
-ENV_FILE="$HOME/.sops-agent.sh"
+DEFAULT_KEY_LINK="$HOME/.config/sops/age/keys.txt"
 DEFAULT_TTL_MINUTES=15
 
 log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"; }
@@ -27,6 +27,10 @@ if [[ ! "$MASTER_KEY" =~ ^AGE-SECRET-KEY-1[A-Za-z0-9]+ ]]; then
     exit 1
 fi
 
+# Ensure default sops age directory exists and symlink points to RAM key
+mkdir -p "$HOME/.config/sops/age"
+ln -sfn "$RAM_KEY_PATH" "$DEFAULT_KEY_LINK"
+
 # Write key directly to RAM-backed filesystem (/dev/shm)
 umask 077
 echo "$MASTER_KEY" > "$RAM_KEY_PATH"
@@ -40,13 +44,6 @@ TTL_SECONDS=$TTL_SECONDS
 EOF
 chmod 600 "$STATE_FILE"
 
-cat << EOF > "$ENV_FILE"
-export SOPS_AGE_KEY_FILE="$RAM_KEY_PATH"
-EOF
-chmod 600 "$ENV_FILE"
-
 echo "Success! SOPS Master Admin Key loaded into RAM (/dev/shm)."
 echo "TTL set to ${DEFAULT_TTL_MINUTES} minutes."
-echo ""
-echo "To activate in your current terminal session, run:"
-echo "    source ~/.sops-agent.sh"
+echo "You can now run 'sops' commands directly in any terminal window without typing passwords!"
