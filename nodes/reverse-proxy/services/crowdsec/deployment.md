@@ -21,13 +21,13 @@ Secrets live under **`/srv/crowdsec/`** so the GitOps clone stays disposable. Te
 2. **Create the environment file** under the service directory:
    ```bash
    sudo mkdir -p /srv/crowdsec
-   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/CrowdSec/crowdsec.env.example /srv/crowdsec/crowdsec.env
+   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/crowdsec.env.example /srv/crowdsec/crowdsec.env
    sudo chmod 600 /srv/crowdsec/crowdsec.env
    # edit /srv/crowdsec/crowdsec.env with real values
    ```
 3. **Run the deploy script** (sources `/srv/crowdsec/crowdsec.env`, restarts services):
    ```bash
-   sudo /opt/homelab-repo/nodes/reverse-proxy/services/CrowdSec/deploy_crowdsec.sh
+   sudo /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/deploy_crowdsec.sh
    ```
 
 > [!NOTE]

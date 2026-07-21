@@ -18,14 +18,14 @@ Secrets live under **`/srv/fail2ban-monitor/`** so the GitOps clone stays dispos
 2. **Create the environment file** under the service directory:
    ```bash
    sudo mkdir -p /srv/fail2ban-monitor
-   sudo cp "/opt/homelab-repo/nodes/reverse-proxy/services/Fail2Ban Monitor/fail2ban.env.example" \
+   sudo cp "/opt/homelab-repo/nodes/reverse-proxy/services/fail2ban-monitor/fail2ban.env.example" \
      /srv/fail2ban-monitor/fail2ban.env
    sudo chmod 600 /srv/fail2ban-monitor/fail2ban.env
    # edit /srv/fail2ban-monitor/fail2ban.env (e.g. HOMELAB_SUBNETS)
    ```
 3. **Run the deploy script**:
    ```bash
-   sudo "/opt/homelab-repo/nodes/reverse-proxy/services/Fail2Ban Monitor/deploy_fail2ban.sh"
+   sudo "/opt/homelab-repo/nodes/reverse-proxy/services/fail2ban-monitor/deploy_fail2ban.sh"
    ```
 
    This will:

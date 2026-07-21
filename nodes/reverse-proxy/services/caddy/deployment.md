@@ -20,7 +20,7 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
 2. **Create the environment file** under the service directory (not in the clone):
    ```bash
    sudo mkdir -p /srv/caddy
-   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/Caddy/Caddyfile.env.example /srv/caddy/caddy.env
+   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile.env.example /srv/caddy/caddy.env
    sudo chmod 600 /srv/caddy/caddy.env
    # edit /srv/caddy/caddy.env with real values
    ```
@@ -38,7 +38,7 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
    ```
 5. **Symlink tracked Caddyfile only**:
    ```bash
-   sudo ln -sfn /opt/homelab-repo/nodes/reverse-proxy/services/Caddy/Caddyfile /srv/caddy/Caddyfile
+   sudo ln -sfn /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile /srv/caddy/Caddyfile
    ```
 6. **Apply**:
    ```bash

@@ -18,13 +18,13 @@ Secrets live under **`/srv/gatus/`** so the GitOps clone stays disposable. The c
 2. **Create the environment file** under the service directory:
    ```bash
    sudo mkdir -p /srv/gatus
-   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/Gatus/gatus.env.example /srv/gatus/gatus.env
+   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/gatus/gatus.env.example /srv/gatus/gatus.env
    sudo chmod 600 /srv/gatus/gatus.env
    # edit /srv/gatus/gatus.env with domain + node IPs
    ```
 3. **Run the deploy script**:
    ```bash
-   sudo /opt/homelab-repo/nodes/reverse-proxy/services/Gatus/deploy_gatus.sh
+   sudo /opt/homelab-repo/nodes/reverse-proxy/services/gatus/deploy_gatus.sh
    ```
 
 > [!NOTE]
