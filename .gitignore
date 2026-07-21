@@ -21,7 +21,7 @@ Thumbs.db
 nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc
 nodes/ai-tools/services/mikrotik-backup/CHANGELOG.md
 
-nodes/reverse-proxy/services/Caddy/Caddyfile.experimental*
+nodes/reverse-proxy/services/caddy/Caddyfile.experimental*
 
 # Private Project Folders
 projects/experimental/

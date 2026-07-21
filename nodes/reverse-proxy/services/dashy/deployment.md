@@ -48,7 +48,7 @@ rm -rf /tmp/dashy-build
    ```bash
    cd /opt/homelab-repo
    git pull
-   sudo /opt/homelab-repo/nodes/reverse-proxy/services/Dashy/deploy_dashy.sh
+   sudo /opt/homelab-repo/nodes/reverse-proxy/services/dashy/deploy_dashy.sh
    ```
 
 ### Caddy routing
