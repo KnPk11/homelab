@@ -112,7 +112,7 @@ Update and launch the stack.
 > **Docker operator**: Airflow has an operator specifically for Docker - the proper way to execute docker commands, such as execute dbt models through calling the separate dbt container.
 
 > [!TIP]
-> **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate compose fragments in the implementation directory: `nodes/homelab-95/services/airflow/docker-compose.flower.yml`.
+> **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate compose fragments in the implementation directory: `nodes/docker-services/services/airflow/docker-compose.flower.yml`.
 
 ## 4. Security
 

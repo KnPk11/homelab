@@ -1,7 +1,7 @@
 # God Mode: ~/.ssh/id_ed25519_ai (svc_ai)  |  Git SSH: ~/.ssh/id_ed25519 (comment: git)
 # Both passphrase-protected. Unlock bundle: ai-key-unlock
 # Then: source ~/.ssh/ai-key-agent.sh
-# See nodes/ai-tools-105/services/ai-ssh-key/deployment.md
+# See nodes/ai-tools/services/ai-ssh-key/deployment.md
 # Note: former name "svc_automation" for the git key is deprecated.
 
 # GitHub — Git SSH key only (not God Mode)

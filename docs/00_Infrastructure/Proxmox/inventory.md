@@ -21,11 +21,11 @@ The following table lists the core nodes currently provisioned on the hypervisor
 | IP Address | Name | Type | Description |
 | :--- | :--- | :--- | :--- |
 | `[IP].89` | **windows-89** | VM | Windows Testing / Sandbox Environment. |
-| `[IP].90` | **omv-90** | VM | OpenMediaVault — Centralized Storage & Backups. |
-| `[IP].91` | **openclaw-91** | VM | OpenClaw — Agentic AI Orchestration. |
-| `[IP].95` | **homelab-95** | VM | Docker Host — Primary Application Stack. |
-| `[IP].101` | **caddy-101** | LXC | Reverse Proxy (Caddy) & Ingress Monitoring. |
-| `[IP].102` | **dns-102** | LXC | AdGuard Home — Network-wide DNS. |
+| `[IP].90` | **nas** | VM | OpenMediaVault — Centralized Storage & Backups. |
+| `[IP].91` | **lab-vm** | VM | OpenClaw — Agentic AI Orchestration. |
+| `[IP].95` | **docker-services** | VM | Docker Host — Primary Application Stack. |
+| `[IP].101` | **reverse-proxy** | LXC | Reverse Proxy (Caddy) & Ingress Monitoring. |
+| `[IP].102` | **dns** | LXC | AdGuard Home — Network-wide DNS. |
 | `[IP].105` | **ai-tools** | LXC | AI Tools & Management Automation Node. |
 | `[IP].110` | **interview** | LXC | Disposable Postgres practice environment. |
 

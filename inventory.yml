@@ -1,0 +1,49 @@
+nodes:
+  proxmox-host:
+    ip: 192.168.50.100
+    type: bare-metal
+
+  docker-services:
+    ip: 192.168.50.95
+    proxmox_id: 100
+    type: vm
+
+  nas:
+    ip: 192.168.50.90
+    proxmox_id: 101
+    type: vm
+
+  lab-vm:
+    ip: 192.168.50.91
+    proxmox_id: 103
+    type: vm
+
+  reverse-proxy:
+    ip: 192.168.50.101
+    proxmox_id: 104
+    type: lxc
+
+  ai-tools:
+    ip: 192.168.50.105
+    proxmox_id: 105
+    type: lxc
+
+  dns:
+    ip: 192.168.50.102
+    proxmox_id: 106
+    type: lxc
+
+  pulse:
+    ip: 192.168.50.88
+    proxmox_id: 107
+    type: lxc
+
+  vpns:
+    ip: 192.168.50.87
+    proxmox_id: 108
+    type: lxc
+
+  pbs:
+    ip: 192.168.50.86
+    proxmox_id: 109
+    type: lxc

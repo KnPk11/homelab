@@ -30,7 +30,7 @@
 
 ## 2. Profiles
 
-Ensure your `profiles.yml` is correctly configured in the service directory (`nodes/homelab-95/services/dbt/profiles.yml`).
+Ensure your `profiles.yml` is correctly configured in the service directory (`nodes/docker-services/services/dbt/profiles.yml`).
 
 ### BigQuery Example
 
