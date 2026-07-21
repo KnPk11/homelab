@@ -70,6 +70,9 @@ PATH_SWEEPS=(
     "dns:/srv"
     "docker-services:/srv"
     "docker-services:/opt/scripts/Security"
+    "lab-vm:/opt/scripts/Security"
+    "nas:/opt/scripts/Security"
+    "proxmox-host:/opt/scripts/Security"
     # Kopia client config + password (next to backup scripts)
     "docker-services:/opt/scripts/Backups/Kopia"
 )
