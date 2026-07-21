@@ -151,38 +151,18 @@ iface vmbr0 inet static
 
 ### Auto-Heal Script
 
-Create a script to automatically recover the interface if a ping to the router fails.
+The auto-heal script is tracked in Git under [`nodes/proxmox-host/scripts/fix-network.sh`](../../../nodes/proxmox-host/scripts/fix-network.sh) and symlinked on the Proxmox host.
 
-1. **Create Script**: `nano /usr/local/bin/fix-network.sh`
-
+1. **Deploy Symlink & Permissions**:
    ```bash
-   #!/bin/bash
-
-   # Prevent multiple instances; enforces the 5-minute cooldown
-   exec 9>/var/lock/fix-network.lock
-   if ! flock -n 9; then
-       exit 0
-   fi
-
-   ROUTER_IP="[GATEWAY]"
-   INTERFACE="[NIC]"
-
-   # Check if the Router's MAC address is visible in the ARP table
-   if ! ip neigh show $ROUTER_IP | grep -qE "REACHABLE|DELAY|STALE"; then
-       echo "$(date): ARP check failed. NIC $INTERFACE likely hung." >> /var/log/network-repair.log
-       /usr/sbin/ip link set $INTERFACE down
-       sleep 3
-       /usr/sbin/ip link set $INTERFACE up
-       
-       # 10-minute cooldown: script sleeps while holding the lock, 
-       # causing any new cron triggers to silently exit.
-       sleep 600 
-   fi
+   chmod +x /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh
+   ln -sfn /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh /usr/local/bin/fix-network.sh
    ```
 
-2. **Make Executable**: `chmod +x /usr/local/bin/fix-network.sh`
-
-3. **Schedule via Crontab**: `* * * * * /usr/local/bin/fix-network.sh`
+2. **Schedule via Crontab**:
+   ```text
+   * * * * * /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh
+   ```
 
 ### Verification & Testing
 
