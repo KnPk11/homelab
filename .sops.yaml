@@ -1,34 +1,34 @@
 creation_rules:
-  - path_regex: nodes/proxmox-host/.*\.env$
+  - path_regex: nodes/proxmox-host/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1q30qfyjrc0zkvdm4783c5t4qta08zsenx8h9vfwfhay682czpaaqsyvjs8"
 
-  - path_regex: nodes/docker-services/.*\.env$
+  - path_regex: nodes/docker-services/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1ys2a57md4tw5hmad3v532gjzgxn2krznf07tgwyhekhcu5j5m9rs3gskq4"
 
-  - path_regex: nodes/nas/.*\.env$
+  - path_regex: nodes/nas/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1sd36le2my5trpf8qnq2ckvs9nd3jus7ezwmqerpx096kmpq0e9yq8uq5ez"
 
-  - path_regex: nodes/lab-vm/.*\.env$
+  - path_regex: nodes/lab-vm/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1m7fv5sk2ndcydksm2x96qsd8v3lx0el8rczl8pp8jvuga7906qpqkcsx25"
 
-  - path_regex: nodes/reverse-proxy/.*\.env$
+  - path_regex: nodes/reverse-proxy/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1rz3pdwcfupv6746rx350wf2v9ku2225ngl535sqm7znm2l573yjs6akhk4"
 
-  - path_regex: nodes/ai-tools/.*\.env$
+  - path_regex: nodes/ai-tools/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1p5nkwme342u5vwxaxfeaajxdwkqquda06td8lu6lajwd776l7vdsjzpdsj"
 
-  - path_regex: nodes/dns/.*\.env$
+  - path_regex: nodes/dns/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1x0p5xz6z9qs9vnux58a6qzgt75hrllr3jsk3lslgu4fs7a89gspqaq6sq0"
 
-  - path_regex: nodes/pulse/.*\.env$
+  - path_regex: nodes/pulse/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age12sgcvdgl2fwt0prkuuq6mw7ycc6hwuguzplyxf0q70cjyk323vcskxx9hw"
 
-  - path_regex: nodes/vpns/.*\.env$
+  - path_regex: nodes/vpns/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1mg3eflfslnexwupxjkd20c20fuhej5n8f0epuekne7uxtpk6cfeq0mj85m"
 
-  - path_regex: nodes/pbs/.*\.env$
+  - path_regex: nodes/pbs/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1scvtgz068fe48zjwpzape0y9p8r3pyynrcw3xlwc8afsyvusry8s2chuk4"
 
-  # Default fallback for any other .env file in the repository
-  - path_regex: .*\.env$
+  # Default fallback for any other file in the repository
+  - path_regex: .*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895"
