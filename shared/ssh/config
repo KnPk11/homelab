@@ -2,7 +2,6 @@
 # Both passphrase-protected. Unlock bundle: ai-key-unlock
 # Then: source ~/.ssh/ai-key-agent.sh
 # See nodes/ai-tools/services/ai-ssh-key/deployment.md
-# Note: former name "svc_automation" for the git key is deprecated.
 
 # GitHub — Git SSH key only (not God Mode)
 Host github.com
@@ -11,18 +10,59 @@ Host github.com
     IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 
-# MikroTik Router (svc_ai full admin; use agent after ai-key-unlock)
-Host 192.168.50.1 192.168.88.1
+# MikroTik Router
+Host router mikrotik 192.168.50.1 192.168.88.1
     User svc_ai
     IdentityFile ~/.ssh/id_ed25519_ai
     IdentitiesOnly yes
 
-# Caddy, DNS, Pulse, VPNs LXC Containers
-Host 192.168.50.101 192.168.50.102 192.168.50.88 192.168.50.87
+# Homelab Nodes (God Mode Key)
+Host proxmox-host
+    HostName 192.168.50.100
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
 
-# OpenMediaVault, OpenClaw, Main Homelab VMs
-Host 192.168.50.90 192.168.50.91 192.168.50.95
+Host docker-services
+    HostName 192.168.50.95
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host nas
+    HostName 192.168.50.90
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host lab-vm
+    HostName 192.168.50.91
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host reverse-proxy
+    HostName 192.168.50.101
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host ai-tools
+    HostName 192.168.50.105
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host dns
+    HostName 192.168.50.102
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host pulse
+    HostName 192.168.50.88
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host vpns
+    HostName 192.168.50.87
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host pbs
+    HostName 192.168.50.86
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
