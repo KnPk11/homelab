@@ -10,9 +10,12 @@ Thumbs.db
 *.env.dec
 *.env.raw
 *.env.unencrypted
-*.key
-*.pem
-.secrets/
+*.secret.dec
+*.secret.raw
+*.pwd.dec
+*.pwd.raw
+*.key.dec
+*.pem.dec
 
 # MikroTik config & logs — contains sensitive network topology, kept as local backup only
 nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc
@@ -26,6 +29,4 @@ projects/airflow-dags/
 projects/dbt-project/
 projects/n8n/
 projects/web-apps/
-*.secret
 pihole.toml
-*.pwd
