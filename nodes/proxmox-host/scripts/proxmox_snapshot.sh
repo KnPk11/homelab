@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Proxmox Scheduled Snapshot Script
-# Version: 1.2 (2026-07-02)
+# Version: 1.3 (2026-07-22)
 # Creates snapshots for all VMs and Containers.
 # Format: S-YYYY-MM-DD
-# Usage: 0 0 */2 * * /path/to/script.sh
+# Usage: 0 2 * * * /path/to/script.sh (Daily at 02:00 AM)
 
 set -e
 
@@ -16,7 +16,7 @@ SNAP_NAME="S-$(date +%Y-%m-%d)"
 DESCRIPTION="Automated snapshot $(date +%Y-%m-%d)"
 INCLUDE_RAM=0 # 0 = No RAM (fast), 1 = Include RAM (slow, more space)
 SLEEP_DELAY=60 # Seconds to wait between snapshots to reduce IO stress
-RETENTION_DAYS=60 # Days to keep snapshots (~2 months)
+RETENTION_DAYS=14 # Days to keep snapshots (~14 days / 2 weeks)
 
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') $1"
@@ -49,7 +49,7 @@ cleanup_old_snapshots() {
         snap_date_str=$(echo "$snap" | cut -d'-' -f2-4 | tr -d '-')
 
         if [[ "$snap_date_str" =~ ^[0-9]{8}$ ]] && [ "$snap_date_str" -lt "$cutoff_date" ]; then
-            log "    [!] Snapshot $snap is older than $RETENTION_DAYS days (~2 months). Deleting..."
+            log "    [!] Snapshot $snap is older than $RETENTION_DAYS days (~14 days). Deleting..."
             if $type delsnapshot "$vmid" "$snap"; then
                 log "    [OK] Deleted $snap."
             else
@@ -89,6 +89,13 @@ CTS=$(pct list | awk 'NR>1 {print $1}')
 for vmid in $CTS; do
     log "[+] Processing Container $vmid..."
     
+    # Skip containers with raw directory bind mounts (Proxmox cannot snapshot directory bind mounts)
+    if pct config $vmid | grep -E '^mp[0-9]*: /' >/dev/null 2>&1; then
+        log "    [i] Container $vmid has directory bind mounts. Skipping local snapshot (backed up via PBS)."
+        cleanup_old_snapshots $vmid "pct"
+        continue
+    fi
+
     # Check if snapshot already exists
     if pct listsnapshot $vmid | grep -q "$SNAP_NAME"; then
         log "    [!] Snapshot $SNAP_NAME already exists for Container $vmid. Skipping."
