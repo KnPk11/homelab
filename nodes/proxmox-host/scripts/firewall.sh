@@ -306,7 +306,6 @@ enable: 1
 [RULES]
 GROUP ssh-adm
 GROUP ping-trusted
-GROUP proxy-back     # Caddy reverse-proxy if you front :8007 later
 
 # PBS API / Web UI (default port); pve1 is inside homelab-lan
 IN ACCEPT -p tcp -dport 8007 -source main-lan -log nolog
