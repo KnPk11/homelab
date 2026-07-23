@@ -252,6 +252,33 @@ When creating or editing automated Backup Jobs in Proxmox VE (**Datacenter ➔ B
 * **Why**: When PBS runs locally on the host (`sata-ssd` / NVMe), backup speeds exceed 140+ MB/s, finishing snapshots in ~15 seconds without I/O latency bottlenecks.
 * **When to Enable**: Enable Fleecing only if you run high-frequency transactional database VMs (e.g. PostgreSQL with heavy disk writes) or backup over a slow remote WAN link.
 
+---
+
+## 🔍 Granular File Restore & Best Practices
+
+### 1. Single File Restore (No Full VM Restore Needed)
+You do **not** need to restore an entire VM or LXC container to recover a single lost or corrupted configuration file:
+* **Web UI File Restore**:
+  1. Open Proxmox VE Web UI ➔ **PBS Storage (`pbs-linux`) ➔ Backups**.
+  2. Select the desired backup snapshot ➔ Click **File Restore**.
+  3. Browse the guest filesystem directly in your browser and download individual files or folders as `.zip`.
+* **CLI Mounting (`proxmox-backup-file-restore`)**:
+  ```bash
+  # Mount any VM backup snapshot read-only to inspect or extract files
+  proxmox-backup-file-restore mount backup/vm/100/2026-07-23T14:00:00Z drive-scsi0.img.fidx /mnt/temp
+  ```
+
+### 2. Best Practice: PBS Backups vs. Local Hypervisor Snapshots
+
+| Feature | Primary Purpose | Best Used For | Space / Retention Impact |
+| :--- | :--- | :--- | :--- |
+| **PBS Backups** | Off-server, deduplicated, encrypted backups with file-level restore. | Scheduled automated backups (daily GFS retention), disaster recovery, and single-file recovery. | **Minimal**: Deduplicated chunk store handles long retention with small disk footprint. |
+| **Local Hypervisor Snapshots** | Immediate, 1-second state rollback on local storage. | Pre-upgrade safety net (e.g. taking a snapshot 1 second before doing `apt upgrade` or major OS changes). | **High**: Accumulates Copy-on-Write (CoW) deltas rapidly over time; should be deleted once upgrade is verified. |
+
+> [!TIP]
+> **Recommended Workflow**: Rely on **PBS Backups** for all scheduled daily backups and file recovery. Create **Local Hypervisor Snapshots** only immediately prior to risky system upgrades or major changes, and delete them once the upgrade is confirmed successful.
+
+
 
 
 
