@@ -478,7 +478,7 @@ dozzle.{$DOMAIN_NAME} {
 vaultwarden.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
-    import access_policy_wan 100 30s
+    import access_policy_wan 250 30s
     import common-logging-plaintext vaultwarden
     import common-logging vaultwarden
 
