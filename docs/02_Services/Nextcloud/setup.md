@@ -226,7 +226,9 @@ Authentication issues on Android may relate to incorrect trusted proxy setups or
 
 ### 7.3. HPB Secrets
 
-> [!FAILURE] Secrets handling
+> [!WARNING]
+> **Secrets handling**
+> 
 > The image does not support `_FILE` directives. A custom entrypoint may also break logging.
 > 
 > ```yaml

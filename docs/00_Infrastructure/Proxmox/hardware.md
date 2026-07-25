@@ -215,5 +215,5 @@ To verify the auto-heal trigger works when the network is actually "lost":
    cat /var/log/network-repair.log
    ```
 
-> [!SUCCESS]
+> [!TIP]
 > The log should show an entry stating the ARP check failed and the NIC was restarted.

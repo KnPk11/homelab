@@ -13,7 +13,7 @@ This guide covers the initial setup and configuration for Linux-based systems in
 
 Bind the computer to a static local IP. This ensures consistent access across the network.
 
-> [!INFO]
+> [!NOTE]
 > Setup varies by router; on Asus it is under **Router settings** → **LAN** → **IP Binding**.
 
 ---
@@ -298,7 +298,7 @@ Enable via **Preferences** → **Raspberry Pi Configuration**. Ensure firewall r
 
 ### Hardware & Software Watchdogs
 
-> [!INFO]
+> [!NOTE]
 > Raspberry Pi has hardware watchdog support. For other devices, consider smart plugs for remote hard resets.
 
 Configure watchdog settings in `/etc/systemd/system.conf`:

@@ -120,6 +120,8 @@ Refresh your browser afterwards.
 
 - **Web UI 2FA**: Available but often unnecessary for homelabs if access is restricted to a trusted network.
 - **SSH Rate Limiting**: Can be configured on the Proxmox host, but typically redundant if your firewall already handles unauthorized access.
+> [!NOTE]
+> Tailscale simplifies remote management of the Proxmox host.
 - **RBAC**: Proxmox supports granular user roles. Useful if multiple people access the environment.
 
 ### Network & Firewall
