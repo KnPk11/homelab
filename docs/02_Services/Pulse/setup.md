@@ -4,7 +4,7 @@
 > **Tags:** #Pulse #Monitoring #Proxmox #LXC
 
 Private multi-host monitoring ([rcourtman/Pulse](https://github.com/rcourtman/Pulse) community).  
-**Deployment:** dedicated **Proxmox LXC**, **not** Docker.
+**Deployment:** dedicated **Proxmox LXC** (see [Pulse Proxmox LXC Spec](proxmox-lxc.md)), **not** Docker.
 
 ## Install (on Proxmox host, creates the LXC)
 

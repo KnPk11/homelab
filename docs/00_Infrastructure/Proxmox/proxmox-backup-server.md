@@ -5,24 +5,12 @@
 
 ## 🛠️ Step-by-Step Deployment Procedure
 
-### 1. Provision LXC Container (Debian 12 Bookworm)
-Proxmox Backup Server v3 requires Debian 12 (Bookworm) dependencies (`libapt-pkg6.0`, `libsgutils2-1.46-2`).
+### 1. Provision LXC Container
+For Proxmox container creation specs, resource sizing, mount points, and `pct create` parameters, refer to:
+- **[PBS Proxmox LXC Spec](pbs-lxc.md)**
 
-On `proxmox-host` (`[PROXMOX-HOST-IP]`):
+Once LXC 109 is created, start the container:
 ```bash
-pct create 109 local:vztmpl/debian-12-standard_12.12-1_amd64.tar.zst \
-  --hostname pbs \
-  --cores 2 \
-  --memory 1024 \
-  --swap 512 \
-  --net0 name=eth0,bridge=vmbr0,firewall=1,ip=[PBS-IP]/24,gw=[GATEWAY-IP] \
-  --storage local-lvm \
-  --rootfs local-lvm:8 \
-  --features nesting=1 \
-  --onboot 1 \
-  --protection 1 \
-  --unprivileged 1
-
 pct start 109
 ```
 
