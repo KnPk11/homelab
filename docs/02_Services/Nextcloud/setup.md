@@ -42,7 +42,9 @@ php occ config:system:set trusted_proxies 0 --value="[DOCKER-NETWORK]"
 php occ config:system:set forwarded_for_headers 0 --value="HTTP_X_FORWARDED_FOR"
 ```
 
-> [!TIP] Editing config.php directly
+> [!TIP]
+> **Editing config.php directly**
+> 
 > If you need to edit the configuration file manually:
 > 
 > ```bash
@@ -208,10 +210,14 @@ Configure the settings in the Nextcloud UI (Account icon -> **Administration set
 
 Nextcloud's Server Side Encryption can be set up on a separate directory or storage.
 
-> [!NOTE] Sharing encrypted files
+> [!NOTE]
+> **Sharing Encrypted Files**
+> 
 > Creating a separate user is preferred and more secure than utilizing public links.
 
-> [!WARNING] File manipulations
+> [!WARNING]
+> **File Manipulations**
+> 
 > Encrypted files will break if file operations are performed outside of Nextcloud (e.g., moving files to a different directory).
 
 ## 7. Known Issues and Troubleshooting
