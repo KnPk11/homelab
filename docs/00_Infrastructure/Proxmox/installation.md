@@ -83,7 +83,7 @@ bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/
 
 Refresh your browser afterwards.
 
-> [!INFO]
+> [!NOTE]
 > To uninstall the script:
 > 
 > ```bash

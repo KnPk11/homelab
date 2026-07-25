@@ -9,5 +9,7 @@ An open-source alternative frontend to YouTube which is privacy-focused and does
 
 ## 2. Known Issues
 
-> [!ERROR] Video Playback
+> [!WARNING]
+> **Video Playback**
+> 
 > I had an issue with video playback in the current Portainer stack configuration.
