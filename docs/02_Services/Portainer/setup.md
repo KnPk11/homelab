@@ -48,9 +48,7 @@ If Portainer is managing only the local Docker engine, enabling SSH is unnecessa
 - Connecting Portainer to **remote Docker hosts**.
 
 > [!IMPORTANT]
-> **Certificates**
-> 
-> Avoid importing certificates unless you are explicitly connecting to a remote host.
+> **Certificates**: Avoid importing certificates unless you are explicitly connecting to a remote host.
 
 ### 2.3. Connection Modes
 
