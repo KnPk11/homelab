@@ -143,7 +143,7 @@ sudo mount -a
 df -h
 ```
 
-> [!SUCCESS]
+> [!TIP]
 > You should see your secondary drive listed multiple times, seamlessly projecting its folders across your OS.
 
 ---
