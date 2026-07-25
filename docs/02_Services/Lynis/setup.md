@@ -15,7 +15,9 @@ Install Lynis directly on the system:
 
 ## 2. Portable Execution
 
-> [!TIP] Portable Run
+> [!TIP]
+> **Portable Run**
+> 
 > If you prefer not to install Lynis on a target machine, you can run it portably:
 
    ```bash

@@ -58,7 +58,8 @@ If you need to configure Jellyfin with a certificate for direct port forwarding:
 5. Enable port forwarding: 8096 TCP.
 6. Refer to the Docker Compose snippet for the port-forwarded setup.
 
-   > [!NOTE]- Port-forwarded Docker Compose snippet
+   > [!NOTE]
+   > **Port-forwarded Docker Compose snippet**
    > 
    > ```yml
    >   jellyfin:
