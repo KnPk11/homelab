@@ -108,11 +108,11 @@ Add this to Airflow's docker compose below `users`:
 
 Update and launch the stack.
 
-> [!NOTE]
-> **Docker operator**: Airflow has an operator specifically for Docker - the proper way to execute docker commands, such as execute dbt models through calling the separate dbt container.
-
 > [!TIP]
-> **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate compose fragments in the implementation directory: `nodes/docker-services/services/airflow/docker-compose.flower.yml`.
+> **Airflow Best Practices**
+> 
+> - **Docker Operator**: Use Airflow's native `DockerOperator` to execute Docker commands and call external containerized jobs (such as dbt models).
+> - **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate Compose fragments under `nodes/docker-services/services/airflow/docker-compose.flower.yml`.
 
 ## 4. Security
 
