@@ -52,9 +52,9 @@ Unlike manual WireGuard configs, Tailscale easily keeps local SMB shares accessi
      --advertise-routes=192.168.50.0/24,192.168.88.0/24
    ```
 
-   > [!TIP]
-   > **Subnet advertising**: multiple CIDRs are a comma-separated list with **no spaces** (or as accepted by your `tailscale` version).  
-   > Do **not** use `--advertise-routes=` with an empty value — omit the flag instead.
+> [!TIP]
+> **Subnet advertising**: multiple CIDRs are a comma-separated list with **no spaces** (or as accepted by your `tailscale` version).  
+> Do **not** use `--advertise-routes=` with an empty value — omit the flag instead.
 
 4. **Authorise Routes in the Admin Console** (required — advertising alone is not enough)
 
@@ -80,8 +80,8 @@ Unlike manual WireGuard configs, Tailscale easily keeps local SMB shares accessi
 
 6. **UDP GRO Forwarding** (optional performance tweak)
 
-   > [!NOTE]
-   > If you see a warning regarding suboptimal UDP GRO forwarding:
+> [!NOTE]
+> If you see a warning regarding suboptimal UDP GRO forwarding:
 
    ```bash
    sudo ethtool -K eth0 rx-udp-gro-forwarding on rx-gro-list off
