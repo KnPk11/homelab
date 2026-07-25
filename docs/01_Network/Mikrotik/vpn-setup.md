@@ -5,7 +5,65 @@
 
 **Current edge VPN:** MikroTik WireGuard on WAN (`listen-port` **51821**). Asus is **AP mode** — do not forward WG/OpenVPN to the Asus.
 
+---
+
+## 🛡️ Multi-Tier Remote Access & Failover Model
+
+The homelab utilizes a 4-tier remote access hierarchy to ensure 100% remote management resilience:
+
+```mermaid
+flowchart TD
+    classDef primary fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff
+    classDef fallback fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
+    classDef emergency fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff
+    classDef hardware fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#fff
+    classDef target fill:#0f172a,stroke:#10b981,stroke-width:2px,color:#fff
+
+    User(["📱 Remote Admin / User"]):::target
+
+    subgraph Tier1 ["Tier 1: Primary Remote Access"]
+        WG["🔒 MikroTik WireGuard<br/>(192.168.88.1 : 51821)"]:::primary
+    end
+
+    subgraph Tier2 ["Tier 2: Fallback Remote Access"]
+        TS["🌐 Tailscale LXC 'vpns'<br/>(CT 108 : 192.168.50.87)"]:::fallback
+    end
+
+    subgraph Tier3 ["Tier 3: Router Emergency Recovery"]
+        PK["⚡ MikroTik Port Knocking<br/>(Dynamic Allowlist Rule)"]:::emergency
+    end
+
+    subgraph Tier4 ["Tier 4: Physical Hardware & Hard-Power Recovery"]
+        SP["🔌 Cloud Smart Plugs<br/>(Hard AC Power Cycle)"]:::hardware
+        BIOS["🖥️ Physical PC BIOS<br/>(Restore AC Power = Always On)"]:::hardware
+        AD["💻 AnyDesk Remote Desktop<br/>(LAN PC Access)"]:::hardware
+    end
+
+    LAN[("🏠 Homelab LAN Infrastructure<br/>(Proxmox, VMs, Storage)")]:::target
+
+    User -->|Daily Native Access| WG
+    User -->|Fallback if WG Fails| TS
+    User -->|If Locked Out of Router| PK
+    User -->|If Host Powered Off| SP
+
+    WG -->|Direct HW Routing| LAN
+    TS -->|Subnet Routing| LAN
+    PK -->|Restore WinBox/SSH| WG
+    SP -->|Trigger Power Restore| BIOS
+    BIOS -->|Auto-Boot System| AD
+    AD -->|LAN Access| LAN
+```
+
+### **Access Tiers Summary**
+* **Tier 1 (Primary)**: MikroTik WireGuard (`listen-port 51821`) — Native high-speed WAN gateway.
+* **Tier 2 (Fallback)**: Tailscale LXC (`vpns` / CT 108 / `192.168.50.87`) — Mesh VPN fallback with NAT traversal & subnet routing.
+* **Tier 3 (Emergency Lockout)**: MikroTik Port Knocking — Secret packet sequence to unblock management access if firewall rules lock out standard ports.
+* **Tier 4 (Hardware Recovery)**: App-managed Smart Plugs + BIOS AC Power Restore + AnyDesk on LAN PCs for hard power cycling and out-of-band desktop recovery.
+
+---
+
 ## WireGuard Server Setup
+
 
 ### 1. Create WireGuard Interface
 
