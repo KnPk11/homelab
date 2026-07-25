@@ -15,5 +15,7 @@ Be aware that Heimdall stores service passwords in plaintext for its widgets.
 
 ## 3. Authentication Issues
 
-> [!ERROR] Auth Rate Limiting
+> [!WARNING]
+> **Auth Rate Limiting**
+> 
 > Heimdall does not always display appropriate authentication errors. It may return a status code `200` even upon failed login attempts.
