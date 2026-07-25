@@ -7,7 +7,7 @@ This document details the specific Proxmox LXC configuration for the dedicated P
 
 ## Provisioning Details
 
-- **Template**: Debian 13 (Standard)
+- **Template**: Debian 12 (Bookworm Standard)
 - **Unprivileged Container**: ✅ Yes
 - **Nesting**: ✅ Yes
 
@@ -15,7 +15,7 @@ This document details the specific Proxmox LXC configuration for the dedicated P
 
 | Setting | Value |
 | :--- | :--- |
-| OS Type | Debian 13 |
+| OS Type | Debian 12 (Bookworm) |
 | CPU | 4 cores |
 | RAM | 2048 MB (2 GB) |
 | Swap | 2048 MB (2 GB) |
@@ -45,7 +45,7 @@ This document details the specific Proxmox LXC configuration for the dedicated P
 
 1. **Create LXC Container**: Execute CLI command on Proxmox host or use Proxmox wizard:
    ```bash
-   pct create 109 local:vztmpl/debian-13-standard_13.0-1_amd64.tar.zst \
+   pct create 109 local:vztmpl/debian-12-standard_12.12-1_amd64.tar.zst \
      --ostype debian \
      --hostname pbs \
      --cores 4 \
