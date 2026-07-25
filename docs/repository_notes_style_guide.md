@@ -17,8 +17,8 @@ This guide ensures consistency across all documentation in the homelab repositor
 - **Section Spacing**: Maintain a compact style. Use exactly **ONE blank line** between the H1 title, the Tags callout, and the first major heading.
 
 ## 2. Callouts (Admonitions)
-Use Obsidian-style callouts for highlights. Keywords must be uppercase.
-Supported types: `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!SUCCESS]`.
+Use GitHub-style callouts for highlights. Keywords must be uppercase.
+Supported GitHub alert types: `[!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]`, `[!CAUTION]`.
 
 ### Hybrid Titling Rule:
 - **Spacing**: ALWAYS place the content on a new line after the callout type (e.g., `> [!NOTE]` followed by a newline).

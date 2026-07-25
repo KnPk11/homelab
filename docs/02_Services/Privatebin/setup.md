@@ -86,7 +86,7 @@ Privatebin does not offer its own authentication system. Two methods exist for a
 1. Add allowed IPs into the Privatebin configuration.
 2. Place `POST` requests behind Caddy's basic authentication.
 
-> [!INFO]
+> [!NOTE]
 > **POST Auth Example**:
 > 
 > ```caddyfile
