@@ -50,18 +50,8 @@ Modify the following options in the `docker-compose.yml` for the initial setup:
 To change the account email, navigate to `vaultwarden.homelab.local/admin` and utilise the vault password as the admin token.
 
 > [!IMPORTANT]
-> **Security Measures**
+> **Vaultwarden Post-Installation Guidelines**
 > 
-> Ensure appropriate security measures are set in the `environments` Docker directive. Set rate limits, block access to the `/admin` page in Caddy, and optionally configure 2FA.
-
-> [!NOTE]
-> **SMTP Settings**
-> 
-> SMTP settings are not essential and can be configured afterwards if required.
-
-> [!TIP]
-> **Backups**
-> 
-> Ensure the bound directory is backed up occasionally, or export the vault as a password-protected file.
-> 
-> A useful method to test backups is to spin up a temporary Vaultwarden image and point it at the backup directory.
+> - **Security Measures**: Ensure appropriate security measures are set in the `environments` Docker directive. Set rate limits, block access to the `/admin` page in Caddy, and optionally configure 2FA.
+> - **SMTP Settings**: SMTP settings are not essential and can be configured afterwards if required.
+> - **Backups**: Ensure the bound directory is backed up occasionally, or export the vault as a password-protected file. A useful method to test backups is to spin up a temporary Vaultwarden image and point it at the backup directory.
