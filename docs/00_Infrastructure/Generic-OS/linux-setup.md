@@ -104,9 +104,9 @@ Using SSH keys is more secure than password-based login.
    ```
 
 2. **Generate SSH Key**
-   
-   > [!NOTE]
-   > For extra security, set a passphrase when generating keys. This can be added to the client's SSH agent to avoid repeated prompts.
+
+> [!NOTE]
+> For extra security, set a passphrase when generating keys. This can be added to the client's SSH agent to avoid repeated prompts.
 
    ```bash
    ssh-keygen -t ed25519 -f [SSH-KEY-PATH]
@@ -128,14 +128,14 @@ Using SSH keys is more secure than password-based login.
    type [SSH-KEY-PATH].pub | ssh [USER]@[HOST-IP] "cat > /home/[USER]/.ssh/authorized_keys"
    ```
 
-   > [!TIP]
-   > If SSH keys fail to work despite being copied, verify the key on the host:
-   > 
-   > ```bash
-   > ssh-keygen -l -f /home/[USER]/.ssh/authorized_keys
-   > ```
-   > 
-   > If an error occurs, recreate the file on the host as formatting issues during transfer are common.
+> [!TIP]
+> If SSH keys fail to work despite being copied, verify the key on the host:
+> 
+> ```bash
+> ssh-keygen -l -f /home/[USER]/.ssh/authorized_keys
+> ```
+> 
+> If an error occurs, recreate the file on the host as formatting issues during transfer are common.
 
 5. **Set Permissions**
    

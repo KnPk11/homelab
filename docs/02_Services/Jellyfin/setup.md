@@ -58,18 +58,19 @@ If you need to configure Jellyfin with a certificate for direct port forwarding:
 5. Enable port forwarding: 8096 TCP.
 6. Refer to the Docker Compose snippet for the port-forwarded setup.
 
-   > [!NOTE]
-   > **Port-forwarded Docker Compose snippet**
-   > 
-   > ```yml
-   >   jellyfin:
-   >     image: lscr.io/linuxserver/jellyfin:10.10.7
-   >       - /data/certs:/certs:ro # Manually mounted certificate for port-binded setup
-   >     ports: # Port-binded setup
-   >       - 8096:8096               # HTTP
-   >       - 8920:8920               # HTTPS (optional, needs config)
-   >       - 7359:7359/udp           # DLNA discovery (optional)
-   >       - 1900:1900/udp           # DLNA SSDP (optional)
-   >     environment:
-   >       - JELLYFIN_PublishedServerUrl=http://[HOST-IP]  # Optional but useful on LAN.
-   > ```
+> [!NOTE]
+> **Port-forwarded Docker Compose snippet**
+> 
+> ```yml
+>   jellyfin:
+>     image: lscr.io/linuxserver/jellyfin:10.10.7
+>     volumes:
+>       - /data/certs:/certs:ro # Manually mounted certificate for port-binded setup
+>     ports: # Port-binded setup
+>       - 8096:8096               # HTTP
+>       - 8920:8920               # HTTPS (optional, needs config)
+>       - 7359:7359/udp           # DLNA discovery (optional)
+>       - 1900:1900/udp           # DLNA SSDP (optional)
+>     environment:
+>       - JELLYFIN_PublishedServerUrl=http://[HOST-IP]  # Optional but useful on LAN.
+> ```

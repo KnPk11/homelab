@@ -19,8 +19,8 @@
     command: ["tail", "-f", "/dev/null"]
     ```
 
-    > [!NOTE]
-    > **GCP Configuration**: If utilised with BigQuery, ensure you set up a service account with appropriate `edit` permissions in GCP. Set up billing alerts and disable the key once your work is complete.
+> [!NOTE]
+> **GCP Configuration**: If utilised with BigQuery, ensure you set up a service account with appropriate `edit` permissions in GCP. Set up billing alerts and disable the key once your work is complete.
 
 4.  Run a sample model:
 
