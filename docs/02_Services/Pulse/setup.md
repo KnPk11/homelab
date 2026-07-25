@@ -50,6 +50,7 @@ pct enter <CT_ID>                 # shell
 systemctl status pulse
 journalctl -u pulse -f
 pct exec <CT_ID> -- /bin/update   # Pulse in-CT update helper (if present)
+apt-get install -y rsync          # Required for scrape_configs_and_secrets.sh
 ```
 
 Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metrics DB).

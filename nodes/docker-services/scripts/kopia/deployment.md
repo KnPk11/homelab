@@ -17,7 +17,7 @@ Tracked scripts live in Git; **client config + password stay on the host** under
 | `/mnt/nas/Apps/Kopia/homelab-backup` | Repository data on NAS |
 | `/usr/local/bin/kopia-backup` | Optional CLI → backup script |
 
-`scrape_secrets.sh` already sweeps `/opt/scripts/Backups/Kopia` for `*.config` / `*.kopia-password`.
+`scrape_configs_and_secrets.sh` already sweeps `/opt/scripts/Backups/Kopia` for `*.config` / `*.kopia-password`.
 
 ### First-time / after nuke-and-pave
 

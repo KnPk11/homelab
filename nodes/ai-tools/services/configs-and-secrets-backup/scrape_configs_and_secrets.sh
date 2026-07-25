@@ -1,16 +1,17 @@
 #!/bin/bash
-# Version: 2.11 (2026-07-16)
+# Version: 2.12 (2026-07-25)
 #
-# scrape_secrets.sh — centralised secrets backup for the homelab.
+# scrape_configs_and_secrets.sh — centralised live node configs & secrets backup for the homelab.
 #
 # Architecture (keep simple, no SOPS):
-#   - GitOps clone is disposable: tracked code/templates only (no real secrets).
-#   - Runtime secrets live under host paths like /srv/<service>/ or /opt/scripts/...
-#   - Vault layout mirrors the search path on each host:
+#   - GitOps clone is disposable: tracked code/templates only (local encrypted repo files are excluded).
+#   - Live runtime secrets (.env, .secret, .pwd) and node configs (nodes.enc, system.json, client.yml, etc.)
+#     live under remote host paths (/srv/<service>/, /etc/pulse/, /opt/scripts/, /home/k/...).
+#   - Vault layout mirrors the search path on each remote host:
 #       BACKUP_DIR/<host>/<absolute-path-without-leading-slash>/...
-#     e.g. /srv/caddy/caddy.env  →  backups/reverse-proxy/srv/caddy/caddy.env
+#     e.g. /srv/caddy/caddy.env  →  configs_and_secrets/reverse-proxy/srv/caddy/caddy.env
 #
-# Needs: rsync on every node + root SSH from this host.
+# Needs: rsync on every node (including LXCs) + root SSH from this host.
 # God Mode: many hosts authorize root only via ~/.ssh/id_ed25519_ai (passphrase).
 #   Unlock first:  ai-key-unlock
 #   Then ensure this shell sees the agent (script auto-sources ~/.ssh/ai-key-agent.sh).
@@ -27,7 +28,7 @@ if [[ -f "${HOME}/.ssh/ai-key-agent.sh" ]]; then
   source "${HOME}/.ssh/ai-key-agent.sh"
 fi
 
-BACKUP_DIR="/opt/dev/secrets_vault/backups"
+BACKUP_DIR="/opt/dev/secrets_vault/configs_and_secrets"
 
 # SSH for root scrapes — prefer God Mode key when present (matches shared/ssh/config)
 SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=10 -o IdentitiesOnly=yes)
@@ -125,7 +126,7 @@ sweep_remote_path() {
     fi
 }
 
-echo "Starting secrets backup... $(date)"
+echo "Starting configs & secrets backup... $(date)"
 if [[ -n "${SSH_AUTH_SOCK:-}" ]]; then
     echo "SSH agent: $SSH_AUTH_SOCK"
 else
@@ -142,17 +143,6 @@ for entry in "${PATH_SWEEPS[@]}"; do
     SRC="${entry#*:}"
     sweep_remote_path "$HOST" "$SRC" || true
 done
-
-# --- local /opt/dev/homelab_repo  →  ai-tools/
-echo "Backing up local /opt/dev/homelab_repo..."
-SRC="/opt/dev/homelab_repo"
-DEST="$BACKUP_DIR/ai-tools"
-mkdir -p "$DEST"
-rsync -avm \
-    --include='*.env' --include='*.secret' --include='*.pwd' \
-    --include='*/.secrets/***' --include='*/' --exclude='*' \
-    "$SRC/" "$DEST/" || \
-    echo "Warning: local repo secret scrape failed"
 
 # --- Host-local paths outside /srv (same rule: vault path = search path)
 HOMELAB_IP="${NODES["docker-services"]}"
@@ -243,4 +233,4 @@ fi
 chmod -R 600 "$BACKUP_DIR"
 find "$BACKUP_DIR" -type d -exec chmod 700 {} +
 
-echo "Secrets backup complete. Files secured in $BACKUP_DIR"
+echo "Configs & secrets backup complete. Files secured in $BACKUP_DIR"

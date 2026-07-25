@@ -26,7 +26,7 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 - **Secret File Types**:
   - **Environment Variables (`.env`)**: SOPS-encrypted in Git. Output to `/srv/<service>/.env` at deploy time.
   - **Standalone Secret Files (`.secret`, `.pwd`, `.json`)**: Single-value credentials (e.g. `gcp-creds.json`, `airflow_fernet_key.secret`, `glances.pwd`, `vaultwarden_admin_token.secret`) are SOPS-encrypted in Git and tracked.
-  - **Third-Party Static Assets (VPN Profiles)**: Bulk raw WireGuard/OpenVPN `.conf` profiles reside in `/opt/dev/secrets_vault/vpn-configs/` (outside Git) and are backed up to offline vault storage via `scrape_secrets.sh`.
+  - **Third-Party Static Assets (VPN Profiles)**: Bulk raw WireGuard/OpenVPN `.conf` profiles reside in `/opt/dev/secrets_vault/vpn-configs/` (outside Git) and are backed up to offline vault storage via `scrape_configs_and_secrets.sh`.
 - **File Permission Rules**:
   - **In Git (`/opt/homelab-repo/`)**: Files maintain standard Git permissions (`644` for files, `755` for scripts). No permission locking scripts run on the repo directory.
   - **In Live Runtime (`/srv/` / `/opt/scripts/Security/`)**: Decrypted files receive strict `600` permissions upon deployment (except `glances.pwd`, `mediamtx/.env`, and `nextcloud_hpb_secrets.env` which receive `644` for unprivileged container processes).

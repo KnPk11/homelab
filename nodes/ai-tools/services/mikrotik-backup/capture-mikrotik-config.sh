@@ -4,8 +4,8 @@
 # Version: 1.4
 # Date: 2026-07-15
 #
-# Pulls a sanitised RouterOS config export from the MikroTik router via SSH
-# and writes it to a local gitignored file for backup by scrape_secrets.sh.
+# capture-mikrotik-config.sh — Exports MikroTik RouterOS config via SSH
+# and writes it to a local gitignored file for backup by scrape_configs_and_secrets.sh.
 #
 # Runs as a cron job on ai-tools every 3 hours.
 #
