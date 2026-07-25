@@ -1,5 +1,8 @@
 # Pulse Deployment Notes
 
+> [!NOTE]
+> **Tags:** #Pulse #Monitoring #Proxmox #LXC
+
 Private multi-host monitoring ([rcourtman/Pulse](https://github.com/rcourtman/Pulse) community).  
 **Deployment:** dedicated **Proxmox LXC**, **not** Docker.
 
