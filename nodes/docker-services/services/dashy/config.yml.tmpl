@@ -139,6 +139,20 @@ sections:
         statusCheck: true
         statusCheckAllowInsecure: true
 
+      - title: Proxmox Backup Server
+        description: Enterprise backup & restore
+        icon: fas fa-archive
+        url: https://${PBS_IP}:8007
+        statusCheck: true
+        statusCheckAllowInsecure: true
+
+      - title: OpenMediaVault
+        description: NAS & storage management
+        icon: fas fa-hdd
+        url: https://${OMV_IP}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
       - title: Cockpit
         description: System Management
         icon: fas fa-tachometer-alt
@@ -149,6 +163,18 @@ sections:
         description: Uptime & Status Monitoring
         icon: fas fa-heartbeat
         url: https://status.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Pulse
+        description: Multi-host Proxmox monitoring
+        icon: fas fa-wave-square
+        url: https://pulse.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Gatus
+        description: Uptime & status page
+        icon: fas fa-clipboard-check
+        url: https://gatus.${HOMELAB_DOMAIN}
         statusCheck: true
 
       - title: Portainer
@@ -245,7 +271,7 @@ sections:
         url: https://nextcloud.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: File Browser
+      - title: FileBrowser Quantum
         description: Browse and manage files
         icon: fas fa-folder
         url: https://filebrowser.${HOMELAB_DOMAIN}
@@ -366,18 +392,78 @@ sections:
         statusCheck: true
         statusCheckAllowInsecure: true
 
+      - title: OpenMediaVault
+        description: NAS & storage management
+        icon: fas fa-hdd
+        url: https://${OMV_IP}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
       - title: Cockpit
         description: System Management
         icon: fas fa-tachometer-alt
         url: https://cockpit.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: AdGuard Home
+        description: Network-wide ad blocking
+        icon: fas fa-shield-alt
+        url: https://adguard.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Tailscale
+        description: VPN mesh admin
+        icon: fas fa-lock
+        url: https://login.tailscale.com/login?next_url=%2Fadmin%2Fmachines
+        statusCheck: true
+
+  - name: Monitoring
+    displayData:
+      hideForGuests: true
+      hideForUsers: ['Dash']
+    items:
       - title: Uptime Kuma
         description: Uptime & Status Monitoring
         icon: fas fa-heartbeat
         url: https://status.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: Pulse
+        description: Multi-host Proxmox monitoring
+        icon: fas fa-wave-square
+        url: https://pulse.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Gatus
+        description: Uptime & status page
+        icon: fas fa-clipboard-check
+        url: https://gatus.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Grafana
+        description: Metrics & Dashboards
+        icon: fas fa-chart-line
+        url: https://grafana.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: InfluxDB
+        description: Time-Series Database
+        icon: fas fa-database
+        url: https://influxdb.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Glances
+        description: System monitoring
+        icon: fas fa-tachometer-alt
+        url: https://glances.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
+  - name: Container Management
+    displayData:
+      hideForGuests: true
+      hideForUsers: ['Dash']
+    items:
       - title: Portainer
         description: Manage Docker containers
         icon: fab fa-docker
@@ -396,37 +482,6 @@ sections:
         icon: fas fa-terminal
         url: https://dozzle.${HOMELAB_DOMAIN}
         statusCheck: true
-
-      - title: Grafana
-        description: Metrics & Dashboards
-        icon: fas fa-chart-line
-        url: https://grafana.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: InfluxDB
-        description: Time-Series Database
-        icon: fas fa-database
-        url: https://influxdb.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: AdGuard Home
-        description: Network-wide ad blocking
-        icon: fas fa-shield-alt
-        url: https://adguard.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: Tailscale
-        description: VPN mesh admin
-        icon: fas fa-lock
-        url: https://login.tailscale.com/login?next_url=%2Fadmin%2Fmachines
-        statusCheck: true
-
-      - title: Glances
-        description: System monitoring
-        icon: fas fa-tachometer-alt
-        url: https://glances.${HOMELAB_DOMAIN}
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
   - name: AI
     displayData:
@@ -451,7 +506,32 @@ sections:
         url: https://hermes.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: n8n
+        description: Self-hosted automation workflows and integrations
+        icon: fas fa-network-wired
+        url: https://n8n.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
   - name: Sync & Backup
+    displayData:
+      hideForGuests: true
+      hideForUsers: ['Dash']
+    items:
+      - title: Proxmox Backup Server
+        description: Enterprise backup & restore
+        icon: fas fa-archive
+        url: https://${PBS_IP}:8007
+        statusCheck: true
+        statusCheckAllowInsecure: true
+
+      - title: Syncthing
+        description: Continuous file synchronization
+        icon: fas fa-sync
+        url: https://syncthing.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+  - name: Media & Entertainment
     displayData:
       hideForGuests: true
       hideForUsers: ['Dash']
@@ -462,23 +542,12 @@ sections:
         url: https://nextcloud.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: Syncthing
-        description: Continuous file synchronization
-        icon: fas fa-sync
-        url: https://syncthing.${HOMELAB_DOMAIN}
-        statusCheck: true
-
       - title: Immich
         description: Self-hosted photo and video backup
         icon: fas fa-images
         url: https://immich.${HOMELAB_DOMAIN}
         statusCheck: true
 
-  - name: Media & Entertainment
-    displayData:
-      hideForGuests: true
-      hideForUsers: ['Dash']
-    items:
       - title: Jellyfin
         description: Media server
         icon: fas fa-film
@@ -491,6 +560,23 @@ sections:
         url: https://photoprism.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: File Browser Quantum
+        description: Browse and manage files
+        icon: fas fa-folder
+        url: https://filebrowser.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Copyparty
+        description: Portable file server & web UI
+        icon: fas fa-folder-open
+        url: https://copyparty.${HOMELAB_DOMAIN}=
+        statusCheck: true
+
+  - name: Downloaders
+    displayData:
+      hideForGuests: true
+      hideForUsers: ['Dash']
+    items:
       - title: qBittorrentvpn
         description: Torrent client with VPN
         icon: fas fa-cloud-download-alt
@@ -526,13 +612,6 @@ sections:
       hideForGuests: true
       hideForUsers: ['Dash']
     items:
-      - title: n8n
-        description: Self-hosted automation workflows and integrations
-        icon: fas fa-network-wired
-        url: https://n8n.${HOMELAB_DOMAIN}
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
-
       - title: Vaultwarden
         description: Self-hosted password manager
         icon: fas fa-key
@@ -543,18 +622,6 @@ sections:
         description: Share text snippets securely
         icon: fas fa-sticky-note
         url: https://privatebin.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: File Browser
-        description: Browse and manage files
-        icon: fas fa-folder
-        url: https://filebrowser.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: Copyparty
-        description: Portable file server & web UI
-        icon: fas fa-folder-open
-        url: https://copyparty.${HOMELAB_DOMAIN}=
         statusCheck: true
 
       - title: Airflow
