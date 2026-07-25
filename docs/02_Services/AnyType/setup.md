@@ -145,7 +145,7 @@ For major upgrades, version pins, and env-format changes:
 
 ## 3. Secrets backup
 
-On-demand only: `shared/scripts/scrape_secrets.sh` (see script header). Pulls:
+On-demand only: `nodes/ai-tools/services/configs-and-secrets-backup/scrape_configs_and_secrets.sh` (see script header). Pulls:
 
 | Path | Why |
 |------|-----|

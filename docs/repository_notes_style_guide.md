@@ -98,4 +98,4 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 ## 11. Project Workflow & Secrets
 - **Docs First**: The primary repository focus is on sanitised documentation (`docs/`). Operational scripts and compose files are maintained but are secondary during the migration phase.
 - **Script History**: We intentionally maintain multiple versioned files (e.g., `Caddyfile_v1`, `Caddyfile_v2`) in the operational `nodes/` directories to artificially recreate a basic commit history when they are eventually pushed to source control.
-- **SOPS Integration**: Operational files in `nodes/` are intentionally left un-sanitised as they act as the true source for homelab deployments. They are excluded from initial public commits and will be encrypted via **SOPS (Secrets OPerationS)** in the future prior to being committed.
+- **SOPS Integration**: Operational secret files in `nodes/` (`.env`, `.secret`, `.pwd`, `.json`) are encrypted in-place using **SOPS (Secrets OPerationS)** with per-node Age recipient keys defined in `.sops.yaml`. Live runtime host paths (such as `/srv/` or `/opt/scripts/`) hold the decrypted production files at deploy time.
