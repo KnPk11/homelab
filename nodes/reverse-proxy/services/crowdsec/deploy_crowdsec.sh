@@ -39,11 +39,15 @@ chmod 600 /etc/crowdsec/bouncers/*.yaml
 echo "Restarting services..."
 systemctl restart crowdsec
 systemctl restart crowdsec-firewall-bouncer
-# Unit name may be either legacy or mikrotik-prefixed depending on install
-if systemctl list-unit-files cs-routeros-bouncer.service &>/dev/null; then
-    systemctl restart cs-routeros-bouncer
-elif systemctl list-unit-files crowdsec-mikrotik-bouncer.service &>/dev/null; then
+# Prefer the live unit name. Legacy cs-routeros-bouncer may be masked (duplicate
+# that fought crowdsec-mikrotik-bouncer for :2112); never restart a masked unit.
+if systemctl cat crowdsec-mikrotik-bouncer.service &>/dev/null; then
     systemctl restart crowdsec-mikrotik-bouncer
+elif systemctl cat cs-routeros-bouncer.service &>/dev/null \
+    && ! systemctl is-enabled cs-routeros-bouncer.service 2>/dev/null | grep -qx masked; then
+    systemctl restart cs-routeros-bouncer
+else
+    echo "Warning: no active RouterOS/MikroTik bouncer unit found to restart."
 fi
 
 echo "Deployment complete."
