@@ -10,7 +10,9 @@ ui:
   header: "System Status"
 
 endpoints:
+  # --- Infrastructure ---
   - name: Internet
+    group: Infrastructure
     url: "icmp://1.1.1.1"
     interval: 30s
     ui:
@@ -20,6 +22,7 @@ endpoints:
       - "[CONNECTED] == true"
 
   - name: Reverse Proxy
+    group: Infrastructure
     url: "tcp://127.0.0.1:80"
     interval: 30s
     ui:
@@ -29,6 +32,7 @@ endpoints:
       - "[CONNECTED] == true"
 
   - name: DNS
+    group: Infrastructure
     url: "tcp://${DNS_NODE_IP}:53"
     interval: 30s
     ui:
@@ -37,16 +41,8 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: AI Tools
-    url: "icmp://${AITOOLS_NODE_IP}"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[CONNECTED] == true"
-
   - name: Main Homelab
+    group: Infrastructure
     url: "icmp://${HOMELAB_NODE_IP}"
     interval: 30s
     ui:
@@ -55,7 +51,28 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  - name: AI Tools
+    group: Infrastructure
+    url: "icmp://${AITOOLS_NODE_IP}"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Pulse
+    group: Infrastructure
+    url: "icmp://${PULSE_NODE_IP}"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
   - name: OpenClaw
+    group: Infrastructure
     url: "icmp://${OPENCLAW_NODE_IP}"
     interval: 30s
     ui:
@@ -65,6 +82,7 @@ endpoints:
       - "[CONNECTED] == true"
 
   - name: OpenMediaVault
+    group: Infrastructure
     url: "icmp://${OMV_NODE_IP}"
     interval: 30s
     ui:
@@ -73,16 +91,9 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: Filebrowser
-    url: "http://${HOMELAB_NODE_IP}:9101"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
+  # --- Sync & Storage ---
   - name: Nextcloud
+    group: Sync & Storage
     url: "http://${HOMELAB_NODE_IP}:8104"
     interval: 30s
     ui:
@@ -91,44 +102,9 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  - name: OpenWebUI
-    url: "http://${HOMELAB_NODE_IP}:3002"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: PrivateBin
-    url: "http://${HOMELAB_NODE_IP}:8180"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Grafana
-    url: "http://${HOMELAB_NODE_IP}:3005"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: Airflow
-    url: "http://${HOMELAB_NODE_IP}:8094"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
-  - name: n8n
-    url: "http://${HOMELAB_NODE_IP}:5678"
+  - name: Filebrowser
+    group: Sync & Storage
+    url: "http://${HOMELAB_NODE_IP}:9101"
     interval: 30s
     ui:
       hide-url: true
@@ -137,6 +113,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Syncthing
+    group: Sync & Storage
     url: "http://${AITOOLS_NODE_IP}:8384"
     interval: 30s
     ui:
@@ -145,16 +122,9 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  - name: Immich
-    url: "http://${HOMELAB_NODE_IP}:2283"
-    interval: 30s
-    ui:
-      hide-url: true
-      hide-hostname: true
-    conditions:
-      - "[STATUS] == 200"
-
+  # --- Media & Entertainment ---
   - name: Jellyfin
+    group: Media & Entertainment
     url: "http://${HOMELAB_NODE_IP}:8096"
     interval: 30s
     ui:
@@ -164,6 +134,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Photoprism
+    group: Media & Entertainment
     url: "http://${HOMELAB_NODE_IP}:2342"
     interval: 30s
     ui:
@@ -172,11 +143,65 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  - name: Pulse
-    url: "icmp://${PULSE_NODE_IP}"
+  - name: Immich
+    group: Media & Entertainment
+    url: "http://${HOMELAB_NODE_IP}:2283"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[CONNECTED] == true"
+      - "[STATUS] == 200"
+
+  # --- AI ---
+  - name: OpenWebUI
+    group: AI
+    url: "http://${HOMELAB_NODE_IP}:3002"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  # --- Tools & Workflow ---
+  - name: PrivateBin
+    group: Tools & Workflow
+    url: "http://${HOMELAB_NODE_IP}:8180"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Airflow
+    group: Tools & Workflow
+    url: "http://${HOMELAB_NODE_IP}:8094"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: n8n
+    group: Tools & Workflow
+    url: "http://${HOMELAB_NODE_IP}:5678"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  # --- Monitoring ---
+  - name: Grafana
+    group: Monitoring
+    url: "http://${HOMELAB_NODE_IP}:3005"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
