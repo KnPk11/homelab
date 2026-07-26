@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   vaultwarden:
-    image: vaultwarden/server:testing
+    image: vaultwarden/server:latest
     container_name: vaultwarden
     user: 1000:1000
     ports:
