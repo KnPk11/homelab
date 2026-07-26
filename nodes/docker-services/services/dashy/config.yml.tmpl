@@ -149,7 +149,8 @@ sections:
         description: NAS & storage management
         icon: fas fa-hdd
         url: https://${OMV_IP}
-        statusCheck: false
+        statusCheck: true
+        statusCheckUrl: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/infrastructure_openmediavault/health/badge.svg
 
       - title: Cockpit
         description: System Management
@@ -392,7 +393,8 @@ sections:
         description: NAS & storage management
         icon: fas fa-hdd
         url: https://${OMV_IP}
-        statusCheck: false
+        statusCheck: true
+        statusCheckUrl: https://gatus.${HOMELAB_DOMAIN}/api/v1/endpoints/infrastructure_openmediavault/health/badge.svg
 
       - title: Cockpit
         description: System Management
