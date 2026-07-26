@@ -137,13 +137,13 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Syncthing
-    url: "http://${HOMELAB_NODE_IP}:8384"
+    url: "icmp://${AITOOLS_NODE_IP}"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[STATUS] == 200"
+      - "[CONNECTED] == true"
 
   - name: Immich
     url: "http://${HOMELAB_NODE_IP}:2283"
