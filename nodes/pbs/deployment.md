@@ -13,5 +13,5 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 2. Services & Specifications
 
-*   [Proxmox Backup Server Spec](../../docs/00_Infrastructure/Proxmox/pbs-lxc.md) — Proxmox LXC container provisioning, resource allocation, and datastore mount points.
-*   [PBS Deployment & Restore Guide](../../docs/00_Infrastructure/Proxmox/proxmox-backup-server.md) — Post-install datastore configuration, WinSCP client setups, and retention models.
+*   [Proxmox Backup Server Spec](../../docs/00_Infrastructure/proxmox/pbs-lxc.md) — Proxmox LXC container provisioning, resource allocation, and datastore mount points.
+*   [PBS Deployment & Restore Guide](../../docs/00_Infrastructure/proxmox/proxmox-backup-server.md) — Post-install datastore configuration, WinSCP client setups, and retention models.

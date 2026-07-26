@@ -7,7 +7,7 @@ This guide covers how to point your custom domain subdomains to your homelab usi
 
 ## 1. Prerequisites
 - A domain registered with Namecheap.
-- MikroTik DDNS enabled (refer to `Mikrotik/setup.md`).
+- MikroTik DDNS enabled (refer to `mikrotik/setup.md`).
 
 ## 2. Configuring Namecheap DNS
 

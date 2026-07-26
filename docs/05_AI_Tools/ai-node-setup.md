@@ -119,7 +119,7 @@ ai-key-lock             # unload both early when done
 | Detail | Location |
 |--------|----------|
 | Scripts + install | [ai-ssh-key deployment](../../nodes/ai-tools/services/ai-ssh-key/deployment.md) |
-| Router-side setup (MikroTik users/firewall) | [MikroTik AI SSH access](../01_Network/Mikrotik/ai-ssh-access.md) |
+| Router-side setup (MikroTik users/firewall) | [MikroTik AI SSH access](../01_Network/mikrotik/ai-ssh-access.md) |
 
 > [!TIP]
 > Use `ai-key-unlock` / `ai-key-lock`, not a bare `ssh-add` in a random terminal. Only the unlock script records TTL state so `ai-key-status` and the cron watchdog work.
