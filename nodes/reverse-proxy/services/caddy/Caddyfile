@@ -148,6 +148,7 @@ home.{$DOMAIN_NAME} {
 
     # Dashy static build — served directly by Caddy (no Node.js runtime)
     root * /srv/dashy/dist
+    header /conf.yml Cache-Control "no-cache, no-store, must-revalidate"
     try_files {path} /index.html
     file_server
 }
