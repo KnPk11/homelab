@@ -87,13 +87,10 @@ A method for cloning a live OS to a mounted SD card.
    ```
 
 > [!NOTE]
-> **Flags:** The `--no-whole-file --inplace` flags run faster on slower microSD cards as `rsync` only copies changed parts of a file, though it introduces a slight risk of file corruption.
-
-> [!NOTE]
-> **Partition UUIDs:** The target drive may inherit the same UUID and partition IDs, but otherwise, update `/mnt/sd_os_clone/etc/fstab` with IDs from `sudo blkid /dev/sda2`.
-
-> [!NOTE]
-> **Performance:** Initial syncs onto a MicroSD card may take hours. Subsequent runs are significantly faster.
+> **Implementation Notes:**
+> - **Flags:** The `--no-whole-file --inplace` flags run faster on slower microSD cards as `rsync` only copies changed parts of a file, though it introduces a slight risk of file corruption.
+> - **Partition UUIDs:** The target drive may inherit the same UUID and partition IDs, but otherwise, update `/mnt/sd_os_clone/etc/fstab` with IDs from `sudo blkid /dev/sda2`.
+> - **Performance:** Initial syncs onto a MicroSD card may take hours. Subsequent runs are significantly faster.
 
 ## 4. RaspiBackup
 
