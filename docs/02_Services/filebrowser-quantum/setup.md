@@ -1,4 +1,4 @@
-# File Browser Quantum Setup
+# FileBrowser Quantum Setup
 
 > [!NOTE]
 > **Tags:** #FileBrowser #FileManager #Media #Docker
