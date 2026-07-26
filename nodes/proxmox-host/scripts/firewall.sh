@@ -9,7 +9,21 @@
 set -e
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-source "$SCRIPT_DIR/firewall.env"
+# ── Network Topology ─────────────────────────────────────────────
+# Canonical IP reference: inventory.yml & shared/ssh/config
+# Subnets
+MAIN_LAN="192.168.88.0/24"
+IOT_LAN="192.168.2.0/24"
+HOMELAB_LAN="192.168.50.0/24"
+VPN_NET="10.5.0.0/24"
+WIN11_VM="192.168.50.84"
+OMV_IP="192.168.50.90"
+REVERSE_PROXY_IP="192.168.50.101"
+DNS_IP="192.168.50.102"
+AITOOLS_IP="192.168.50.105"
+PULSE_MONITOR_IP="192.168.50.88"
+VPNS_IP="192.168.50.87"
+PBS_IP="192.168.50.86"
 
 # File Paths
 CLUSTER_FW="/etc/pve/firewall/cluster.fw"
@@ -53,7 +67,7 @@ homelab-lan $HOMELAB_LAN  # Homelab Subnet (Intermediate Trust)
 vpn-net $VPN_NET          # Primary VPN Subnet
 # Note: External VMs/devices need an alias here so they can be referenced as a "-source" in rules.
 # Proxmox guests (like Guest 100 on .95) don't need aliases here; their rules are applied via their specific ID.fw file.
-win11-vm $HOMELAB_NODE       # Windows 11 VM
+win11-vm $WIN11_VM       # Windows 11 VM
 open-media-vault $OMV_IP # OMV Storage VM
 reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container

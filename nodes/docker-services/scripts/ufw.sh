@@ -3,21 +3,18 @@
 #  UFW Firewall Setup Script – Homelab Server
 #  Version 3.3
 #  Run as root (automatically upgrades to sudo if needed)
-#  Network layout lives in /opt/scripts/Security/ufw.env (not in the disposable clone).
+#  Network layout is defined inline (canonical reference: inventory.yml).
 # ==========================================================
 
 set -euo pipefail
 
-ENV_FILE="/opt/scripts/Security/ufw.env"
-if [[ ! -f "$ENV_FILE" ]]; then
-    echo "Error: $ENV_FILE not found. Copy ufw.env.example there and edit:"
-    echo "  sudo mkdir -p /opt/scripts/Security"
-    echo "  sudo cp /opt/homelab-repo/nodes/docker-services/scripts/ufw.env.example /opt/scripts/Security/ufw.env"
-    echo "  sudo chmod 600 /opt/scripts/Security/ufw.env"
-    exit 1
-fi
-# shellcheck source=/dev/null
-source "$ENV_FILE"
+# ── Network Topology ─────────────────────────────────────────────
+# Canonical IP reference: inventory.yml
+MAIN_LAN="192.168.88.0/24"
+CADDY_IP="192.168.50.101"
+AITOOLS_IP="192.168.50.105"
+DOCKER_LAN="172.16.0.0/12"
+VPN_NETS="10.5.0.0/24 10.6.0.0/24 10.8.0.0/24 100.64.0.0/10"
 
 # If not run as root, re‑execute with sudo
 if [[ $EUID -ne 0 ]]; then

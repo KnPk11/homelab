@@ -7,7 +7,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-source "$SCRIPT_DIR/ufw.env"
+# ── Network Topology ─────────────────────────────────────────────
+# Canonical IP reference: inventory.yml
+MAIN_LAN_SUBNET="192.168.88.0/24"
+HOMELAB_LAN_SUBNET="192.168.50.0/24"
+DOCKER_SUBNET="172.16.0.0/12"
+VPN_NETS="10.5.0.0/24 10.6.0.0/24 10.8.0.0/24 100.64.0.0/10"
 
 if [[ $EUID -ne 0 ]]; then
     exec sudo "$0" "$@"
@@ -29,7 +34,7 @@ ufw allow from $DOCKER_SUBNET comment 'Full Access (Docker Internal)'
 
 # 3. Restricted VPN Access
 # Only allow SSH (Port 22) from VPN subnets
-for subnet in $VPN_SUBNETS; do
+for subnet in $VPN_NETS; do
     ufw allow from $subnet to any port 22 proto tcp comment 'SSH (VPN)'
 done
 

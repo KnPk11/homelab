@@ -1,21 +1,14 @@
 #!/bin/bash
 # Fail2Ban Deployment Script
-# Secrets live under /srv/fail2ban-monitor/ (not in the disposable GitOps clone).
+# Network topology is defined inline (canonical reference: inventory.yml).
+# Monitor code is symlinked under /srv/fail2ban-monitor/ from the GitOps clone.
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-ENV_FILE="/srv/fail2ban-monitor/fail2ban.env"
 
-if [ ! -f "$ENV_FILE" ]; then
-    echo "Error: $ENV_FILE does not exist. Copy fail2ban.env.example there and fill your secrets:"
-    echo "  sudo mkdir -p /srv/fail2ban-monitor"
-    echo "  sudo cp \"$SCRIPT_DIR/fail2ban.env.example\" /srv/fail2ban-monitor/fail2ban.env"
-    echo "  sudo chmod 600 /srv/fail2ban-monitor/fail2ban.env"
-    exit 1
-fi
+set -euo pipefail
 
-set -a
-# shellcheck source=/dev/null
-source "$ENV_FILE"
-set +a
+# ── Network Topology ─────────────────────────────────────────────
+# ignoreip whitelist for jail.local (same class of data as UFW scripts)
+HOMELAB_SUBNETS="::1 192.168.88.0/24 192.168.50.0/24 172.16.0.0/12 10.5.0.0/24 10.6.0.0/24 100.64.0.0/10"
 export HOMELAB_SUBNETS
 
 # Deploy jail.local via envsubst

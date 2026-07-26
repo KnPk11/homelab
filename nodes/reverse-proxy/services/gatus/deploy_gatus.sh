@@ -1,8 +1,20 @@
 #!/bin/bash
 # Gatus Deployment Script
-# Secrets live under /srv/gatus/ (not in the disposable GitOps clone).
+# Network topology is defined inline (canonical reference: inventory.yml).
+# Secrets (e.g. DOMAIN_NAME) live under /srv/gatus/ (not in the disposable GitOps clone).
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/gatus/gatus.env"
+
+set -euo pipefail
+
+# ── Network Topology ─────────────────────────────────────────────
+DNS_NODE_IP=192.168.50.102
+AITOOLS_NODE_IP=192.168.50.105
+HOMELAB_NODE_IP=192.168.50.95
+OPENCLAW_NODE_IP=192.168.50.91
+OMV_NODE_IP=192.168.50.90
+PULSE_NODE_IP=192.168.50.88
+export DNS_NODE_IP AITOOLS_NODE_IP HOMELAB_NODE_IP OPENCLAW_NODE_IP OMV_NODE_IP PULSE_NODE_IP
 
 if [ ! -f "$ENV_FILE" ]; then
     echo "Error: $ENV_FILE does not exist. Copy gatus.env.example there and fill your secrets:"
@@ -12,12 +24,12 @@ if [ ! -f "$ENV_FILE" ]; then
     exit 1
 fi
 
-# Load variables and export them
+# Load secrets and export for envsubst
 set -a
 # shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
-export DOMAIN_NAME DNS_NODE_IP AITOOLS_NODE_IP HOMELAB_NODE_IP OPENCLAW_NODE_IP OMV_NODE_IP PULSE_NODE_IP
+export DOMAIN_NAME
 
 # Deploy config.yaml via envsubst
 echo "Deploying config.yaml..."

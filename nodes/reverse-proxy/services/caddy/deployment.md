@@ -2,32 +2,43 @@
 
 The primary proxy configuration for the node.
 
-Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked config and examples — real secrets stay outside the repo so the clone stays disposable.
+Network topology (backend node IPs and trusted LAN CIDRs) is **hardcoded in the tracked `Caddyfile`** — same approach as the UFW scripts. Secrets and host-specific values (`DOMAIN_NAME`, auth hashes, IPv6 prefix) stay under **`/srv/caddy/`** so the GitOps clone stays disposable.
 
 ### Layout
 
 | Path | Role |
 | :--- | :--- |
-| `/opt/homelab-repo/.../Caddy/Caddyfile` | Tracked config (symlinked into `/srv/caddy/`) |
-| `/opt/homelab-repo/.../Caddy/Caddyfile.env.example` | Template only |
-| `/srv/caddy/caddy.env` | Real secrets (not in clone; same `*.env` naming as other services) |
+| `.../caddy/Caddyfile` | Tracked config (backend IPs inline; secrets via `{$VAR}`) |
+| `.../caddy/Caddyfile.env.example` | Secrets template only |
+| `/srv/caddy/caddy.env` | Real secrets (not in clone) |
 | `/srv/caddy/Caddyfile.experimental` | Local/experimental sites (not in clone) |
 | `/srv/caddy/Caddyfile` | Symlink → tracked Caddyfile |
+
+### Secrets (`/srv/caddy/caddy.env`)
+
+| Variable | Purpose |
+| :--- | :--- |
+| `DOMAIN_NAME` | Public base domain for site blocks |
+| `GLANCES_HASH` | Basic-auth hash for glances |
+| `WUD_HASH` | Basic-auth hash for WUD |
+| `IPV6_PREFIX` | Trusted IPv6 prefix in private-only matchers |
 
 ### Deployment Strategy
 
 1. **Clone the repository** to `/opt/homelab-repo` on the node.
-2. **Decrypt the environment file** from the repository into the service directory:
+2. **Create the secrets file** under the service directory:
    ```bash
    sudo mkdir -p /srv/caddy
-   sops -d /opt/homelab-repo/nodes/reverse-proxy/services/caddy/caddy.env > /srv/caddy/caddy.env
+   sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile.env.example /srv/caddy/caddy.env
    sudo chmod 600 /srv/caddy/caddy.env
+   # edit /srv/caddy/caddy.env with real DOMAIN_NAME, hashes, IPV6_PREFIX
    ```
+   (If you still keep an encrypted `caddy.env` in-repo during migration, decrypt into `/srv/caddy/caddy.env` instead — strip any leftover IP keys; they are no longer read.)
 3. **Experimental config** (optional) — keep only under `/srv/caddy/`:
    ```bash
    sudo touch /srv/caddy/Caddyfile.experimental
    ```
-4. **Inject env into systemd**:
+4. **Inject secrets into systemd** (network IPs are not env vars anymore):
    ```bash
    sudo mkdir -p /etc/systemd/system/caddy.service.d/
    sudo tee /etc/systemd/system/caddy.service.d/override.conf <<'EOF'
@@ -44,3 +55,5 @@ Runtime files live under `/srv/caddy/`. The GitOps clone only holds tracked conf
    sudo systemctl daemon-reload
    sudo systemctl restart caddy
    ```
+
+To change backend node IPs, edit the literals in `Caddyfile` and reload/restart Caddy. To change domain/hashes/IPv6 prefix, edit `/srv/caddy/caddy.env` and restart Caddy.

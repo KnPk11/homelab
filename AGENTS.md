@@ -24,7 +24,7 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
   - AI agents on `ai-tools` can ENCRYPT secrets, but CANNOT DECRYPT secrets for other nodes.
   - Human admins unlock the Master Admin key into RAM on `ai-tools` via `sops-key-unlock` (15-min TTL).
 - **Secret File Types**:
-  - **Environment Variables (`.env`)**: SOPS-encrypted in Git. Output to `/srv/<service>/.env` at deploy time.
+  - **Environment Variables (`.env`)**: SOPS-encrypted in Git. Output to `/srv/<service>/.env` at deploy time. Note that internal RFC 1918 IP addresses used in firewall scripts are NOT classified as secrets and are committed in plain text (per `.agents/AGENTS.md` §3). The SOPS encryption for firewall `.env` files has been removed; SOPS remains active for genuine secrets (passwords, API keys, domain names, tokens).
   - **Standalone Secret Files (`.secret`, `.pwd`, `.json`)**: Single-value credentials (e.g. `gcp-creds.json`, `airflow_fernet_key.secret`, `glances.pwd`, `vaultwarden_admin_token.secret`) are SOPS-encrypted in Git and tracked.
   - **Third-Party Static Assets (VPN Profiles)**: Bulk raw WireGuard/OpenVPN `.conf` profiles reside in `/opt/dev/secrets_vault/vpn-configs/` (outside Git) and are backed up to offline vault storage via `scrape_configs_and_secrets.sh`.
 - **File Permission Rules**:

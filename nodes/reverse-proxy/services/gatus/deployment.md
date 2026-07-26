@@ -1,31 +1,38 @@
 # Gatus Deployment Notes
 
-Secrets live under **`/srv/gatus/`** so the GitOps clone stays disposable. The config template and deploy script stay in the repo; rendered config goes to `/opt/gatus/config.yaml`.
+Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same approach as the UFW scripts. Secrets (`DOMAIN_NAME`) live under **`/srv/gatus/`** so the GitOps clone stays disposable. The config template and deploy script stay in the repo; rendered config goes to `/srv/gatus/config.yaml`.
 
 ### Layout
 
 | Path | Role |
 | :--- | :--- |
-| `.../Gatus/config.yaml` | Tracked template (`$DOMAIN_NAME`, node IPs, etc.) |
-| `.../Gatus/gatus.env.example` | Template only |
-| `.../Gatus/deploy_gatus.sh` | Renders config + restarts service |
-| `/srv/gatus/gatus.env` | Real values (not in clone) |
-| `/opt/gatus/config.yaml` | Rendered runtime config |
+| `.../gatus/config.yaml` | Tracked template (`$DOMAIN_NAME`, `$DNS_NODE_IP`, etc.) |
+| `.../gatus/deploy_gatus.sh` | Inline network vars; sources secrets; renders config + restarts |
+| `.../gatus/gatus.env.example` | Secrets template (`DOMAIN_NAME` only) |
+| `/srv/gatus/gatus.env` | Real secrets (not in clone) |
+| `/srv/gatus/config.yaml` | Rendered runtime config |
 
 ### Deployment Strategy
 
 1. **Clone the repository** to `/opt/homelab-repo`.
-2. **Create the environment file** under the service directory:
+2. **Create the secrets file**:
    ```bash
    sudo mkdir -p /srv/gatus
    sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/gatus/gatus.env.example /srv/gatus/gatus.env
    sudo chmod 600 /srv/gatus/gatus.env
-   # edit /srv/gatus/gatus.env with domain + node IPs
+   # edit /srv/gatus/gatus.env with DOMAIN_NAME
    ```
 3. **Run the deploy script**:
    ```bash
    sudo /opt/homelab-repo/nodes/reverse-proxy/services/gatus/deploy_gatus.sh
    ```
 
+   This will:
+   - Source `/srv/gatus/gatus.env` for secrets
+   - Inject inline node IPs + secrets into `config.yaml` via `envsubst`
+   - Write `/srv/gatus/config.yaml` and restart `gatus`
+
+To change monitored node IPs, edit the topology block at the top of `deploy_gatus.sh` and re-run the script.
+
 > [!NOTE]
-> Do **not** symlink the template into `/opt/gatus/`. Always use `deploy_gatus.sh` after template or secret changes so `envsubst` injects values securely.
+> Do **not** symlink the template into `/srv/gatus/`. Always use `deploy_gatus.sh` after template or secret changes so `envsubst` injects values.
