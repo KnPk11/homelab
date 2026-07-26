@@ -14,8 +14,8 @@ services:
       - /srv/jellyfin/config:/config
       - /mnt/nas/Media:/data/media/
       - /mnt/nas/Downloads:/data/downloads/
-    expose:
-      - 80
+    ports:
+      - "8096:8096"
     networks:
       - caddy_public
     devices:
