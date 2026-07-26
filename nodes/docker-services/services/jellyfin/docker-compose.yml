@@ -20,7 +20,6 @@ services:
       - caddy_public
     devices:
       - /dev/dri:/dev/dri              # Required for VAAPI/OpenGL hardware accel
-      - /dev/video19:/dev/video19      # Required for hardware HEVC decoding
     restart: unless-stopped
     cap_drop:
       - AUDIT_CONTROL
