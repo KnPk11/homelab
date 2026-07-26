@@ -13,4 +13,4 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 2. Services
 
-*   [Tailscale](../../docs/02_Services/Tailscale/setup.md) — Main mesh VPN and Subnet Router
+*   [Tailscale](../../docs/02_Services/tailscale/setup.md) — Main mesh VPN and Subnet Router
