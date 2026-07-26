@@ -52,10 +52,14 @@ services:
     container_name: photoprism_db
     environment:
       - MARIADB_AUTO_UPGRADE=1
-      - FILE__MYSQL_ROOT_PASSWORD=/run/secrets/photoprism_mysql_root_password
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/photoprism_mysql_root_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/photoprism_mysql_root_password
+      - MARIADB_DATABASE=photoprism
       - MYSQL_DATABASE=photoprism
+      - MARIADB_USER=photoprism
       - MYSQL_USER=photoprism
-      - FILE__MYSQL_PASSWORD=/run/secrets/photoprism_database_password
+      - MARIADB_PASSWORD_FILE=/run/secrets/photoprism_database_password
+      - MYSQL_PASSWORD_FILE=/run/secrets/photoprism_database_password
     secrets:
       - photoprism_mysql_root_password
       - photoprism_database_password
