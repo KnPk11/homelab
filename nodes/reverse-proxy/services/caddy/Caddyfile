@@ -161,7 +161,7 @@ dashy.{$DOMAIN_NAME} {
     import common-logging dashy
     import honeypots-and-traps
 
-    reverse_proxy {$HOMELAB_IP}:9102
+    reverse_proxy 192.168.50.95:9102
 }
 
 pulse.{$DOMAIN_NAME} {
@@ -172,7 +172,7 @@ pulse.{$DOMAIN_NAME} {
     import common-logging pulse
 
     # No iframe embedding — open Pulse in its own tab (matches Pulse allowEmbedding=false)
-    reverse_proxy {$PULSE_IP}:7655
+    reverse_proxy 192.168.50.88:7655
 }
 
 cockpit.{$DOMAIN_NAME} {
@@ -182,7 +182,7 @@ cockpit.{$DOMAIN_NAME} {
     import common-logging-plaintext cockpit
     import common-logging cockpit
 
-    reverse_proxy {$HOMELAB_IP}:9090
+    reverse_proxy 192.168.50.95:9090
 }
 
 grafana.{$DOMAIN_NAME} {
@@ -192,7 +192,7 @@ grafana.{$DOMAIN_NAME} {
     import common-logging-plaintext grafana
     import common-logging grafana
 
-    reverse_proxy {$HOMELAB_IP}:3005
+    reverse_proxy 192.168.50.95:3005
 }
 
 adguard.{$DOMAIN_NAME} {
@@ -202,7 +202,7 @@ adguard.{$DOMAIN_NAME} {
     import common-logging-plaintext adguard
     import common-logging adguard
 
-    reverse_proxy {$DNS_IP}:3000
+    reverse_proxy 192.168.50.102:3000
 }
 
 portainer.{$DOMAIN_NAME} {
@@ -213,7 +213,7 @@ portainer.{$DOMAIN_NAME} {
     import common-logging portainer
 
     # reverse_proxy portainer:9000
-    reverse_proxy {$HOMELAB_IP}:9443 {
+    reverse_proxy 192.168.50.95:9443 {
         transport http {
             # This tells Caddy to trust Portainer's self-signed cert
             tls_insecure_skip_verify
@@ -228,7 +228,7 @@ influxdb.{$DOMAIN_NAME} {
     import common-logging-plaintext influxdb
     import common-logging influxdb
 
-    reverse_proxy {$HOMELAB_IP}:8086
+    reverse_proxy 192.168.50.95:8086
 }
 
 glances.{$DOMAIN_NAME} {
@@ -243,7 +243,7 @@ glances.{$DOMAIN_NAME} {
             k {$GLANCES_HASH}
         }
 
-        reverse_proxy {$HOMELAB_IP}:61208
+        reverse_proxy 192.168.50.95:61208
     }
 }
 
@@ -255,7 +255,7 @@ filebrowser.{$DOMAIN_NAME} {
     import common-logging-plaintext filebrowser
     import common-logging filebrowser
 
-    reverse_proxy {$HOMELAB_IP}:9101
+    reverse_proxy 192.168.50.95:9101
 }
 
 # copyparty.{$DOMAIN_NAME} {
@@ -276,7 +276,7 @@ photoprism.{$DOMAIN_NAME} {
     import common-logging photoprism
     import honeypots-and-traps
 
-    reverse_proxy {$HOMELAB_IP}:2342
+    reverse_proxy 192.168.50.95:2342
 }
 
 # immich.{$DOMAIN_NAME} {
@@ -309,7 +309,7 @@ nextcloud.{$DOMAIN_NAME} {
     redir /.well-known/nodeinfo /index.php/.well-known/nodeinfo 301
     redir /ocm-provider/ /index.php/ocm-provider/ 301
 
-    reverse_proxy {$HOMELAB_IP}:8104
+    reverse_proxy 192.168.50.95:8104
 }
 
 # opencloud.{$DOMAIN_NAME} {
@@ -331,7 +331,7 @@ talk-hpb.{$DOMAIN_NAME} {
     import common-logging talk-hpb
 
     # reverse_proxy nextcloud_talk_hpb:8081 {
-    reverse_proxy {$HOMELAB_IP}:8105 {
+    reverse_proxy 192.168.50.95:8105 {
         # Helper to ensure Nextcloud sees the correct headers
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
@@ -346,7 +346,7 @@ talk-hpb.{$DOMAIN_NAME} {
 #     import common-logging-plaintext mediamtx
 #     import common-logging mediamtx
 
-#     reverse_proxy {$HOMELAB_IP}:8888
+#     reverse_proxy 192.168.50.95:8888
 # }
 
 jellyfin.{$DOMAIN_NAME} {
@@ -357,7 +357,7 @@ jellyfin.{$DOMAIN_NAME} {
     import common-logging jellyfin
     import honeypots-and-traps
 
-    reverse_proxy {$HOMELAB_IP}:8096
+    reverse_proxy 192.168.50.95:8096
 }
 
 privatebin.{$DOMAIN_NAME} {
@@ -367,7 +367,7 @@ privatebin.{$DOMAIN_NAME} {
     import common-logging-plaintext privatebin
     import common-logging privatebin
 
-    reverse_proxy {$HOMELAB_IP}:8180
+    reverse_proxy 192.168.50.95:8180
 }
 
 banned.{$DOMAIN_NAME} {
@@ -403,7 +403,7 @@ wud.{$DOMAIN_NAME} {
             k {$WUD_HASH}
         }
 
-        reverse_proxy {$HOMELAB_IP}:3001
+        reverse_proxy 192.168.50.95:3001
     }
 }
 
@@ -424,7 +424,7 @@ openclaw.{$DOMAIN_NAME} {
     import common-logging-plaintext openclaw
     import common-logging openclaw
 
-    reverse_proxy {$OPENCLAW_IP}:18789
+    reverse_proxy 192.168.50.91:18789
 }
 
 hermes.{$DOMAIN_NAME} {
@@ -434,8 +434,8 @@ hermes.{$DOMAIN_NAME} {
     import common-logging-plaintext hermes
     import common-logging hermes
 
-    reverse_proxy {$OPENCLAW_IP}:9119 {
-        header_up Host {$OPENCLAW_IP}:9119
+    reverse_proxy 192.168.50.91:9119 {
+        header_up Host 192.168.50.91:9119
     }
 }
 
@@ -457,14 +457,14 @@ status.{$DOMAIN_NAME} {
 
     # 2. Serve public paths directly to the backend
     handle @public_paths {
-        reverse_proxy {$HOMELAB_IP}:3003
+        reverse_proxy 192.168.50.95:3003
     }
 
     # 3. Everything else is restricted to LAN only
     handle {
         import access_policy_lan
         # reverse_proxy uptime-kuma:3001
-        reverse_proxy {$HOMELAB_IP}:3003
+        reverse_proxy 192.168.50.95:3003
     }
 }
 
@@ -475,7 +475,7 @@ dozzle.{$DOMAIN_NAME} {
     import common-logging-plaintext dozzle
     import common-logging dozzle
 
-    reverse_proxy {$HOMELAB_IP}:9105
+    reverse_proxy 192.168.50.95:9105
 }
 
 vaultwarden.{$DOMAIN_NAME} {
@@ -500,7 +500,7 @@ vaultwarden.{$DOMAIN_NAME} {
     respond @admin "Unauthorized" 403
 
     # Proxy to Vaultwarden
-    reverse_proxy {$HOMELAB_IP}:9103 {
+    reverse_proxy 192.168.50.95:9103 {
         # Pass the real client IP so Vaultwarden can rate-limit correctly
         header_up X-Real-IP {remote_host}
     }
@@ -513,7 +513,7 @@ my-media.{$DOMAIN_NAME} {
     import common-logging-plaintext webdav
     import common-logging webdav
 
-    reverse_proxy {$HOMELAB_IP}:8084
+    reverse_proxy 192.168.50.95:8084
 }
 
 pinchflat.{$DOMAIN_NAME} {
@@ -533,7 +533,7 @@ metube.{$DOMAIN_NAME} {
     import common-logging-plaintext metube
     import common-logging metube
 
-    reverse_proxy {$HOMELAB_IP}:8181
+    reverse_proxy 192.168.50.95:8181
 }
 
 airflow.{$DOMAIN_NAME} {
@@ -543,7 +543,7 @@ airflow.{$DOMAIN_NAME} {
     import common-logging-plaintext airflow
     import common-logging airflow
 
-    reverse_proxy {$HOMELAB_IP}:8094
+    reverse_proxy 192.168.50.95:8094
 }
 
 ai.{$DOMAIN_NAME} {
@@ -553,7 +553,7 @@ ai.{$DOMAIN_NAME} {
     import common-logging-plaintext openwebui
     import common-logging openwebui
 
-    reverse_proxy {$HOMELAB_IP}:3002
+    reverse_proxy 192.168.50.95:3002
 }
 
 syncthing.{$DOMAIN_NAME} {
@@ -601,7 +601,7 @@ ocstats.{$DOMAIN_NAME} {
     import common-logging-plaintext pages
     import common-logging pages
 
-    reverse_proxy {$OPENCLAW_IP}:10482
+    reverse_proxy 192.168.50.91:10482
 }
 
 import Caddyfile.experimental*

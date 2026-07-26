@@ -76,9 +76,10 @@ Before committing, ensure all sensitive or personal information is replaced with
 - **Project/Repo Names**: Replace personal branding (e.g., "MyBrand") with generic terms like "Homelab" or "MyLab".
 - **Usernames**: Replace your real username with `[USER]` or `[PERSONAL-USER]`.
 - **UUIDs/Secrets**: Use `[DISK-UUID]`, `[VOLUME-ID]`, or `[SECRET]`.
-- **IP Addresses**: 
-  - Use generic internal ranges (e.g., `192.168.1.x`) for general examples.
-  - **Specific Nodes**: For specific host IP addresses, ALWAYS use bracketed placeholders (e.g., `[SERVICE-IP]`, `[CADDY-IP]`, `[LAPI-IP]`) instead of numeric values.
+- **IP Addresses**:
+  - **Documentation** (`docs/`): Use generic internal ranges (e.g., `192.168.1.x`) for general examples, and bracketed placeholders (e.g., `[SERVICE-IP]`, `[CADDY-IP]`) for specific nodes. This keeps guides universal.
+  - **Operational Scripts** (`nodes/`, `shared/`): Internal RFC 1918 addresses (e.g., `192.168.50.x`) may be committed in plain text. These are not secrets and encrypting them adds operational friction without security benefit. Use named variables at the top of scripts for clarity (e.g., `CADDY_IP="192.168.50.101"`).
+  - **Canonical Reference**: `inventory.yml` and `shared/ssh/config` are the single sources of truth for node IP assignments.
 - **Domain Names**: Use `.home`, `.local`, or `example.com`.
 
 ## 8. Testing & Verification

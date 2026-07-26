@@ -5,7 +5,15 @@
 # ==============================================================================
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
-source "$SCRIPT_DIR/firewall.env"
+# ── Network Topology ─────────────────────────────────────────────
+# Canonical IP reference: inventory.yml
+LAN_SUBNET="192.168.88.0/24"
+HOMELAB_SUBNET="192.168.50.0/24"
+VPN_SUBNET="10.5.0.0/24"
+AITOOLS_IP="192.168.50.105"
+CADDY_IP="192.168.50.101"
+# Windows 11 VM IP
+WIN11_VM_IP="192.168.50.84"
 
 export PATH=$PATH:/usr/sbin:/sbin:/usr/bin:/bin
 
