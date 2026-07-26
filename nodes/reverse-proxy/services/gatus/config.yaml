@@ -109,6 +109,69 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
+  - name: Grafana
+    url: "http://${HOMELAB_NODE_IP}:3005"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Airflow
+    url: "http://${HOMELAB_NODE_IP}:8094"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: n8n
+    url: "http://${HOMELAB_NODE_IP}:5678"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Syncthing
+    url: "http://${HOMELAB_NODE_IP}:8384"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Immich
+    url: "http://${HOMELAB_NODE_IP}:2283"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Jellyfin
+    url: "http://${HOMELAB_NODE_IP}:8096"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Photoprism
+    url: "http://${HOMELAB_NODE_IP}:2342"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
   - name: Pulse
     url: "icmp://${PULSE_NODE_IP}"
     interval: 30s
