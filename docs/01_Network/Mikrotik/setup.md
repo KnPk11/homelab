@@ -27,12 +27,12 @@ set [find comment=homelab] dns-server=[ADGUARD-IP]
 set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
 ```
 
-**Resilience when dns is down:** MikroTik script `CheckAdGuard` + scheduler `DNS_Health_Check` (every 1m) plus the **AdGuard Failover Trap** NAT. See [AdGuard Home setup — DNS failover](../../02_Services/AdGuard%20Home/setup.md#client-dns-via-mikrotik-dhcp-current).
+**Resilience when dns is down:** MikroTik script `CheckAdGuard` + scheduler `DNS_Health_Check` (every 1m) plus the **AdGuard Failover Trap** NAT. See [AdGuard Home setup — DNS failover](../../02_Services/adguard-home/setup.md#client-dns-via-mikrotik-dhcp-current).
 
 > [!NOTE]
 > Dual DHCP DNS (`[ADGUARD-IP],1.1.1.1`) was tried for simple client failover but causes **random AdGuard bypass** (clients often query both resolvers). Prefer AdGuard-only + router health script.
 
-See also [AdGuard Home setup](../../02_Services/AdGuard%20Home/setup.md) (upstream resolvers, punch-hole rules).
+See also [AdGuard Home setup](../../02_Services/adguard-home/setup.md) (upstream resolvers, punch-hole rules).
 
 ### Router DNS service
 

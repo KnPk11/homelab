@@ -90,6 +90,6 @@ After major upstream `git pull` / compose renames: `docker compose config` and r
 
 ## Install / update docs
 
-- `docs/02_Services/AnyType/setup.md`
-- `docs/02_Services/AnyType/storage-split.md`
+- `docs/02_Services/anytype/setup.md`
+- `docs/02_Services/anytype/storage-split.md`
 - Upstream: [Upgrade Guide](https://github.com/anyproto/any-sync-dockercompose/wiki/Upgrade-Guide)
