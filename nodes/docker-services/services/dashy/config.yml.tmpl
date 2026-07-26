@@ -125,19 +125,17 @@ sections:
       hideForGuests: true
       hideForUsers: ['Services']
     items:
-      - title: Router Web UI
-        description: Router Admin
+      - title: Mikrotik Web UI
+        description: Mikrotik Router Admin
         icon: fas fa-network-wired
         url: https://${ROUTER_IP}:8443
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+        statusCheck: false
 
       - title: Proxmox
         description: Virtualization Hypervisor
         icon: fas fa-layer-group
         url: https://${PROXMOX_IP}:8006
-        statusCheck: true
-        statusCheckAllowInsecure: true
+        statusCheck: false
 
       - title: Proxmox Backup Server
         description: Enterprise backup & restore
@@ -145,13 +143,13 @@ sections:
         url: https://${PBS_IP}:8007
         statusCheck: true
         statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
       - title: OpenMediaVault
         description: NAS & storage management
         icon: fas fa-hdd
         url: https://${OMV_IP}
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+        statusCheck: false
 
       - title: Cockpit
         description: System Management
@@ -378,26 +376,23 @@ sections:
       hideForGuests: true
       hideForUsers: ['Dash']
     items:
-      - title: Router Web UI
-        description: Router Admin
+      - title: Mikrotik Web UI
+        description: Mikrotik Router Admin
         icon: fas fa-network-wired
         url: https://${ROUTER_IP}:8443
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+        statusCheck: false
 
       - title: Proxmox
         description: Virtualization Hypervisor
         icon: fas fa-layer-group
         url: https://${PROXMOX_IP}:8006
-        statusCheck: true
-        statusCheckAllowInsecure: true
+        statusCheck: false
 
       - title: OpenMediaVault
         description: NAS & storage management
         icon: fas fa-hdd
         url: https://${OMV_IP}
-        statusCheck: true
-        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+        statusCheck: false
 
       - title: Cockpit
         description: System Management
@@ -524,6 +519,7 @@ sections:
         url: https://${PBS_IP}:8007
         statusCheck: true
         statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
       - title: Syncthing
         description: Continuous file synchronization
