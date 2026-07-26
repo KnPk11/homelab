@@ -348,15 +348,16 @@ talk-hpb.{$DOMAIN_NAME} {
 #     reverse_proxy {$HOMELAB_IP}:8888
 # }
 
-# jellyfin.{$DOMAIN_NAME} {
-#     import common-headers
-#     import common-robots
-#     import access_policy_wan 250 30s
-#     import common-logging-plaintext jellyfin
-#     import common-logging jellyfin
+jellyfin.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 250 30s
+    import common-logging-plaintext jellyfin
+    import common-logging jellyfin
+    import honeypots-and-traps
 
-#     reverse_proxy jellyfin:8096
-# }
+    reverse_proxy {$HOMELAB_IP}:8096
+}
 
 privatebin.{$DOMAIN_NAME} {
     import common-headers
