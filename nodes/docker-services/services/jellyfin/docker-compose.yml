@@ -12,8 +12,8 @@ services:
       - no-new-privileges
     volumes:
       - /srv/jellyfin/config:/config
-      - /mnt/pool/Media:/data/media/
-      - /mnt/pool/Downloads:/data/downloads/
+      - /mnt/nas/Media:/data/media/
+      - /mnt/nas/Downloads:/data/downloads/
     expose:
       - 80
     networks:
