@@ -9,8 +9,8 @@ services:
     networks:
       - caddy_public
       - photoprism_internal
-    expose:
-      - "2342"  # Use expose since Caddy will access it internally
+    ports:
+      - "2342:2342"
     environment:
       - PHOTOPRISM_ADMIN_PASSWORD_FILE=/run/secrets/photoprism_password
       - PHOTOPRISM_DATABASE_DRIVER=mysql
