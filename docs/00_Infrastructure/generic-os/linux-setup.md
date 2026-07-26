@@ -279,18 +279,14 @@ Enable via **Preferences** → **Raspberry Pi Configuration**. Ensure firewall r
 
 ### AnyDesk
 
-> [!TIP]
-> AnyDesk serves as a reliable backup if SSH or VNC access is lost.
+AnyDesk serves as a reliable backup if SSH or VNC access is lost. For unattended access, set up a permanent password in the AnyDesk application settings.
 
 > [!WARNING]
-> On Raspberry Pi, switch away from Wayland for AnyDesk compatibility.
+> On Raspberry Pi, switch away from Wayland for AnyDesk compatibility:
 > 
 > 1. Run `sudo raspi-config`.
 > 2. Navigate to **Boot Options** → **Desktop / CLI** and select **Desktop** (not Wayland).
 > 3. Reboot.
-
-> [!TIP]
-> Set up a password for unattended access in AnyDesk.
 
 ---
 
