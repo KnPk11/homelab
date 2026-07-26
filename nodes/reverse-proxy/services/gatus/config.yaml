@@ -91,9 +91,9 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  # --- Sync & Storage ---
+  # --- Storage ---
   - name: Nextcloud
-    group: Sync & Storage
+    group: Storage
     url: "http://${HOMELAB_NODE_IP}:8104"
     interval: 30s
     ui:
@@ -103,7 +103,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Filebrowser
-    group: Sync & Storage
+    group: Storage
     url: "http://${HOMELAB_NODE_IP}:9101"
     interval: 30s
     ui:
@@ -113,7 +113,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Syncthing
-    group: Sync & Storage
+    group: Storage
     url: "http://${AITOOLS_NODE_IP}:8384"
     interval: 30s
     ui:
@@ -122,9 +122,9 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  # --- Media & Entertainment ---
+  # --- Media ---
   - name: Jellyfin
-    group: Media & Entertainment
+    group: Media
     url: "http://${HOMELAB_NODE_IP}:8096"
     interval: 30s
     ui:
@@ -134,17 +134,17 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Photoprism
-    group: Media & Entertainment
+    group: Media
     url: "http://${HOMELAB_NODE_IP}:2342"
     interval: 30s
     ui:
       hide-url: true
       hide-hostname: true
     conditions:
-      - "[STATUS] == 200"
+      - "[STATUS] < 400"
 
   - name: Immich
-    group: Media & Entertainment
+    group: Media
     url: "http://${HOMELAB_NODE_IP}:2283"
     interval: 30s
     ui:
@@ -164,9 +164,9 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  # --- Tools & Workflow ---
+  # --- Tools ---
   - name: PrivateBin
-    group: Tools & Workflow
+    group: Tools
     url: "http://${HOMELAB_NODE_IP}:8180"
     interval: 30s
     ui:
@@ -176,7 +176,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: Airflow
-    group: Tools & Workflow
+    group: Tools
     url: "http://${HOMELAB_NODE_IP}:8094"
     interval: 30s
     ui:
@@ -186,7 +186,7 @@ endpoints:
       - "[STATUS] == 200"
 
   - name: n8n
-    group: Tools & Workflow
+    group: Tools
     url: "http://${HOMELAB_NODE_IP}:5678"
     interval: 30s
     ui:
