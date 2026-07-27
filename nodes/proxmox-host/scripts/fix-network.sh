@@ -1,6 +1,15 @@
 #!/bin/bash
-
-# Prevent multiple instances; enforces the 10-minute cooldown
+# =============================================================================
+# fix-network.sh
+# Version: 1.0
+# Date: 2026-07-21
+#
+# Proxmox NIC recovery: if router ARP is missing on nic0, bounce the interface.
+# Uses flock + 10-minute cooldown so cron can call it frequently safely.
+#
+# Usage:
+#   */1 * * * * /path/to/fix-network.sh   # typical cron; exits quietly if locked
+# =============================================================================
 exec 9>/var/lock/fix-network.lock
 if ! flock -n 9; then
     exit 0

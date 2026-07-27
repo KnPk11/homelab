@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
-# ==========================================================
-#  Default Homelab UFW Firewall Setup Script
-#  Location: shared/scripts/ufw.sh
-#  Run as root / sudo on new host machines
-# ==========================================================
-
+# =============================================================================
+# Default Homelab UFW Firewall Setup Script
+# Version: 1.1
+# Date: 2026-07-27
+#
+# Default homelab UFW baseline for new hosts (LAN/VPN/Docker trust zones).
+# Optional overrides: shared/scripts/ufw.env if present.
+#
+# Usage:
+#   sudo ./ufw.sh
+# =============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

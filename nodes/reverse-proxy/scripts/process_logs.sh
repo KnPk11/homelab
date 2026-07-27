@@ -1,12 +1,15 @@
 #!/bin/bash
-: '
-Unified Log Manager - LXC Edition
---------------------------------------
-Purpose: Manages log rotation, archival, and retention for the Caddy LXC environment.
-Requirements: Must be run as root.
-Usage: Usually executed via cron.
-'
-
+# =============================================================================
+# Unified Log Manager
+# Version: 2.2
+# Date: 2026-07-10
+#
+# Unified log manager for the reverse-proxy (Caddy) LXC: rotation, archival, retention.
+# Must be run as root; usually via cron.
+#
+# Usage:
+#   sudo ./process_logs.sh
+# =============================================================================
 set -euo pipefail
 shopt -s nullglob
 

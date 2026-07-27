@@ -1,9 +1,14 @@
 #!/bin/bash
-# ==============================================================================
-# OMV Firewall Rules Generator (Version 1.2)
-# Generates iptables rules in JSON for OMV and applies them via omv-rpc/omv-salt.
-# ==============================================================================
-
+# =============================================================================
+# OMV Firewall Rules Generator
+# Version: 1.3
+# Date: 2026-07-27
+#
+# Generate OMV firewall rules (iptables JSON) and apply via omv-rpc/omv-salt.
+#
+# Usage:
+#   sudo ./firewall.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 # ── Network Topology ─────────────────────────────────────────────
 # Canonical IP reference: inventory.yml

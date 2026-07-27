@@ -69,6 +69,6 @@ See [scripts/kopia/deployment.md](scripts/kopia/deployment.md) — client config
 | Service | Deploy script | Secret location |
 | :--- | :--- | :--- |
 | Dashy | `services/dashy/deploy_app.sh` | `/srv/dashy/dashy.env` |
-| PrivateBin | `services/privatebin/deploy.sh` | `/srv/privatebin/.env` |
+| PrivateBin | `services/privatebin/deploy_app.sh` | `/srv/privatebin/.env` |
 | MediaMTX | `services/mediamtx/deploy_app.sh` | `/srv/mediamtx/.env` |
-| Nextcloud | `services/nextcloud/deploy.sh` | `/srv/nextcloud/` |
+| Nextcloud | `services/nextcloud/deploy_app.sh` | `/srv/nextcloud/` |
