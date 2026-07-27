@@ -1,7 +1,15 @@
 #!/bin/bash
-# Fail2Ban Deployment Script
-# Network topology is defined inline (canonical reference: inventory.yml).
-# Monitor code is symlinked under /srv/fail2ban-monitor/ from the GitOps clone.
+# =============================================================================
+# deploy_fail2ban.sh
+# Version: 1.2
+# Date: 2026-07-27
+#
+# Deploy Fail2Ban jail.local (inline HOMELAB_SUBNETS via envsubst), symlink
+# CrowdSec action + ban monitor script, restart fail2ban and fail2ban-monitor.
+#
+# Usage:
+#   sudo ./deploy_fail2ban.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 
 set -euo pipefail

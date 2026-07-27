@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
-# ==========================================================
-#  UFW Firewall Setup Script – OpenClaw (.91) (Version 2.0)
-#  Run as root (automatically upgrades to sudo if needed)
-# ==========================================================
-
+# =============================================================================
+# UFW Firewall Setup Script
+# Version: 2.1
+# Date: 2026-07-27
+#
+# UFW setup for lab-vm / OpenClaw (.91): trusted LANs + restricted VPN SSH.
+#
+# Usage:
+#   sudo ./ufw.sh
+# =============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

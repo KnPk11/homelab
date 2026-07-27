@@ -1,7 +1,15 @@
 #!/bin/bash
-# Description: Deploys the centralised VPN configurations to the host for Portainer to consume.
-# Source:       /opt/dev/secrets_vault/vpn-configs (outside repo, not tracked by Git)
-
+# =============================================================================
+# deploy_app.sh
+# Version: 1.1
+# Date: 2026-07-26
+#
+# Copy centralised VPN profiles from secrets_vault into /srv/vpn-configs
+# for Portainer/consumers (source tree is outside Git).
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 set -euo pipefail
 
 SOURCE_DIR="/opt/dev/secrets_vault/vpn-configs"

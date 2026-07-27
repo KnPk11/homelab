@@ -3,11 +3,15 @@
 Fail2Ban & CrowdSec Intrusion Monitor
 =============================================================================
 Version 4.1
-Date: 2026-07-15
+Date: 2026-07-19
 
 Simple HTTP server to display recent bans from Fail2Ban and CrowdSec.
 Uses cscli for CrowdSec (avoids log rotation issues) and parses fail2ban logs.
 Fail2Ban is preferred over CrowdSec when the same IP appears from both sources.
+
+Usage:
+  python3 fail2ban_bans.py
+  # or via systemd: fail2ban-monitor.service -> /srv/fail2ban-monitor/fail2ban_bans.py
 """
 import os
 import re

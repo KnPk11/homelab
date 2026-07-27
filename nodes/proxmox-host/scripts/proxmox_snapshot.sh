@@ -1,11 +1,15 @@
 #!/bin/bash
-
+# =============================================================================
 # Proxmox Scheduled Snapshot Script
-# Version: 1.3 (2026-07-22)
-# Creates snapshots for all VMs and Containers.
-# Format: S-YYYY-MM-DD
-# Usage: 0 2 * * * /path/to/script.sh (Daily at 02:00 AM)
-
+# Version: 1.3
+# Date: 2026-07-22
+#
+# Scheduled snapshots for all VMs and CTs (name S-YYYY-MM-DD) with retention.
+# PATH set for cron; include-RAM off by default.
+#
+# Usage:
+#   0 2 * * * /path/to/proxmox_snapshot.sh   # daily 02:00
+# =============================================================================
 set -e
 
 # Ensure PATH includes Proxmox sbin directories for cron execution

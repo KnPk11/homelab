@@ -1,11 +1,15 @@
 #!/bin/bash
-
-# Proxmox Firewall Management Script
-# Version: 1.5 (2026-07-20)
-# --------------------------------------
-# Run this on the Proxmox Host (pve1)
-# v1.5: CT 108 vpns (Tailscale UDP 41641), CT 109 PBS (:8007), aliases + tailscale-wg group
-
+# =============================================================================
+# firewall.sh
+# Version: 1.6
+# Date: 2026-07-27
+#
+# Proxmox host/cluster firewall management (cluster.fw aliases + guest rules).
+# Run on the Proxmox host (pve1). Topology inline; canonical ref inventory.yml.
+#
+# Usage:
+#   sudo ./firewall.sh
+# =============================================================================
 set -e
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

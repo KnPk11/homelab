@@ -1,7 +1,14 @@
 #!/bin/bash
-# Description: Automatically pulls the latest configuration from the GitOps repository.
-# Usage: Run via cron on target nodes (e.g., hourly or daily).
-
+# =============================================================================
+# auto_pull_repo.sh
+# Version: 1.3
+# Date: 2026-07-21
+#
+# Hard-reset /opt/homelab-repo to origin/main so nodes track GitOps (cron-friendly).
+#
+# Usage:
+#   Run via cron on target nodes (e.g. hourly or daily).
+# =============================================================================
 REPO_DIR="/opt/homelab-repo"
 
 if [ ! -d "$REPO_DIR/.git" ]; then

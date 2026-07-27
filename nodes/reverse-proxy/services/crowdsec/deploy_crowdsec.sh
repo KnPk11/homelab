@@ -1,7 +1,15 @@
 #!/bin/bash
-# CrowdSec Deployment Script
-# Network topology is defined inline (canonical reference: inventory.yml).
-# Secrets live under /srv/crowdsec/ (not in the disposable GitOps clone).
+# =============================================================================
+# deploy_crowdsec.sh
+# Version: 1.3
+# Date: 2026-07-27
+#
+# Render CrowdSec + bouncer configs via envsubst (inline network topology +
+# /srv/crowdsec/crowdsec.env secrets) and restart CrowdSec services.
+#
+# Usage:
+#   sudo ./deploy_crowdsec.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/crowdsec/crowdsec.env"
 

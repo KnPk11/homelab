@@ -1,11 +1,15 @@
 #!/bin/bash
-# Deploy Dashy (static build) to reverse-proxy
-# Uses envsubst to generate conf.yml into /srv/dashy/dist and /srv/dashy/user-data/
+# =============================================================================
+# deploy_dashy.sh
+# Version: 1.1
+# Date: 2026-07-19
 #
-# Pre-built dist is SCP'd from ai-tools (or rebuilt locally).
+# Deploy static Dashy on reverse-proxy: envsubst conf.yml into /srv/dashy/
+# (pre-built dist SCP'd from ai-tools or rebuilt locally).
 #
-# Usage: sudo ./deploy_dashy.sh
-
+# Usage:
+#   sudo ./deploy_dashy.sh
+# =============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

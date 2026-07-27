@@ -1,7 +1,15 @@
 #!/bin/bash
-# Gatus Deployment Script
-# Network topology is defined inline (canonical reference: inventory.yml).
-# Secrets (e.g. DOMAIN_NAME) live under /srv/gatus/ (not in the disposable GitOps clone).
+# =============================================================================
+# deploy_gatus.sh
+# Version: 1.4
+# Date: 2026-07-27
+#
+# Render Gatus config.yaml (inline node IPs + /srv/gatus/gatus.env secrets)
+# and restart the gatus service.
+#
+# Usage:
+#   sudo ./deploy_gatus.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/gatus/gatus.env"
 
