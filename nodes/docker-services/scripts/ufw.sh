@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
-# ==========================================================
-#  UFW Firewall Setup Script – Homelab Server
-#  Version 3.3
-#  Run as root (automatically upgrades to sudo if needed)
-#  Network layout is defined inline (canonical reference: inventory.yml).
-# ==========================================================
-
+# =============================================================================
+# UFW Firewall Setup Script – Homelab Server
+# Version 3.3
+# Date: 2026-07-27
+#
+# UFW setup for docker-services (homelab server): trusted LAN/Caddy/AI/Docker,
+# restricted VPN access, and published app ports. Network topology inline.
+#
+# Usage:
+#   sudo ./ufw.sh
+# =============================================================================
 set -euo pipefail
 
 # ── Network Topology ─────────────────────────────────────────────

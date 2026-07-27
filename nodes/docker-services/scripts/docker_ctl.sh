@@ -1,14 +1,15 @@
 #!/bin/bash
-# ==============================================================================
-# Docker Maintenance Controller - Version 1.1
-# ==============================================================================
-# Managed Docker services (socket, daemon, containerd) for maintenance mode.
-# Stopping the socket first prevents systemd from automatically restarting
-# Docker when a container or tool attempts to communicate with the API.
+# =============================================================================
+# docker_ctl.sh
+# Version: 1.1
+# Date: 2026-06-23
 #
-# Usage: ./docker_ctl.sh {stop|start}
-# ==============================================================================
-
+# Stop or start Docker stack services (socket, daemon, containerd) for maintenance.
+# Stopping the socket first prevents systemd auto-restarts via the API.
+#
+# Usage:
+#   ./docker_ctl.sh {stop|start}
+# =============================================================================
 # Define services
 SERVICES="docker.socket docker containerd"
 

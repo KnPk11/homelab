@@ -1,8 +1,16 @@
 #!/bin/bash
+# =============================================================================
+# Kopia Repository Initialiser Script
+# Version: 1.1
+# Date: 2026-07-25
+#
 # One-time: create the Kopia filesystem repository and local client config.
-# Runtime home: /opt/scripts/Backups/Kopia (secrets stay here, not in Git).
-# After create, run: sudo kopia-backup maintenance  (or homelab_backup_kopia.sh maintenance)
-
+# Runtime home: /opt/scripts/Backups/Kopia (secrets stay on host, not in Git).
+# After create, run: sudo kopia-backup maintenance
+#
+# Usage:
+#   sudo ./initialise_repository.sh
+# =============================================================================
 set -euo pipefail
 
 CONFIG_DIR="/opt/scripts/Backups/Kopia/config"

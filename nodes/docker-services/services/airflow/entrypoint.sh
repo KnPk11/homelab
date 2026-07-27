@@ -1,4 +1,15 @@
 #!/bin/bash
+# =============================================================================
+# entrypoint.sh
+# Version: 1.0
+# Date: 2026-06-29
+#
+# Container entrypoint: load Airflow JWT/Fernet secrets from /run/secrets,
+# then exec the upstream Airflow entrypoint.
+#
+# Usage:
+#   Invoked by the container runtime (not run manually on the host).
+# =============================================================================
 set -e
 
 # Load secrets

@@ -1,7 +1,15 @@
 #!/bin/bash
-# Deploy Dashy Config Template
-# Secrets: /srv/dashy/dashy.env (not in the disposable GitOps clone)
-
+# =============================================================================
+# deploy_app.sh
+# Version: 1.2
+# Date: 2026-07-10
+#
+# Render Dashy config.yml from template using /srv/dashy/dashy.env secrets
+# (docker-services host).
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/dashy/dashy.env"
 TEMPLATE_FILE="$SCRIPT_DIR/config.yml.tmpl"

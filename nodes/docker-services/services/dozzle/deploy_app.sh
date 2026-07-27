@@ -1,4 +1,14 @@
 #!/usr/bin/env bash
+# =============================================================================
+# deploy_app.sh
+# Version: 1.1
+# Date: 2026-06-25
+#
+# Render Dozzle users.yml from dozzle.env and install under /srv/dozzle/.
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 set -e
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

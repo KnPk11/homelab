@@ -1,6 +1,14 @@
 #!/bin/bash
-# deploy_app.sh — renders profiles; secrets live under /srv/dbt/
-
+# =============================================================================
+# deploy_app.sh
+# Version: 1.2
+# Date: 2026-07-10
+#
+# Render dbt profiles.yml via envsubst; secrets live under /srv/dbt/.
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/dbt/.env"
 DEST_DIR="/srv/dbt"
