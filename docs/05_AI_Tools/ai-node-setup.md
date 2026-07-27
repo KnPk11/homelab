@@ -184,7 +184,7 @@ credentials.json
       profile = "homelab"
       ```
 
-   3. **`~/.grok/sandbox.toml`** — custom profile that extends `workspace`, allows writes under `/opt/dev`, and kernel-denies the vault / VPN secrets / `/srv` secret globs:
+   3. **`~/.grok/sandbox.toml`** — custom profile that extends `workspace`, allows writes under `/opt/dev`, and kernel-denies the vault / `/srv` secret globs:
 
       ```toml
       [profiles.homelab]
@@ -193,7 +193,6 @@ credentials.json
 
       deny = [
         "/opt/dev/secrets_vault",
-        "/opt/dev/homelab_repo/shared/vpn-configs/.secrets",
         "/srv/**/.env",
         "/srv/**/*.env",
         "/srv/**/*.secret",
@@ -217,10 +216,11 @@ credentials.json
 > **Grok sandbox caveats**
 >
 > - Sandbox is fixed at process start. Change profile only on a **new** session (`grok --sandbox off` / `homelab` / `workspace`).
-> - Relative globs (`**/…`) are anchored at the **session workspace CWD**. Absolute directory denies (vault, VPN `.secrets`) always apply.
+> - Relative globs (`**/…`) are anchored at the **session workspace CWD**. Absolute directory denies (e.g. `secrets_vault`) always apply.
+> - Do **not** deny a **non-existent** path under the repo (e.g. a legacy `shared/vpn-configs/.secrets`). Bubblewrap will create a mode-`000` empty stub there every sandboxed session. VPN material belongs in `/opt/dev/secrets_vault` and `/srv`, not the Git clone.
 > - Do **not** use a broad absolute pattern like `/opt/dev/**/*.env` if you have project fixtures with a **directory** named `.env` (e.g. dbt under `/opt/dev/projects/`) — bubblewrap can fail closed and refuse to start.
 > - Patterns like `*.env` / `*.secret` do **not** match templates (`*.env.example`, `*.secret.example`).
-> - Repo secrets policy still lives in `.gitignore` (`*.env`, `*.secret`, `*.key`, `*.pem`, `.secrets/`). Live credentials should stay under `/srv` on nodes and the central vault, not in Git.
+> - Repo secrets policy still lives in `.gitignore` (decrypted stubs + `.secrets/`). Live credentials should stay under `/srv` on nodes and the central vault, not in Git.
 
 #### Auditing
 

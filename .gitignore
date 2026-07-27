@@ -17,6 +17,12 @@ Thumbs.db
 *.key.dec
 *.pem.dec
 
+# Sandbox/tooling stubs or accidental secret dirs (never commit)
+.secrets
+.secrets/
+**/.secrets
+**/.secrets/
+
 # MikroTik config & logs — contains sensitive network topology, kept as local backup only
 nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc
 nodes/ai-tools/services/mikrotik-backup/CHANGELOG.md
