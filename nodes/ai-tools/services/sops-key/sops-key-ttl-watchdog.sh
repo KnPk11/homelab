@@ -1,5 +1,14 @@
 #!/bin/bash
-# sops-key-ttl-watchdog.sh — Watchdog run via cron to automatically wipe expired SOPS keys from RAM
+# =============================================================================
+# sops-key-ttl-watchdog.sh
+# Version: 1.0
+# Date: 2026-07-21
+#
+# Cron watchdog: wipe expired SOPS Master Admin key from RAM when TTL elapses.
+#
+# Usage:
+#   */5 * * * * /opt/dev/homelab_repo/nodes/ai-tools/services/sops-key/sops-key-ttl-watchdog.sh >> /var/log/sops-key-ttl.log 2>&1
+# =============================================================================
 RAM_KEY_PATH="/dev/shm/.sops_master_key"
 STATE_FILE="/dev/shm/.sops_unlock.state"
 

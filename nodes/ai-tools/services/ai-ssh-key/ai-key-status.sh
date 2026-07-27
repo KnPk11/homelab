@@ -5,6 +5,9 @@
 # Date: 2026-07-16
 #
 # Show whether managed keys (God Mode + GitHub) are loaded and TTL remaining.
+#
+# Usage:
+#   ai-key-status
 # =============================================================================
 
 set -euo pipefail

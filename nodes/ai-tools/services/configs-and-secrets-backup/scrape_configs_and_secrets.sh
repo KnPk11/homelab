@@ -1,25 +1,16 @@
 #!/bin/bash
-# Version: 2.12 (2026-07-25)
+# =============================================================================
+# scrape_configs_and_secrets.sh
+# Version: 2.12
+# Date: 2026-07-25
 #
-# scrape_configs_and_secrets.sh — centralised live node configs & secrets backup for the homelab.
+# Centralised live-node configs & secrets backup into secrets_vault (rsync, no SOPS).
+# Requires God Mode SSH (ai-key-unlock). ON DEMAND ONLY — not for cron.
+# Move vault offline after the run.
 #
-# Architecture (keep simple, no SOPS):
-#   - GitOps clone is disposable: tracked code/templates only (local encrypted repo files are excluded).
-#   - Live runtime secrets (.env, .secret, .pwd) and node configs (nodes.enc, system.json, client.yml, etc.)
-#     live under remote host paths (/srv/<service>/, /etc/pulse/, /opt/scripts/, /home/k/...).
-#   - Vault layout mirrors the search path on each remote host:
-#       BACKUP_DIR/<host>/<absolute-path-without-leading-slash>/...
-#     e.g. /srv/caddy/caddy.env  →  configs_and_secrets/reverse-proxy/srv/caddy/caddy.env
-#
-# Needs: rsync on every node (including LXCs) + root SSH from this host.
-# God Mode: many hosts authorize root only via ~/.ssh/id_ed25519_ai (passphrase).
-#   Unlock first:  ai-key-unlock
-#   Then ensure this shell sees the agent (script auto-sources ~/.ssh/ai-key-agent.sh).
-# Usage: Run ON DEMAND ONLY. Do not use crontab. Move the secrets_vault to a safe offline location immediately after.
-#
-# New sweep root: add "host:/abs/path" to PATH_SWEEPS.
-# Always use root@ — bare "IP:path" follows ssh_config User and cannot read 0600 root secrets.
-
+# Usage:
+#   ai-key-unlock && ./scrape_configs_and_secrets.sh
+# =============================================================================
 set -euo pipefail
 
 # Shared agent env from ai-key-unlock (must not be *.env — sandbox/deny lists)

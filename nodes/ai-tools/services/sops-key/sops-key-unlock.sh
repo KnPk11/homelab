@@ -1,5 +1,15 @@
 #!/bin/bash
-# sops-key-unlock.sh — Unlock Master Admin age key into RAM for temporary SOPS operations
+# =============================================================================
+# sops-key-unlock.sh
+# Version: 1.0
+# Date: 2026-07-21
+#
+# Unlock Master Admin age key into RAM for temporary SOPS encrypt/decrypt ops.
+# Default TTL is 15 minutes; pair with sops-key-lock / sops-key-ttl-watchdog.
+#
+# Usage:
+#   sops-key-unlock
+# =============================================================================
 set -e
 
 RAM_KEY_PATH="/dev/shm/.sops_master_key"
