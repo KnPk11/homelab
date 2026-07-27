@@ -1,7 +1,14 @@
 #!/bin/bash
+# =============================================================================
 # deploy_app.sh
-# Renders templates and deploys config files to destination paths
-
+# Version: 1.1
+# Date: 2026-06-29
+#
+# Render Grafana templates and deploy/symlink config into /srv/grafana/.
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="$SCRIPT_DIR/.env"
 

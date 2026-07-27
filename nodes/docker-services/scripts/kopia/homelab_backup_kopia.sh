@@ -1,18 +1,16 @@
 #!/bin/bash
-#
-# ==============================================================================
+# =============================================================================
 # Kopia Backup Script - Homelab Unified
-# ==============================================================================
-# Description: Snapshots /srv, /data, and Docker volumes; policies + maintenance.
-# Version:     3.1 (2026-07-10)
-# Usage:       sudo kopia-backup [data|srv|docker|maintenance]
-#              sudo /opt/scripts/Backups/Kopia/homelab_backup_kopia.sh ...
+# Version: 3.1
+# Date: 2026-07-10
 #
-# Secrets (host-only, not in Git):
-#   /opt/scripts/Backups/Kopia/config/main-repo.config
-#   /opt/scripts/Backups/Kopia/config/main-repo.config.kopia-password
-# ==============================================================================
-
+# Kopia backup: snapshot /srv, /data, and Docker volumes; policies + maintenance.
+# Host secrets under /opt/scripts/Backups/Kopia/config/ (not in Git).
+#
+# Usage:
+#   sudo kopia-backup [data|srv|docker|maintenance]
+#   sudo /opt/scripts/Backups/Kopia/homelab_backup_kopia.sh ...
+# =============================================================================
 set -euo pipefail
 umask 0002
 

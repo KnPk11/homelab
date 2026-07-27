@@ -1,10 +1,15 @@
 #!/bin/bash
-# deploy_app.sh — render glances.conf; secrets live under /srv/glances/ only.
+# =============================================================================
+# deploy_app.sh
+# Version: 1.2
+# Date: 2026-07-10
 #
-# Expects:
-#   /srv/glances/glances_influx_token.secret  (raw token, one line)
-#   /srv/glances/glances.pwd                  (web UI password file; optional at deploy)
-
+# Render glances.conf; secrets under /srv/glances/ only
+# (Influx token .secret and optional glances.pwd).
+#
+# Usage:
+#   sudo ./deploy_app.sh
+# =============================================================================
 set -euo pipefail
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

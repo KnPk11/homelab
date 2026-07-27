@@ -1,12 +1,15 @@
 #!/bin/bash
-# ==============================================================================
-# Network Availability Waiter - Version 1.1
-# ==============================================================================
-# Delays script execution until the 'ens18' interface is assigned the 
-# static IP 192.168.50.95. Useful for services that depend on networking 
-# being fully initialized.
-# ==============================================================================
-
+# =============================================================================
+# wait_for_network.sh
+# Version: 1.1
+# Date: 2026-06-27
+#
+# Block until ens18 has static IP 192.168.50.95 (docker-services host).
+# Useful as a dependency before services that need networking fully up.
+#
+# Usage:
+#   Called from systemd/unit dependency or other scripts; no args.
+# =============================================================================
 while ! ip addr show ens18 | grep -q "192.168.50.95"; do
     sleep 1
 done
