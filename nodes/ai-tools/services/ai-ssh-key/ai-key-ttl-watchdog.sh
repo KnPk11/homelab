@@ -7,7 +7,8 @@
 # Cron watchdog: if the key bundle has been unlocked longer than its TTL
 # (default 2h from unlock), unload all managed keys from ssh-agent.
 #
-# Cron (every 5 minutes on ai-tools):
+# Usage:
+#   # cron every 5 minutes on ai-tools
 #   */5 * * * * /opt/dev/homelab_repo/nodes/ai-tools/services/ai-ssh-key/ai-key-ttl-watchdog.sh >> /var/log/ai-key-ttl.log 2>&1
 # =============================================================================
 

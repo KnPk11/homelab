@@ -9,7 +9,8 @@
 #
 # Runs as a cron job on ai-tools every 3 hours.
 #
-# Cron entry:
+# Usage:
+#   # cron every few hours on ai-tools
 #   0 */3 * * * /opt/dev/homelab_repo/nodes/ai-tools/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 # =============================================================================
 

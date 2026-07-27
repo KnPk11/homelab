@@ -1,12 +1,14 @@
+# =============================================================================
+# common.sh
+# Version: 1.2
+# Date: 2026-07-20
+#
 # Shared helpers for God Mode AI + Git SSH key TTL tooling.
-# Sourced by unlock / lock / watchdog scripts — not executed directly.
+# Sourced by unlock / lock / status / watchdog — not executed directly.
 #
-# Keys managed as a bundle (same agent + same TTL):
-#   1) ~/.ssh/id_ed25519_ai  — privileged lab SSH (MikroTik, LXCs, VMs)
-#   2) ~/.ssh/id_ed25519     — Git SSH key for GitHub (optional if file exists)
-#
-# Agent env path must NOT end in ".env" (sandbox deny lists often stub **/*.env).
-
+# Usage:
+#   source from sibling scripts only
+# =============================================================================
 # shellcheck shell=bash
 
 # Primary (God Mode) — required
