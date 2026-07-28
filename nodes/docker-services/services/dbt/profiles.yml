@@ -17,8 +17,7 @@ postgres_profile:
       type: postgres
       host: postgres_db
       user: postgres
-      # password: "{{ env_var('POSTGRES_PASSWORD') }}"
-      password: ${POSTGRES_PASSWORD} # Not the best place
+      password: ${POSTGRES_PASSWORD}
       port: 5432
       dbname: main_db
       schema: public

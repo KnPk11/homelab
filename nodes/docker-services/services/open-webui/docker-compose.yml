@@ -7,8 +7,6 @@ services:
     restart: unless-stopped
     ports:
       - "3002:8080"
-    # networks:
-    #   - caddy_public
     environment:
       - PUID=1000
       - PGID=1000
@@ -21,7 +19,6 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      # - CHOWN
       - SETGID
       - SETUID
     security_opt:
@@ -47,8 +44,3 @@ services:
 
 volumes:
   openwebui_data:
-
-
-# networks:
-#   caddy_public:
-#     external: true

@@ -94,10 +94,6 @@ x-airflow-common:
   volumes:
     - ${AIRFLOW_DAGS_PATH:-/srv/airflow/dags}:/opt/airflow/dags
     - ${AIRFLOW_LOGS_PATH:-/srv/airflow/logs}:/opt/airflow/logs
-    # - /mnt/pool:/mnt/pool
-    # - /home/k/Desktop/mnt_backup:/mnt_backup
-    # - /mnt/pool/Downloads/yt-dlp:/opt/airflow/downloads
-    # - /data/scripts/yt-dlp/logs:/opt/airflow/yt-dlp-logs
     - /var/run/docker.sock:/var/run/docker.sock
   user: "${AIRFLOW_UID:-1000}:0"
   group_add:
@@ -171,8 +167,6 @@ services:
     container_name: airflow_apiserver
     ports:
       - "8094:8080"
-    # expose:
-    #   - 8080
     networks:
       - airflow_net
       - caddy_public
@@ -395,8 +389,6 @@ services:
       <<: *airflow-common-env
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
-      # _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
-      # _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
     networks:

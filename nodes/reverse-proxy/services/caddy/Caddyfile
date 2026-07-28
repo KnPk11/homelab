@@ -212,7 +212,6 @@ portainer.{$DOMAIN_NAME} {
     import common-logging-plaintext portainer
     import common-logging portainer
 
-    # reverse_proxy portainer:9000
     reverse_proxy 192.168.50.95:9443 {
         transport http {
             # This tells Caddy to trust Portainer's self-signed cert
@@ -290,7 +289,6 @@ photoprism.{$DOMAIN_NAME} {
 # }
 
 nextcloud.{$DOMAIN_NAME} {
-    # import common-headers
     import common-robots
     import access_policy_wan 4000 60s
     import common-logging-plaintext nextcloud
@@ -312,17 +310,6 @@ nextcloud.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.95:8104
 }
 
-# opencloud.{$DOMAIN_NAME} {
-#     import common-headers
-#     import basic-csp
-#     import common-robots
-#     import access_policy_wan 200 30s
-#     import common-logging-plaintext opencloud
-#     import common-logging opencloud
-
-#     reverse_proxy opencloud:9200
-# }
-
 talk-hpb.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
@@ -330,7 +317,6 @@ talk-hpb.{$DOMAIN_NAME} {
     import common-logging-plaintext talk-hpb
     import common-logging talk-hpb
 
-    # reverse_proxy nextcloud_talk_hpb:8081 {
     reverse_proxy 192.168.50.95:8105 {
         # Helper to ensure Nextcloud sees the correct headers
         header_up X-Real-IP {remote_host}
@@ -338,16 +324,6 @@ talk-hpb.{$DOMAIN_NAME} {
         header_up X-Forwarded-Proto https
     }
 }
-
-# mediamtx.{$DOMAIN_NAME} {
-#     import common-headers
-#     import common-robots
-#     import access_policy_wan 500 30s
-#     import common-logging-plaintext mediamtx
-#     import common-logging mediamtx
-
-#     reverse_proxy 192.168.50.95:8888
-# }
 
 jellyfin.{$DOMAIN_NAME} {
     import common-headers
@@ -463,7 +439,6 @@ status.{$DOMAIN_NAME} {
     # 3. Everything else is restricted to LAN only
     handle {
         import access_policy_lan
-        # reverse_proxy uptime-kuma:3001
         reverse_proxy 192.168.50.95:3003
     }
 }
@@ -596,7 +571,6 @@ gatus.{$DOMAIN_NAME} {
 ocstats.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
-    # import access_policy_wan 50 30s
     import access_policy_lan
     import common-logging-plaintext pages
     import common-logging pages

@@ -6,15 +6,15 @@ services:
     container_name: vpn-secure-wireguard
     cap_add:
       - NET_ADMIN        # Needed for WireGuard to modify network stack
-      - SYS_MODULE       # Only needed if module insertion at runtime is required
+      - SYS_MODULE
     cap_drop:
       - AUDIT_WRITE
       - MKNOD
-      - NET_RAW          # Prevents raw packet access (unless needed for ping)
+      - NET_RAW
       - SYS_PTRACE
       - SYS_CHROOT
       - SYS_RAWIO
-      - SYS_ADMIN        # Never grant this
+      - SYS_ADMIN
     security_opt:
       - no-new-privileges:true
     sysctls:
@@ -55,7 +55,7 @@ services:
       - MKNOD
       - NET_RAW
       - SYS_CHROOT
-      - SYS_ADMIN   # definitely never give this
+      - SYS_ADMIN
       - SYS_MODULE
       - SYS_PTRACE
       - SYS_RAWIO
