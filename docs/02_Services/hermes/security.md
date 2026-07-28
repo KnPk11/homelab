@@ -1,47 +1,81 @@
 # Hermes Security
 
 > [!NOTE]
-> #Security #Firewall #UFW #Proxmox #HomeLab
+> #Hermes #Security #Firewall #UFW #Proxmox #HomeLab
 
-The Hermes service is protected by a multi-layered security architecture ensuring that the dashboard and the underlying API keys are shielded from unauthorised access.
+Multi-layer access control for the Hermes dashboard and API keys. Install and provider setup live in [setup.md](setup.md).
 
-## Security Layers
+## 1. Description
 
-### 1. Perimeter Defence (Router)
-The **MikroTik Router** acts as the primary barrier. 
-- No port forwarding rules are configured for the Hermes dashboard port (`9119`).
-- Direct access from the public internet is completely blocked at the edge.
+Hermes is exposed only through trusted paths: no public port-forward for the dashboard, hypervisor and guest firewalls restrict who can reach the VM, Caddy enforces LAN-only HTTPS, and the app itself requires native `scrypt` login.
 
-### 2. Hypervisor Firewall (Proxmox)
-The **Proxmox VE Firewall** provides a second layer of isolation at the guest network interface level.
-- **Rule Policy**: Only the Caddy Reverse Proxy is permitted to communicate with the Hermes port on the OpenClaw VM.
-- All other internal traffic to the dashboard port is dropped before it reaches the VM.
+## 2. Security Layers
 
-### 3. Guest Firewall (UFW)
-The **Uncomplicated Firewall (UFW)** is active on the OpenClaw VM itself.
-- Restricted to internal trusted subnets (`[LAN-TRUSTED].0/24` and `[LAN-SERVERS].0/24`).
-- Provides a final internal check for all incoming packets.
+### Perimeter (MikroTik)
 
-### 4. Application Access Policy (Caddy)
-The Caddy reverse proxy enforces a LAN-only access policy.
-- Requests from non-local IP addresses are rejected with a `403 Forbidden` response.
-- This ensures that even if the domain name is known, the dashboard cannot be reached from outside the trusted network.
+- No port-forward for the Hermes dashboard port (`9119`).
+- Direct internet access to the dashboard is blocked at the edge.
 
-## Service Binding
+### Hypervisor (Proxmox)
+
+- Guest firewall allows the **Caddy** reverse proxy to the Hermes port on the OpenClaw VM.
+- Other internal sources to that port are dropped before the VM.
+
+### Guest firewall (UFW)
+
+- OpenClaw UFW limited to trusted subnets (`[LAN-TRUSTED].0/24`, `[LAN-SERVERS].0/24`).
+
+### Application (Caddy)
+
+- LAN-only access policy; non-local clients get `403`.
+- TLS termination on Caddy; Hermes handles application auth.
+
+```caddy
+hermes.[DOMAIN] {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext hermes
+    import common-logging hermes
+
+    reverse_proxy [CADDY-IP]:9119 {
+        header_up Host [CADDY-IP]:9119
+    }
+}
+```
+
+## 3. Service Binding
 
 > [!IMPORTANT]
 > **Safety Justification**
-> 
-> The Hermes dashboard is bound to `0.0.0.0` within the VM to allow communication with the reverse proxy. While binding to `0.0.0.0` is typically less secure, it is safe in this environment due to the **Proxmox Firewall** and **MikroTik** perimeter, which ensure that only the verified reverse proxy container can physically reach the port.
+>
+> The Hermes dashboard binds to `0.0.0.0` so Caddy can reach it. That is acceptable here only because Proxmox and MikroTik already restrict who can hit the port. If those layers are disabled, re-bind to `127.0.0.1` or allow only the Caddy LXC IP in UFW.
 
-## Authentication & Hardening
+## 4. Native Authentication
 
-### Native Authentication
-Hermes utilises a native authentication gate for non-loopback binds. This is configured utilising:
-- **Username**: Configured via environment variables.
-- **Password Hashing**: Utilises `scrypt` hashing for high resistance to brute-force attacks.
-- **Session Signing**: A stable 32-byte secret ensures session integrity across service restarts.
+Hermes uses native `scrypt` auth (password-manager friendly) for non-loopback binds.
 
-### Hardening Recommendations
-- **Localhost Binding**: If the Proxmox firewall is ever disabled, the service should be re-bound to `127.0.0.1` or restricted via UFW specifically to the Caddy LXC IP.
-- **Credential Rotation**: Regularly rotate the dashboard password and the session secret utilised for signing tokens.
+| Setting | Role |
+| :--- | :--- |
+| Username | Dashboard login user |
+| Password hash | `scrypt` (not plaintext) |
+| Session secret | 32-byte secret for session signing across restarts |
+
+Configured in `~/.hermes/.env` (not in the main config file):
+
+```bash
+HERMES_DASHBOARD_BASIC_AUTH_USERNAME=[USER]
+HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH=scrypt$16384$8$1$...
+HERMES_DASHBOARD_BASIC_AUTH_SECRET=[SECRET]
+```
+
+> [!IMPORTANT]
+> **Hash generation**
+>
+> Generate the password hash with Hermes’s helper so the format matches:
+> `python -c "from plugins.dashboard_auth.basic import hash_password; print(hash_password('YOUR_PASSWORD'))"`
+
+### Hardening recommendations
+
+- Prefer Caddy + LAN policy over exposing the VM port broadly.
+- Rotate dashboard password and session secret periodically.
