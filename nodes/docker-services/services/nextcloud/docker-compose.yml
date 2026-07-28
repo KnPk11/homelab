@@ -31,7 +31,6 @@ services:
     secrets:
       - nextcloud_mysql_password
     networks:
-      # - caddy_public
       - nextcloud_internal
     restart: unless-stopped
     cap_drop:
@@ -128,8 +127,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # labels:
-    #   - "wud.tag.include=^8\\.4\\..*-bookworm"
     deploy:
       resources:
         limits:
@@ -150,7 +147,6 @@ services:
       - "3478:3478/tcp" # TURN server
       - "3478:3478/udp" # TURN server
     networks:
-      # - caddy_public
       - nextcloud_internal
     env_file:
       - ${NC_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env} # Entrypoint is messy
@@ -181,8 +177,6 @@ services:
 
 
 networks:
-  # caddy_public:
-  #   external: true
   nextcloud_internal:
     driver: bridge
     internal: false 

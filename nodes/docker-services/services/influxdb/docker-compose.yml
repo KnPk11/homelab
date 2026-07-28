@@ -23,7 +23,6 @@ services:
       - NET_RAW
     security_opt:
       - no-new-privileges:true
-    # read_only: true
     tmpfs:
       - /tmp
     deploy:

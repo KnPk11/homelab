@@ -15,7 +15,6 @@ config_paths:
   notification_dir: /etc/crowdsec/notifications/
   plugin_dir: /usr/lib/crowdsec/plugins/
 crowdsec_service:
-  #console_context_path: /etc/crowdsec/console/context.yaml
   acquisition_path: /etc/crowdsec/acquis.yaml
   acquisition_dir: /etc/crowdsec/acquis.d
   parser_routines: 1
@@ -26,12 +25,6 @@ db_config:
   log_level: info
   type: sqlite
   db_path: /var/lib/crowdsec/data/crowdsec.db
-  #max_open_conns: 100
-  #user: 
-  #password:
-  #db_name:
-  #host:
-  #port:
   flush:
     max_items: 5000
     max_age: 7d
@@ -53,9 +46,6 @@ api:
       - 127.0.0.1
       - ::1
       - ${HOMELAB_SUBNET}
-#    tls:
-#      cert_file: /etc/crowdsec/ssl/cert.pem
-#      key_file: /etc/crowdsec/ssl/key.pem
 prometheus:
   enabled: true
   level: full

@@ -3,7 +3,8 @@ services:
     image: portainer/portainer-ce:2.38.0
     container_name: portainer
     restart: unless-stopped
-    ports: # To acess via https://IP:9443 if Caddy dies.
+    # To acess via https://IP:9443 if Caddy dies.
+    ports:
       - "127.0.0.1:9443:9443"
       - "192.168.50.95:9443:9443"
     environment:
@@ -18,7 +19,7 @@ services:
       - /srv:/srv:ro
     read_only: true
     labels:
-      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$" # For What's Up Docker
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$"
     tmpfs:
       - /tmp
     security_opt:
@@ -28,7 +29,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M # Portainer can get hungry with many stacks
+          memory: 512M
           cpus: '0.5'
 
 

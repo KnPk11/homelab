@@ -13,8 +13,6 @@ services:
       - 192.168.50.95:22000:22000/udp # Sync UDP (QUIC)
       - 127.0.0.1:21027:21027/udp # Discovery
       - 192.168.50.95:21027:21027/udp # Discovery
-    # networks:
-    #  - caddy_public
     environment:
       - PUID=1000
       - PGID=1000
@@ -33,8 +31,3 @@ services:
         reservations:
           cpus: '0.25'
           memory: 256M
-
-
-# networks:
-#   caddy_public:
-#     external: true

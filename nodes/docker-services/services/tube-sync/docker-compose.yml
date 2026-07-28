@@ -20,7 +20,7 @@ services:
       - MKNOD
       - NET_RAW
       - SYS_CHROOT
-      - SYS_ADMIN   # definitely never give this
+      - SYS_ADMIN
       - SYS_MODULE
       - SYS_PTRACE
       - SYS_RAWIO
