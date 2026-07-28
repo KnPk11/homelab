@@ -1,9 +1,14 @@
 # Cockpit
 
 > [!NOTE]
-> **Tags:** #cockpit #server_management #linux #web_ui
+> #Cockpit #ServerManagement #Linux #WebUI
 
-## 1. Installation
+
+## 1. Description
+
+Cockpit is a lightweight web console for Linux servers — packages, logs, storage, networking, and terminal access from a browser without full SSH for every admin task.
+
+## 2. Installation
 
 Run these three commands:
 
@@ -19,7 +24,7 @@ Add a UFW rule if needed:
 sudo ufw allow 9090/tcp
 ```
 
-## 2. Initial Access
+## 3. Initial Access
 
 - Navigate to `https://[IP]:9090`
 - Login with **non-root** Debian credentials
@@ -27,7 +32,7 @@ sudo ufw allow 9090/tcp
 > [!TIP]
 > **Full Access**: Toggle off **Limited Access** in the top-right for full control.
 
-## 3. Reverse Proxy Setup
+## 4. Reverse Proxy Setup
 
 Find Docker gateway:
 
@@ -87,7 +92,7 @@ In Caddyfile:
 reverse_proxy host.docker.internal:9090
 ```
 
-## 4. Security Enhancements
+## 5. Security Enhancements
 
 Make sure Fail2Ban is looking at the auth attempts via the custom logs in `/mnt/logs*`, or create a specific jail for Cockpit, pointing it at the system auth log:
 
@@ -101,7 +106,7 @@ bantime = 3600
 findtime = 600
 ```
 
-## 5. Custom Plugins
+## 6. Custom Plugins
 
 ### 45Drives Navigator
 

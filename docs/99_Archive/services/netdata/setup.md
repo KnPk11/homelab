@@ -1,7 +1,7 @@
 # Netdata Setup
 
 > [!NOTE]
-> **Tags:** #Netdata #SystemStats #Monitoring #DockerCompose
+> #Netdata #SystemStats #Monitoring #DockerCompose
 
 ## 1. Description
 

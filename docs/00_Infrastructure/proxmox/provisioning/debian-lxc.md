@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #Infrastructure #Provisioning #Debian #Linux #LXC
-
 # Debian LXC Provisioning Guide
+
+> [!NOTE]
+> #Proxmox #Infrastructure #Provisioning #Debian #Linux #LXC
 
 This guide provides a standard blueprint for creating a Debian-based Linux Container (LXC) on Proxmox.
 

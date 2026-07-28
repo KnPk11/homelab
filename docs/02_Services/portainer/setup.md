@@ -1,11 +1,16 @@
 # Portainer Setup
 
 > [!NOTE]
-> **Tags:** #Portainer #Docker #ContainerManagement #Infrastructure #DockerCompose
+> #Portainer #Docker #ContainerManagement #Infrastructure #DockerCompose
 
-## 1. Installation
 
-### 1.1. Preparation
+## 1. Description
+
+Portainer is a web UI for Docker (and Swarm/Kubernetes) — manage containers, stacks, images, and volumes without living in the CLI.
+
+## 2. Installation
+
+### 2.1. Preparation
 
 1. Navigate to the deployment directory:
 
@@ -25,7 +30,7 @@ nano docker-compose.yml
 docker volume create portainer_data
 ```
 
-### 1.2. Deployment
+### 2.2. Deployment
 
 1. Start the Portainer container:
 
@@ -35,13 +40,13 @@ docker compose up -d
 
 2. Access the web interface at `[HOST-IP]:9443`.
 
-## 2. Security and Connectivity
+## 3. Security and Connectivity
 
-### 2.1. Stack Management
+### 3.1. Stack Management
 
 It is recommended to split stacks into individual Docker Compose files to isolate services for modularity and reduce the potential blast radius of configuration errors.
 
-### 2.2. Remote Host Management
+### 3.2. Remote Host Management
 
 If Portainer is managing only the local Docker engine, enabling SSH is unnecessary. SSH or the Portainer Agent is only required when:
 - Managing multiple Docker nodes.
@@ -50,7 +55,7 @@ If Portainer is managing only the local Docker engine, enabling SSH is unnecessa
 > [!IMPORTANT]
 > **Certificates**: Avoid importing certificates unless you are explicitly connecting to a remote host.
 
-### 2.3. Connection Modes
+### 3.3. Connection Modes
 
 Portainer supports two primary methods for managing remote environments:
 - **Agent Mode**: Utilizing the Portainer Agent container on the remote host (recommended for performance and feature support).

@@ -1,11 +1,14 @@
 # FileBrowser Quantum Setup
 
 > [!NOTE]
-> **Tags:** #FileBrowser #FileManager #Media #Docker
+> #FileBrowser #FileManager #Media #Docker
 
----
 
-## 1. Directory Structure
+## 1. Description
+
+FileBrowser Quantum is a web file manager for browsing, uploading, and sharing files on server storage with a clean UI and user/auth controls.
+
+## 2. Directory Structure
 Create the required directories:
 
    ```bash
@@ -27,9 +30,7 @@ Set the appropriate permissions:
    sudo chown -R [USER-ID]:[GROUP-ID] /tmp/filebrowser_tmp
    ```
 
----
-
-## 2. Configuration
+## 3. Configuration
 Create a `config.yaml` file and populate it with the following configuration:
 
    ```yaml
@@ -57,9 +58,7 @@ Create a `config.yaml` file and populate it with the following configuration:
          levels: "info|warning|error|debug"
    ```
 
----
-
-## 3. Installation
+## 4. Installation
 Deploy the stack using Portainer or Docker Compose.
 
 > [!WARNING]
@@ -69,9 +68,7 @@ Log in via the Web UI using the default credentials and change them immediately:
 - **Username:** `admin`
 - **Password:** `admin`
 
----
-
-## 4. Security
+## 5. Security
 
 > [!IMPORTANT]
 > Change the default admin password immediately after the first login.

@@ -1,16 +1,17 @@
 # Grafana Setup
 
 > [!NOTE]
-> **Tags:** #Grafana #Dashboards #Monitoring #Docker #Loki
+> #Grafana #Dashboards #Monitoring #Docker #Loki
 
----
 
-## 1. Summary
+## 1. Description
+
+Grafana is a metrics and log visualisation platform — dashboards over InfluxDB, Loki, and other data sources for monitoring the homelab.
+
+## 2. Summary
 This service is utilised for system monitoring (Glances) and MikroTik syslog analysis. Data is split between InfluxDB (metrics) and Loki (logs).
 
----
-
-## 2. Setup
+## 3. Setup
 
 ### 2.1 Glances & InfluxDB
 1. Add the Docker Compose stack to Portainer.
@@ -28,8 +29,6 @@ This service is utilised for system monitoring (Glances) and MikroTik syslog ana
 > - **Name:** `DS_QUERY`
 > - **Custom options:** `influxdb`
 
----
-
 ### 2.2 Loki
 1. Ensure Loki is listening on the LAN interface to receive logs from the reverse proxy.
 2. In Portainer, ensure the `ports` mapping is correctly configured:
@@ -43,9 +42,7 @@ This service is utilised for system monitoring (Glances) and MikroTik syslog ana
    - **URL:** `http://loki:3100`
 4. Import Dashboard ID: `12611`.
 
----
-
-## 3. MikroTik Log Collection (Host-Specific)
+## 4. MikroTik Log Collection (Host-Specific)
 Promtail must run on the reverse proxy host to ship logs back to the Loki instance.
 
 ### 3.1 Installation

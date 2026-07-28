@@ -1,7 +1,7 @@
 # Vaultwarden Setup
 
 > [!NOTE]
-> **Tags:** #Vaultwarden #Passwords #Security #Bitwarden #Docker
+> #Vaultwarden #Passwords #Security #Bitwarden #Docker
 
 ## 1. Description
 

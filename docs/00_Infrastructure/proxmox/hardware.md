@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #Infrastructure #Hardware #Storage #Networking
-
 # Proxmox Hardware Management & Troubleshooting
+
+> [!NOTE]
+> #Proxmox #Infrastructure #Hardware #Storage #Networking
 
 ## Drive Management
 
@@ -23,8 +23,6 @@ To ensure deleted files inside a VM actually free up space on the Proxmox host:
 ```bash
 sudo systemctl enable --now fstrim.timer
 ```
-
----
 
 ### Enlarging a VM Drive
 
@@ -105,8 +103,6 @@ df -h
 # Verify swap is active
 sudo swapon --show
 ```
-
----
 
 ## Proxmox NIC Hang (Intel i219-V / Realtek)
 

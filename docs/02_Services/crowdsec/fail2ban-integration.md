@@ -1,7 +1,7 @@
 # CrowdSec Fail2Ban Integration
 
 > [!NOTE]
-> **Tags:** #crowdsec #fail2ban #security #linux
+> #CrowdSec #Fail2Ban #Security #Linux
 
 This document describes the "Bridge" architecture used to synchronise Fail2Ban detections with the network-wide CrowdSec firewall. Instead of blocking locally only, Fail2Ban delegates enforcement to CrowdSec, which then pushes the ban to the MikroTik Edge router.
 

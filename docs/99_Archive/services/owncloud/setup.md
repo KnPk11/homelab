@@ -1,7 +1,7 @@
 # OwnCloud Setup
 
 > [!NOTE]
-> **Tags:** #OwnCloud #Cloud #Productivity #Files #Collaboration #DockerCompose
+> #OwnCloud #Cloud #Productivity #Files #Collaboration #DockerCompose
 
 ## 1. Description
 

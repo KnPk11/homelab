@@ -1,13 +1,14 @@
 # Hermes Dashboard
 
 > [!NOTE]
-> **Tags:** #Hermes #AI #Dashboard #Proxmox #HomeLab
+> #Hermes #AI #Dashboard #Proxmox #HomeLab
+
+
+## 1. Description
 
 Hermes is an AI agent dashboard and management system utilised for orchestrating LLM workflows, managing API keys, and interacting with various AI providers.
 
----
-
-## Installation
+## 2. Installation
 
 ### Deployment Environment
 
@@ -24,9 +25,7 @@ The service was installed utilising the standard installation procedure for Linu
 curl -sSL https://hermes.nousresearch.com/install.sh | bash
 ```
 
----
-
-## Configuration
+## 3. Configuration
 
 ### AI Providers & Models
 
@@ -51,9 +50,7 @@ hermes model
 
 API keys are stored securely within the `~/.hermes/.env` file and managed via the dashboard interface.
 
----
-
-## Dashboard Access & Security
+## 4. Dashboard Access & Security
 
 > [!TIP]
 > **Authentication**: Hermes uses native `scrypt` authentication to ensure compatibility with password manager auto-fill.
@@ -99,9 +96,7 @@ HERMES_DASHBOARD_BASIC_AUTH_SECRET=[SECRET]
 > The password hash must be generated utilising the internal Hermes utility to ensure the correct `scrypt` format:
 > `python -c "from plugins.dashboard_auth.basic import hash_password; print(hash_password('YOUR_PASSWORD'))"`
 
----
-
-## Verification
+## 5. Verification
 
 To verify the service is running and accessible:
 

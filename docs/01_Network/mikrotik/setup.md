@@ -1,10 +1,10 @@
+# Basic Setup
+
 > [!NOTE]
-> **Tags:** #MikroTik #Setup #Networking #IPv6
+> #MikroTik #Setup #Networking #IPv6
 
 > [!IMPORTANT]
 > **Architecture Note:** This configuration utilises a **dual-router setup**. The MikroTik serves as the primary gateway and homelab router, while a secondary Asus router is utilised primarily in **Access Point (AP) mode** for the trusted LAN.
-
-# Basic Setup
 
 ## Networking
 
@@ -148,13 +148,11 @@ Set the connection type to **Native** (recommended) or **Passthrough**.
 > [!NOTE]
 > **Native** should detect the DHCPv6 server on the MikroTik and request a prefix. If **Native** fails, try **Passthrough**.
 
-# Updating
+## Updating
 
 Ensure you periodically check for and install updates:
 - **RouterOS**: **System** → **Packages** → **Check For Updates**.
 - **Firmware**: **System** → **RouterBOARD**.
-
----
 
 ## Appendix A: Legacy — full ASUS DMZ (retired)
 
@@ -171,8 +169,6 @@ Historical recipe (do **not** re-enable casually):
 - **To Addresses**: `[ROUTER-IP-SECONDARY]`
 
 Place below specific homelab pinholes (80/443, etc.) and above masquerade. Pair with care so MikroTik WireGuard `:51821` is not swallowed (old “Don’t DMZ WireGuard” accept is also retired).
-
----
 
 ## Appendix B: Legacy DNS static patterns
 

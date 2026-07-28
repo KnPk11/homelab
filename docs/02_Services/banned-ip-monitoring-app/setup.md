@@ -1,13 +1,13 @@
 # Banned IP Monitoring App
 
 > [!NOTE]
-> **Tags:** #fail2ban #crowdsec #security #docker #native
+> #Fail2Ban #CrowdSec #Security #Docker #Native
 
-## Description
+## 1. Description
 
 Simple Python web server which parses logs to output IPs banned by Fail2Ban and CrowdSec in the past 24 hours.
 
-## 1. Installation
+## 2. Installation
 
 ### Docker
 
@@ -60,12 +60,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now fail2ban-monitor
 ```
 
-## 2. Troubleshooting
+## 3. Troubleshooting
 
 > [!WARNING]
 > **CrowdSec IP Parsing Failure**: If the app fails to return any IPs from CrowdSec, it might be due to the system locale causing the Python regex to fail on date parsing. Ensure logs are in the expected standard format.
 
-## 3. Security
+## 4. Security
 
 - **Isolation**: Best to keep separate from Caddy. Do not run these kinds of scripts inside dedicated containers as it increases the likelihood of compromise, especially for an important service and considering the simplicity of the custom app.
 - **LAN Access**: Having the app only be reachable within LAN (by Dashy) would be even better.

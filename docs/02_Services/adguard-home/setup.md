@@ -1,13 +1,11 @@
 # AdGuard Home Setup & Configuration
 
 > [!NOTE]
-> **Tags:** #DNS #AdGuard #Docker #LXC #Monitoring #Security
+> #DNS #AdGuard #Docker #LXC #Monitoring #Security
 
-## Overview
+## Description
 
-Primary DNS and Ad-blocking service for the network. This document covers two setup methods: Docker-based and Bare-Metal LXC.
-
----
+Network-wide DNS resolver and ad/tracker blocker for the lab and home LAN — clients use AdGuard as their sole DNS for filtering, local rewrites, and query logs.
 
 ## Option A: Docker Setup
 
@@ -26,8 +24,6 @@ sudo chown -R root:root /srv/adguard
 sudo chmod -R 755 /srv/adguard
 sudo chmod 644 /srv/adguard/conf/AdGuardHome.yaml
 ```
-
----
 
 ## Option B: Bare-Metal LXC Setup
 
@@ -89,8 +85,6 @@ systemctl daemon-reload
 systemctl restart AdGuardHome
 systemctl status AdGuardHome
 ```
-
----
 
 ## General Configuration
 
@@ -224,8 +218,6 @@ If logs show Reverse DNS Lookup errors for IPv6, add `[ROUTER-IP]` under **Setti
 Also enable:
 - Use private reverse DNS resolvers
 - Enable reverse DNS resolution of upstream IP addresses
-
----
 
 ## Appendix A: MikroTik AdGuard health script
 

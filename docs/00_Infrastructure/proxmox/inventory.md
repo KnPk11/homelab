@@ -1,18 +1,14 @@
-> [!NOTE]
-> **Tags:** #Proxmox #Infrastructure #Inventory #Networking
-
 # Proxmox Node Inventory & Network Map
 
-This document provides a detailed inventory of the Proxmox Virtual Environment (PVE) and its hosted guests, along with the global network addressing scheme.
+> [!NOTE]
+> #Proxmox #Infrastructure #Inventory #Networking
 
----
+This document provides a detailed inventory of the Proxmox Virtual Environment (PVE) and its hosted guests, along with the global network addressing scheme.
 
 ## Proxmox Host
 - **Host ([PVE-NAME]):** `[PVE-IP]`
   - Primary Hypervisor running Proxmox VE.
   - Manages all virtualized compute and storage resources.
-
----
 
 ## Guest Nodes (VMs & LXCs)
 
@@ -29,11 +25,9 @@ The following table lists the core nodes currently provisioned on the hypervisor
 | `[IP].105` | **ai-tools** | LXC | AI Tools & Management Automation Node. |
 | `[IP].110` | **interview** | LXC | Disposable Postgres practice environment. |
 
----
-
 ## Network Segmentation
 
-The lab utilizes VLAN segmentation to isolate untrusted services from the secure local network.
+The lab utilises VLAN segmentation to isolate untrusted services from the secure local network.
 
 | Network | Subnet | Description |
 | :--- | :--- | :--- |

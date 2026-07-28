@@ -1,7 +1,7 @@
 # SFTPGo Setup
 
 > [!NOTE]
-> **Tags:** #SFTPGo #Sftp #Files #Transfer #Infrastructure
+> #SFTPGo #Sftp #Files #Transfer #Infrastructure
 
 ## 1. Description
 

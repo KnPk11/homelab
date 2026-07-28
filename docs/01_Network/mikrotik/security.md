@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #MikroTik #Security #Hardening #Firewall
-
 # MikroTik Hardening & Security Guide
+
+> [!NOTE]
+> #MikroTik #Security #Hardening #Firewall
 
 ## Network Topology
 
@@ -33,14 +33,10 @@ Without filtering, firewall still stops most **routed** untrusted→private traf
 > [!WARNING]
 > Apply while managing via **homelab** (`[HOMELAB-GW]`), not only a main-LAN Wi‑Fi client. Set PVID / `bridge vlan` rows **before** `vlan-filtering=yes`.
 
----
-
 ## Tailscale Security
 
 - **Isolation**: Traditional network segmentation is bypassed by Tailscale tunnels. Access control must be enforced via **Tailscale ACLs**.
 - **Subnet Routing**: Should remain **disabled by default**. Only advertise subnets from individual hosts and require manual approval in the Tailscale admin panel.
-
----
 
 ## Basic Hardening
 
@@ -137,8 +133,6 @@ Do **not** publish SSH with DSTNAT. Prefer VPN for admin; knock only as break-gl
 > [!TIP]
 > RouterOS **`reverse-proxy`** is a built-in SNI proxy on :443. Public apps should use **Caddy + DSTNAT**, not this service.
 
----
-
 ## Firewall Strategies (current)
 
 > [!WARNING]
@@ -189,8 +183,6 @@ Do not auto-classify interfaces when lists are hand-maintained.
 
 - [MikroTik default firewall discussion](https://forum.mikrotik.com/t/buying-rb1100ahx4-dude-edition-questions-about-firewall/148996/4)
 - Private audit: `docs_private/security/mikrotik-firewall-audit.md` (if present in vault)
-
----
 
 ## Advanced Protection
 
@@ -258,8 +250,6 @@ Clients: DHCP **AdGuard only** (`[ADGUARD-IP]`) plus router `CheckAdGuard` / Fai
 
 (www-ssl often left unrestricted at the service layer so port-knock Web UI works; firewall still gates WAN.)
 
----
-
 ## Verification & Testing
 
 ### WAN Access Test
@@ -291,8 +281,6 @@ smbclient -L //[TRUSTED-IP] -N
 ```
 
 - **Expected**: `Connection failed (Error NT_STATUS_IO_TIMEOUT)`.
-
----
 
 ## Appendix A: Legacy hardening snippets
 

@@ -1,11 +1,9 @@
-> [!NOTE]
-> **Tags:** #Linux #Security #Hardening
-
 # Linux Hardening Guide
 
-Guidelines and procedures for securing Linux-based systems in the homelab.
+> [!NOTE]
+> #Linux #Security #Hardening
 
----
+Guidelines and procedures for securing Linux-based systems in the homelab.
 
 ## System Access & Security
 
@@ -27,16 +25,12 @@ If the system is exposed to the WAN, implement the following:
 
 Enable password-protected login and automatic session locking via system configuration (e.g., `raspi-config` on Raspberry Pi).
 
----
-
 ## Storage & Encryption
 
 ### Encrypted Partitions
 
 > [!IMPORTANT]
 > Since the SD card is typically unencrypted, use encrypted partitions for sensitive data like `srv` and `data`. This ensures that secrets are unloaded if the device is powered down or stolen.
-
----
 
 ## Password Management
 
@@ -49,8 +43,6 @@ Enable password-protected login and automatic session locking via system configu
 ### Fail2Ban
 
 Use `fail2ban` to protect against brute-force attacks on SSH and other exposed services.
-
----
 
 ## Network Security (Firewall)
 
@@ -105,8 +97,6 @@ sudo ufw status numbered
 nmap [DOMAIN]
 ```
 
----
-
 ## Advanced Traffic Control
 
 ### Rate Limiting (iptables)
@@ -127,8 +117,6 @@ sudo iptables -A INPUT -p tcp --dport 443 \
 
 > [!WARNING]
 > Manual `iptables` rules may conflict with UFW or be lost after a reboot. Use `iptables-persistent` if these rules are required long-term.
-
----
 
 ## File System & Permissions
 
@@ -164,8 +152,6 @@ Use consistent ownership and permissions for sensitive directories (e.g., `certs
    find /data/secrets -type f -exec chmod 600 {} \;
    ```
 
----
-
 ## Monitoring & Health
 
 ### Drive Health (S.M.A.R.T.)
@@ -192,8 +178,6 @@ Check system logs for I/O errors:
 ```bash
 dmesg | grep -i error
 ```
-
----
 
 ## VPN & Remote Access
 

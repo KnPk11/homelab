@@ -1,7 +1,7 @@
 # Backup and Maintenance Guide
 
 > [!NOTE]
-> **Tags:** #Backup #Maintenance #Kopia #Proxmox #Mikrotik
+> #Backup #Maintenance #Kopia #Proxmox #MikroTik
 
 ## 1. Description
 

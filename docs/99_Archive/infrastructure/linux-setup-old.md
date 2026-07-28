@@ -1,7 +1,7 @@
 # Legacy Linux Setup
 
 > [!NOTE]
-> **Tags:** #Linux #Setup #Xscreensaver #Display #Infrastructure
+> #Linux #Setup #Xscreensaver #Display #Infrastructure
 
 ## 1. Description
 
@@ -11,14 +11,14 @@ An archive of deprecated Linux system setup procedures and utilities previously 
 
 Xscreensaver is used to properly blank the screen, ensuring it remains off even after remote connections.
 
-### 2.1. Installation
+### Installation
 
 ```bash
 sudo apt update
 sudo apt install xscreensaver
 ```
 
-### 2.2. Configuration
+### Configuration
 
 In the advanced settings, set the **Stand By**, **Suspend**, and **Screen Off** values to approximately 20, 25, and 30 minutes respectively.
 

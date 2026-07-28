@@ -1,7 +1,7 @@
 # File Browser Setup
 
 > [!NOTE]
-> **Tags:** #FileBrowser #FileManager #Media #DockerCompose
+> #FileBrowser #FileManager #Media #DockerCompose
 
 ## 1. Description
 

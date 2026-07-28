@@ -1,7 +1,7 @@
 # Tailscale Setup
 
 > [!NOTE]
-> **Tags:** #Tailscale #Vpn #Networking #DockerCompose #Proxmox
+> #Tailscale #VPN #Networking #DockerCompose #Proxmox
 
 ## 1. Description
 

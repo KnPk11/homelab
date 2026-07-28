@@ -1,7 +1,7 @@
 # Copyparty Setup
 
 > [!NOTE]
-> **Tags:** #Copyparty #FileSharing #Storage #DockerCompose
+> #Copyparty #FileSharing #Storage #DockerCompose
 
 ## 1. Description
 

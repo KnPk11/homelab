@@ -1,14 +1,17 @@
 # AnyType
 
 > [!NOTE]
-> **Tags:** #anytype #productivity #sync #docker_repository
+> #AnyType #Productivity #Sync #DockerRepository
+
+
+## 1. Description
 
 Host: **docker-services** (`[ANYTYPE-IP]`). Upstream stack is cloned under `/srv/anytype-sync-logic`; persistent data under `/srv/anytype`.
 
 Node-specific notes (hardening override, secrets paths):  
 `nodes/docker-services/services/anytype/README.md`
 
-## 1. Installation
+## 2. Installation
 
 > [!NOTE]
 > **Reference**: [As seen here](https://youtu.be/D8ZntmTs1Vs?si=kJRGAM0_MzkqOTrO)  
@@ -119,7 +122,7 @@ If you only need to force filenode config regen in older workflows:
 sudo rm -rf ./etc/any-sync-filenode
 ```
 
-## 2. Updating
+## 3. Updating
 
 > [!IMPORTANT]
 > Always **back up the vault** before updating the repository as a good measure.
@@ -143,7 +146,7 @@ For major upgrades, version pins, and env-format changes:
 
 - [any-sync-dockercompose Upgrade Guide](https://github.com/anyproto/any-sync-dockercompose/wiki/Upgrade-Guide)
 
-## 3. Secrets backup
+## 4. Secrets backup
 
 On-demand only: `nodes/ai-tools/services/configs-and-secrets-backup/scrape_configs_and_secrets.sh` (see script header). Pulls:
 
@@ -155,7 +158,7 @@ On-demand only: `nodes/ai-tools/services/configs-and-secrets-backup/scrape_confi
 
 Treat `client.yml` as **confidential** (join config for your network), not as sensitive as a recovery phrase.
 
-## 4. DNS & Reachability (WAN / LAN / VPN)
+## 5. DNS & Reachability (WAN / LAN / VPN)
 
 `EXTERNAL_LISTEN_HOSTS` should list what **clients dial**. With one hostname shared by Caddy and AnyType:
 

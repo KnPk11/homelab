@@ -1,11 +1,14 @@
 # Fail2Ban Setup
 
 > [!NOTE]
-> **Tags:** #fail2ban #networking #security #docker #native
+> #Fail2Ban #Networking #Security #Docker #Native
 
-Covers the installation of Fail2Ban to protect Caddy and the setup of the custom Python monitoring dashboard.
 
-## 1. Installation
+## 1. Description
+
+Fail2Ban watches logs for abuse (e.g. Caddy auth failures) and bans offenders at the firewall; paired here with a small dashboard of recent bans from Fail2Ban and CrowdSec.
+
+## 2. Installation
 
 You can choose between a containerised or a native installation depending on your environment.
 
@@ -70,7 +73,7 @@ For standard Linux distributions:
 sudo apt update && sudo apt install fail2ban -y
 ```
 
-## 2. Configuration
+## 3. Configuration
 
 ### Log Permissions
 
@@ -126,7 +129,7 @@ Verify the RegEx rules against your logs:
 sudo fail2ban-regex /mnt/logs/caddy/plaintext/[SERVICE].log /etc/fail2ban/filter.d/caddy-authcodes.conf
 ```
 
-## 3. Firewall & Bouncing
+## 4. Firewall & Bouncing
 
 The method for applying bans depends on your host type.
 
@@ -164,7 +167,7 @@ banaction = crowdsec
 banaction_allports = crowdsec
 ```
 
-## 4. Testing & Verification
+## 5. Testing & Verification
 
 Follow these steps to ensure your Fail2Ban setup is functioning correctly.
 

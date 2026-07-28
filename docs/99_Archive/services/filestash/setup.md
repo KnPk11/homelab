@@ -1,7 +1,7 @@
 # Filestash Setup
 
 > [!NOTE]
-> **Tags:** #Filestash #Files #Media #DockerCompose
+> #Filestash #Files #Media #DockerCompose
 
 ## 1. Description
 

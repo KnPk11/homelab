@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #Infrastructure #Setup #Security
-
 # Proxmox VE Installation & Hardening
+
+> [!NOTE]
+> #Proxmox #Infrastructure #Setup #Security
 
 ## Preparation & Boot
 
@@ -9,8 +9,6 @@
 - **Flash**: Use Rufus to flash the ISO to a USB drive.
 - **Secure Boot**: Disable secure boot in the BIOS for best compatibility.
 - **Boot**: Insert the USB into the target machine and boot from it via the BIOS/UEFI boot menu.
-
----
 
 ## Installation Configuration
 
@@ -30,8 +28,6 @@ Follow the on-screen prompts to configure the base system:
     - **IP Address**: Choose a static IP (e.g., `192.168.1.100`).
     - **Important**: Ensure your router’s DHCP reservation is set to this same static IP to avoid conflicts.
 
----
-
 ## First Login
 
 Once the installation finishes, the system will reboot into a CLI login screen. You do not need to log in there.
@@ -41,8 +37,6 @@ Once the installation finishes, the system will reboot into a CLI login screen. 
     - *Note*: You may get an SSL warning; this is normal. Click **Advanced** → **Proceed**.
 3. **Username**: `root`
 4. **Password**: The password you set during installation.
-
----
 
 ## Post-Installation Setup
 
@@ -90,8 +84,6 @@ Refresh your browser afterwards.
 > bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh) uninstall
 > ```
 
----
-
 ## Architecture Decisions
 
 ### Docker Strategy: VM vs. LXC?
@@ -111,8 +103,6 @@ Refresh your browser afterwards.
 2. **Go to Options**: In the middle menu, click the **Options** tab.
 3. **Find "Start at boot"**: Look for the row that says **Start at boot**.
 4. **Edit it**: Double-click that row, check the box, and click **OK**.
-
----
 
 ## Security & Hardening
 
@@ -147,8 +137,6 @@ Refresh your browser afterwards.
 | **Recommended** | Unattended updates, RBAC, login monitoring            |
 | **Optional**    | Separate VLAN, host firewall, 2FA, SSH rate limiting  |
 | **Advanced**    | Backup encryption, VM encryption (LUKS/Dropbear/Tang) |
-
----
 
 ## Troubleshooting
 

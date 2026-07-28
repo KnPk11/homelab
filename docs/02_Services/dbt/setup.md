@@ -1,9 +1,14 @@
 # dbt
 
 > [!NOTE]
-> **Tags:** #dbt #data_modelling #analytics #docker_compose
+> #Dbt #DataModelling #Analytics #DockerCompose
 
-## 1. Installation
+
+## 1. Description
+
+dbt (data build tool) turns SQL into versioned analytics models — transforms warehouse data with tests, documentation, and repeatable builds rather than one-off scripts.
+
+## 2. Installation
 
 1.  Add the stack in your container management tool (e.g., Portainer).
 
@@ -28,7 +33,7 @@
     docker exec -it dbt dbt run --select +fact_orders
     ```
 
-## 2. Profiles
+## 3. Profiles
 
 Ensure your `profiles.yml` is correctly configured in the service directory (`nodes/docker-services/services/dbt/profiles.yml`).
 

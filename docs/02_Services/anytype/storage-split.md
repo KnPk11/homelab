@@ -1,7 +1,7 @@
 # AnyType Storage Split
 
 > [!NOTE]
-> **Tags:** #anytype #storage #minio #nas
+> #AnyType #Storage #MinIO #NAS
 
 ## Objective
 
@@ -45,7 +45,7 @@ make start
 ```
 
 > [!TIP]
-> **Merge Behavior**: Compose merges this with the main stack; keep `STORAGE_DIR=/srv/anytype` in **`.env`**. The volume line below only redirects Minio blobs to the NAS path.
+> **Merge Behaviour**: Compose merges this with the main stack; keep `STORAGE_DIR=/srv/anytype` in **`.env`**. The volume line below only redirects Minio blobs to the NAS path.
 
 ### Option B: Symlink
 

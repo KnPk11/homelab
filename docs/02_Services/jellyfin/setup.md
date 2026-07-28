@@ -1,9 +1,14 @@
 # Jellyfin Setup
 
 > [!NOTE]
-> **Tags:** #jellyfin #media #streaming #video #docker_compose
+> #Jellyfin #Media #Streaming #Video #DockerCompose
 
-## 1. Device Identification
+
+## 1. Description
+
+Jellyfin is a free media server for streaming personal movies, TV, and music to browsers and apps with no licence fees or mandatory accounts.
+
+## 2. Device Identification
 
 Find what video acceleration devices the Raspberry Pi has:
 
@@ -11,7 +16,7 @@ Find what video acceleration devices the Raspberry Pi has:
    v4l2-ctl --list-devices
    ```
 
-## 2. Configuration
+## 3. Configuration
 
 Update the `docker-compose.yml` with these variables.
 
@@ -19,15 +24,15 @@ Update the `docker-compose.yml` with these variables.
 > Do not enable or require HTTPS through Jellyfin's admin if utilising Caddy.
 > Do not set any base URL; Caddy will handle this.
 
-## 3. Subpath Configuration
+## 4. Subpath Configuration
 
 Set the base URL under `Networking` if you wish to run Jellyfin in a subpath.
 
-## 4. Deployment
+## 5. Deployment
 
 Start the stack in Portainer.
 
-## 5. Port-forwarded Setup (Optional)
+## 6. Port-forwarded Setup (Optional)
 
 If you need to configure Jellyfin with a certificate for direct port forwarding:
 

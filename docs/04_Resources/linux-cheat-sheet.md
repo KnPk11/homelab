@@ -1,7 +1,7 @@
 # Resources Reference
 
 > [!NOTE]
-> **Tags:** #Linux #CheatSheet #Docker #Backups #Networking #Resources
+> #Linux #CheatSheet #Docker #Backups #Networking #Resources
 
 ## 1. Description
 

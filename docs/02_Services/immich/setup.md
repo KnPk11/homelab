@@ -1,9 +1,14 @@
 # Immich Setup
 
 > [!NOTE]
-> **Tags:** #Immich #Photos #Backup #AI #Media #Docker
+> #Immich #Photos #Backup #AI #Media #Docker
 
-## 1. Hardware Acceleration
+
+## 1. Description
+
+Immich is a self-hosted photo and video library with mobile backup, face recognition, and a timeline UI — a private alternative to Google Photos.
+
+## 2. Hardware Acceleration
 
 Immich supports hardware acceleration for both transcoding and machine learning tasks. 
 
@@ -34,7 +39,7 @@ For accelerated inference, use the appropriate image tag and extend the `immich-
        - .env
    ```
 
-## 2. Storage Configuration
+## 3. Storage Configuration
 
 Configure the storage locations in your `.env` file rather than modifying the `docker-compose.yml` directly.
 

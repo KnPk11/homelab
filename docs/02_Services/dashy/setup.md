@@ -1,9 +1,14 @@
 # Dashy Setup
 
 > [!NOTE]
-> **Tags:** #dashy #dashboard #monitoring #docker_compose
+> #Dashy #Dashboard #Monitoring #DockerCompose
 
-## 1. Installation
+
+## 1. Description
+
+Dashy is a self-hosted application dashboard: a single start page of links, status badges, and widgets for the services you run in the lab.
+
+## 2. Installation
 
 ### Option A: Docker (Portainer)
 
@@ -40,7 +45,7 @@ For resource-constrained nodes, Dashy can be compiled into a static site and ser
    }
    ```
 
-## 2. Configuration
+## 3. Configuration
 
 > [!NOTE]
 > **Password-protected setup**
@@ -60,7 +65,7 @@ For resource-constrained nodes, Dashy can be compiled into a static site and ser
 >         useProxy: true
 > ```
 
-## 3. Security
+## 4. Security
 
 > [!NOTE]
 > **Secret Management**

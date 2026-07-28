@@ -1,13 +1,11 @@
 # Caddy Security & Hardening
 
 > [!NOTE]
-> **Tags:** #Caddy #Security #Hardening #Proxy
+> #Caddy #Security #Hardening #Proxy
 
 ## Overview
 
 Refer to the guide on hardening Caddy at [Hackvisor - Caddy](https://hackviser.com/tactics/hardening/caddy) and use the [Security Headers](https://securityheaders.com/) website to validate the implementation.
-
----
 
 ## SSL & TLS
 
@@ -36,8 +34,6 @@ tls {
 }
 ```
 
----
-
 ## Authentication & Access Control
 
 ### Basic Auth
@@ -63,8 +59,6 @@ rate_limit {
 respond "Rate limited"
 ```
 
----
-
 ## IP Filtering & Forwarding
 
 ### Restricted Access
@@ -77,8 +71,6 @@ It is possible to restrict which IPs are allowed to access a particular service.
 > Ensure all backend services (e.g., Nextcloud, Jellyfin) receive the original client IP via `X-Forwarded-For`. This makes the internal security mechanisms of those services more effective.
 
 **Best Practice:** Bind Caddy's internal IP for `X-Forwarded-For` headers instead of a broad range. This prevents an attacker from easily spoofing their IP by pretending to be the reverse proxy.
-
----
 
 ## Privacy (Robots.txt)
 

@@ -1,7 +1,7 @@
 # Tube Archivist Setup
 
 > [!NOTE]
-> **Tags:** #TubeArchivist #Media #Youtube #VideoDownloader #DockerCompose
+> #TubeArchivist #Media #Youtube #VideoDownloader #DockerCompose
 
 ## 1. Description
 

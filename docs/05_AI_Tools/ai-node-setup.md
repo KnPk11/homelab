@@ -1,7 +1,7 @@
 # AI Node Setup
 
 > [!NOTE]
-> **Tags:** #Ai #Lxc #Proxmox #Gemini #Grok #OpenCode #AgenticAi #Infrastructure #Security
+> #AI #LXC #Proxmox #Gemini #Grok #OpenCode #AgenticAi #Infrastructure
 
 ## 1. Description
 
@@ -45,7 +45,6 @@ Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource
    - Use the `/model` command to set the required model (e.g., Grok 2, Grok 4.3).
    - Use the `/usage` command to check model usage.
 
-
 ### 3.3. OpenCode Setup
 
 1. **Installation**:
@@ -57,7 +56,7 @@ Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource
 2. **Configuration**:
    Navigate to your project directory and run `/connect` to configure a provider.
 
-#### 3.3.1. Local LLM Providers (OpenCode)
+#### Local LLM Providers (OpenCode)
 
 Custom OpenAI-compatible endpoints (e.g., Open WebUI) require explicit mapping in the configuration.
 
@@ -123,6 +122,7 @@ ai-key-lock             # unload both early when done
 
 > [!TIP]
 > Use `ai-key-unlock` / `ai-key-lock`, not a bare `ssh-add` in a random terminal. Only the unlock script records TTL state so `ai-key-status` and the cron watchdog work.
+
 ### 4.2. User Permissions
 
 | Approach | Pros | Cons |

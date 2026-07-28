@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #LXC #Infrastructure #AdGuardHome #Networking
-
 # AdGuard Home: Proxmox LXC Spec
+
+> [!NOTE]
+> #Proxmox #LXC #Infrastructure #AdGuardHome #Networking
 
 This document details the specific Proxmox LXC configuration for the AdGuard Home service.
 
@@ -30,14 +30,12 @@ This document details the specific Proxmox LXC configuration for the AdGuard Hom
 - **DNS Server**: `9.9.9.9` (Initial setup)
 - **Firewall**: ✅ Enabled (Managed via Proxmox)
 
----
-
 ## Setup Steps
 
 1. **Create LXC**: Follow the standard Proxmox LXC creation wizard using the specs above.
 2. **SSH Key**: Paste your public SSH key `[SECRET]` during creation for passwordless access.
 3. **ACLs**: Leave as **Default** to ensure standard Linux permissions work correctly.
-4. **Mount Options**: Leave blank (optimized defaults).
+4. **Mount Options**: Leave blank (optimised defaults).
 
 > [!TIP]
 > Use the "root" password set during creation only for the initial console login to install dependencies.

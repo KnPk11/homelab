@@ -1,7 +1,7 @@
 # Proxmox Backup Server: Proxmox LXC Spec
 
 > [!NOTE]
-> **Tags:** #Proxmox #PBS #LXC #Infrastructure #Backup #Storage
+> #Proxmox #PBS #LXC #Infrastructure #Backup #Storage
 
 This document details the specific Proxmox LXC configuration for the dedicated Proxmox Backup Server (`pbs`) container node.
 
@@ -38,8 +38,6 @@ This document details the specific Proxmox LXC configuration for the dedicated P
 - **Gateway**: `[GATEWAY-IP]`
 - **DNS Server**: Default (Host settings)
 - **Firewall**: ✅ Enabled (Managed via Proxmox)
-
----
 
 ## Setup Steps
 

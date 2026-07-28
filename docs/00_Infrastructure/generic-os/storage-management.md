@@ -1,11 +1,9 @@
-> [!NOTE]
-> **Tags:** #Linux #Storage #Setup #fstab #MergerFS
-
 # Storage Management & Mounting
 
-Tactical guide for managing physical drives, partitions, and pooling layers on Linux-based nodes.
+> [!NOTE]
+> #Linux #Storage #Setup #Fstab #MergerFS
 
----
+Tactical guide for managing physical drives, partitions, and pooling layers on Linux-based nodes.
 
 ## Mounting External Drives
 
@@ -29,8 +27,6 @@ Add the following entry (replace placeholders with specific device values):
 UUID=[DISK-UUID]  /mnt/[MOUNT-POINT]  ntfs-3g  defaults,uid=1000,gid=1000,umask=000,nofail  0  0
 ```
 
----
-
 ## Data Pooling (MergerFS)
 
 When adding multiple drives to a single logical pool, use `mergerfs` to present them as a unified directory.
@@ -50,11 +46,11 @@ sudo mkdir -p /mnt/[VIRTUAL-POOL]
 sudo mv /mnt/[VIRTUAL-POOL]/* /mnt/[SOURCE-DRIVE-A]/
 ```
 
-### 3. Initialize the Pool
-Initialize the pool by merging the underlying source branches into the target mount point:
+### 3. Initialise the Pool
+Initialise the pool by merging the underlying source branches into the target mount point:
 
 ```bash
-# Standard mergerfs initialization
+# Standard mergerfs initialisation
 mergerfs /mnt/[SOURCE-DRIVE-A]:/mnt/[SOURCE-DRIVE-B] /mnt/[VIRTUAL-POOL]
 ```
 

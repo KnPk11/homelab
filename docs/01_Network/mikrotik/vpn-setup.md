@@ -1,15 +1,13 @@
-> [!NOTE]
-> **Tags:** #MikroTik #VPN #WireGuard #Networking
-
 # Virtual Private Networks (VPN)
+
+> [!NOTE]
+> #MikroTik #VPN #WireGuard #Networking
 
 **Current edge VPN:** MikroTik WireGuard on WAN (`listen-port` **51821**). Asus is **AP mode** — do not forward WG/OpenVPN to the Asus.
 
----
-
 ## 🛡️ Multi-Tier Remote Access & Failover Model
 
-The homelab utilizes a 4-tier remote access hierarchy to ensure 100% remote management resilience:
+The homelab utilises a 4-tier remote access hierarchy to ensure 100% remote management resilience:
 
 ```mermaid
 flowchart TD
@@ -59,8 +57,6 @@ flowchart TD
 * **Tier 2 (Fallback)**: Tailscale LXC (`vpns` / CT 108 / `192.168.50.87`) — Mesh VPN fallback with NAT traversal & subnet routing.
 * **Tier 3 (Emergency Lockout)**: MikroTik Port Knocking — Secret packet sequence to unblock management access if firewall rules lock out standard ports.
 * **Tier 4 (Hardware Recovery)**: App-managed Smart Plugs + BIOS AC Power Restore + AnyDesk on LAN PCs for hard power cycling and out-of-band desktop recovery.
-
----
 
 ## WireGuard Server Setup
 
@@ -112,8 +108,6 @@ add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pm
     protocol=tcp tcp-flags=syn comment="Clamp TCP MSS for WireGuard (out)"
 ```
 
----
-
 ## Client Configuration (Example)
 
 - **Addresses:** `[WG-SUBNET].2/32`
@@ -121,4 +115,3 @@ add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pm
 - **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed
 - **Endpoint:** `[DDNS_NAME].sn.mynetname.net:51821`
 - **Public Key:** `[ROUTER-WG-PUBLIC-KEY]`
-

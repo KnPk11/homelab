@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #Infrastructure #Provisioning #Debian #Linux #VM
-
 # Debian VM Provisioning Guide
+
+> [!NOTE]
+> #Proxmox #Infrastructure #Provisioning #Debian #Linux #VM
 
 This guide provides a standard blueprint for creating a Debian-based virtual machine on Proxmox.
 
@@ -12,8 +12,6 @@ This guide provides a standard blueprint for creating a Debian-based virtual mac
     - Select your **local** storage in the Proxmox sidebar.
     - Select **ISO Images** → **Upload**.
     - Select your Debian ISO and complete the upload.
-
----
 
 ## Phase 2: Create the VM (Recommended Settings)
 
@@ -49,8 +47,6 @@ Click **Create VM** and follow these tab-specific recommendations:
 - **Bridge**: `vmbr0`.
 - **Model**: `VirtIO (paravirtualized)`.
 
----
-
 ## Phase 3: Install Debian
 
 Launch the **Console** and select **Graphical Install**.
@@ -68,8 +64,6 @@ Launch the **Console** and select **Graphical Install**.
     - **Uncheck**: `Debian desktop environment` and `GNOME`.
     - **Check**: `SSH server` and `Standard system utilities`.
 6. **GRUB**: Install the GRUB boot loader to your primary drive (`/dev/sda`).
-
----
 
 ## Phase 4: Post-Install Configuration
 

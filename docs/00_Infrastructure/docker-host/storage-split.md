@@ -1,11 +1,9 @@
 # Docker Storage Migration
 
 > [!NOTE]
-> **Tags:** #Docker #Storage #Migration #Proxmox #LVM
+> #Docker #Storage #Migration #Proxmox #LVM
 
 A step-by-step runbook for migrating Docker, containerd, and data directories from the OS drive to a secondary storage drive.
-
----
 
 ## Prerequisites
 
@@ -13,8 +11,6 @@ A step-by-step runbook for migrating Docker, containerd, and data directories fr
 - [ ] Sufficient space on new drive
 - [ ] SSH access to the system
 - [ ] Backup of critical data (just in case)
-
----
 
 ## Phase 1: Stop Services & Estimate Space
 
@@ -42,8 +38,6 @@ sudo du -sh /var/lib/containerd
 
 > [!NOTE]
 > Run these commands **before** stopping Docker. If Docker is still running, the reported size will be inflated due to Docker's OverlayFS illusion.
-
----
 
 ## Phase 2: Prepare the New Drive
 
@@ -86,8 +80,6 @@ sudo mkdir /mnt/appdata/srv
 sudo mkdir /mnt/appdata/data
 ```
 
----
-
 ## Phase 3: Migrate Data
 
 ```bash
@@ -99,8 +91,6 @@ sudo rsync -aP /data/              /mnt/appdata/data/
 
 > [!TIP]
 > The `-a` flag preserves permissions and timestamps. `-P` shows progress for large transfers.
-
----
 
 ## Phase 4: Create Anchor Points
 
@@ -121,8 +111,6 @@ sudo mkdir -p /var/lib/containerd
 sudo mkdir /srv
 sudo mkdir /data
 ```
-
----
 
 ## Phase 5: Configure Bind Mounts
 
@@ -146,8 +134,6 @@ df -h
 > [!TIP]
 > You should see your secondary drive listed multiple times, seamlessly projecting its folders across your OS.
 
----
-
 ## Phase 6: Restart & Verify
 
 ```bash
@@ -155,8 +141,6 @@ df -h
 ```
 
 Verify containers start correctly and volumes are accessible.
-
----
 
 ## Phase 7: Cleanup (After Confirmation)
 
@@ -174,8 +158,6 @@ Tell the hypervisor that space has been freed:
 ```bash
 sudo fstrim -av
 ```
-
----
 
 ## Proxmox-Specific: Shrink the Original Drive
 

@@ -1,13 +1,18 @@
 # Kafka Setup
 
 > [!NOTE]
-> **Tags:** #kafka #data_streaming #message_broker #infrastructure #docker_compose
+> #Kafka #DataStreaming #MessageBroker #Infrastructure #DockerCompose
 
-## 1. Deployment
+
+## 1. Description
+
+Apache Kafka is a distributed log/message bus for high-throughput event streaming — producers write topics, consumers process them asynchronously.
+
+## 2. Deployment
 
 Add and start the stack in Portainer.
 
-## 2. Zookeeper (Optional)
+## 3. Zookeeper (Optional)
 
 > [!NOTE]
 > Zookeeper is technically not required for Kafka to run.

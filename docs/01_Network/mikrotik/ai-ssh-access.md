@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #MikroTik #SSH #Security #Agent
-
 # MikroTik Remote Access Setup Guide
+
+> [!NOTE]
+> #MikroTik #SSH #Security #Agent
 
 Secure SSH access for the automation agent (live: user `svc_ai` or `svc_backup` on `ai-tools` / `[AGENT-CONTAINER-IP]`) to the MikroTik router.
 

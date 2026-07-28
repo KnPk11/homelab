@@ -1,7 +1,7 @@
 # Legacy Backup Methods
 
 > [!NOTE]
-> **Tags:** #Archive #Backup #Rsync #Restic #RaspberryPi
+> #Archive #Backup #Rsync #Restic #RaspberryPi
 
 ## 1. Description
 
@@ -14,7 +14,7 @@ Restic was previously used for backups before transitioning to Kopia.
 ### Commands
 
 ```bash
-# Initialize a repository
+# Initialise a repository
 restic init -r /home/[USER]/Desktop/homelab_backup/Notes
 
 # Backup Notes directory (tagged as "notes")

@@ -1,11 +1,14 @@
 # CrowdSec
 
 > [!NOTE]
-> **Tags:** #crowdsec #networking #security #distributed #mikrotik
+> #CrowdSec #Networking #Security #Distributed #MikroTik
 
-This document covers the distributed CrowdSec architecture used to protect the network. It consists of a central "Brain" (LAPI), multiple "Sentinels" (Agents), and an "Edge Enforcer" (MikroTik).
 
-## 1. The Architecture (Distributed Setup)
+## 1. Description
+
+CrowdSec is a collaborative IDS/IPS: agents parse logs, a central LAPI issues decisions, and bouncers (firewall, MikroTik) enforce bans across the network.
+
+## 2. The Architecture (Distributed Setup)
 
 ### Central Brain: Caddy LXC
 
@@ -17,9 +20,7 @@ This document covers the distributed CrowdSec architecture used to protect the n
 - **Role**: Parse local logs (SSH, Docker, AnyType, etc.) and forward alerts to the Brain.
 - **Config**: `/etc/crowdsec/local_api_credentials.yaml` (points to Caddy LXC).
 
----
-
-## 2. Configure the Central Brain
+## 3. Configure the Central Brain
 
 ### Install CrowdSec
 
@@ -50,7 +51,7 @@ sudo systemctl reload crowdsec
 sudo cscli metrics
 ```
 
-## 3. Log Parsing (Acquis Configuration)
+## 4. Log Parsing (Acquis Configuration)
 
 Configure which logs CrowdSec should parse on the Caddy LXC, in `/etc/crowdsec/acquis.yaml`:
 
@@ -83,9 +84,7 @@ sudo cscli machines add docker-host --password [SECRET]
 sudo cscli machines add openclaw --password [SECRET]
 ```
 
----
-
-## 4. Deploy Sentinels
+## 5. Deploy Sentinels
 
 On the agent machines, install CrowdSec but disable the local LAPI:
 
@@ -119,9 +118,7 @@ On the agent machines, install CrowdSec but disable the local LAPI:
 
     This ensures CrowdSec waits for full network connectivity before starting, and automatically retries if it still fails for a transient reason.
 
----
-
-## 5. MikroTik Edge Bouncer (The Precise Shield)
+## 6. MikroTik Edge Bouncer (The Precise Shield)
 
 The bouncer runs on the Caddy LXC and pushes **"Local Only"** bans to the router. This keeps the MikroTik Address List clean and prevents UI lag.
 
@@ -133,9 +130,7 @@ crowdsec:
   api_url: "http://[LAPI-IP]:8080/"
 ```
 
----
-
-## 6. Local Server Protection (The Global Shield)
+## 7. Local Server Protection (The Global Shield)
 
 While the MikroTik stays lean with local-only bans, the standard firewall bouncer on the **Caddy server** handles the massive **25,000+ Community Blocklist (CAPI)**.
 
@@ -156,17 +151,13 @@ api_url: http://[LAPI-IP]:8080/
 >   - DOCKER-USER
 > ```
 
----
-
-## 7. Fail2Ban Integration
+## 8. Fail2Ban Integration
 
 Fail2Ban detections can be synchronised with the CrowdSec network-wide firewall to ensure IPs caught by Fail2Ban are also blocked at the MikroTik Edge.
 
 👉 **See the dedicated guide**: [CrowdSec Fail2Ban Integration](./fail2ban-integration.md)
 
----
-
-## 8. Validation & Troubleshooting
+## 9. Validation & Troubleshooting
 
 ### Check Connection Status
 
@@ -194,9 +185,7 @@ Check if a test IP reaches the router:
 - **MikroTik Bouncer**: `sudo journalctl -u crowdsec-mikrotik-bouncer -f`
 - **Firewall Bouncer**: `sudo journalctl -u crowdsec-firewall-bouncer -f`
 
----
-
-## 9. Allowlisting
+## 10. Allowlisting
 
 Create allowlists for trusted IPs that should never be banned:
 

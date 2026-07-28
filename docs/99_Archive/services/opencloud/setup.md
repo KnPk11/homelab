@@ -1,7 +1,7 @@
 # OpenCloud Setup
 
 > [!NOTE]
-> **Tags:** #OpenCloud #Cloud #Productivity #Files #Collaboration #DockerCompose
+> #OpenCloud #Cloud #Productivity #Files #Collaboration #DockerCompose
 
 ## 1. Description
 

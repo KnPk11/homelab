@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #MikroTik #Logging #Syslog #rsyslog
-
 # Set Up Syslog Receiver
+
+> [!NOTE]
+> #MikroTik #Logging #Syslog #Rsyslog
 
 ## 1. Install rsyslog
 
@@ -15,7 +15,7 @@ sudo apt install rsyslog
 
 Modify `/etc/rsyslog.conf` to enable the UDP listener:
 
-```
+```text
 # Uncomment or add these lines
 module(load="imudp")
 input(type="imudp" port="514")
@@ -25,7 +25,7 @@ input(type="imudp" port="514")
 
 Create a configuration file at `/etc/rsyslog.d/mikrotik.conf`:
 
-```
+```text
 # Capture logs from your MikroTik IP
 if $fromhost-ip == '[ROUTER-IP]' then {
     action(type="omfile" file="/mnt/logs/mikrotik/mikrotik.log")
@@ -61,13 +61,11 @@ add action=remote topics=critical
 > [!WARNING]
 > **Log Volume**: Enabling logging for all rules is not recommended as it adds CPU overhead and generates excessive noise.
 
----
-
-# Enable Logrotate (Optional)
+## 6. Enable Logrotate (Optional)
 
 Create `/etc/logrotate.d/mikrotik`:
 
-```
+```bash
 /mnt/logs/mikrotik/*.log {
     daily
     rotate 30

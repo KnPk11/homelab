@@ -1,13 +1,18 @@
 # InfluxDB Setup
 
 > [!NOTE]
-> **Tags:** #InfluxDB #Metrics #Data #Docker
+> #InfluxDB #Metrics #Data #Docker
 
-## 1. Installation
+
+## 1. Description
+
+InfluxDB is a time-series database optimised for metrics and events (e.g. Telegraf/Glances feeds) that Grafana and other tools query for dashboards.
+
+## 2. Installation
 
 Deploy the InfluxDB stack using Portainer or Docker Compose. This service is primarily utilised to gather metrics from Glances.
 
-## 2. Configuration
+## 3. Configuration
 
 Navigate to the Web UI to finalise the configuration.
 
@@ -28,7 +33,7 @@ To change a user's password, execute the following command:
      --password [SECRET]
    ```
 
-## 3. Useful Commands
+## 4. Useful Commands
 
 To check the storage usage of the InfluxDB container:
 

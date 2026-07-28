@@ -1,11 +1,14 @@
 # Glances Setup
 
 > [!NOTE]
-> **Tags:** #glances #system_stats #monitoring #docker_compose
+> #Glances #SystemStats #Monitoring #DockerCompose
 
----
 
-## 1. Configuration
+## 1. Description
+
+Glances is a cross-platform system monitor that exposes CPU, memory, disk, network, and process metrics via a web UI or API — useful for quick host health checks.
+
+## 2. Configuration
 
 If Dashy widgets refresh too slowly you can disable processes list in `glances.conf`:
 
@@ -17,9 +20,7 @@ disable=True
 disable=True
 ```
 
----
-
-## 2. Security
+## 3. Security
 
 Consider setting up a [password](https://glances.readthedocs.io/en/latest/docker.html):
 
@@ -54,9 +55,7 @@ However this means Dashy will need to store plaintext password in its config in 
 >       - /etc/os-release:/etc/os-release:ro
 > ```
 
----
-
-## 3. InfluxDB Integration
+## 4. InfluxDB Integration
 
 > [!WARNING]
 > **Glances image type**

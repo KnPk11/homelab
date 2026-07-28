@@ -1,9 +1,14 @@
 # Airflow
 
 > [!NOTE]
-> **Tags:** #airflow #data_orchestration #analytics #docker_compose #python
+> #Airflow #DataOrchestration #Analytics #DockerCompose #Python
 
-## 1. Setup
+
+## 1. Description
+
+Apache Airflow orchestrates scheduled and dependency-aware data pipelines as code (DAGs), used here to run analytics and automation jobs on a timetable with clear run history and retries.
+
+## 2. Setup
 
 Create the env file:
 
@@ -68,7 +73,7 @@ docker exec -it airflow_apiserver airflow users create \
     --email [EMAIL]
 ```
 
-## 2. Reverse Proxy Setup
+## 3. Reverse Proxy Setup
 
 Add this variable to the compose:
 
@@ -77,7 +82,7 @@ AIRFLOW__WEBSERVER__BASE_URL=http://example.com/airflow
 AIRFLOW__WEBSERVER__ENABLE_PROXY_FIX: 'True'
 ```
 
-## 3. Docker Operator Integration
+## 4. Docker Operator Integration
 
 Find the group Docker runs on:
 
@@ -114,7 +119,7 @@ Update and launch the stack.
 > - **Docker Operator**: Use Airflow's native `DockerOperator` to execute Docker commands and call external containerized jobs (such as dbt models).
 > - **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate Compose fragments under `nodes/docker-services/services/airflow/docker-compose.flower.yml`.
 
-## 4. Security
+## 5. Security
 
 - Make sure to delete the default user and create a new one with a strong password.
 - Airflow **does not** natively support restricting access by IP or subnet. That kind of network-level filtering needs to happen in your **reverse proxy** (Caddy) or firewall.

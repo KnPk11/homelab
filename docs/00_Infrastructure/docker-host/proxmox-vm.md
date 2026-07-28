@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #VM #Infrastructure #Docker #Linux
-
 # Docker Host: Proxmox VM Spec
+
+> [!NOTE]
+> #Proxmox #VM #Infrastructure #Docker #Linux
 
 This document details the specific Proxmox VM configuration for the primary Docker Host.
 
@@ -25,8 +25,6 @@ This document details the specific Proxmox VM configuration for the primary Dock
 - **Gateway**: `192.168.1.1`
 - **DNS Server**: Default
 - **Firewall**: ✅ Enabled
-
----
 
 ## Setup Steps
 
