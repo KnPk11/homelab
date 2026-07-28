@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #VM #Infrastructure #OMV #Storage
-
 # OpenMediaVault: Proxmox VM Spec
+
+> [!NOTE]
+> #Proxmox #VM #Infrastructure #OMV #Storage
 
 This document details the specific Proxmox VM configuration for OpenMediaVault.
 
@@ -25,8 +25,6 @@ This document details the specific Proxmox VM configuration for OpenMediaVault.
 - **Gateway**: `192.168.1.1`
 - **DNS Server**: Default
 - **Firewall**: ✅ Enabled
-
----
 
 ## Setup Steps
 

@@ -1,17 +1,13 @@
 # Gatus Setup
 
 > [!NOTE]
-> **Tags:** #gatus #networking #native
+> #Gatus #Networking #Native
 
----
+## 1. Description
 
-## Introduction
+Gatus is a self-hosted status page and health checker: it probes HTTP, TCP, ICMP, and more, then shows uptime history for lab services.
 
-This document outlines the manual installation and configuration of Gatus to provide a standalone status page.
-
----
-
-## 1. Installation
+## 2. Installation
 
 Since standard binary downloads can sometimes be blocked, building from source ensures compatibility.
 
@@ -39,9 +35,7 @@ Since standard binary downloads can sometimes be blocked, building from source e
    chmod +x /srv/gatus/gatus
    ```
 
----
-
-## 2. Configuration
+## 3. Configuration
 
 Gatus is configured to run on port **8081** (since 8080 is used by CrowdSec):
 
@@ -109,9 +103,7 @@ endpoints:
     conditions: ["[CONNECTED] == true"]
 ```
 
----
-
-## 3. Systemd Service
+## 4. Systemd Service
 
 Create the service to ensure Gatus starts on boot:
 
@@ -139,9 +131,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now gatus
 ```
 
----
-
-## 4. Caddy Configuration
+## 5. Caddy Configuration
 
 Add a block for `gatus.example.com` in `/srv/caddy/Caddyfile` to expose Gatus securely within the LAN:
 
@@ -157,9 +147,7 @@ gatus.example.com {
 }
 ```
 
----
-
-## 5. Maintenance Commands
+## 6. Maintenance Commands
 
 * **View Logs**: `journalctl -u gatus -f`
 * **Restart**: `systemctl restart gatus`

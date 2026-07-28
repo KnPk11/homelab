@@ -1,7 +1,7 @@
 # Client Integrations
 
 > [!NOTE]
-> **Tags:** #Ai #Integrations #AnyType #Obsidian #VsCode #Mcp #LmStudio
+> #AI #Integrations #AnyType #Obsidian #VsCode #Mcp #LmStudio
 
 ## 1. Description
 

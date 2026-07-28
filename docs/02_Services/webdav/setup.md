@@ -1,7 +1,7 @@
 # WebDAV Setup
 
 > [!NOTE]
-> **Tags:** #WebDAV #FileSharing #Storage #Docker #Fail2Ban
+> #WebDAV #FileSharing #Storage #Docker #Fail2Ban
 
 ## 1. Description
 

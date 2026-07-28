@@ -1,7 +1,7 @@
 # Invidious Setup
 
 > [!NOTE]
-> **Tags:** #Invidious #Media #Youtube #VideoDownloader #DockerCompose
+> #Invidious #Media #Youtube #VideoDownloader #DockerCompose
 
 ## 1. Description
 

@@ -1,7 +1,7 @@
 # Pi-hole Setup
 
 > [!NOTE]
-> **Tags:** #PiHole #Dns #Security #Adblock #Networking
+> #PiHole #DNS #Security #Adblock #Networking
 
 ## 1. Description
 

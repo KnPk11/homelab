@@ -1,7 +1,7 @@
 # Heimdall Setup
 
 > [!NOTE]
-> **Tags:** #Heimdall #Dashboard #Portal #DockerCompose
+> #Heimdall #Dashboard #Portal #DockerCompose
 
 ## 1. Description
 

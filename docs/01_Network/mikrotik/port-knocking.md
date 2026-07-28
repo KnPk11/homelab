@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #MikroTik #Security #PortKnocking #SSH
-
 # Port Knocking Configuration
+
+> [!NOTE]
+> #MikroTik #Security #PortKnocking #SSH
 
 Port knocking is an **emergency backdoor** only: temporarily whitelist your public IP for **SSH** and **WebFig (www-ssl :8443)**. Prefer **WireGuard** for daily admin. Knock is obscurity + friction, not a password — services still need keys/strong credentials.
 

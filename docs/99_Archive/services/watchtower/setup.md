@@ -1,7 +1,7 @@
 # Watchtower Setup
 
 > [!NOTE]
-> **Tags:** #Watchtower #Docker #Updates #Maintenance #DockerCompose
+> #Watchtower #Docker #Updates #Maintenance #DockerCompose
 
 ## 1. Description
 
@@ -36,4 +36,3 @@ services:
     labels:
       - "com.centurylinklabs.watchtower.enable=false"
 ```
-

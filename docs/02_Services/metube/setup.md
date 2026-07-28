@@ -1,7 +1,7 @@
 # Metube Setup
 
 > [!NOTE]
-> **Tags:** #Metube #VideoDownloader #YouTube #Media #DockerCompose
+> #MeTube #VideoDownloader #YouTube #Media #DockerCompose
 
 ## 1. Description
 
@@ -16,4 +16,3 @@ Add the Docker Compose stack to Portainer and start it.
 1. Access the web interface at `http://[HOST-IP]:8084`.
 2. Paste the URL of the video or playlist you wish to download.
 3. Downloads will be saved to the mapped `/mnt/pool/Downloads/Metube` directory.
-

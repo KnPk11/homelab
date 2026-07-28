@@ -1,7 +1,7 @@
 # Freetube Setup
 
 > [!NOTE]
-> **Tags:** #Freetube #Media #Youtube #DockerCompose
+> #Freetube #Media #Youtube #DockerCompose
 
 ## 1. Description
 

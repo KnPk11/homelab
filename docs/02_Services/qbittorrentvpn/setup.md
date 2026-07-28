@@ -1,11 +1,11 @@
 # qBittorrentVPN Setup
 
 > [!NOTE]
-> **Tags:** #Torrent #Downloader #Media #Vpn #Openvpn #DockerCompose
+> #Torrent #Downloader #Media #VPN #Openvpn #DockerCompose
 
 ## 1. Description
 
-A VPN enabled torrent client that includes a kill switch.
+qBittorrent with an integrated VPN and kill switch so BitTorrent traffic only leaves the network through the tunnel — if the VPN drops, traffic stops.
 
 ## 2. Installation
 

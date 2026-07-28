@@ -1,7 +1,7 @@
 # TubeSync Setup
 
 > [!NOTE]
-> **Tags:** #TubeSync #Media #Youtube #VideoDownloader #DockerCompose
+> #TubeSync #Media #Youtube #VideoDownloader #DockerCompose
 
 ## 1. Description
 

@@ -1,9 +1,14 @@
 # Photoprism Setup
 
 > [!NOTE]
-> **Tags:** #Photoprism #Photos #Ai #Media #DockerCompose
+> #PhotoPrism #Photos #AI #Media #DockerCompose
 
-## 1. Installation
+
+## 1. Description
+
+PhotoPrism is a self-hosted photo management app with AI labelling, search, and a web gallery over your existing image library on disk.
+
+## 2. Installation
 
 Deploy the Docker Compose stack using your preferred method (e.g., Portainer or CLI).
 
@@ -14,4 +19,3 @@ Deploy the Docker Compose stack using your preferred method (e.g., Portainer or 
 > docker exec -it photoprism sh
 > photoprism passwd [USER]
 > ```
-

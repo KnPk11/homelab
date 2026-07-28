@@ -1,7 +1,7 @@
 # Wireguard Setup
 
 > [!NOTE]
-> **Tags:** #Wireguard #Vpn #Networking #Docker
+> #WireGuard #VPN #Networking #Docker
 
 ## 1. Description
 

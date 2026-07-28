@@ -1,7 +1,7 @@
 # Piped Setup
 
 > [!NOTE]
-> **Tags:** #Piped #Media #Youtube #VideoDownloader #DockerCompose
+> #Piped #Media #Youtube #VideoDownloader #DockerCompose
 
 ## 1. Description
 

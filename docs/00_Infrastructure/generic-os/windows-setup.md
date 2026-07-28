@@ -1,11 +1,9 @@
-> [!NOTE]
-> **Tags:** #Windows #Docker #Infrastructure #Setup
-
 # Windows Docker Setup Guide
 
-This guide covers the installation and configuration of Docker and Portainer on Windows using WSL2.
+> [!NOTE]
+> #Windows #Docker #Infrastructure #Setup
 
----
+This guide covers the installation and configuration of Docker and Portainer on Windows using WSL2.
 
 ## Docker Installation
 
@@ -15,8 +13,6 @@ This guide covers the installation and configuration of Docker and Portainer on 
 3. **Enable WSL2 Mode**:
    - Open Docker Desktop settings.
    - Navigate to **General** → **Use the WSL 2 based engine**.
-
----
 
 ## Portainer Configuration
 
@@ -38,4 +34,3 @@ docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart always -v \\.
 ### 3. Access the Dashboard
 Once the container is running, access the Portainer web interface at:
 `https://localhost:9443`
-

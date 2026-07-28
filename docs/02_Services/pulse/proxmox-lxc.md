@@ -1,7 +1,7 @@
 # Pulse: Proxmox LXC Spec
 
 > [!NOTE]
-> **Tags:** #Proxmox #LXC #Infrastructure #Pulse #Monitoring
+> #Proxmox #LXC #Infrastructure #Pulse #Monitoring
 
 This document details the specific Proxmox LXC configuration for the Pulse multi-host monitoring service.
 
@@ -32,8 +32,6 @@ This document details the specific Proxmox LXC configuration for the Pulse multi
 - **Gateway**: `[GATEWAY-IP]`
 - **DNS Server**: Default (Host settings)
 - **Firewall**: ✅ Enabled (Managed via Proxmox)
-
----
 
 ## Setup Steps
 

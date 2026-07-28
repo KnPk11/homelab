@@ -1,7 +1,7 @@
 # VPNs: Proxmox LXC Spec
 
 > [!NOTE]
-> **Tags:** #Proxmox #LXC #Infrastructure #WireGuard #Tailscale #VPN #Networking
+> #Proxmox #LXC #Infrastructure #WireGuard #Tailscale #VPN #Networking
 
 This document details the specific Proxmox LXC configuration for the dedicated VPN gateway container (`vpns`), hosting Tailscale and WireGuard subnet routing.
 
@@ -34,8 +34,6 @@ This document details the specific Proxmox LXC configuration for the dedicated V
 - **Gateway**: `[GATEWAY-IP]`
 - **DNS Server**: Default (Host settings)
 - **Firewall**: ✅ Enabled (Managed via Proxmox)
-
----
 
 ## Setup Steps
 

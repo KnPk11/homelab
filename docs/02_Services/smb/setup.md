@@ -1,11 +1,11 @@
 # SMB Setup
 
 > [!NOTE]
-> **Tags:** #Smb #Samba #Files #Lan #Networking #DockerCompose
+> #SMB #Samba #Files #LAN #Networking #DockerCompose
 
 ## 1. Description
 
-Secure file sharing via SMB/Samba for local network and VPN clients.
+SMB/Samba file shares for Windows-friendly access to lab storage from PCs and VPN clients, with authenticated share access on the LAN.
 
 ## 2. Installation
 

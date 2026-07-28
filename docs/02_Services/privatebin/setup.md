@@ -1,9 +1,14 @@
 # Privatebin Setup
 
 > [!NOTE]
-> **Tags:** #Privatebin #Security #TextSharing #Encrypted #DockerCompose
+> #PrivateBin #Security #TextSharing #Encrypted #DockerCompose
 
-## 1. Configuration
+
+## 1. Description
+
+PrivateBin is a minimal, self-hosted pastebin with client-side encryption so the server never sees plaintext pastes.
+
+## 2. Configuration
 
 1. Create a custom configuration file:
    
@@ -38,7 +43,7 @@
    creators = "[SERVICE-NET], [MANAGEMENT-NET]"
    ```
 
-## 2. Installation
+## 3. Installation
 
 1. Add the Docker Compose stack to Portainer and start it.
 2. Set the correct access rights:
@@ -50,7 +55,7 @@
    sudo chmod 644 /srv/privatebin/nginx.conf
    ```
 
-## 3. Nginx Proxy Configuration
+## 4. Nginx Proxy Configuration
 
 1. Edit the Nginx configuration file inside the container:
    
@@ -79,7 +84,7 @@
 > [!WARNING]
 > Ensure this configuration is bind-mounted, as setting the container's flag to `read_only` will restore its original state.
 
-## 4. Shared Access
+## 5. Shared Access
 
 Privatebin does not offer its own authentication system. Two methods exist for allowing specific people to create pastes while maintaining public read access:
 
@@ -106,7 +111,7 @@ Privatebin does not offer its own authentication system. Two methods exist for a
 > }
 > ```
 
-## 5. Security and Best Practices
+## 6. Security and Best Practices
 
 - Run via a reverse proxy over HTTPS.
 - Use a unique subdirectory or virtual host (avoid `/bin/`).

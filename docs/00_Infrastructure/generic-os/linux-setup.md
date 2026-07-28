@@ -1,11 +1,9 @@
-> [!NOTE]
-> **Tags:** #Linux #Infrastructure #Setup #Security
-
 # Linux Setup Guide
 
-This guide covers the initial setup and configuration for Linux-based systems in the homelab environment.
+> [!NOTE]
+> #Linux #Infrastructure #Setup #Security
 
----
+This guide covers the initial setup and configuration for Linux-based systems in the homelab environment.
 
 ## IP Configuration
 
@@ -15,8 +13,6 @@ Bind the computer to a static local IP. This ensures consistent access across th
 
 > [!NOTE]
 > Setup varies by router; on Asus it is under **Router settings** → **LAN** → **IP Binding**.
-
----
 
 ## User Management & Permissions
 
@@ -65,8 +61,6 @@ Unlike Raspberry Pi OS, Debian Server disables direct root SSH by default, and t
    ```bash
    sudo apt update
    ```
-
----
 
 ## SSH Configuration
 
@@ -153,8 +147,6 @@ Start-Service ssh-agent
 ssh-add [SSH-KEY-PATH]
 ```
 
----
-
 ## Security & Maintenance
 
 ### Automatic Updates
@@ -188,8 +180,6 @@ sudo ufw enable
 
 > [!TIP]
 > Use `gufw` for a graphical interface on Desktop environments: `sudo apt install gufw`.
-
----
 
 ## Antivirus (ClamAV)
 
@@ -241,8 +231,6 @@ Add the following line:
 > [!TIP]
 > Periodically check the scan log at `/var/log/clamav/scan.log`
 
----
-
 ## Utilities & GUI (Optional)
 
 ### Pi-Apps
@@ -269,8 +257,6 @@ startx
 sudo apt install gnome-system-monitor
 ```
 
----
-
 ## Remote Access (Optional)
 
 ### VNC Setup
@@ -287,8 +273,6 @@ AnyDesk serves as a reliable backup if SSH or VNC access is lost. For unattended
 > 1. Run `sudo raspi-config`.
 > 2. Navigate to **Boot Options** → **Desktop / CLI** and select **Desktop** (not Wayland).
 > 3. Reboot.
-
----
 
 ## System Resilience
 

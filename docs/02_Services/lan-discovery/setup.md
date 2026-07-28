@@ -1,9 +1,14 @@
 # LAN Discovery Setup
 
 > [!NOTE]
-> **Tags:** #Avahi #Wsdd #Mdns #Discovery #Networking #Lan #DockerCompose
+> #Avahi #Wsdd #Mdns #Discovery #Networking #LAN #DockerCompose
 
-## 1. Avahi Configuration (Linux & MacOS)
+
+## 1. Description
+
+LAN discovery tooling maps what is alive on the local network (hosts, open services) to support inventory and troubleshooting.
+
+## 2. Avahi Configuration (Linux & MacOS)
 
 > [!NOTE]
 > This is required for Linux and MacOS SAMBA network discovery.
@@ -57,7 +62,7 @@
    sudo ufw allow from [LAN-IP-RANGE] to any port 5353 proto udp
    ```
 
-## 2. WSDD Configuration (Windows)
+## 3. WSDD Configuration (Windows)
 
 > [!NOTE]
 > This is required for Windows SAMBA network discovery.
@@ -69,7 +74,7 @@
    sudo ufw allow from [LAN-IP-RANGE] to any port 5357 proto tcp
    ```
 
-## 3. Security Hardening
+## 4. Security Hardening
 
 > [!IMPORTANT]
 > Ensure the following security measures are implemented:

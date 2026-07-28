@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #VM #Infrastructure #OpenClaw #AI
-
 # OpenClaw: Proxmox VM Spec
+
+> [!NOTE]
+> #Proxmox #VM #Infrastructure #OpenClaw #AI
 
 This document details the specific Proxmox Virtual Machine (QEMU VM 103) configuration for the OpenClaw service (`lab-vm`).
 
@@ -31,8 +31,6 @@ This document details the specific Proxmox Virtual Machine (QEMU VM 103) configu
 - **Bridge**: `vmbr0` (VirtIO)
 - **Firewall**: ✅ Enabled
 
----
-
 ## Setup Steps
 
 1. **Create VM**: Follow the standard Proxmox VM creation wizard or execute via CLI on the Proxmox host:
@@ -52,4 +50,3 @@ This document details the specific Proxmox Virtual Machine (QEMU VM 103) configu
    ```
 2. **Install OS**: Install Debian 13 / Linux server ISO.
 3. **Guest Agent**: Ensure `qemu-guest-agent` is installed and running inside the VM (`systemctl enable --now qemu-guest-agent`).
-

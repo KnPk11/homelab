@@ -1,5 +1,8 @@
 # Heimdall Security
 
+> [!NOTE]
+> #Services #Heimdall #Security
+
 ## 1. Access Control
 
 - Accounts are limited; serving a public URL may allow unauthorised users to modify widgets unless the container is mounted as **read-only** in Docker.

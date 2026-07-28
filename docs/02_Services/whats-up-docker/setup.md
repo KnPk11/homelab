@@ -1,7 +1,7 @@
 # What's Up Docker Setup
 
 > [!NOTE]
-> **Tags:** #WhatsUpDocker #Docker #Updates #Monitoring #Maintenance #DockerCompose
+> #WhatsUpDocker #Docker #Updates #Monitoring #Maintenance #DockerCompose
 
 ## 1. Description
 

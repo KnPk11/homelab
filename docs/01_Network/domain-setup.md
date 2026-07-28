@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #DNS #DDNS #Networking
-
 # Domain Setup
+
+> [!NOTE]
+> #DNS #DDNS #Networking
 
 This guide covers how to point your custom domain subdomains to your homelab using CNAME records and the MikroTik DDNS service.
 
@@ -30,9 +30,7 @@ You can verify the DNS resolution from your local machine:
 nslookup nextcloud.[DOMAIN]
 ```
 
----
-
-# Appendix: Legacy DDNS Method
+## Appendix: Legacy DDNS Method
 
 > [!WARNING]
 > This method is legacy and has been replaced by the CNAME method described above. It is kept here for historical reference or for cases where CNAME records cannot be used.
@@ -52,4 +50,3 @@ sudo apt install dnsutils
 ```bash
 */10 * * * * /[PATH-TO-SCRIPT]/update-ddns.sh
 ```
-

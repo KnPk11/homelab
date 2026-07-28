@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #PBS #Backup #LXC #Infrastructure
-
 # Proxmox Backup Server (PBS) Deployment Guide
+
+> [!NOTE]
+> #Proxmox #PBS #Backup #LXC #Infrastructure
 
 ## 🛠️ Step-by-Step Deployment Procedure
 
@@ -196,11 +196,9 @@ Proxmox Backup Server supports **Client-Side AES-256-GCM Zero-Knowledge Encrypti
      ```
    * Alternatively, use PBS built-in **Remote Sync Jobs** if the destination PC also runs PBS.
 
----
-
 ## 🧹 Recommended Prune & Retention Policy (GFS Model)
 
-Proxmox Backup Server utilizes chunk-level deduplication, allowing long-term historical retention with minimal disk space overhead.
+Proxmox Backup Server utilises chunk-level deduplication, allowing long-term historical retention with minimal disk space overhead.
 
 ### 1. Recommended Retention Parameters
 
@@ -224,8 +222,6 @@ Proxmox Backup Server utilizes chunk-level deduplication, allowing long-term his
   proxmox-backup-manager datastore update pbs-windows --keep-daily 7 --keep-weekly 4 --keep-monthly 6 --keep-yearly 1
   ```
 
----
-
 ## 📋 Proxmox VE Backup Job Best Practices
 
 When creating or editing automated Backup Jobs in Proxmox VE (**Datacenter ➔ Backup ➔ Add/Edit Job**):
@@ -239,8 +235,6 @@ When creating or editing automated Backup Jobs in Proxmox VE (**Datacenter ➔ B
 * **Default**: Keep **Fleecing Disabled** for local PBS setups.
 * **Why**: When PBS runs locally on the host (`sata-ssd` / NVMe), backup speeds exceed 140+ MB/s, finishing snapshots in ~15 seconds without I/O latency bottlenecks.
 * **When to Enable**: Enable Fleecing only if you run high-frequency transactional database VMs (e.g. PostgreSQL with heavy disk writes) or backup over a slow remote WAN link.
-
----
 
 ## 🔍 Granular File Restore & Best Practices
 
@@ -265,10 +259,3 @@ You do **not** need to restore an entire VM or LXC container to recover a single
 
 > [!TIP]
 > **Recommended Workflow**: Rely on **PBS Backups** for all scheduled daily backups and file recovery. Create **Local Hypervisor Snapshots** only immediately prior to risky system upgrades or major changes, and delete them once the upgrade is confirmed successful.
-
-
-
-
-
-
-

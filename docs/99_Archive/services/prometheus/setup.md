@@ -1,7 +1,7 @@
 # Prometheus Setup
 
 > [!NOTE]
-> **Tags:** #Prometheus #Monitoring #Database #Infrastructure
+> #Prometheus #Monitoring #Database #Infrastructure
 
 ## 1. Description
 

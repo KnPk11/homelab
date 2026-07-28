@@ -1,9 +1,14 @@
 # Kopia Setup
 
 > [!NOTE]
-> **Tags:** #kopia #backup #encryption #data_protection
+> #Kopia #Backup #Encryption #DataProtection
 
-## 1. Installation
+
+## 1. Description
+
+Kopia is a fast, encrypted backup tool with client-side encryption, compression, and deduplication to local or remote repositories.
+
+## 2. Installation
 
 1. Install the GPG signing key to verify the authenticity of the releases:
 
@@ -25,7 +30,7 @@
    sudo apt install kopia-ui
    ```
 
-## 2. Docker Installation (Alternative)
+## 3. Docker Installation (Alternative)
 
 1. Install the password hashing tool:
 

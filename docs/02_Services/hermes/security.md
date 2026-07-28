@@ -1,11 +1,9 @@
 # Hermes Security
 
 > [!NOTE]
-> **Tags:** #Security #Firewall #UFW #Proxmox #HomeLab
+> #Security #Firewall #UFW #Proxmox #HomeLab
 
 The Hermes service is protected by a multi-layered security architecture ensuring that the dashboard and the underlying API keys are shielded from unauthorised access.
-
----
 
 ## Security Layers
 
@@ -29,16 +27,12 @@ The Caddy reverse proxy enforces a LAN-only access policy.
 - Requests from non-local IP addresses are rejected with a `403 Forbidden` response.
 - This ensures that even if the domain name is known, the dashboard cannot be reached from outside the trusted network.
 
----
-
 ## Service Binding
 
 > [!IMPORTANT]
 > **Safety Justification**
 > 
 > The Hermes dashboard is bound to `0.0.0.0` within the VM to allow communication with the reverse proxy. While binding to `0.0.0.0` is typically less secure, it is safe in this environment due to the **Proxmox Firewall** and **MikroTik** perimeter, which ensure that only the verified reverse proxy container can physically reach the port.
-
----
 
 ## Authentication & Hardening
 

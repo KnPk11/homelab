@@ -1,22 +1,27 @@
 # MediaMTX Setup
 
 > [!NOTE]
-> **Tags:** #MediaMTX #Streaming #Rtsp #Networking #DockerCompose
+> #MediaMTX #Streaming #Rtsp #Networking #DockerCompose
 
-## 1. Installation
+
+## 1. Description
+
+MediaMTX is a ready-to-use media server for RTSP/RTMP/HLS/WebRTC — ingest cameras or streams and republish them on the LAN.
+
+## 2. Installation
 
 1. Copy the Docker Compose stack to Portainer and start it.
 
 2. Install and configure the `mediamtx.yml` file.
 
-## 2. OBS Configuration
+## 3. OBS Configuration
 
 To stream via OBS, use the following settings:
 
 - **URL:** ``rtmp://[HOST-IP]:1935/live`
 - **Key:** `stream?user=[USER]&pass=[SECRET]`
 
-## 3. Access URLs
+## 4. Access URLs
 
 Utilise the following URLs for stream access:
 
@@ -24,7 +29,7 @@ Utilise the following URLs for stream access:
 - **RTSP Stream:** `rtsp://homelab.local:8554/live`
 - **RTSP Stream (VRChat):** `rtspt://homelab.local:8554/live`
 
-## 4. Logging Configuration
+## 5. Logging Configuration
 
 1. Create the log directory and file:
 
@@ -43,7 +48,7 @@ Utilise the following URLs for stream access:
 > [!NOTE]
 > These variables should be added to the environment section as they may not function correctly within `mediamtx.yml`.
 
-## 5. Security Hardening
+## 6. Security Hardening
 
 > [!IMPORTANT]
 > Ensure the following security measures are implemented to protect your stream:

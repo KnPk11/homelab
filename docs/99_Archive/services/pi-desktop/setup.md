@@ -1,7 +1,7 @@
 # Pi-desktop Setup
 
 > [!NOTE]
-> **Tags:** #PiDesktop #Linux #VNC #DockerCompose #DesktopEnvironment
+> #PiDesktop #Linux #VNC #DockerCompose #DesktopEnvironment
 
 ## 1. Description
 

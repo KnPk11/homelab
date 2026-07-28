@@ -1,7 +1,7 @@
 # Uptime Kuma Setup
 
 > [!NOTE]
-> **Tags:** #Uptime #Monitoring #DockerCompose
+> #Uptime #Monitoring #DockerCompose
 
 ## 1. Description
 

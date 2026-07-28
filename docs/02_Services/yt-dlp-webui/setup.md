@@ -1,7 +1,7 @@
 # yt-dlp Web UI Setup
 
 > [!NOTE]
-> **Tags:** #YtDlp #VideoDownloader #Youtube #Media
+> #YtDlp #VideoDownloader #Youtube #Media
 
 ## 1. Description
 

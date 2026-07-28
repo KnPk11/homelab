@@ -1,7 +1,7 @@
 # OpenMediaVault Setup & Configuration
 
 > [!NOTE]
-> **Tags:** #OpenMediaVault #FileSharing #NFS #SMB
+> #OpenMediaVault #FileSharing #NFS #SMB
 
 ## Installation
 
@@ -51,8 +51,6 @@ sudo systemctl enable qemu-guest-agent
 5. **Force SSL/TLS:** Check this if you want it to automatically redirect you to the secure version.
 6. Click **Save and Apply**.
 
----
-
 ## Storage & File Systems
 
 > [!NOTE]
@@ -81,8 +79,6 @@ sudo systemctl enable qemu-guest-agent
 > ```bash
 > qm set [VM-ID] --scsi1 [VOLUME],snapshot=0
 > ```
-
----
 
 ## Service Setup
 
@@ -181,8 +177,6 @@ sudo chattr +i /mnt/nas            # prevents writes when unmounted
 [OMV-IP]:/files /mnt/nas nfs _netdev,nofail,x-systemd.automount,x-systemd.idle-timeout=60,noatime,rw,soft,intr 0 0
 ```
 
----
-
 ## Identity & Permission Strategy
 
 Allows a personal user and service accounts (Nextcloud/Docker) to share folders without conflicts.
@@ -212,8 +206,6 @@ Allows a personal user and service accounts (Nextcloud/Docker) to share folders 
 * User [PERSONAL-USER] (UID 1000)
 * User srv-media (UID 1001)
 * Group homelab-data (GID 1000)
-
----
 
 ## Data Migration & Sync
 

@@ -1,13 +1,11 @@
 # Caddy Installation & Configuration
 
 > [!NOTE]
-> **Tags:** #Caddy #Networking #Proxy #Docker #Native
+> #Caddy #Networking #Proxy #Docker #Native
 
-## Overview
+## Description
 
-This guide covers both Docker and bare-metal installation methods for the Caddy reverse proxy.
-
----
+Caddy is the reverse proxy and TLS terminator at the edge of the lab: automatic HTTPS, virtual hosts for services, and access control in front of internal apps.
 
 ## Option A: Docker Setup
 
@@ -43,8 +41,6 @@ sudo chmod -R 777 /mnt/logs/caddy
 > 
 > The configuration can be found in the following location:
 > `/srv/caddy/etc-caddy/Caddyfile`
-
----
 
 ## Option B: Bare-Metal LXC Setup
 
@@ -148,8 +144,6 @@ chmod -R 775 /var/log/caddy/
 ```bash
 systemctl status caddy
 ```
-
----
 
 ## Common Configuration
 

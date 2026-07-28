@@ -1,7 +1,7 @@
 # Project Send Setup
 
 > [!NOTE]
-> **Tags:** #ProjectSend #WebDAV #Files #FileSharing #DockerCompose
+> #ProjectSend #WebDAV #Files #FileSharing #DockerCompose
 
 ## 1. Description
 

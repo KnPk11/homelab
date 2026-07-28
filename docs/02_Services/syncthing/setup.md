@@ -1,11 +1,11 @@
 # Syncthing Setup
 
 > [!NOTE]
-> **Tags:** #Syncthing #Sync #P2p #Backup
+> #Syncthing #Sync #P2p #Backup
 
 ## 1. Description
 
-Peer-to-peer file synchronisation across multiple devices.
+Syncthing is peer-to-peer continuous file synchronisation — devices share folders directly with no central cloud account.
 
 ## 2. Installation
 

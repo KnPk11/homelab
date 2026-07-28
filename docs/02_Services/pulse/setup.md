@@ -1,12 +1,14 @@
 # Pulse Deployment Notes
 
 > [!NOTE]
-> **Tags:** #Pulse #Monitoring #Proxmox #LXC
+> #Pulse #Monitoring #Proxmox #LXC
 
-Private multi-host monitoring ([rcourtman/Pulse](https://github.com/rcourtman/Pulse) community).  
-**Deployment:** dedicated **Proxmox LXC** (see [Pulse Proxmox LXC Spec](proxmox-lxc.md)), **not** Docker.
 
-## Install (on Proxmox host, creates the LXC)
+## 1. Description
+
+Pulse is a private multi-host monitoring dashboard for Proxmox and related infrastructure — host/CT/VM health, metrics, and alerts in one UI.
+
+## 2. Install (on Proxmox host, creates the LXC)
 
 Upstream installer runs **as root on the Proxmox host** and builds a Debian LXC with a **systemd** Pulse server.
 
@@ -28,7 +30,7 @@ First-time UI setup: open the printed URL, paste the **bootstrap token** from th
 pct exec <CT_ID> -- env PULSE_DATA_DIR=/etc/pulse /opt/pulse/bin/pulse bootstrap-token
 ```
 
-## Connect Proxmox (preferred)
+## 3. Connect Proxmox (preferred)
 
 Manual “Add node” is easy to get wrong (self-signed TLS; Close without Save).
 
@@ -43,7 +45,7 @@ curl -fsSL 'http://<PULSE_IP>:<PORT>/api/setup-script?type=pve&host=https%3A%2F%
 
 **Firewall (required):** PVE host must allow this CT to reach **TCP 8006**. Repo source of truth: `nodes/proxmox-host/scripts/firewall.sh` (alias `pulse-monitor` + host rule). Guest firewall: SSH (`ssh-adm`), ping, **`proxy-back` only** for the UI (Caddy; no direct LAN/VPN to the port).
 
-## Day-2 ops
+## 4. Day-2 ops
 
 ```bash
 pct enter <CT_ID>                 # shell
@@ -55,7 +57,7 @@ apt-get install -y rsync          # Required for scrape_configs_and_secrets.sh
 
 Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metrics DB).
 
-## Security / scope
+## 5. Security / scope
 
 - **UI only via Caddy** (`access_policy_lan`). Guest FW does **not** open the port to main-lan/vpn; only `GROUP proxy-back`.
 - Auth required for stats (`PULSE_AUTH_*` after bootstrap). No guest/anonymous metrics mode.
@@ -63,9 +65,9 @@ Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metr
 - CT **protection** enabled (prevents accidental delete/stop from UI without unlock).
 - Prefer static/DHCP reservation so `pulse-monitor` firewall alias stays valid.
 
-## Related
+## 6. Related
 
 - Firewall: `nodes/proxmox-host/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
 - Private notes: `docs_private/services/public-homepage-and-host-monitoring.md`
 - Upstream: [Install](https://github.com/rcourtman/Pulse/blob/main/docs/INSTALL.md), [Configuration](https://github.com/rcourtman/Pulse/blob/main/docs/CONFIGURATION.md)
-```
+```text

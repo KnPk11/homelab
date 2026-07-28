@@ -1,7 +1,7 @@
 # Docker Setup & Configuration
 
 > [!NOTE]
-> **Tags:** #Docker #Infrastructure #Linux #RaspberryPi
+> #Docker #Infrastructure #Linux #RaspberryPi
 
 ## Provisioning Setup
 
@@ -30,8 +30,6 @@ sudo apt install docker-compose-plugin
 ```bash
 docker compose version
 ```
-
----
 
 ## Raspberry Pi Specifics
 
@@ -71,8 +69,6 @@ docker compose version
 > ```
 > 
 > Note that the changes might not apply unless each service is re-deployed with some changes in docker-compose.
-
----
 
 ## Management Tools
 

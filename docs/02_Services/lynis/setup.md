@@ -1,11 +1,14 @@
 # Lynis Setup
 
 > [!NOTE]
-> **Tags:** #Security #Auditing #Native
+> #Security #Auditing #Native
+
+
+## 1. Description
 
 Lynis is an open-source security auditing tool designed to assist in system hardening.
 
-## 1. Installation
+## 2. Installation
 
 Install Lynis directly on the system:
 
@@ -13,7 +16,7 @@ Install Lynis directly on the system:
    sudo apt update && sudo apt install -y lynis
    ```
 
-## 2. Portable Execution
+## 3. Portable Execution
 
 > [!TIP]
 > **Portable Run**
@@ -27,7 +30,7 @@ Install Lynis directly on the system:
    ./lynis audit system
    ```
 
-## 3. Audit Commands
+## 4. Audit Commands
 
 Execute an audit on a remote system:
 

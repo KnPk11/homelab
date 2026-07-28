@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #Proxmox #LXC #Infrastructure #AI
-
 # AI Node: Proxmox LXC Spec
+
+> [!NOTE]
+> #Proxmox #LXC #Infrastructure #AI
 
 This document details the specific Proxmox LXC configuration for the AI Node (`ai-tools`).
 
@@ -55,8 +55,6 @@ nameserver 1.1.1.1
 > House DHCP already uses AdGuard + `1.1.1.1`. Using the MikroTik as secondary forced Homelab → router DNS input rules and tied lab DNS to the edge box. Prefer the same dual list as DHCP.
 
 Proxmox **host** `/etc/resolv.conf` should also prefer AdGuard + Cloudflare so new CTs with “use host DNS” do not inherit router-only DNS.
-
----
 
 ## Setup Steps
 

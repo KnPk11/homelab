@@ -1,7 +1,7 @@
-> [!NOTE]
-> **Tags:** #MikroTik #Segmentation #Bridge #Firewall
-
 # Isolating the Homelab Network
+
+> [!NOTE]
+> #MikroTik #Segmentation #Bridge #Firewall
 
 ## Uniting `ether3` and `ether4` (The Homelab Switch)
 
@@ -41,8 +41,6 @@ Put the lab (and guest VLAN) on **Untrusted**:
 
 **LAN** list = main `bridge` + `wireguard1` (trusted management).  
 **WAN** = `ether1` + `pppoe-out1`.
-
----
 
 ## Bridge VLAN filtering (Guest + Asus trunk)
 
@@ -109,8 +107,6 @@ If a row already exists, use `set [find ...]` instead of `add`.
 - Homelab isolation remains the **separate bridge**, not guest VLAN filtering.  
 - ASUS guest isolation / client isolation is optional extra, not a substitute for tagging + filtering.
 
----
-
 ## Firewall (current model)
 
 ### Isolation: Untrusted → private
@@ -173,16 +169,12 @@ After intentional accepts (LAN→WAN, LAN→other, DSTNAT, Untrusted→WAN, pinh
     log-prefix=drop_forward_default comment="Drop all other forward (default deny)"
 ```
 
----
-
 ## Zero Trust layers
 
 - **Layer 1 (MikroTik L3):** Interface lists + isolate + pinholes  
 - **Layer 1b (MikroTik L2):** Bridge **VLAN filtering** on main `bridge` (guest trunk vs access ports) — see above  
 - **Layer 2 (Asus AP / main LAN):** Correct SSID→VLAN tagging; host placement on trusted L2  
 - **Layer 3 (Host OS):** Host firewall / app auth  
-
----
 
 ## Appendix A: Legacy segmentation recipes
 

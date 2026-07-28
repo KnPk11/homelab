@@ -1,7 +1,7 @@
 # Docker Setup
 
 > [!NOTE]
-> **Tags:** #Docker #Security #Infrastructure
+> #Docker #Security #Infrastructure
 
 ## 1. General Principles
 - Utilise Docker images from reputable repositories or authors.
