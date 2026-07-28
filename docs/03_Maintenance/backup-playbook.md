@@ -10,24 +10,26 @@ Operator playbook for **backing up and restoring** the homelab, plus light clean
 | Layer | What | Where it lives |
 | :--- | :--- | :--- |
 | **Configs & secrets** | Live `/srv` envs, keys, node configs | On-demand scrape → `secrets_vault` |
+| **Router settings** | MikroTik config | Automated export + optional binary backup |
+| **Logs** | Large media libraries | Separate NAS/SMB sync |
 | **App data (docker-services)** | `/srv`, `/data`, Docker volumes via **Kopia** | Repo on NAS; client config on the host |
-| **Router** | MikroTik config | Automated export + optional binary backup |
 | **Guests** | VMs/CTs | Proxmox Backup Server (`pbs-linux`) |
 | **Media / bulk NAS** | Large media libraries | Separate NAS/SMB sync |
-
-Install and first-time Kopia wiring: [Kopia setup](../02_Services/kopia/setup.md) and node notes under `nodes/docker-services/scripts/kopia/deployment.md`.
 
 ## 2. Pre-backup checklist
 
 Run through these before a planned backup window:
 
-1. **Repository**: Commit and push any intentional changes; avoid leaving half-edited deploy templates only on a host.
-2. **Optional app exports** (not replaced by Kopia alone):
+1. **Repository**: Commit and push any intentional changes.
+2. **Optional app exports**:
    - **Vaultwarden / Bitwarden**: encrypted JSON export, password-protected.
    - **AnyType**: File → Export Space → Any-Block / Protobuf (enable options you need).
-3. Confirm the **fstrim** jobs are running on each machine.
 
-## 3. Cleanup (optional)
+## 3. Cleanup
+
+### Generic
+
+- Confirm the **fstrim** jobs are running on each machine.
 
 ### Docker (docker-services)
 
@@ -37,7 +39,7 @@ Optional hygiene in Portainer (or CLI):
 - **Volumes** — only remove named volumes you are sure are disposable; even if shown as inactive due to a stack being offline.
 - **Test DBs** — drop large throwaway PostgreSQL (or similar) volumes when finished.
 
-### Nextcloud `occ` janitor
+### Nextcloud `occ` janitor (optional)
 
 Run inside the Nextcloud app container:
 
