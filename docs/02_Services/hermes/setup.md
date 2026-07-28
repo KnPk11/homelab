@@ -3,7 +3,6 @@
 > [!NOTE]
 > #Hermes #AI #Dashboard #Proxmox #HomeLab
 
-
 ## 1. Description
 
 Hermes is an AI agent dashboard and management system utilised for orchestrating LLM workflows, managing API keys, and interacting with various AI providers.
@@ -50,53 +49,12 @@ hermes model
 
 API keys are stored securely within the `~/.hermes/.env` file and managed via the dashboard interface.
 
-## 4. Dashboard Access & Security
-
-> [!TIP]
-> **Authentication**: Hermes uses native `scrypt` authentication to ensure compatibility with password manager auto-fill.
-
-### Access Details
+### Dashboard URL
 
 - **URL**: `https://hermes.[DOMAIN]`
-- **Username**: `[USER]`
-- **Auth Method**: Native Hermes Login (scrypt-hashed)
-- **Session Security**: A stable 32-byte secret is utilised for session signing.
+- **Auth**: native Hermes login (see [security.md](security.md) for hashing, Caddy, and perimeter layers)
 
-### Caddy Configuration
-
-Caddy handles TLS termination and restricts access to the LAN. Authentication is delegated to Hermes.
-
-```caddy
-hermes.[DOMAIN] {
-    import common-headers
-    import common-robots
-    import access_policy_lan
-    import common-logging-plaintext hermes
-    import common-logging hermes
-
-    reverse_proxy [CADDY-IP]:9119 {
-        header_up Host [CADDY-IP]:9119
-    }
-}
-```
-
-### Native Authentication Setup
-
-Authentication is configured via environment variables in `~/.hermes/.env` to separate secrets from the main configuration file.
-
-```bash
-HERMES_DASHBOARD_BASIC_AUTH_USERNAME=[USER]
-HERMES_DASHBOARD_BASIC_AUTH_PASSWORD_HASH=scrypt$16384$8$1$...
-HERMES_DASHBOARD_BASIC_AUTH_SECRET=[SECRET]
-```
-
-> [!IMPORTANT]
-> **Hash Generation**
-> 
-> The password hash must be generated utilising the internal Hermes utility to ensure the correct `scrypt` format:
-> `python -c "from plugins.dashboard_auth.basic import hash_password; print(hash_password('YOUR_PASSWORD'))"`
-
-## 5. Verification
+## 4. Verification
 
 To verify the service is running and accessible:
 
