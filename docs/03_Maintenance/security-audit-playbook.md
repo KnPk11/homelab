@@ -3,7 +3,7 @@
 > [!NOTE]
 > #Security #Audit #Maintenance #Lynis #DockerBench #CrowdSec #MikroTik
 
-## 1. Description
+## 📖 1. Description
 
 Periodic **read-only** security audit for a human or AI agent on **ai-tools**. Run checks, reconcile with private baselines, write a short report. Full upgrades and remediations are out of band unless the operator approves.
 
@@ -30,9 +30,7 @@ Periodic **read-only** security audit for a human or AI agent on **ai-tools**. R
 
 **Related:** [lynis](../02_Services/lynis/setup.md) · [docker-bench](../02_Services/docker-bench/setup.md) · [docker-host/security](../00_Infrastructure/docker-host/security.md) · [crowdsec](../02_Services/crowdsec/setup.md) · [mikrotik/security](../01_Network/mikrotik/security.md) · [caddy/security](../02_Services/caddy/security.md) · [ai-node-setup](../05_AI_Tools/ai-node-setup.md) · private: `lynis-audit.md`, `mikrotik-firewall-audit.md`, `linux-host-hygiene.md`, `ai-tools-hardening.md`
 
----
-
-## 2. Agent protocol
+## 🤖 2. Agent protocol
 
 ```bash
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh && ai-key-status
@@ -50,9 +48,7 @@ ai-key-lock   # also sops-key-lock if used
 
 **Out of scope:** full upgrade campaigns, architecture redesign, SIEM/AV everywhere, perfect CIS/Lynis scores, decrypting the secrets estate, destructive firewall experiments.
 
----
-
-## 3. Scope matrix
+## 📊 3. Scope matrix
 
 ● in-scope for that cycle · ○ optional/light · — N/A
 
@@ -71,9 +67,7 @@ Host columns follow [inventory.yml](../../inventory.yml); they are **examples of
 
 **Monthly light:** CrowdSec + Caddy skim, MikroTik control-plane + DSTNAT/IPv6 spot-check, key status, backup ages, reboot flags on reverse-proxy + docker-services (and any other host that flags `REBOOT_REQUIRED` during the snapshot). Skip full Lynis/Bench unless something changed.
 
----
-
-## 4. Pre-flight
+## 🚀 4. Pre-flight
 
 ```bash
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh && ai-key-status
@@ -89,9 +83,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=5 router '/system resource print' | head
 - Report mode: `monthly-light` | `quarterly-deep` | `ad-hoc:[focus]`.
 - Do not commit audit noise without review.
 
----
-
-## 5. Checklist
+## ✅ 5. Checklist
 
 ### 5.1 Updates snapshot (info only)
 
@@ -273,9 +265,7 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 | SMB / share ACLs | Public apps lack full private trees |
 | Tailscale ACLs | Overlay least-privilege (bypasses VLANs) |
 
----
-
-## 6. Session wrap-up
+## 🔒 6. Session wrap-up
 
 1. `ai-key-lock` (+ `sops-key-lock` if used).
 2. Fill report template (§7); prefer private vault for raw detail.
@@ -283,9 +273,7 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 4. Doc fixes (sanitised) if public intent was wrong — not chat-only.
 5. No agent scratch/logs into git unless asked.
 
----
-
-## 7. Report template
+## 📝 7. Report template
 
 ```markdown
 # Security audit report — [YYYY-MM-DD]
@@ -332,9 +320,7 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 1.
 ```
 
----
-
-## 8. Monthly light (copy-paste order)
+## ⚡ 8. Monthly light (copy-paste order)
 
 1. Pre-flight reachability + `ai-key-status`
 2. reverse-proxy: CrowdSec metrics/bouncers + Caddy active + quick site skim
