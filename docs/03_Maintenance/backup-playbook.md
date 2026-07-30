@@ -3,7 +3,7 @@
 > [!NOTE]
 > #Backup #Maintenance #Kopia #Proxmox #PBS #MikroTik
 
-## 1. Description
+## 📖 1. Description
 
 Operator playbook for **backing up and restoring** the homelab, plus light cleanup that usually runs before or after a backup window. It covers:
 
@@ -16,7 +16,7 @@ Operator playbook for **backing up and restoring** the homelab, plus light clean
 | **Guests** | VMs/CTs | Proxmox Backup Server (`pbs-linux`) |
 | **Media / bulk NAS** | Large media libraries | Separate NAS/SMB sync |
 
-## 2. Pre-backup checklist
+## ✅ 2. Pre-backup checklist
 
 Run through these before a planned backup window:
 
@@ -25,13 +25,45 @@ Run through these before a planned backup window:
    - **Vaultwarden / Bitwarden**: encrypted JSON export, password-protected.
    - **AnyType**: File → Export Space → Any-Block / Protobuf (enable options you need).
 
-## 3. Cleanup
+## 🧹 3. Cleanup
 
-### Generic
+### 3.1 fstrim (reclaim free space on thin disks)
 
-- Confirm the **fstrim** jobs are running on each machine.
+**Check timer status** (run on Proxmox host and each VM):
 
-### Docker (docker-services)
+```bash
+systemctl is-enabled fstrim.timer
+systemctl status fstrim.timer --no-pager
+systemctl list-timers fstrim.timer --no-pager
+```
+
+**Enable if missing** (VMs / host only):
+
+```bash
+sudo systemctl enable --now fstrim.timer
+```
+
+**Run** (safe; can take a while on large disks):
+
+```bash
+sudo fstrim -av
+```
+
+### 3.2 VS Code remote sessions
+
+```bash
+# How large is it?
+du -sh ~/.vscode-server 2>/dev/null
+du -sh ~/.vscode-server/code-* 2>/dev/null | sort -h
+
+# List builds (newest mtime last is a reasonable “current” guess — verify before delete)
+ls -lt ~/.vscode-server | head
+```
+
+> [!TIP]
+> **While connected:** Prefer deleting only builds that are clearly old.
+
+### 3.3 Docker clean-up
 
 Optional hygiene in Portainer (or CLI):
 
@@ -39,7 +71,7 @@ Optional hygiene in Portainer (or CLI):
 - **Volumes** — only remove named volumes you are sure are disposable; even if shown as inactive due to a stack being offline.
 - **Test DBs** — drop large throwaway PostgreSQL (or similar) volumes when finished.
 
-### Nextcloud `occ` janitor (optional)
+### 3.4 Nextcloud `occ` janitor (optional)
 
 Run inside the Nextcloud app container:
 
@@ -59,7 +91,7 @@ php occ user:delete [OLD-USERNAME]
 truncate -s 0 /path/to/nextcloud.log
 ```
 
-## 4. Configs and secrets
+## 🔐 4. Configs and secrets
 
 Live secrets and host-only configs - run the on-demand scraper after unlocking God Mode SSH:
 
@@ -73,9 +105,8 @@ source ~/.ssh/ai-key-agent.sh
 
 - **Output:** `/opt/dev/secrets_vault/configs_and_secrets/` (layout mirrors remote paths).
 - **Not for cron** — run when needed, then move/copy the vault offline.
-- Includes Kopia client config under `/opt/scripts/Backups/Kopia` when present on docker-services.
 
-## 5. Router settings
+## 🌐 5. Router settings
 
 ### Automated export (preferred)
 
@@ -101,7 +132,7 @@ Includes secrets; not human-readable:
 
 Download from **Files** in Winbox/WebFig and store offline.
 
-## 6. Docker host — Kopia (optional)
+## 🐳 6. Docker host — Kopia (inactive)
 
 Runs on **docker-services**. Scripts are tracked in Git and symlinked under `/opt/scripts/Backups/Kopia/`. Repository data sits on the NAS; **client config and password stay on the host** (not in Git).
 
@@ -183,7 +214,7 @@ sudo kopia --config-file "$CFG" snapshot restore [SNAPSHOT-ID] /tmp/restore-stag
 
 Exclusions and rationale: [Appendix A](#appendix-a-kopia-exclusions).
 
-## 7. Proxmox Backup Server
+## 🛡️ 7. Proxmox Backup Server
 
 Primary guest protection is **PBS** datastore **`pbs-linux`** (path on PBS host: `/mnt/datastore/pbs`). Schedule and retention are configured on PBS; see [Proxmox Backup Server](../00_Infrastructure/proxmox/proxmox-backup-server.md).
 
@@ -199,11 +230,11 @@ When taking an offline copy of verified PBS data:
 3. Prefer **mirror** with deletion on the destination.
 4. Optionally count files/dirs before and after sync (PBS trees are large because of `.chunks`).
 
-## 8. Logs (optional)
+## 📜 8. Logs (optional)
 
 - Sync or backup logs over **SMB** to offsite storage.
 
-## 9. NAS and bulk media (optional)
+## 🗄️ 9. NAS and bulk media (optional)
 
 Large media libraries from the NAS VM are **not** synced.
 
@@ -212,7 +243,7 @@ Large media libraries from the NAS VM are **not** synced.
 
 ---
 
-## Appendix A: Kopia exclusions
+## 📎 Appendix A: Kopia exclusions
 
 Tracked ignore file: `nodes/docker-services/scripts/kopia/global.kopiaignore` (symlinked into the runtime dir). Keep this appendix and the live ignore list in sync when you change policy.
 
