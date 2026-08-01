@@ -15,8 +15,6 @@
 			"/opt/homelab-repo"
 		],
 		"files.exclude": {
-			"dev": true,
-			"homelab-repo": true,
 			"**/.git": true,
 			"**/.svn": true,
 			"**/.hg": true,
