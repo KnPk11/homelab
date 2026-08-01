@@ -1,7 +1,6 @@
 {
 	"folders": [
 		{ "name": "⭐ Dev Area", "path": "/opt/dev" },
-		{ "name": "⭐ Homelab Repository", "path": "/opt/homelab-repo" },
 		{ "name": "📁 root", "path": "/root" },
 		{ "name": "📁 home", "path": "/home" },
 		{ "name": "📁 data", "path": "/data" },
