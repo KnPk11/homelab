@@ -578,4 +578,14 @@ ocstats.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.91:10482
 }
 
+sleep.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 75 30s
+    import common-logging-plaintext pages
+    import common-logging pages
+
+    reverse_proxy 192.168.50.91:10750
+}
+
 import Caddyfile.experimental*
