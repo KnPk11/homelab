@@ -24,6 +24,8 @@ services:
       - N8N_AUTH_MODE=basic
       - N8N_PUBLIC_API_DISABLED=true
       - TZ=Europe/London
+      - FILEBROWSER_URL=${FILEBROWSER_URL:-http://filebrowser.example.com}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:--1000000000000}
     volumes:
       - /srv/n8n/data:/home/node/.n8n
     deploy:

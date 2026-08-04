@@ -1,0 +1,454 @@
+{
+  "name": "Homelab Guardian - FileBrowser Health Check & Self-Healing",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        704
+      ],
+      "id": "e446c08a-945c-487b-a7e8-0d60470c7481",
+      "name": "Every 5 Minutes"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=The current time is {{ $now }}. Check if {{ $env.FILEBROWSER_URL }} is responding correctly. Return your findings as structured output.",
+        "options": {
+          "systemMessage": "=## Role\nYou are 'Homelab Guardian'.\n\n## Detection Logic\n1. Use the HTTP Request Tool to fetch {{ $env.FILEBROWSER_URL }}.\n2. The site is ONLY 'UP' if the HTTP status is 200 AND the body contains the string 'FileBrowser'.\n3. If you get a 404, a 502, a redirect, a connection error, or the response body contains the word 'Caddy', the service is DOWN.\n\n## Response Rules\n- If the site is UP: set website_up to \"true\" and message to a short status summary.\n- If the site is DOWN: set website_up to \"false\" and message to a description of what you observed (status code, body snippet, error) and recommend restarting the filebrowser-quantum Docker container.\n- Do NOT attempt to run any Docker/SSH commands yourself. Only report your findings."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        592
+      ],
+      "id": "88411426-1512-44e3-bbd4-09e97f775e41",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-oss-20b",
+          "mode": "list",
+          "cachedResultName": "gpt-oss-20b"
+        },
+        "responsesApiEnabled": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        240,
+        816
+      ],
+      "id": "5d7fbbb9-bc23-4c4e-8d34-071296420f5b",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "homelab-guardian-session"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        816
+      ],
+      "id": "f6d2d200-de25-4757-a771-3d8b81ada982",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Use this to check that filebrowser service is up. Makes an HTTP GET request to the given URL and returns the status code and body.",
+        "url": "={{ $env.FILEBROWSER_URL }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        496,
+        816
+      ],
+      "id": "faf4747e-64ff-43b8-bf4f-46c37b6160ed",
+      "name": "HTTP Request Tool"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output;\n\n// Extract the first valid JSON object from the output, ignoring any surrounding junk\nconst match = raw.match(/\\{[\\s\\S]*\\}/);\n\nif (!match) {\n  // If we can't find JSON at all, assume the site is down and pass the raw output as the message\n  return [{ json: { website_up: \"false\", message: \"Agent returned unparseable output: \" + raw } }];\n}\n\ntry {\n  const parsed = JSON.parse(match[0]);\n  return [{ json: { website_up: parsed.website_up || \"false\", message: parsed.message || \"No message provided.\" } }];\n} catch (e) {\n  return [{ json: { website_up: \"false\", message: \"Failed to parse agent output: \" + raw } }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        640
+      ],
+      "id": "360523e9-c29d-46c6-9d4c-a58896c0c6d6",
+      "name": "Parse Agent Output"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a3349b50-b72f-4e2b-adf6-e1e3aaa622d2",
+              "leftValue": "={{ $json.website_up }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        880,
+        656
+      ],
+      "id": "3aeccdd5-fcd4-46f0-888b-95c0e250a772",
+      "name": "Site Down?"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=🚨 FileBrowser is DOWN\n\n{{ $('Parse Agent Output').first().json.message }}\n\nRecommended action: Restart the filebrowser-quantum Docker container.\n\nPress a button below:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1136,
+        608
+      ],
+      "id": "75fd2923-8267-4934-b766-c3a2ac70aa99",
+      "name": "Telegram Alert",
+      "webhookId": "YOUR_WEBHOOK_ID_ALERT",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        16,
+        1120
+      ],
+      "id": "668d5919-b773-437c-84ee-ada2a7d27794",
+      "name": "Telegram Callback Trigger",
+      "webhookId": "YOUR_WEBHOOK_ID_LISTENER",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "callback-check-001",
+              "leftValue": "={{ $json.callback_query.data }}",
+              "rightValue": "approve_restart_filebrowser",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        240,
+        1120
+      ],
+      "id": "c2ac4b1d-7499-4c7b-9d94-5e35a24b5e56",
+      "name": "Approved?"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "⏳ Restart approved. Executing Docker restart now...",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        1024
+      ],
+      "id": "0f7e548d-6d82-4d3b-8ce3-b489266bc5a1",
+      "name": "Telegram Ack",
+      "webhookId": "YOUR_WEBHOOK_ID_ACK",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "=✅ Restart Complete\n\nThe Docker restart workflow has finished. Please verify that {{ $env.FILEBROWSER_URL }} is back up.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        912,
+        1024
+      ],
+      "id": "60346a57-b76a-479a-a403-201308ef8916",
+      "name": "Telegram Done",
+      "webhookId": "YOUR_WEBHOOK_ID_DONE",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "👌 Restart ignored. No action taken.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        1216
+      ],
+      "id": "ffa333f4-329b-41b9-89c8-37405f56331e",
+      "name": "Telegram Ignored",
+      "webhookId": "YOUR_WEBHOOK_ID_IGNORED",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_TELEGRAM_CREDENTIAL_ID",
+          "name": "Telegram Account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        688,
+        1024
+      ],
+      "id": "61db1d1d-e8eb-4212-a5f0-27a96e726985",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPassword": {
+          "id": "YOUR_SSH_CREDENTIAL_ID",
+          "name": "SSH Password Account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse Agent Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Agent Output": {
+      "main": [
+        [
+          {
+            "node": "Site Down?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Site Down?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Callback Trigger": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Ack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Telegram Ignored",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Ack": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Telegram Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "tags": []
+}
