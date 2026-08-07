@@ -17,6 +17,7 @@ import os
 import re
 import gzip
 import json
+import glob
 import subprocess
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime, timedelta
@@ -72,21 +73,21 @@ class Handler(BaseHTTPRequestHandler):
         events = []
         cutoff_time = datetime.utcnow() - timedelta(days=1)
 
-        # --- 1. PARSE CROWDSEC VIA CSCLI ---
+        # --- 1. PARSE CROWDSEC VIA CSCLI ALERTS (HISTORICAL & ACTIVE) ---
         try:
             result = subprocess.check_output(
-                ["cscli", "decisions", "list", "-o", "json"],
+                ["cscli", "alerts", "list", "-o", "json", "--since", "24h"],
                 stderr=subprocess.DEVNULL,
             )
             if result:
                 data = json.loads(result)
                 for item in data:
-                    ip = item.get("source", {}).get("value")
-                    scenario = item.get("scenario")
-                    start_at = item.get("start_at")
+                    ip = item.get("source", {}).get("ip") or item.get("source", {}).get("value")
+                    scenario = item.get("scenario", "")
+                    created_at = item.get("created_at") or item.get("start_at")
 
-                    if ip and scenario and start_at:
-                        clean_ts = start_at.replace("Z", "").split(".")[0]
+                    if ip and scenario and created_at:
+                        clean_ts = created_at.replace("Z", "").split(".")[0]
                         dt = datetime.strptime(clean_ts, "%Y-%m-%dT%H:%M:%S")
                         if dt > cutoff_time:
                             source = "CS"
@@ -112,8 +113,8 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as e:
             print(f"Error reading CS CLI: {e}")
 
-        # --- 2. PARSE FAIL2BAN LOGS ---
-        f2b_files = [F2B_LOG_FILE + ".1.gz", F2B_LOG_FILE + ".1", F2B_LOG_FILE]
+        # --- 2. PARSE FAIL2BAN LOGS (INCLUDING ALL ROTATED LOGS) ---
+        f2b_files = glob.glob("/var/log/fail2ban.log*")
         local_cutoff = datetime.now() - timedelta(days=1)
         for log_file in f2b_files:
             if not os.path.exists(log_file):
