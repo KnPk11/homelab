@@ -18,7 +18,7 @@ MAIN_LAN_SUBNET="192.168.88.0/24"
 HOMELAB_LAN_SUBNET="192.168.50.0/24"
 DOCKER_SUBNET="172.16.0.0/12"
 VPN_NETS="10.5.0.0/24 10.6.0.0/24 10.8.0.0/24 100.64.0.0/10"
-MINI_K8S_IP="192.168.50.96"
+K8S_IP="192.168.50.96"
 
 if [[ $EUID -ne 0 ]]; then
     exec sudo "$0" "$@"
@@ -39,8 +39,8 @@ ufw allow from $HOMELAB_LAN_SUBNET comment 'Full Access (Homelab LAN)'
 ufw allow from $DOCKER_SUBNET comment 'Full Access (Docker Internal)'
 
 # 3. k3s Worker Node Rules
-ufw allow from $MINI_K8S_IP to any port 8472 proto udp comment 'k3s Flannel VXLAN (from mini-k8s)'
-ufw allow from $MINI_K8S_IP to any port 10250 proto tcp comment 'k3s Kubelet (from mini-k8s)'
+ufw allow from $K8S_IP to any port 8472 proto udp comment 'k3s Flannel VXLAN (from k8s)'
+ufw allow from $K8S_IP to any port 10250 proto tcp comment 'k3s Kubelet (from k8s)'
 ufw allow 30000:32767/tcp comment 'k3s NodePort Services'
 
 # 4. Restricted VPN Access
