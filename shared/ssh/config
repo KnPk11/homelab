@@ -66,3 +66,13 @@ Host pbs
     HostName 192.168.50.86
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
+
+Host mini-k8s
+    HostName 192.168.50.96
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
+Host scratch-pc
+    HostName 192.168.50.85
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
