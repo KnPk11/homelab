@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # firewall.sh
-# Version: 1.6
-# Date: 2026-07-27
+# Version: 1.7
+# Date: 2026-08-04
 #
 # Proxmox host/cluster firewall management (cluster.fw aliases + guest rules).
 # Run on the Proxmox host (pve1). Topology inline; canonical ref inventory.yml.
@@ -21,13 +21,16 @@ IOT_LAN="192.168.2.0/24"
 HOMELAB_LAN="192.168.50.0/24"
 VPN_NET="10.5.0.0/24"
 WIN11_VM="192.168.50.84"
+SCRATCH_PC="192.168.50.85"
 OMV_IP="192.168.50.90"
+LAB_VM_IP="192.168.50.91"
 REVERSE_PROXY_IP="192.168.50.101"
 DNS_IP="192.168.50.102"
 AITOOLS_IP="192.168.50.105"
 PULSE_MONITOR_IP="192.168.50.88"
 VPNS_IP="192.168.50.87"
 PBS_IP="192.168.50.86"
+K8S_IP="192.168.50.96"
 
 # File Paths
 CLUSTER_FW="/etc/pve/firewall/cluster.fw"
@@ -43,6 +46,7 @@ FW_DNS="/etc/pve/firewall/106.fw"
 FW_PULSE="/etc/pve/firewall/107.fw"
 FW_VPNS="/etc/pve/firewall/108.fw"
 FW_PBS="/etc/pve/firewall/109.fw"
+FW_MINI_K8S="/etc/pve/firewall/110.fw"
 
 
 # Backup Configuration
@@ -54,7 +58,7 @@ echo "--- Initializing Firewall Update ---"
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS"; do
+for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
@@ -72,13 +76,16 @@ vpn-net $VPN_NET          # Primary VPN Subnet
 # Note: External VMs/devices need an alias here so they can be referenced as a "-source" in rules.
 # Proxmox guests (like Guest 100 on .95) don't need aliases here; their rules are applied via their specific ID.fw file.
 win11-vm $WIN11_VM       # Windows 11 VM
+scratch-pc $SCRATCH_PC   # Scratch Dev Workstation (.85)
 open-media-vault $OMV_IP # OMV Storage VM
+lab-vm $LAB_VM_IP        # k3s worker VM (.91)
 reverse-proxy $REVERSE_PROXY_IP # Reverse Proxy Container
 dns $DNS_IP           # DNS Container
 ai-tools $AITOOLS_IP      # AI Toolbox Container
 pulse-monitor $PULSE_MONITOR_IP   # Pulse monitoring LXC (CT 107)
 vpns $VPNS_IP             # VPN / Tailscale LXC (CT 108)
 pbs $PBS_IP               # Proxmox Backup Server LXC (CT 109)
+mini-k8s $K8S_IP         # k3s control plane LXC (CT 110)
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
@@ -217,7 +224,7 @@ EOC
 
 echo "[+] Generated rules for Guest 101 (OMV)."
 
-# 5. Guest 103: Openclaw VM (.91)
+# 5. Guest 103: Openclaw / lab-vm (.91) — k3s worker
 cat <<EOC > $FW_OPENCLAW
 [OPTIONS]
 enable: 1
@@ -226,9 +233,13 @@ enable: 1
 GROUP ssh-adm
 GROUP proxy-back
 GROUP ping-trusted
+# k3s worker (joined to mini-k8s)
+IN ACCEPT -p udp -dport 8472 -source mini-k8s -log nolog # k3s flannel VXLAN
+IN ACCEPT -p tcp -dport 10250 -source mini-k8s -log nolog # k3s kubelet
+IN ACCEPT -p tcp -dport 30363 -source homelab-lan -log nolog # k3s storycards NodePort
 EOC
 
-echo "[+] Generated rules for Guest 103 (Openclaw)."
+echo "[+] Generated rules for Guest 103 (Openclaw / k3s worker)."
 
 # 6. Guest 104: Caddy LXC (.101)
 cat <<EOC > $FW_CADDY
@@ -333,7 +344,28 @@ EOC
 
 echo "[+] Generated rules for Guest 109 (PBS)."
 
-# 12. Apply / Restart Service
+# 12. Guest 110: mini-k8s LXC (.96) — k3s control plane
+cat <<EOC > $FW_MINI_K8S
+[OPTIONS]
+enable: 1
+
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP proxy-back
+# k3s API (kubectl) — restricted to dev workstation and worker node
+IN ACCEPT -p tcp -dport 6443 -source scratch-pc -log nolog
+IN ACCEPT -p tcp -dport 6443 -source lab-vm -log nolog
+# flannel + kubelet — restricted to worker node
+IN ACCEPT -p udp -dport 8472 -source lab-vm -log nolog # k3s flannel VXLAN
+IN ACCEPT -p tcp -dport 10250 -source lab-vm -log nolog # k3s kubelet
+# NodePort 30363 covered by proxy-back (Caddy)
+EOC
+
+echo "[+] Generated rules for Guest 110 (mini-k8s / k3s master)."
+
+# 13. Apply / Restart Service
+
 echo "--- Validating Configuration ---"
 if pve-firewall compile > /dev/null; then
     echo "[+] Validation successful. Reloading firewall..."

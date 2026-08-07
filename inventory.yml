@@ -47,3 +47,14 @@ nodes:
     ip: 192.168.50.86
     proxmox_id: 109
     type: lxc
+
+  mini-k8s:
+    ip: 192.168.50.96
+    proxmox_id: 110
+    type: lxc
+
+  scratch-pc:
+    ip: 192.168.50.85
+    type: bare-metal
+    description: Disposable scratch dev workstation for web app prototyping
+
