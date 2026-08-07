@@ -48,7 +48,7 @@ nodes:
     proxmox_id: 109
     type: lxc
 
-  mini-k8s:
+  k8s:
     ip: 192.168.50.96
     proxmox_id: 110
     type: lxc

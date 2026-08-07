@@ -85,7 +85,7 @@ ai-tools $AITOOLS_IP      # AI Toolbox Container
 pulse-monitor $PULSE_MONITOR_IP   # Pulse monitoring LXC (CT 107)
 vpns $VPNS_IP             # VPN / Tailscale LXC (CT 108)
 pbs $PBS_IP               # Proxmox Backup Server LXC (CT 109)
-mini-k8s $K8S_IP         # k3s control plane LXC (CT 110)
+k8s $K8S_IP         # k3s control plane LXC (CT 110)
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
@@ -233,9 +233,9 @@ enable: 1
 GROUP ssh-adm
 GROUP proxy-back
 GROUP ping-trusted
-# k3s worker (joined to mini-k8s)
-IN ACCEPT -p udp -dport 8472 -source mini-k8s -log nolog # k3s flannel VXLAN
-IN ACCEPT -p tcp -dport 10250 -source mini-k8s -log nolog # k3s kubelet
+# k3s worker (joined to k8s)
+IN ACCEPT -p udp -dport 8472 -source k8s -log nolog # k3s flannel VXLAN
+IN ACCEPT -p tcp -dport 10250 -source k8s -log nolog # k3s kubelet
 IN ACCEPT -p tcp -dport 30363 -source homelab-lan -log nolog # k3s storycards NodePort
 EOC
 
@@ -344,7 +344,7 @@ EOC
 
 echo "[+] Generated rules for Guest 109 (PBS)."
 
-# 12. Guest 110: mini-k8s LXC (.96) — k3s control plane
+# 12. Guest 110: k8s LXC (.96) — k3s control plane
 cat <<EOC > $FW_MINI_K8S
 [OPTIONS]
 enable: 1
@@ -362,7 +362,7 @@ IN ACCEPT -p tcp -dport 10250 -source lab-vm -log nolog # k3s kubelet
 # NodePort 30363 covered by proxy-back (Caddy)
 EOC
 
-echo "[+] Generated rules for Guest 110 (mini-k8s / k3s master)."
+echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
 
 # 13. Apply / Restart Service
 
