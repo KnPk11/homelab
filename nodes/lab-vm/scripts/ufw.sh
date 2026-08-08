@@ -39,8 +39,9 @@ ufw allow from $HOMELAB_LAN_SUBNET comment 'Full Access (Homelab LAN)'
 ufw allow from $DOCKER_SUBNET comment 'Full Access (Docker Internal)'
 
 # 3. k3s Worker Node Rules
-ufw allow from $K8S_IP to any port 8472 proto udp comment 'k3s Flannel VXLAN (from k8s)'
+ufw allow from $HOMELAB_LAN_SUBNET to any port 8472 proto udp comment 'k3s Flannel VXLAN (homelab LAN)'
 ufw allow from $K8S_IP to any port 10250 proto tcp comment 'k3s Kubelet (from k8s)'
+ufw allow from 192.168.50.0/24 to any port 10250 proto tcp comment 'k3s kubelet API'
 ufw allow 30000:32767/tcp comment 'k3s NodePort Services'
 
 # 4. Restricted VPN Access

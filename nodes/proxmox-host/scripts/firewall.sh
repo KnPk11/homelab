@@ -235,6 +235,7 @@ GROUP proxy-back
 GROUP ping-trusted
 # k3s worker (joined to k8s)
 IN ACCEPT -p udp -dport 8472 -source k8s -log nolog # k3s flannel VXLAN
+IN ACCEPT -p udp -dport 8472 -source scratch-pc -log nolog # k3s flannel VXLAN (worker-to-worker)
 IN ACCEPT -p tcp -dport 10250 -source k8s -log nolog # k3s kubelet
 IN ACCEPT -p tcp -dport 30363 -source homelab-lan -log nolog # k3s storycards NodePort
 EOC
@@ -353,13 +354,19 @@ enable: 1
 GROUP ssh-adm
 GROUP ping-trusted
 GROUP proxy-back
+# Allow full communication from k3s worker nodes (lab-vm and scratch-pc)
+IN ACCEPT -source scratch-pc -log nolog
+IN ACCEPT -source lab-vm -log nolog
 # k3s API (kubectl) — restricted to dev workstation and worker node
 IN ACCEPT -p tcp -dport 6443 -source scratch-pc -log nolog
 IN ACCEPT -p tcp -dport 6443 -source lab-vm -log nolog
 # flannel + kubelet — restricted to worker node
 IN ACCEPT -p udp -dport 8472 -source lab-vm -log nolog # k3s flannel VXLAN
 IN ACCEPT -p tcp -dport 10250 -source lab-vm -log nolog # k3s kubelet
-# NodePort 30363 covered by proxy-back (Caddy)
+# Spark Web UIs & K8s NodePort Services
+IN ACCEPT -p tcp -dport 4040 -source homelab-lan -log nolog # Spark Live Web UI
+IN ACCEPT -p tcp -dport 18080 -source homelab-lan -log nolog # Spark History Server
+IN ACCEPT -p tcp -dport 30000:32767 -source homelab-lan -log nolog # k3s NodePort Services
 EOC
 
 echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
