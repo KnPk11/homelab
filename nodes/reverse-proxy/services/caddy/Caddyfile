@@ -578,6 +578,24 @@ ocstats.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.91:10482
 }
 
+storycards.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 75 30s
+    import common-logging-plaintext pages
+    import common-logging pages
+    reverse_proxy 192.168.50.91:33363
+}
+
+homelab-news.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 100 30s
+    import common-logging-plaintext pages
+    import common-logging pages
+    reverse_proxy 192.168.50.85:8088
+}
+
 sleep.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
