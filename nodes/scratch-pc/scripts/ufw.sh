@@ -37,6 +37,7 @@ ufw allow from "$MAIN_LAN_SUBNET" comment 'Full Access (Main LAN)'
 ufw allow from "$DOCKER_SUBNET" comment 'Full Access (Docker Internal)'
 
 # 3. Kubernetes Cluster Access (kubectl & NodePorts)
+ufw allow from 192.168.50.0/24 to any port 10250 proto tcp comment 'k3s kubelet API'
 ufw allow to "$K8S_IP" port 6443 proto tcp comment 'k3s API (k8s)'
 ufw allow to "$LAB_VM_IP" port 30000:32767 proto tcp comment 'k3s NodePorts (lab-vm)'
 
