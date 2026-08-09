@@ -8,8 +8,9 @@ services:
       --input /input
       --output /output
       --theme cards
+      --theme-style /output/custom.css
       --title "Space Photos Gallery"
-      --small-size 500
+      --small-size 600
       --large-size 1600
       --sort-albums-by name
       --cleanup
