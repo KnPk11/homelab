@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: spark-executor-isolation
+  namespace: spark
+spec:
+  podSelector:
+    matchLabels:
+      spark-role: executor
+  policyTypes:
+    - Ingress
+  ingress:
+    # Allow driver host (k8s control plane)
+    - from:
+        - ipBlock:
+            cidr: 192.168.50.96/32
+    # Allow inter-executor pod traffic within spark namespace
+    - from:
+        - podSelector:
+            matchLabels:
+              spark-role: executor
