@@ -301,6 +301,22 @@ spark.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.96:18080
 }
 
+k8s.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext k8s
+    import common-logging k8s
+    import honeypots-and-traps
+
+    reverse_proxy https://192.168.50.96:30443 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+}
+
+
 
 # immich.{$DOMAIN_NAME} {
 #     import common-headers
