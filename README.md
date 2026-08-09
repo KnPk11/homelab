@@ -29,7 +29,7 @@ flowchart TD
     end
 
     subgraph Compute["🖥️ Proxmox Hypervisor"]
-        Caddy["Caddy<br>(Reverse Proxy)"]
+        Caddy["Reverse Proxy"]
         
         subgraph DirectPorts["Direct Port Forwards"]
             MediaMTX["MediaMTX"]
@@ -38,8 +38,9 @@ flowchart TD
         end
         
         subgraph Services["Internal Services"]
-            L1["Infrastructure<br>(AdGuard, AI)"]
-            L2["Apps<br>(Nextcloud, Docker)"]
+            L1["DNS, K8S, Pulse, AI tools"]
+            L2["Docker Services VM"]
+            L4["Hermes/OpenClaw VM"]
             L3["Storage<br>(NAS)"]
         end
     end
@@ -55,7 +56,7 @@ flowchart TD
 
     class WAN wanLayer;
     class VLAN_MIX,VLAN_LAN netLayer;
-    class Caddy,MediaMTX,AnySync,TalkHPB,L1,L2,L3 compLayer;
+    class Caddy,MediaMTX,AnySync,TalkHPB,L1,L2,L3,L4 compLayer;
 ```
 
 ---
