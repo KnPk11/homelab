@@ -91,7 +91,7 @@ class Handler(BaseHTTPRequestHandler):
                         dt = datetime.strptime(clean_ts, "%Y-%m-%dT%H:%M:%S")
                         if dt > cutoff_time:
                             source = "CS"
-                            color = "#8e44ad"
+                            color = "#e67e22"
                             jail_display = scenario
 
                             if "Fail2Ban" in scenario:
@@ -175,7 +175,7 @@ class Handler(BaseHTTPRequestHandler):
         tr:nth-child(even) { background-color: #1e1e1e; }
         .badge { padding: 2px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; margin-right: 5px; color: #fff; }
         .F2B { background-color: #c0392b; }
-        .CS  { background-color: #8e44ad; }
+        .CS  { background-color: #e67e22; }
         """
         return f"""
         <html>
