@@ -1,0 +1,19 @@
+services:
+  lychee:
+    image: lycheeorg/lychee:latest
+    container_name: lychee
+    ports:
+      - "8183:8000"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/config/database.sqlite
+      - APP_KEY=base64:oUBsyHdX8wpUnJGfvmm8B+LtzZs5ElOcTfwpTm1U3MQ=
+      - APP_URL=https://lychee.${DOMAIN_NAME}
+    volumes:
+      - /srv/lychee/config:/config
+      - /srv/lychee/sym:/app/public/sym
+      - "/mnt/nas/Shared/Content/Space photos:/space-photos:ro"
+    restart: unless-stopped

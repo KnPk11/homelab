@@ -289,6 +289,17 @@ space.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.95:8182
 }
 
+lychee.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 250 30s
+    import common-logging-plaintext lychee
+    import common-logging lychee
+    import honeypots-and-traps
+
+    reverse_proxy 192.168.50.95:8183
+}
+
 # immich.{$DOMAIN_NAME} {
 #     import common-headers
 #     import common-robots
