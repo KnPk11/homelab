@@ -12,6 +12,8 @@ services:
       - DB_DATABASE=/config/database.sqlite
       - APP_KEY=base64:oUBsyHdX8wpUnJGfvmm8B+LtzZs5ElOcTfwpTm1U3MQ=
       - APP_URL=https://lychee.${DOMAIN_NAME}
+      - TRUSTED_PROXIES=*
+      - APP_FORCE_HTTPS=true
     volumes:
       - /srv/lychee/config:/config
       - /srv/lychee/sym:/app/public/sym
