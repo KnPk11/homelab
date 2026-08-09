@@ -8,6 +8,7 @@ services:
       --input /input
       --output /output
       --theme mosaic
+      --theme-style /output/custom.css
       --title "Space Photos Gallery"
       --small-size 400
       --large-size 1600
