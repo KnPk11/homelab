@@ -1,17 +1,17 @@
 services:
   lychee:
-    image: lycheeorg/lychee:latest
+    image: lycheeorg/lychee:v7.7.2
     container_name: lychee
     ports:
       - "8183:8000"
+    env_file:
+      - ${LYCHEE_ENV_PATH:-/srv/lychee/.env}
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
       - DB_CONNECTION=sqlite
       - DB_DATABASE=/config/database.sqlite
-      - APP_KEY=base64:oUBsyHdX8wpUnJGfvmm8B+LtzZs5ElOcTfwpTm1U3MQ=
-      - APP_URL=https://lychee.${DOMAIN_NAME}
       - TRUSTED_PROXIES=*
       - APP_FORCE_HTTPS=true
     volumes:
@@ -20,3 +20,20 @@ services:
       - /srv/lychee/sym:/app/public/sym
       - "/mnt/nas/Shared/Content/Space photos:/space-photos:ro"
     restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
