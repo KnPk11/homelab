@@ -27,6 +27,7 @@ services:
       - photoprism_database_password
     volumes:
       - /srv/photoprism/storage:/photoprism/storage
+      - "/mnt/nas/Shared/Content/Space photos:/photoprism/originals/space:ro"
     restart: unless-stopped
     cap_drop:
       - ALL
