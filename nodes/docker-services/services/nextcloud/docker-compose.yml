@@ -18,6 +18,8 @@ services:
       - /mnt/nas/Private:/data/media/private/Private
       - /mnt/nas/Downloads:/data/media/private/Downloads
       - /mnt/nas/Media:/data/media/private/Media
+    env_file:
+      - ${NC_ENV_PATH:-/srv/nextcloud/.env}
     environment:
       - MYSQL_PASSWORD_FILE=/run/secrets/nextcloud_mysql_password
       - MYSQL_DATABASE=nextcloud
@@ -150,6 +152,7 @@ services:
       - nextcloud_internal
     env_file:
       - ${NC_HPB_SECRETS_PATH:-/srv/nextcloud/nextcloud_hpb_secrets.env} # Entrypoint is messy
+      - ${NC_ENV_PATH:-/srv/nextcloud/.env}
     environment:
       - TALK_PORT=3478
       - NC_DOMAIN=${NC_DOMAIN:-nextcloud.example.com}  # Nextcloud domain
