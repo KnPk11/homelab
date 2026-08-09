@@ -7,10 +7,9 @@ services:
       thumbsup
       --input /input
       --output /output
-      --theme cards
-      --theme-style /output/custom.css
+      --theme mosaic
       --title "Space Photos Gallery"
-      --small-size 600
+      --small-size 400
       --large-size 1600
       --sort-albums-by name
       --cleanup
