@@ -16,6 +16,7 @@ services:
       - APP_FORCE_HTTPS=true
     volumes:
       - /srv/lychee/config:/config
+      - /srv/lychee/uploads:/app/public/uploads
       - /srv/lychee/sym:/app/public/sym
       - "/mnt/nas/Shared/Content/Space photos:/space-photos:ro"
     restart: unless-stopped
