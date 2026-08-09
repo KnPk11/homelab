@@ -364,9 +364,15 @@ IN ACCEPT -p tcp -dport 6443 -source lab-vm -log nolog
 IN ACCEPT -p udp -dport 8472 -source lab-vm -log nolog # k3s flannel VXLAN
 IN ACCEPT -p tcp -dport 10250 -source lab-vm -log nolog # k3s kubelet
 # Spark Web UIs & K8s NodePort Services
-IN ACCEPT -p tcp -dport 4040 -source homelab-lan -log nolog # Spark Live Web UI
-IN ACCEPT -p tcp -dport 18080 -source homelab-lan -log nolog # Spark History Server
+IN ACCEPT -p tcp -dport 4040 -source main-lan -log nolog # Spark Live Web UI (Main LAN)
+IN ACCEPT -p tcp -dport 4040 -source vpn-net -log nolog # Spark Live Web UI (VPN)
+IN ACCEPT -p tcp -dport 4040 -source homelab-lan -log nolog # Spark Live Web UI (Homelab LAN)
+IN ACCEPT -p tcp -dport 18080 -source main-lan -log nolog # Spark History Server (Main LAN)
+IN ACCEPT -p tcp -dport 18080 -source vpn-net -log nolog # Spark History Server (VPN)
+IN ACCEPT -p tcp -dport 18080 -source homelab-lan -log nolog # Spark History Server (Homelab LAN)
+IN ACCEPT -p tcp -dport 30000:32767 -source main-lan -log nolog # k3s NodePort Services
 IN ACCEPT -p tcp -dport 30000:32767 -source homelab-lan -log nolog # k3s NodePort Services
+
 EOC
 
 echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
