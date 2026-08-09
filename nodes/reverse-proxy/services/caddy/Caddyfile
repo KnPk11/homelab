@@ -290,6 +290,18 @@ lychee.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.95:8183
 }
 
+spark.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext spark
+    import common-logging spark
+    import honeypots-and-traps
+
+    reverse_proxy 192.168.50.96:18080
+}
+
+
 # immich.{$DOMAIN_NAME} {
 #     import common-headers
 #     import common-robots
