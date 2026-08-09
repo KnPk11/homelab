@@ -226,6 +226,7 @@ influxdb.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext influxdb
     import common-logging influxdb
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:8086
 }
@@ -236,7 +237,8 @@ glances.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext glances
     import common-logging glances
-    
+    import honeypots-and-traps
+
     handle {
         basic_auth {
             k {$GLANCES_HASH}
@@ -253,6 +255,7 @@ filebrowser.{$DOMAIN_NAME} {
     import access_policy_wan 200 30s
     import common-logging-plaintext filebrowser
     import common-logging filebrowser
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:9101
 }
@@ -333,6 +336,7 @@ nextcloud.{$DOMAIN_NAME} {
     import access_policy_wan 4000 60s
     import common-logging-plaintext nextcloud
     import common-logging nextcloud
+    import honeypots-and-traps
 
     header {
             # Fixes HSTS warning (6 months in seconds)
@@ -382,6 +386,7 @@ privatebin.{$DOMAIN_NAME} {
     import access_policy_wan 50 30s
     import common-logging-plaintext privatebin
     import common-logging privatebin
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:8180
 }
@@ -393,6 +398,7 @@ banned.{$DOMAIN_NAME} {
     import access_policy_wan 200 30s
     import common-logging-plaintext banned
     import common-logging banned
+    import honeypots-and-traps
 
     header {
             # 1. Remove the strict 'SAMEORIGIN' rule from common-headers
@@ -413,6 +419,7 @@ wud.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext wud
     import common-logging wud
+    import honeypots-and-traps
 
     handle {
         basic_auth {
@@ -489,6 +496,7 @@ dozzle.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext dozzle
     import common-logging dozzle
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:9105
 }
@@ -527,6 +535,7 @@ my-media.{$DOMAIN_NAME} {
     import access_policy_wan 1000 30s
     import common-logging-plaintext webdav
     import common-logging webdav
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:8084
 }
@@ -537,6 +546,7 @@ pinchflat.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext pinchflat
     import common-logging pinchflat
+    import honeypots-and-traps
 
     reverse_proxy vpn-secure-wireguard:8945
 }
@@ -547,6 +557,7 @@ metube.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext metube
     import common-logging metube
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:8181
 }
@@ -567,6 +578,7 @@ ai.{$DOMAIN_NAME} {
     import access_policy_wan 500 30s
     import common-logging-plaintext openwebui
     import common-logging openwebui
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.95:3002
 }
@@ -577,6 +589,7 @@ syncthing.{$DOMAIN_NAME} {
     import access_policy_lan
     import common-logging-plaintext syncthing
     import common-logging syncthing
+    import honeypots-and-traps
 
     reverse_proxy 192.168.50.105:8384 {
         header_up Host 127.0.0.1
@@ -591,6 +604,7 @@ gatus.{$DOMAIN_NAME} {
     import access_policy_wan 300 30s
     import common-logging-plaintext gatus
     import common-logging gatus
+    import honeypots-and-traps
 
     @public_badges {
         path /api/v1/endpoints/*/health/badge.svg
