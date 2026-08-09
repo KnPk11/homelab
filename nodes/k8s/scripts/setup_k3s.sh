@@ -26,7 +26,6 @@ curl -sfL https://get.k3s.io | sh -s - server \
   --data-dir=/srv/k8s/data \
   --write-kubeconfig-mode=600 \
   --secrets-encryption \
-  --kube-apiserver-arg=anonymous-auth=false \
   --kube-apiserver-arg=audit-log-path=/srv/k8s/data/audit.log \
   --kube-apiserver-arg=audit-log-maxage=30 \
   --kube-apiserver-arg=audit-log-maxbackup=10 \
