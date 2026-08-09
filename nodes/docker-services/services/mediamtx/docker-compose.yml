@@ -5,6 +5,8 @@ services:
     image: bluenviron/mediamtx:latest-ffmpeg
     container_name: mediamtx
     user: 1000:1000
+    env_file:
+      - ${MEDIAMTX_ENV_PATH:-/srv/mediamtx/.env}
     environment:
       - MTX_RTSPTRANSPORTS=tcp
       - MTX_WEBRTCADDITIONALHOSTS=${MEDIAMTX_DOMAIN:-mediamtx.example.com}
