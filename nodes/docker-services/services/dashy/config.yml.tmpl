@@ -414,6 +414,12 @@ sections:
         url: https://login.tailscale.com/login?next_url=%2Fadmin%2Fmachines
         statusCheck: true
 
+      - title: Kubernetes
+        description: K8s Cluster & Workload Management
+        icon: fas fa-cubes
+        url: https://k8s.${HOMELAB_DOMAIN}
+        statusCheck: true
+
   - name: Monitoring
     displayData:
       hideForGuests: true
@@ -605,6 +611,29 @@ sections:
         url: https://metube.${HOMELAB_DOMAIN}
         statusCheck: true
 
+  - name: Data & Analytics
+    displayData:
+      hideForGuests: true
+      hideForUsers: ['Dash']
+    items:
+      - title: Airflow
+        description: Workflow orchestration & scheduling
+        icon: fas fa-project-diagram
+        url: https://airflow.${HOMELAB_DOMAIN}/
+        statusCheck: true
+
+      - title: dbt Docs
+        description: Data transformation lineage & documentation
+        icon: fas fa-database
+        url: https://dbt.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Apache Spark
+        description: Distributed data processing & job monitoring
+        icon: fas fa-bolt
+        url: https://spark.${HOMELAB_DOMAIN}
+        statusCheck: true
+
   - name: Tools & Workflow
     displayData:
       hideForGuests: true
@@ -620,10 +649,4 @@ sections:
         description: Share text snippets securely
         icon: fas fa-sticky-note
         url: https://privatebin.${HOMELAB_DOMAIN}
-        statusCheck: true
-
-      - title: Airflow
-        description: Workflow orchestration & scheduling
-        icon: fas fa-project-diagram
-        url: https://airflow.${HOMELAB_DOMAIN}/
         statusCheck: true
