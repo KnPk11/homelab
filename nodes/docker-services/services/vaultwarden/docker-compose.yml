@@ -8,6 +8,8 @@ services:
     ports:
       - "9103:80"
     restart: always
+    env_file:
+      - ${VAULTWARDEN_ENV_PATH:-/srv/vaultwarden/.env}
     environment:
       - DOMAIN=https://${VAULTWARDEN_DOMAIN:-vaultwarden.example.com}
       - TZ=Europe/London

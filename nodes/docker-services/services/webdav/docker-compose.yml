@@ -6,6 +6,8 @@ services:
     container_name: media-webdav
     ports:
       - "8084:80"
+    env_file:
+      - ${WEBDAV_ENV_PATH:-/srv/webdav/.env}
     environment:
       - APP_UID=1000
       - APP_GID=1000

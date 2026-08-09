@@ -17,6 +17,8 @@ services:
       - "8180:8080"
     networks:
       - caddy_public
+    env_file:
+      - ${PRIVATEBIN_ENV_PATH:-/srv/privatebin/.env}
     environment:
       - TZ=Europe/London
     restart: unless-stopped
