@@ -419,6 +419,8 @@ sections:
         icon: fas fa-cubes
         url: https://k8s.${HOMELAB_DOMAIN}
         statusCheck: true
+        statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403,404,405'
 
   - name: Monitoring
     displayData:
@@ -633,6 +635,8 @@ sections:
         icon: fas fa-bolt
         url: https://spark.${HOMELAB_DOMAIN}
         statusCheck: true
+        statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403,404,405'
 
   - name: Tools & Workflow
     displayData:
