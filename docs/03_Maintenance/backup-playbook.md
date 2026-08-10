@@ -7,21 +7,28 @@
 
 Operator playbook for **backing up and restoring** the homelab, plus light cleanup that usually runs before or after a backup window. It covers:
 
-| Layer | What | Where it lives |
-| :--- | :--- | :--- |
-| **Configs & secrets** | Live `/srv` envs, keys, node configs | On-demand scrape → `secrets_vault` |
-| **Router settings** | MikroTik config | Automated export + optional binary backup |
-| **Logs** | Large media libraries | Separate NAS/SMB sync |
-| **App data (docker-services)** | `/srv`, `/data`, Docker volumes via **Kopia** | Repo on NAS; client config on the host |
-| **Guests** | VMs/CTs | Proxmox Backup Server (`pbs-linux`) |
-| **Media / bulk NAS** | Large media libraries | Separate NAS/SMB sync |
-
+| Layer                          | What                                          | Where it lives                              |
+| :----------------------------- | :-------------------------------------------- | :------------------------------------------ |
+| **Guests**                     | VMs/CTs                                       | Proxmox Backup Server & offline storage     |
+| **App data (docker-services)** | `/srv`, `/data`, Docker volumes via **Kopia** | NAS & offline storage                       |
+| **Media (NAS)**                | Large media libraries                         | Offline storage via SMB (excluded from PBS) |
+| **Logs**                       | reverse-proxy `/mnt/logs`                     | Offline storage via SMB (excluded from PBS) |
+| **Configs & secrets**          | Live `/srv` envs, keys, node configs          | On-demand scrape into `secrets_vault`       |
+| **Router settings**            | MikroTik config                               | Automated export into `secrets_vault`       |
 ## ✅ 2. Pre-backup checklist
 
-Run through these before a planned backup window:
+Daily **PBS** of Linux guests plus an offline **mirror of the `pbs-linux` datastore** (WinSCP to a backup storage) already cover most disaster recovery for disks and CT/VM state. Treat extra weekly app exports as optional, occasional backups. Do not triple-copy the same disk content every week in three formats.
 
-1. **Repository**: Commit and push any intentional changes.
-2. **Optional app exports**:
+| Manual habit                                      | Still needed?                    | Notes                                                                                   |
+| :------------------------------------------------ | :------------------------------- | :-------------------------------------------------------------------------------------- |
+| PBS datastore → Off-site disk                     | **Yes** (automate if possible)   | Second copy of guest images                                                             |
+| **Vaultwarden** / **AnyType** app export          | **Yes, but rare** (e.g. monthly) | Portable re-import; PBS is image restore, not a clean app migrate                       |
+| Pull whole `/opt/dev` (repos/notes) from ai-tools | **Usually no for DR**            | Covered if that guest is in PBS; prefer git remotes / Syncthing for a live Windows tree |
+| Manual / SMB copy of `/mnt/logs`                  | Since PBS excludes `mp0`         | Enable Backup on the logs disk *or* keep optional SMB/offline sync (see §8)             |
+| Quarterly restore drill                           | **Yes**                          | Restore one CT from PBS (or from the offline mirror) and boot it                        |
+
+1. **Repository**: Commit and push untracked changes.
+2. **App exports** (portable — useful as less frequent backups):
    - **Vaultwarden / Bitwarden**: encrypted JSON export, password-protected.
    - **AnyType**: File → Export Space → Any-Block / Protobuf (enable options you need).
 
@@ -220,6 +227,12 @@ Primary guest protection is **PBS** datastore **`pbs-linux`** (path on PBS host:
 
 > [!NOTE]
 > Older workflow used `vzdump` files under host dump paths. Prefer PBS.
+
+### What a guest backup includes
+
+- **Root filesystem** of each scheduled VM/CT.
+- **Additional disks / mount points** only when **Backup** is enabled for that disk in the guest hardware config (Proxmox UI tick box).
+- Point-in-time as of the job (e.g. daily ~04:00 snapshot mode) — not continuous replication.
 
 ### Offline / secondary copy of the datastore
 
