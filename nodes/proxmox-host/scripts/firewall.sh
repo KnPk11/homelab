@@ -17,7 +17,7 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 # Canonical IP reference: inventory.yml & shared/ssh/config
 # Subnets
 MAIN_LAN="192.168.88.0/24"
-IOT_LAN="192.168.2.0/24"
+IOT_LAN="192.168.101.0/24"
 HOMELAB_LAN="192.168.50.0/24"
 VPN_NET="10.5.0.0/24"
 WIN11_VM="192.168.50.84"
