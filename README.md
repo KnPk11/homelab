@@ -2,6 +2,13 @@
 
 This repository is the central "Source of Truth" for my private cloud infrastructure. It transitions my homelab from a monolithic "manual" setup to a mature, distributed, GitOps-driven architecture.
 
+## 🖼️ Lab UI
+
+Sanitised views of the Dashy control surfaces — public entrypoint vs private service catalogue.
+
+| Public entrypoint | Private catalogue |
+| :---: | :---: |
+| ![Public Dashy landing page](docs/assets/screenshots/dashy-public-landing.jpg) | ![Private Dashy service catalogue](docs/assets/screenshots/dashy-private-catalogue.jpg) |
 
 ## ⚙️ Tech Stack
 *   **Compute:** Lenovo M70Q Tiny + Raspberry Pi 5
