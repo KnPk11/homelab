@@ -195,7 +195,27 @@ endpoints:
     conditions:
       - "[STATUS] == 200"
 
-  - name: Airflow
+  - name: Apache Airflow
+    group: Tools
+    url: "http://${HOMELAB_NODE_IP}:8094"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: Apache Spark
+    group: Tools
+    url: "http://${MINI_K8S_NODE_IP}:18080"
+    interval: 30s
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: dbt
     group: Tools
     url: "http://${HOMELAB_NODE_IP}:8094"
     interval: 30s
