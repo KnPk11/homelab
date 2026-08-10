@@ -354,15 +354,12 @@ enable: 1
 GROUP ssh-adm
 GROUP ping-trusted
 GROUP proxy-back
-# Allow full communication from k3s worker nodes (lab-vm and scratch-pc)
+
+# Full inter-node cluster communication from k3s compute worker nodes (lab-vm & scratch-pc)
+# Allows K8s API (6443), Flannel VXLAN (8472), Kubelet (10250), & dynamic Spark RPC (7078-7079)
 IN ACCEPT -source scratch-pc -log nolog
 IN ACCEPT -source lab-vm -log nolog
-# k3s API (kubectl) — restricted to dev workstation and worker node
-IN ACCEPT -p tcp -dport 6443 -source scratch-pc -log nolog
-IN ACCEPT -p tcp -dport 6443 -source lab-vm -log nolog
-# flannel + kubelet — restricted to worker node
-IN ACCEPT -p udp -dport 8472 -source lab-vm -log nolog # k3s flannel VXLAN
-IN ACCEPT -p tcp -dport 10250 -source lab-vm -log nolog # k3s kubelet
+
 # Spark Web UIs & K8s NodePort Services
 IN ACCEPT -p tcp -dport 4040 -source main-lan -log nolog # Spark Live Web UI (Main LAN)
 IN ACCEPT -p tcp -dport 4040 -source vpn-net -log nolog # Spark Live Web UI (VPN)
