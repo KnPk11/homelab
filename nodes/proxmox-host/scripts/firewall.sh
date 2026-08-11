@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # firewall.sh
-# Version: 1.7
-# Date: 2026-08-04
+# Version: 1.9
+# Date: 2026-08-11
 #
 # Proxmox host/cluster firewall management (cluster.fw aliases + guest rules).
 # Run on the Proxmox host (pve1). Topology inline; canonical ref inventory.yml.
@@ -39,6 +39,7 @@ PVE1_FW="/etc/pve/nodes/pve1/host.fw"
 # Guest Configs
 FW_HOMELAB="/etc/pve/firewall/100.fw"
 FW_OMV="/etc/pve/firewall/101.fw"
+FW_WINDOWS="/etc/pve/firewall/102.fw"   # windows VM (RDP)
 FW_OPENCLAW="/etc/pve/firewall/103.fw"
 FW_CADDY="/etc/pve/firewall/104.fw"
 FW_AI_TOOLS="/etc/pve/firewall/105.fw"
@@ -58,7 +59,7 @@ echo "--- Initializing Firewall Update ---"
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S"; do
+for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_WINDOWS" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
@@ -133,8 +134,8 @@ IN DNS(ACCEPT) -source vpn-net -log nolog
 IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
 
 [group file-svc]
-# SMB/NFS Access Rules
-# SMB: Main LAN, VPN, and specific Homelab Node
+# SMB/NFS for shared file hosts (OMV, docker-services, reverse-proxy trusted clients).
+# Intentionally does NOT include lab-vm / scratch-pc / k8s — those use file-svc-logs on CT 104 only.
 IN SMB(ACCEPT) -source main-lan -log nolog
 IN SMB(ACCEPT) -source vpn-net -log nolog
 IN SMB(ACCEPT) -source win11-vm -log nolog
@@ -144,6 +145,13 @@ IN ACCEPT -p tcp -dport 2049 -source homelab-lan -log nolog
 IN ACCEPT -p udp -dport 2049 -source homelab-lan -log nolog
 IN ACCEPT -p tcp -dport 111 -source homelab-lan -log nolog
 IN ACCEPT -p udp -dport 111 -source homelab-lan -log nolog
+
+[group file-svc-logs]
+# SMB only for reverse-proxy [logs] share — Spark / security analytics clients.
+# Attach this group to CT 104 only (not OMV / docker-services).
+IN SMB(ACCEPT) -source lab-vm -log nolog
+IN SMB(ACCEPT) -source scratch-pc -log nolog
+IN SMB(ACCEPT) -source k8s -log nolog
 
 [group crowdsec-svc]
 # CrowdSec Local API (LAPI) and Agent Communication
@@ -224,7 +232,23 @@ EOC
 
 echo "[+] Generated rules for Guest 101 (OMV)."
 
-# 5. Guest 103: Openclaw / lab-vm (.91) — k3s worker
+# 5. Guest 102: windows VM — RDP from trusted LANs
+cat <<EOC > $FW_WINDOWS
+[OPTIONS]
+enable: 1
+policy_in: DROP
+
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP proxy-back
+IN ACCEPT -p tcp -dport 3389 -source homelab-lan -log nolog # RDP from Homelab LAN
+IN ACCEPT -p tcp -dport 3389 -source main-lan -log nolog # RDP from Main LAN
+EOC
+
+echo "[+] Generated rules for Guest 102 (windows / RDP)."
+
+# 6. Guest 103: Openclaw / lab-vm (.91) — k3s worker
 cat <<EOC > $FW_OPENCLAW
 [OPTIONS]
 enable: 1
@@ -242,7 +266,7 @@ EOC
 
 echo "[+] Generated rules for Guest 103 (Openclaw / k3s worker)."
 
-# 6. Guest 104: Caddy LXC (.101)
+# 7. Guest 104: Caddy LXC (.101)
 cat <<EOC > $FW_CADDY
 [OPTIONS]
 enable: 1
@@ -251,15 +275,16 @@ macfilter: 1
 [RULES]
 GROUP ssh-adm
 GROUP web-pub
-GROUP log-svc      # Syslog ingestion
-GROUP file-svc      # Temp for log access
+GROUP log-svc         # Syslog ingestion
+GROUP file-svc        # Trusted SMB (main-lan/vpn/…) + NFS macros if used
+GROUP file-svc-logs   # Spark nodes only → //reverse-proxy/logs (not OMV)
 GROUP ping-trusted
 GROUP crowdsec-svc
 EOC
 
 echo "[+] Generated rules for Guest 104 (Caddy Proxy)."
 
-# 7. Guest 105: AI Tools (Me)
+# 8. Guest 105: AI Tools (Me)
 cat <<EOC > $FW_AI_TOOLS
 [OPTIONS]
 enable: 1
@@ -280,7 +305,7 @@ EOC
 
 echo "[+] Generated rules for Guest 105 (AI Toolbox)."
 
-# 8. Guest 106: DNS LXC (.102)
+# 9. Guest 106: DNS LXC (.102)
 cat <<EOC > $FW_DNS
 [OPTIONS]
 enable: 1
@@ -298,7 +323,7 @@ EOC
 
 echo "[+] Generated rules for Guest 106 (DNS)."
 
-# 9. Guest 107: Pulse monitoring LXC (.88)
+# 10. Guest 107: Pulse monitoring LXC (.88)
 # ssh-adm + ping; UI only through Caddy (GROUP proxy-back → reverse-proxy).
 # No broad :7655 from main-lan/vpn/homelab-lan — use https://pulse.<domain>.
 cat <<EOC > $FW_PULSE
@@ -315,7 +340,7 @@ EOC
 
 echo "[+] Generated rules for Guest 107 (Pulse)."
 
-# 10. Guest 108: VPN / Tailscale LXC (.87)
+# 11. Guest 108: VPN / Tailscale LXC (.87)
 cat <<EOC > $FW_VPNS
 [OPTIONS]
 enable: 1
@@ -328,7 +353,7 @@ EOC
 
 echo "[+] Generated rules for Guest 108 (vpns / Tailscale)."
 
-# 11. Guest 109: Proxmox Backup Server LXC (.86)
+# 12. Guest 109: Proxmox Backup Server LXC (.86)
 cat <<EOC > $FW_PBS
 [OPTIONS]
 enable: 1
@@ -345,7 +370,7 @@ EOC
 
 echo "[+] Generated rules for Guest 109 (PBS)."
 
-# 12. Guest 110: k8s LXC (.96) — k3s control plane
+# 13. Guest 110: k8s LXC (.96) — k3s control plane
 cat <<EOC > $FW_MINI_K8S
 [OPTIONS]
 enable: 1
@@ -379,7 +404,7 @@ EOC
 
 echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
 
-# 13. Apply / Restart Service
+# 14. Apply / Restart Service
 
 echo "--- Validating Configuration ---"
 if pve-firewall compile > /dev/null; then
