@@ -12,7 +12,7 @@ services:
       - APP_UID=1000
       - APP_GID=1000
       - TZ=Europe/London
-      - SERVER_NAME=${WEBDAV_DOMAIN:-media-webdav.example.com}
+      # SERVER_NAME is set dynamically inside entrypoint.sh from WEBDAV_DOMAIN (.env)
     secrets:
       - webdav_password
     entrypoint: ["/entrypoint.sh"]
