@@ -7,7 +7,8 @@
 		{ "name": "📁 srv", "path": "/srv" },
 		{ "name": "📁 mnt", "path": "/mnt" },
 		{ "name": "📁 opt", "path": "/opt" },
-		{ "name": "📁 etc", "path": "/etc" }
+		{ "name": "📁 etc", "path": "/etc" },
+		{ "name": "📁 tmp", "path": "/tmp" }
 	],
 	"settings": {
 		"git.scanRepositories": [
