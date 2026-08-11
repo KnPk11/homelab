@@ -91,7 +91,7 @@ Record posture for **each update kind** below. Do not apply upgrades here — on
 
 | Kind | What | Typical where | How to snapshot |
 | :--- | :--- | :--- | :--- |
-| **Router** | RouterOS packages / firmware channel | MikroTik | Version + available update (no upgrade mid-audit) |
+| **Router** | Edge + AP firmware | **All routers:** MikroTik (RouterOS packages / RouterBOARD) **and** AsusWRT-Merlin on the RT-AX88U (AP) | Version + available update on **each** box. |
 | **OS** | Hypervisor + guest base systems | All inventory hosts | Channel varies: **Proxmox** host UI/`pve`; **guest apt** (often via **Cockpit**); **OMV** UI on nas — those names are channels, not an exhaustive host list |
 | **Docker images** | Container image tags actually *running* | Mainly **docker-services** (any other Docker host if present) | Stale/outdated images vs registry; What’s Up Docker / Diun / `docker images` + compose tags |
 | **Native services** | Non-container apps installed on the OS (packages, binaries, unit-managed stacks) | Any host that runs them (e.g. CrowdSec, Caddy package, AdGuard, PBS, Hermes/OpenClaw, fail2ban) | Pending package upgrades for those units, or “version last checked” if install is manual/third-party |
@@ -107,8 +107,11 @@ ssh [HOST] 'echo "=== OS $(hostname) ==="
 # Proxmox host: also note pveversion / UI update state if apt alone is incomplete
 # nas: note OMV update UI if that is the real channel
 
-# --- Router ---
+# --- Router (check BOTH edge and AP) ---
+# MikroTik:
 ssh router '/system resource print; /system package update print'
+# Optional: /system routerboard print  (RouterBOARD firmware vs current package)
+# Asus (Merlin, AP mode): Web UI → Administration → Firmware Upgrade
 
 # --- Docker images (docker-services; awareness only) ---
 ssh docker-services 'docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}" 
@@ -275,7 +278,6 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 
 ## 📝 7. Report template
 
-```markdown
 # Security audit report — [YYYY-MM-DD]
 
 - **Mode:** monthly-light | quarterly-deep | ad-hoc:[focus]
@@ -291,7 +293,8 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 ## Updates snapshot
 | Kind | Where | Pending / stale? | Channel | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| Router | MikroTik |  | RouterOS |  |
+| Router | MikroTik |  | RouterOS / RouterBOARD |  |
+| Router | Asus Merlin (AP) |  | Merlin release for model |  |
 | OS | [host…] | reboot? | PVE / apt·Cockpit / OMV |  |
 | Docker images | docker-services |  | compose tags / WUD |  |
 | Native services | [host + unit…] |  | apt / vendor / manual |  |
@@ -318,7 +321,6 @@ ssh docker-services 'CFG=/opt/scripts/Backups/Kopia/config/main-repo.config
 
 ## Follow-ups
 1.
-```
 
 ## ⚡ 8. Monthly light (copy-paste order)
 
