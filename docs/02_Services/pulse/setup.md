@@ -13,7 +13,11 @@ Pulse is a private multi-host monitoring dashboard for Proxmox and related infra
 Upstream installer runs **as root on the Proxmox host** and builds a Debian LXC with a **systemd** Pulse server.
 
 ```bash
-export PULSE_VERSION=v6.0.5
+# Prefer latest stable tag at install time (example shape: v6.2.1)
+export PULSE_VERSION=[LATEST-PULSE-VERSION]
+# Optional auto-resolve (needs curl + jq on the Proxmox host):
+# export PULSE_VERSION="$(curl -fsSL https://api.github.com/repos/rcourtman/Pulse/releases/latest | jq -r .tag_name)"
+
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh"
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh.sshsig"
 ssh-keygen -Y verify \
@@ -51,8 +55,20 @@ curl -fsSL 'http://<PULSE_IP>:<PORT>/api/setup-script?type=pve&host=https%3A%2F%
 pct enter <CT_ID>                 # shell
 systemctl status pulse
 journalctl -u pulse -f
-pct exec <CT_ID> -- /bin/update   # Pulse in-CT update helper (if present)
+/opt/pulse/bin/pulse version
 apt-get install -y rsync          # Required for scrape_configs_and_secrets.sh
+```
+
+### Update server (in-CT)
+
+This lab keeps auto-updates **disabled** (`--disable-auto-updates`). When the UI reports a new version, pin the **latest** tag again and upgrade:
+
+```bash
+export PULSE_VERSION=[LATEST-PULSE-VERSION]   # from GitHub Releases /latest
+# Optional: export PULSE_VERSION="$(curl -fsSL https://api.github.com/repos/rcourtman/Pulse/releases/latest | jq -r .tag_name)"
+
+# Preferred when present (created by the installer):
+/bin/update --version "${PULSE_VERSION}"
 ```
 
 Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metrics DB).
@@ -70,4 +86,3 @@ Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metr
 - Firewall: `nodes/proxmox-host/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
 - Private notes: `docs_private/services/public-homepage-and-host-monitoring.md`
 - Upstream: [Install](https://github.com/rcourtman/Pulse/blob/main/docs/INSTALL.md), [Configuration](https://github.com/rcourtman/Pulse/blob/main/docs/CONFIGURATION.md)
-```text
