@@ -64,6 +64,11 @@ Guest SSID ── VLAN 10 ───┘
 
 Asus must tag the guest (and any IoT-as-guest) SSID as **VLAN 10**. If both networks leave the AP untagged, MikroTik cannot separate them.
 
+> [!WARNING]
+> **Device isolation (Asus guest Wi‑Fi)**
+>
+> In normal **router mode**, Asus guest-network isolation works as intended (guest clients are kept off the main LAN by the Asus firewall). In **AP mode** that isolation does **not** function the same way: without SSID→VLAN tagging (and upstream enforcement), there is no reliable separation between IoT/guest Wi‑Fi clients and the rest of the devices on the Asus.
+
 ### Target config (RouterOS 7)
 
 ```bash
@@ -105,7 +110,7 @@ If a row already exists, use `set [find ...]` instead of `add`.
 
 - Firewall **Isolate Homelab & IoT** (Untrusted → private) still required for L3.  
 - Homelab isolation remains the **separate bridge**, not guest VLAN filtering.  
-- ASUS guest isolation / client isolation is optional extra, not a substitute for tagging + filtering.
+- ASUS guest isolation / client isolation is optional extra, not a substitute for tagging + filtering (see warning above on **AP mode**).
 
 ## Firewall (current model)
 
