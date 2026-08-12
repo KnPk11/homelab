@@ -1,0 +1,27 @@
+# Spark executor pod template for caddy geo map (and similar jobs).
+# One executor per node; schedule only on workers (not control-plane/master).
+# run_caddy_geo_map.sh regenerates this when SPREAD_EXECUTORS=1 (default).
+apiVersion: v1
+kind: Pod
+spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: spark-role
+                operator: In
+                values:
+                  - executor
+          topologyKey: kubernetes.io/hostname
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+              - key: node-role.kubernetes.io/master
+                operator: DoesNotExist
