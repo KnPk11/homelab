@@ -50,11 +50,13 @@ To explicitly tell receiving mail servers worldwide that no email servers are au
    - **TTL:** `Automatic`
 
 3. **Null MX Record** (Explicitly refuses inbound email):
-   - **Type:** `MX Record`
-   - **Host:** `@`
-   - **Value:** `.`
-   - **Priority:** `0`
-   - *Note: If Namecheap's DNS interface rejects `.` as a value, scroll down to the "Mail Settings" section on the Advanced DNS page and select "No Email Service".*
+   - *Note: Namecheap does not list MX records in the main "Host Records" table. Instead, scroll down to the dedicated **Mail Settings** section on the Advanced DNS page.*
+   - **Recommended (Namecheap GUI)**: Select **No Email Service** from the **Mail Settings** drop-down menu.
+   - **Manual (Custom MX)**: Select **Custom MX** from the drop-down menu → Click **Add New Record**:
+     - **Type:** `MX Record`
+     - **Host:** `@`
+     - **Value / Server:** `.`
+     - **Priority:** `0`
 
 4. **Wildcard DKIM Revocation** (Actively revokes all DKIM selectors):
    - **Type:** `TXT Record`
