@@ -49,6 +49,18 @@ To explicitly tell receiving mail servers worldwide that no email servers are au
    - **Value:** `v=DMARC1; p=reject;`
    - **TTL:** `Automatic`
 
+3. **Null MX Record** (Explicitly refuses inbound email):
+   - **Type:** `MX Record`
+   - **Host:** `@`
+   - **Value:** `.`
+   - **Priority:** `0`
+   - *Note: If Namecheap's DNS interface rejects `.` as a value, scroll down to the "Mail Settings" section on the Advanced DNS page and select "No Email Service".*
+
+4. **Wildcard DKIM Revocation** (Actively revokes all DKIM selectors):
+   - **Type:** `TXT Record`
+   - **Host:** `*._domainkey`
+   - **Value:** `v=DKIM1; p=`
+
 ### Option A: Transitioning to a Managed Provider (e.g., Proton Mail, M365)
 
 If you decide to use your domain with a managed external email provider, update these records according to your provider's instructions:
@@ -70,12 +82,26 @@ If you decide to self-host an email stack on your own infrastructure:
 * **Reverse DNS (PTR)**: Ensure your ISP or hosting provider configures a matching PTR record for your public IP pointing back to `mail.[DOMAIN]`.
 
 
-## 4. Local Verification
-You can verify the DNS resolution from your local machine:
+## 4. Verification
+
+### Online Verification (MXToolbox SuperTool)
+Verify your DNS security records online using [MXToolbox SuperTool](https://mxtoolbox.com/SuperTool.aspx):
+
+* **SPF Check**: Enter `spf:[DOMAIN]` to confirm `v=spf1 -all` is active.
+* **DMARC Check**: Enter `dmarc:[DOMAIN]` to verify `p=reject` policy enforcement.
+* **MX Check**: Enter `mx:[DOMAIN]` to confirm the Null MX record or "No Email Service" setting.
+* **DKIM Check**: Enter `txt:*._domainkey.[DOMAIN]` to check DKIM key revocation.
+
+### Local CLI Verification
+Verify DNS resolution locally from your workstation:
 
 ```bash
 # Check if the subdomain resolves to your MikroTik DDNS address
 nslookup nextcloud.[DOMAIN]
+
+# Verify SPF and DMARC TXT records
+dig +short TXT [DOMAIN]
+dig +short TXT _dmarc.[DOMAIN]
 ```
 
 ## Appendix: Legacy DDNS Method
