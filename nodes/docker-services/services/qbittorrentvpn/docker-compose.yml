@@ -7,7 +7,7 @@ services:
     environment:
       - VPN_ENABLED=yes
       - VPN_PROV=custom
-      - VPN_CLIENT=openvpn    # openvpn or wireguard, depending on provider
+      - VPN_CLIENT=wireguard  # openvpn or wireguard, depending on provider
       - STRICT_PORT_FORWARD=yes # VPN kill switch
       - ENABLE_PRIVOXY=no
       - WEBUI_PORT=8091
