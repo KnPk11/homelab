@@ -29,6 +29,8 @@ services:
       - /dev/net/tun          # VPN tunnel device
     cap_add:
       - NET_ADMIN             # needed for VPN
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
     security_opt:
       - no-new-privileges:true
     deploy:
