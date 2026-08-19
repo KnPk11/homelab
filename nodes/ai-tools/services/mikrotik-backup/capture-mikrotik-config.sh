@@ -25,6 +25,7 @@ ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
 REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
 LOCAL_BACKUP_DIR="/opt/dev/secrets_vault/mikrotik-backups"
 LOCAL_BACKUP="${LOCAL_BACKUP_DIR}/mikrotik-config-export-$(date +%Y%m%d-%H%M%S).rsc"
+RETENTION_DAYS="${RETENTION_DAYS:-90}"
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -133,6 +134,6 @@ else
   log "Backup updated: ${LOCAL_BACKUP}"
 fi
 
-# Clean up backups older than 30 days
-find "${LOCAL_BACKUP_DIR}" -type f -name "mikrotik-config-export-*.rsc" -mtime +30 -delete
-log "Cleaned up backups older than 30 days."
+# Clean up backups older than 90 days
+find "${LOCAL_BACKUP_DIR}" -type f -name "mikrotik-config-export-*.rsc" -mtime "+${RETENTION_DAYS}" -delete
+log "Cleaned up backups older than ${RETENTION_DAYS} days."
