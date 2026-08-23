@@ -1,6 +1,6 @@
 services:
   photoprism:
-    image: photoprism/photoprism:latest
+    image: photoprism/photoprism:260728
     container_name: photoprism
     depends_on:
       - photoprism_db
