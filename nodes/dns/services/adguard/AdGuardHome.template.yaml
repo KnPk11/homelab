@@ -176,6 +176,11 @@ filtering:
     - domain: mediamtx.{{DOMAIN_NAME}}
       answer: {{HOMELAB_NODE_IP}}
       enabled: true
+    # Direct to OMV (not Caddy). Wildcard *.domain otherwise sends nas to the proxy,
+    # which does not terminate SMB/OMV UI.
+    - domain: nas.{{DOMAIN_NAME}}
+      answer: {{OMV_NODE_IP}}
+      enabled: true
   safe_fs_patterns: []
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576

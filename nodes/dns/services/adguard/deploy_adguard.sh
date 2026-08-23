@@ -59,6 +59,9 @@ if [[ -z "$HOMELAB_NODE_IP" ]]; then
     exit 1
 fi
 
+# OMV/NAS (inventory.yml). Optional in env; default matches inventory.
+OMV_NODE_IP="${OMV_NODE_IP:-192.168.50.90}"
+
 echo "📝 Injecting secrets into AdGuardHome configuration..."
 
 # 4. Replace placeholders and write to the live location.
@@ -66,11 +69,13 @@ echo "📝 Injecting secrets into AdGuardHome configuration..."
 awk -v hash="$ADGUARD_PASSWORD_HASH" \
     -v domain="$DOMAIN_NAME" \
     -v caddy_ip="$CADDY_NODE_IP" \
-    -v homelab_ip="$HOMELAB_NODE_IP" '{
+    -v homelab_ip="$HOMELAB_NODE_IP" \
+    -v omv_ip="$OMV_NODE_IP" '{
     gsub(/\{\{ADGUARD_PASSWORD_HASH\}\}/, hash)
     gsub(/\{\{DOMAIN_NAME\}\}/, domain)
     gsub(/\{\{CADDY_NODE_IP\}\}/, caddy_ip)
     gsub(/\{\{HOMELAB_NODE_IP\}\}/, homelab_ip)
+    gsub(/\{\{OMV_NODE_IP\}\}/, omv_ip)
     print
 }' "$TEMPLATE_FILE" > "$LIVE_FILE"
 
