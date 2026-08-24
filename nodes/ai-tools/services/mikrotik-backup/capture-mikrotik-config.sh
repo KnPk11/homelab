@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # =============================================================================
 # capture-mikrotik-config.sh
-# Version: 1.4
-# Date: 2026-07-15
+# Version: 1.5
+# Date: 2026-08-24
 #
 # capture-mikrotik-config.sh — Exports MikroTik RouterOS config via SSH
 # and writes it to a local gitignored file for backup by scrape_configs_and_secrets.sh.
@@ -22,6 +22,8 @@ set -euo pipefail
 ROUTER_SSH_USER="${ROUTER_SSH_USER:-svc_backup}"
 ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
 ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
+# Passwordless job key (NOT God Mode, NOT the GitHub key). Cron has no ssh-agent.
+ROUTER_SSH_IDENTITY="${ROUTER_SSH_IDENTITY:-$HOME/.ssh/id_ed25519_mt_backup}"
 REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
 LOCAL_BACKUP_DIR="/opt/dev/secrets_vault/mikrotik-backups"
 LOCAL_BACKUP="${LOCAL_BACKUP_DIR}/mikrotik-config-export-$(date +%Y%m%d-%H%M%S).rsc"
@@ -90,8 +92,14 @@ ROUTER_CMD=$(cat << 'EOF'
 EOF
 )
 
+if [[ ! -f "${ROUTER_SSH_IDENTITY}" ]]; then
+  log "ERROR: SSH identity not found: ${ROUTER_SSH_IDENTITY}"
+  log "This job needs a passphrase-less key for ${ROUTER_SSH_USER} (default ~/.ssh/id_ed25519_mt_backup)."
+  exit 1
+fi
+
 ssh \
-  -i ~/.ssh/id_ed25519 \
+  -i "${ROUTER_SSH_IDENTITY}" \
   -o IdentitiesOnly=yes \
   -o BatchMode=yes \
   -o ConnectTimeout=10 \

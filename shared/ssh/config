@@ -10,10 +10,17 @@ Host github.com
     IdentityFile ~/.ssh/id_ed25519
     IdentitiesOnly yes
 
-# MikroTik Router
+# MikroTik Router (God Mode — interactive / AI)
 Host router mikrotik 192.168.50.1 192.168.88.1
     User svc_ai
     IdentityFile ~/.ssh/id_ed25519_ai
+    IdentitiesOnly yes
+
+# MikroTik read-only capture (passphrase-less job key; used by cron)
+Host mikrotik-backup
+    HostName 192.168.88.1
+    User svc_backup
+    IdentityFile ~/.ssh/id_ed25519_mt_backup
     IdentitiesOnly yes
 
 # Homelab Nodes (God Mode Key)

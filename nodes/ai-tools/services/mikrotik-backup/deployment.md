@@ -30,12 +30,22 @@ Add the following line:
 
 ### SSH key prerequisite
 
-The script uses key-based auth (`svc_backup@192.168.88.1`). Ensure the executing user's public key is authorised on the router:
+Cron has **no ssh-agent**, so this job must use a **passphrase-less** key. Do not point it at God Mode (`id_ed25519_ai`) or the GitHub key (`id_ed25519`) — both are encrypted and fail in BatchMode as `Permission denied (publickey)`.
+
+On **ai-tools**:
 
 ```bash
-# Copy public key to the router
-ssh-copy-id -i ~/.ssh/id_ed25519.pub svc_backup@192.168.88.1
+# One-time: dedicated job key (not in Git)
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_mt_backup -N '' -C svc_backup
 ```
+
+On the router (as `svc_ai`, God Mode unlocked):
+
+```bash
+/user ssh-keys add user=svc_backup key="ssh-ed25519 AAAA... svc_backup"
+```
+
+The capture script defaults to `~/.ssh/id_ed25519_mt_backup` (`ROUTER_SSH_IDENTITY` to override).
 
 ## 3. Restoring Configs
 
