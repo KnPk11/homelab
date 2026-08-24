@@ -113,5 +113,5 @@ add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pm
 - **Addresses:** `[WG-SUBNET].2/32`
 - **DNS:** Prefer **`[ADGUARD-IP]`** only (same as house DHCP). Using only `[WG-SUBNET].1` forces all client queries through the router.
 - **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed
-- **Endpoint:** `[DDNS_NAME].sn.mynetname.net:51821`
+- **Endpoint:**  MikroTik Cloud `[DDNS_NAME].sn.mynetname.net:51821`, or `ip.[DOMAIN]:51821` (using dynamic DNS) as fallback only if Mikrotik's Cloud is itself experiencing DNS issues.
 - **Public Key:** `[ROUTER-WG-PUBLIC-KEY]`
