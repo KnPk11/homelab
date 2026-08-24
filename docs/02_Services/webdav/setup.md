@@ -33,14 +33,17 @@ behind_proxy: true
 prefix: /
 users:
   - username: K
-    password: "YOUR_PASSWORD_OR_BCRYPT_HASH"
+    password: "{bcrypt}$2a$10$..."  # or plain-text password
     scope: /data
     modify: true
     rules: []
 ```
 
 > [!TIP]
-> **Password format:** You can enter plain-text passwords or standard bcrypt hashes (e.g. `$2a$10$...`).
+> **Password format:** 
+> * **Bcrypt:** Prefix the hash with `{bcrypt}` (e.g. `"{bcrypt}$2a$10$..."`). Generate with:
+>   `docker exec media-webdav webdav bcrypt 'YOUR_PASSWORD'`
+> * **Plain text:** Enter directly as `"your_password"`.
 
 ---
 

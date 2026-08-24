@@ -10,7 +10,7 @@ behind_proxy: true
 prefix: /
 users:
   - username: K
-    password: "your_password_or_bcrypt_hash_here"
+    password: "{bcrypt}$2a$10$..." # or plain-text "your_password"
     scope: /data
     modify: true
     rules: []
