@@ -2,7 +2,7 @@ version: '3.8'
 
 services:    
   webdav:
-    image: hacdias/webdav:latest
+    image: hacdias/webdav:v5.14.2
     container_name: media-webdav
     restart: unless-stopped
     ports:
