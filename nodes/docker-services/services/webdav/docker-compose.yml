@@ -5,6 +5,7 @@ services:
     image: hacdias/webdav:v5.14.2
     container_name: media-webdav
     restart: unless-stopped
+    user: "1000:1000"
     ports:
       - "8084:80"
     environment:
@@ -13,6 +14,13 @@ services:
       - ${WEBDAV_CONFIG_PATH:-/srv/webdav/config.yaml}:/etc/webdav/config.yaml:ro
       - /mnt/nas/Media:/data
     command: ["-c", "/etc/webdav/config.yaml"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16M
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
     deploy:
       resources:
         limits:
