@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > **Tags:** #DNS #DDNS #Namecheap #WireGuard #Networking
-> **Host:** `ai-tools` | **Interval:** Every 10–15 minutes
+> **Host:** `ai-tools` | **Interval:** Every 5 minutes
 
 ## 1. Overview
 
@@ -45,10 +45,10 @@ Edit crontab on `ai-tools`:
 crontab -e
 ```
 
-Add the job (running every 10–15 minutes):
+Add the job (running every 5 minutes):
 
 ```cron
-*/10 * * * * /opt/dev/homelab_repo/nodes/ai-tools/services/namecheap-ddns/update-namecheap-ddns.sh >> /var/log/namecheap-ddns.log 2>&1
+*/5 * * * * /opt/dev/homelab_repo/nodes/ai-tools/services/namecheap-ddns/update-namecheap-ddns.sh >> /var/log/namecheap-ddns.log 2>&1
 ```
 
 ---
