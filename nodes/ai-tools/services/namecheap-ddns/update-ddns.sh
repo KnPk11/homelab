@@ -1,0 +1,1 @@
+update-namecheap-ddns.sh
