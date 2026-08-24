@@ -1,0 +1,16 @@
+# =============================================================================
+# WebDAV Server Configuration (hacdias/webdav)
+# Place real runtime config at: /srv/webdav/config.yaml on docker-services
+# =============================================================================
+
+address: 0.0.0.0
+port: 80
+auth: true
+behind_proxy: true
+prefix: /
+users:
+  - username: K
+    password: "your_password_or_bcrypt_hash_here"
+    scope: /data
+    modify: true
+    rules: []

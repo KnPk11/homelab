@@ -2,44 +2,22 @@ version: '3.8'
 
 services:    
   webdav:
-    image: chonjay21/webdav:latest
+    image: hacdias/webdav:latest
     container_name: media-webdav
+    restart: unless-stopped
     ports:
       - "8084:80"
-    env_file:
-      - ${WEBDAV_ENV_PATH:-/srv/webdav/.env}
     environment:
-      - APP_UID=1000
-      - APP_GID=1000
       - TZ=Europe/London
-      # SERVER_NAME is set dynamically inside entrypoint.sh from WEBDAV_DOMAIN (.env)
-    secrets:
-      - webdav_password
-    entrypoint: ["/entrypoint.sh"]
     volumes:
-      - /srv/webdav/entrypoint.sh:/entrypoint.sh:ro
-      - /mnt/nas/Media:/var/webdav/data
-    restart: unless-stopped
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - DAC_OVERRIDE
-      - FOWNER
-      - SETUID
-      - SETGID
-      - KILL
-      - NET_BIND_SERVICE
+      - ${WEBDAV_CONFIG_PATH:-/srv/webdav/config.yaml}:/etc/webdav/config.yaml:ro
+      - /mnt/nas/Media:/data
+    command: ["-c", "/etc/webdav/config.yaml"]
     deploy:
       resources:
         limits:
           cpus: '0.50'
-          memory: 512M
+          memory: 128M
         reservations:
-          cpus: '0.25'
-          memory: 256M
-
-
-secrets:
-  webdav_password:
-    file: ${WEBDAV_PASSWORD_PATH:-/srv/webdav/webdav_password.secret}
+          cpus: '0.10'
+          memory: 32M

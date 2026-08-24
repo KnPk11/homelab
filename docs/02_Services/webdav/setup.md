@@ -1,83 +1,82 @@
 # WebDAV Setup
 
 > [!NOTE]
-> #WebDAV #FileSharing #Storage #Docker #Fail2Ban
+> **Tags:** #WebDAV #FileSharing #Media #Storage #Docker #Symfonium
+> **Service:** `media-webdav` | **Port:** `8084` (internal) -> Caddy Reverse Proxy
 
-## 1. Description
+## 1. Overview
 
-A protocol for secure remote file access and management over HTTP, suitable for mounting remote storage as local drives.
+A lightweight, high-performance WebDAV server powered by [`hacdias/webdav`](https://github.com/hacdias/webdav). It exposes your NAS media storage (`/mnt/nas/Media`) over HTTPS for:
+* **Symfonium** (Android media streaming)
+* **Android File Managers** (Solid Explorer, Mixplorer)
+* **Windows Network Drive Mapping**
+* **Remote Clients & rclone**
 
-Brute-force, geo-blocking, and exposure tips: [security.md](security.md).
+---
 
-## 2. Directory Preparation
+## 2. Server Configuration (`docker-services`)
 
-Create the necessary configuration directories and set appropriate permissions:
+Runtime configuration is stored on `docker-services` under `/srv/webdav/config.yaml`.
 
+### 1. Create directory & config
 ```bash
-sudo mkdir -p /srv/webdav/config
-sudo chmod -R 755 /srv/webdav/config
+sudo mkdir -p /srv/webdav
+sudo chmod 755 /srv/webdav
 ```
 
-## 3. Entrypoint Configuration
-
-This Docker image is not persistent and does not support file injections. As a workaround, create and mount an entrypoint script that reads secrets:
-
-```bash
-#!/bin/sh
-set -e
-
-export APP_USER_NAME=[USER]
-export APP_USER_PASSWD=$(cat /run/secrets/[SECRET])
-
-exec "$WEBDAV_SOURCE_DIR/entrypoint.sh"
+### 2. Configure `/srv/webdav/config.yaml`
+```yaml
+address: 0.0.0.0
+port: 80
+auth: true
+behind_proxy: true
+prefix: /
+users:
+  - username: K
+    password: "YOUR_PASSWORD_OR_BCRYPT_HASH"
+    scope: /data
+    modify: true
+    rules: []
 ```
 
-Ensure the script is executable:
+> [!TIP]
+> **Password format:** You can enter plain-text passwords or standard bcrypt hashes (e.g. `$2a$10$...`).
 
+---
+
+## 3. Client Connection Guide
+
+### 📱 Symfonium (Android)
+1. Open Symfonium → **Settings** → **Media providers** → **Add provider** → **WebDAV**.
+2. **Server address:** `https://my-media.[DOMAIN]` (or local `http://192.168.50.95:8084`).
+3. **Username:** `K`
+4. **Password:** Your configured password.
+
+---
+
+### 💻 Windows Network Drive (Native Explorer)
+Because Caddy terminates valid Let's Encrypt TLS on port 443, Windows maps the drive natively without extra tools:
+
+1. Open **File Explorer** → This PC → **Map network drive**.
+2. **Drive:** `Z:` (or preferred letter).
+3. **Folder:** `https://my-media.[DOMAIN]`
+4. Check **"Connect using different credentials"** and click **Finish**.
+5. Enter username `K` and your password.
+
+---
+
+### 🔄 rclone / Scripted Mount
 ```bash
-chmod +x /srv/webdav/entrypoint.sh
+# rclone config entry
+[my-media]
+type = webdav
+url = https://my-media.[DOMAIN]
+vendor = other
+user = K
+pass = <obscured_password>
 ```
 
-## 4. Deployment Options
-
-### Port-forwarded Setup
-
-1. Forward the relevant ports if utilising port forwarding.
-2. Mount on Windows using `https://webdav.homelab.local:8443/data/`
-
-### Reverse-proxied Setup
-
-1. Remove certificates, TLS, and port mappings from the `docker-compose.yml` file if utilising Caddy.
-2. Configure the `SERVER_NAME` environment variable.
-
-## 5. Multi-user Support
-
-1. Duplicate the Docker Compose configuration and enable the `URL_PREFIX` variable to create unique subpaths:
-
-   ```yaml
-        - URL_PREFIX=/webdav_shared
-      volumes:
-        - /mnt/pool/Shared:/var/webdav/data
-   ```
-
-2. Alternatively, run at the root path and create additional subdomains.
-
-## 6. Known Issues
-
-> [!WARNING]
-> **Mounting as a drive on Windows**
->
-> Native Windows drive mounting often fails, similar to issues seen with Nextcloud.
->
-> Possible solutions include:
-> - Utilising a custom WebDAV plugin for Caddy.
-> - Using third-party WebDAV mounters such as `rclone`.
-
-### rclone Workaround
-
-1. Add the address with credentials: `https://webdav.homelab.local/data/`
-2. Mount the drive by executing:
-
-   ```cmd
-   ./rclone mount webdav: Y: --vfs-cache-mode writes --links
-   ```
+Mount as a local drive:
+```bash
+rclone mount my-media: /path/to/mount --vfs-cache-mode writes
+```
