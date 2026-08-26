@@ -533,6 +533,9 @@ my-media.{$DOMAIN_NAME} {
     import common-logging webdav
     import honeypots-and-traps
 
+    # Compatibility for legacy clients configured with /data subpath (e.g. Symfonium)
+    uri strip_prefix /data
+
     # Strip scheme and hostname from Destination header for WebDAV MOVE/COPY operations
     @hasDest header_regexp dest Destination ^https?://[^/]+(.*)$
     request_header @hasDest Destination {re.dest.1}
