@@ -92,3 +92,36 @@ Mount as a local drive:
 ```bash
 rclone mount my-media: /path/to/mount --vfs-cache-mode writes
 ```
+
+
+## 4. Multi-User & Granular Permissions
+
+You can serve multiple isolated users from the same single container. The `scope` parameter acts as a private `chroot` jail for each user:
+
+```yaml
+users:
+  # 1. Admin (Full access to all media)
+  - username: K
+    password: "{bcrypt}$2a$10$..."
+    scope: /data
+    modify: true
+    rules:
+      - regex: true
+        path: '^\/.*(\.git|\.DS_Store|@eaDir|Thumbs\.db).*$'
+        allow: false # Hide hidden/system files
+
+  # 2. Fariend share (Private personal subfolder only)
+  - username: user
+    password: "{bcrypt}$2a$10$..."
+    scope: /data/Shared/User
+    modify: true
+    rules: []
+
+  # 3. Guest (Read-only shared library)
+  - username: guest
+    password: "{bcrypt}$2a$10$..."
+    scope: /data/Shared/Guest
+    modify: false
+    rules: []
+```
+
