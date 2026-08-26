@@ -27,14 +27,18 @@ sudo chmod 755 /srv/webdav
 ```yaml
 address: 0.0.0.0
 port: 80
-auth: true
-behind_proxy: true
 prefix: /
+behindProxy: true
+
+# Global defaults
+directory: /data
+permissions: CRUD
+
 users:
   - username: K
     password: "{bcrypt}$2a$10$..."  # or plain-text password
-    scope: /data
-    modify: true
+    directory: /data
+    permissions: CRUD
     rules: []
 ```
 
@@ -96,32 +100,31 @@ rclone mount my-media: /path/to/mount --vfs-cache-mode writes
 
 ## 4. Multi-User & Granular Permissions
 
-You can serve multiple isolated users from the same single container. The `scope` parameter acts as a private `chroot` jail for each user:
+You can serve multiple isolated users from the same single container. The `directory` parameter acts as a private `chroot` jail for each user, and `permissions` controls their access (`CRUD`, `R`, `none`):
 
 ```yaml
 users:
   # 1. Admin (Full access to all media)
   - username: K
     password: "{bcrypt}$2a$10$..."
-    scope: /data
-    modify: true
+    directory: /data
+    permissions: CRUD
     rules:
-      - regex: true
-        path: '^\/.*(\.git|\.DS_Store|@eaDir|Thumbs\.db).*$'
-        allow: false # Hide hidden/system files
+      - regex: '^/.*(\.git|\.DS_Store|@eaDir|Thumbs\.db).*$'
+        permissions: none # Hide/block hidden system files
 
-  # 2. Fariend share (Private personal subfolder only)
+  # 2. Friend share (Private personal subfolder only)
   - username: user
     password: "{bcrypt}$2a$10$..."
-    scope: /data/Shared/User
-    modify: true
+    directory: /data/Shared/User
+    permissions: CRUD
     rules: []
 
   # 3. Guest (Read-only shared library)
   - username: guest
     password: "{bcrypt}$2a$10$..."
-    scope: /data/Shared/Guest
-    modify: false
+    directory: /data/Shared/Guest
+    permissions: R
     rules: []
 ```
 
