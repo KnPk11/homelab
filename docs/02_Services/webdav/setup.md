@@ -12,7 +12,6 @@ A lightweight, high-performance WebDAV server powered by [`hacdias/webdav`](http
 * **Windows Network Drive Mapping**
 * **Remote Clients & rclone**
 
----
 
 ## 2. Server Configuration (`docker-services`)
 
@@ -45,30 +44,40 @@ users:
 >   `docker exec media-webdav webdav bcrypt 'YOUR_PASSWORD'`
 > * **Plain text:** Enter directly as `"your_password"`.
 
----
 
 ## 3. Client Connection Guide
 
-### 📱 Symfonium (Android)
+### 1. Symfonium (Android)
 1. Open Symfonium → **Settings** → **Media providers** → **Add provider** → **WebDAV**.
 2. **Server address:** `https://my-media.[DOMAIN]` (or local `http://192.168.50.95:8084`).
 3. **Username:** `K`
 4. **Password:** Your configured password.
 
----
 
-### 💻 Windows Network Drive (Native Explorer)
-Because Caddy terminates valid Let's Encrypt TLS on port 443, Windows maps the drive natively without extra tools:
+### 2. Windows Network Drive (Native Explorer)
+Because Caddy terminates valid Let's Encrypt TLS on port 443, Windows maps the drive natively:
 
+#### Prerequisites (WebClient Service)
+Windows requires the **`WebClient`** service to be running:
+1. Press `Win + R`, type `services.msc`, and press Enter.
+2. Ensure **WebClient** is **Running** and set to **Automatic** (or run `net start webclient` in Administrator CMD).
+
+#### Mapping the Drive
 1. Open **File Explorer** → This PC → **Map network drive**.
 2. **Drive:** `Z:` (or preferred letter).
 3. **Folder:** `https://my-media.[DOMAIN]`
-4. Check **"Connect using different credentials"** and click **Finish**.
-5. Enter username `K` and your password.
+4. Check **"Connect using different credentials"** (and optionally "Reconnect at sign-in").
+5. Click **Finish**, then authenticate with username `K` and your password.
 
----
+#### Large File Tweak (Optional / Recommended for Media)
+By default, Windows limits single-file WebDAV transfers to 50 MB. To lift this limit to 4 GB:
+1. In Registry Editor (`regedit`), navigate to:
+   `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters`
+2. Set **`FileSizeLimitInBytes`** (Decimal) to **`4294967295`** (4 GB).
+3. Restart the `WebClient` service or reboot.
 
-### 🔄 rclone / Scripted Mount
+
+### 3. rclone / Scripted Mount
 ```bash
 # rclone config entry
 [my-media]
