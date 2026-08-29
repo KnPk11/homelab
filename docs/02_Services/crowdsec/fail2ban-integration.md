@@ -17,7 +17,7 @@ Create the action file at `/etc/fail2ban/action.d/crowdsec.conf`. This script te
 # existing CS decisions for this IP, then add with F2B bantime.
 # Race: if CrowdSec later creates a longer native decision (e.g. 4h profile),
 # the edge ban may lengthen again until that decision expires.
-actionban = cscli decisions delete --ip <ip> ; cscli decisions add --ip <ip> --duration <bantime>s --reason 'Fail2Ban: <name>'
+actionban = cscli decisions delete --ip <ip> ; cscli decisions add --ip <ip> --duration <bantime>s --reason 'Fail2Ban: <name>' ; /usr/bin/python3 /srv/fail2ban-monitor/fail2ban_bans.py --record --ip <ip> --jail <name> --source F2B
 actionunban = cscli decisions delete --ip <ip>
 ```
 

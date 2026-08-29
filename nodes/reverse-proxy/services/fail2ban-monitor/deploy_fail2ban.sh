@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # deploy_fail2ban.sh
-# Version: 1.2
-# Date: 2026-07-27
+# Version: 1.3
+# Date: 2026-08-29
 #
 # Deploy Fail2Ban jail.local (inline HOMELAB_SUBNETS via envsubst), symlink
 # CrowdSec action + ban monitor script, restart fail2ban and fail2ban-monitor.
@@ -28,6 +28,8 @@ ln -sf "$SCRIPT_DIR/crowdsec_action.conf" /etc/fail2ban/action.d/crowdsec.conf
 # Symlink the python monitor (tracked code; stays in clone)
 mkdir -p /srv/fail2ban-monitor
 ln -sf "$SCRIPT_DIR/fail2ban_bans.py" /srv/fail2ban-monitor/fail2ban_bans.py
+touch /srv/fail2ban-monitor/banned-history.jsonl
+chmod 644 /srv/fail2ban-monitor/banned-history.jsonl
 
 echo "Restarting fail2ban..."
 systemctl restart fail2ban

@@ -5,7 +5,7 @@
 
 ## 1. Description
 
-Simple Python web server which parses logs to output IPs banned by Fail2Ban and CrowdSec in the past 24 hours.
+Simple Python web server which shows IPs banned by Fail2Ban and CrowdSec in a rolling 24-hour window. Bans are appended to a dedicated JSONL history file as they happen; the widget reads that file rather than live CrowdSec/Fail2Ban logs (those rotate and CrowdSec's CLI defaults to the 50 most recent alerts).
 
 ## 2. Installation
 
@@ -63,7 +63,9 @@ sudo systemctl enable --now fail2ban-monitor
 ## 3. Troubleshooting
 
 > [!WARNING]
-> **CrowdSec IP Parsing Failure**: If the app fails to return any IPs from CrowdSec, it might be due to the system locale causing the Python regex to fail on date parsing. Ensure logs are in the expected standard format.
+> **History looks truncated at ~50 bans**: CrowdSec `cscli alerts list` defaults to `--limit 50`. The monitor must ingest with `--limit 0` into `/srv/fail2ban-monitor/banned-history.jsonl`. If that file is missing or the service is down, the widget cannot reconstruct a full 24h window from the CLI alone.
+>
+> **CrowdSec/Fail2Ban logs empty after midnight**: `process_logs.sh` truncates `/var/log/fail2ban.log` and `/var/log/crowdsec.log` nightly. That is expected and is why the widget uses the JSONL history file instead of those logs.
 
 ## 4. Security
 

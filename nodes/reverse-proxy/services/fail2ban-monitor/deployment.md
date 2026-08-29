@@ -11,6 +11,9 @@ Templates and the deploy script stay in the repo. Network topology (ignoreip sub
 | `.../fail2ban-monitor/crowdsec_action.conf` | Fail2Ban → CrowdSec action |
 | `.../fail2ban-monitor/fail2ban_bans.py` | Ban dashboard script |
 | `/srv/fail2ban-monitor/fail2ban_bans.py` | Symlink → tracked script in clone |
+| `/srv/fail2ban-monitor/banned-history.jsonl` | Append-only rolling ban log (runtime, not in git) |
+
+The widget reads **only** `banned-history.jsonl` over a rolling 24h window. Fail2Ban `actionban` appends immediately; a background thread also ingests CrowdSec via `cscli alerts list --limit 0` so CrowdSec's default 50-row cap and nightly `process_logs.sh` truncation cannot shrink the history.
 
 ### Deployment Strategy
 
