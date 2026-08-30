@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   vpn-secure-wireguard:
-    image: linuxserver/wireguard:arm64v8-latest
+    image: lscr.io/linuxserver/wireguard:1.0.20260223
     container_name: vpn-secure-wireguard
     cap_add:
       - NET_ADMIN        # Needed for WireGuard to modify network stack
