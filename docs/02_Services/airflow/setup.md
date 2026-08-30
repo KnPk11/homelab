@@ -116,7 +116,12 @@ Update and launch the stack.
 > [!TIP]
 > **Airflow Best Practices**
 > 
-> - **Docker Operator**: Use Airflow's native `DockerOperator` to execute Docker commands and call external containerized jobs (such as dbt models).
+> - **Custom Image Build**: When extending Airflow with custom utilities (`ffmpeg`, `restic`, `yt-dlp`, Docker CLI), build the image locally on the Docker host prior to launching the stack:
+>   ```bash
+>   docker build -t custom_airflow:3.0.4 /opt/homelab-repo/nodes/docker-services/services/airflow
+>   ```
+>   Do not declare `build:` in `docker-compose.yml` when deploying via Portainer Git repository stacks, as Portainer's internal compose runner operates with a read-only filesystem (`mkdir /.docker: read-only file system`).
+> - **Docker Operator**: Use Airflow's native `DockerOperator` to execute Docker commands and call external containerised jobs (such as dbt models).
 > - **Optional Services**: Additional services like **Flower** (for Celery monitoring) are available as separate Compose fragments under `nodes/docker-services/services/airflow/docker-compose.flower.yml`.
 
 ## 5. Security

@@ -61,12 +61,12 @@ networks:
 
 x-airflow-common:
   &airflow-common
-  # In order to add custom dependencies or upgrade provider distributions you can use your extended image.
-  # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
-  # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+  # Use the pre-built local image. Do not set `build:` here: Portainer's
+  # compose runner has a read-only filesystem (`mkdir /.docker` fails).
+  # Rebuild on the host when the Dockerfile changes:
+  #   docker build -t custom_airflow:3.0.4 /opt/homelab-repo/nodes/docker-services/services/airflow
   # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.0.4}
   image: ${AIRFLOW_IMAGE_NAME:-custom_airflow:3.0.4}
-  build: .
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor

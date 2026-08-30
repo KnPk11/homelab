@@ -64,6 +64,15 @@ See [scripts/kopia/deployment.md](scripts/kopia/deployment.md) — client config
    ```
 3. Deploy the stack in Portainer using the compose file in the repo.
 
+## Airflow service
+
+1. Restore secret files under `/srv/airflow/.secrets/` (`airflow_fernet_key.secret`, `airflow_jwt_secret.secret`) and create `/srv/airflow/.env`.
+2. Build the custom image locally on the Docker host:
+   ```bash
+   docker build -t custom_airflow:3.0.4 /opt/homelab-repo/nodes/docker-services/services/airflow
+   ```
+3. Deploy the stack in Portainer using the compose file in the repo (`docker-compose.yml` references `custom_airflow:3.0.4` directly without `build:` so Portainer's read-only runner does not attempt in-container builds).
+
 ## Other services with deploy scripts
 
 | Service | Deploy script | Secret location |
