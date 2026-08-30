@@ -66,7 +66,7 @@ See [scripts/kopia/deployment.md](scripts/kopia/deployment.md) — client config
 
 ## Airflow service
 
-1. Restore secret files under `/srv/airflow/.secrets/` (`airflow_fernet_key.secret`, `airflow_jwt_secret.secret`) and create `/srv/airflow/.env`.
+1. Restore secret files under `/srv/airflow/.secrets/` (`airflow_fernet_key.secret`, `airflow_jwt_secret.secret`) and `/srv/airflow/.env` (from `airflow.env`).
 2. Build the custom image locally on the Docker host:
    ```bash
    docker build -t custom_airflow:3.0.4 /opt/homelab-repo/nodes/docker-services/services/airflow

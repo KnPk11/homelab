@@ -10,17 +10,14 @@ Apache Airflow orchestrates scheduled and dependency-aware data pipelines as cod
 
 ## 2. Setup
 
-Create the env file:
+Create the runtime env file on the host (`/srv/airflow/.env`):
 
 ```bash
-echo -e "AIRFLOW_UID=$(id -u)" > .env
-```
-
-Add GID to it:
-
-```env
+sudo mkdir -p /srv/airflow
+cat << 'EOF' | sudo tee /srv/airflow/.env
 AIRFLOW_UID=1000
 AIRFLOW_GID=0
+EOF
 ```
 
 Create the required directories:
