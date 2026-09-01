@@ -1,0 +1,16 @@
+[Unit]
+Description=Web-compromise docker events watch
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+EnvironmentFile=-/srv/web-compromise-watch/docker-events.env
+ExecStart=/usr/local/sbin/web-compromise-docker-events
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

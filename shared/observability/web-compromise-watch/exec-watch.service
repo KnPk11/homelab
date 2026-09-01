@@ -1,0 +1,15 @@
+[Unit]
+Description=Web-compromise exec watch (service-user shells)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/srv/web-compromise-watch/exec-watch.env
+ExecStart=/usr/local/sbin/web-compromise-exec-watch
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

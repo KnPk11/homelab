@@ -46,6 +46,10 @@ Docker Compose only auto-loads a file named **`.env`** for `${VAR}` interpolatio
 
 See [scripts/deployment.md](scripts/deployment.md) — env under `/opt/scripts/Security/ufw.env`.
 
+## Web-compromise watch
+
+See [services/web-compromise-watch/deployment.md](services/web-compromise-watch/deployment.md). Docker events (privileged / host-net / new published port) plus `/proc` watch for `nc`/`ncat` in docker cgroups.
+
 ## Kopia backups
 
 See [scripts/kopia/deployment.md](scripts/kopia/deployment.md) — client config + password under `/opt/scripts/Backups/Kopia/config/` (not in Git).
