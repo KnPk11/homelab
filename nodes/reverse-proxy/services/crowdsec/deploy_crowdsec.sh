@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # deploy_crowdsec.sh
-# Version: 1.3
-# Date: 2026-07-27
+# Version: 1.4
+# Date: 2026-09-01
 #
 # Render CrowdSec + bouncer configs via envsubst (inline network topology +
 # /srv/crowdsec/crowdsec.env secrets) and restart CrowdSec services.
@@ -37,6 +37,12 @@ set +a
 
 # Export secrets explicitly for envsubst
 export CROWDSEC_FIREWALL_API_KEY CROWDSEC_ROUTEROS_API_KEY MIKROTIK_USERNAME MIKROTIK_PASSWORD
+export TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID
+
+if [ -z "${TELEGRAM_BOT_TOKEN:-}" ] || [ -z "${TELEGRAM_CHAT_ID:-}" ]; then
+    echo "Error: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID must be set in $ENV_FILE"
+    exit 1
+fi
 
 echo "Deploying config.yaml..."
 envsubst < "$SCRIPT_DIR/config.yaml" > /etc/crowdsec/config.yaml
@@ -50,8 +56,19 @@ envsubst < "$SCRIPT_DIR/crowdsec-firewall-bouncer.yaml" > /etc/crowdsec/bouncers
 echo "Deploying RouterOS bouncer..."
 envsubst < "$SCRIPT_DIR/cs-routeros-bouncer.yaml" > /etc/crowdsec/bouncers/cs-routeros-bouncer.yaml
 
+echo "Deploying profiles.yaml..."
+cp "$SCRIPT_DIR/profiles.yaml" /etc/crowdsec/profiles.yaml
+
+echo "Deploying Telegram HTTP notification..."
+# Restrict envsubst so Go templates in format: are left intact.
+envsubst '${TELEGRAM_BOT_TOKEN} ${TELEGRAM_CHAT_ID}' \
+  < "$SCRIPT_DIR/http.yaml" > /etc/crowdsec/notifications/http.yaml
+
 echo "Setting permissions..."
 chmod 600 /etc/crowdsec/bouncers/*.yaml
+# Plugin process runs as nobody:nogroup and must read the notification file.
+chown root:nogroup /etc/crowdsec/notifications/http.yaml
+chmod 640 /etc/crowdsec/notifications/http.yaml
 
 echo "Restarting services..."
 systemctl restart crowdsec

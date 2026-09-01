@@ -12,7 +12,9 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
 | :--- | :--- |
 | `.../crowdsec/*.yaml` (repo) | Tracked templates (`$VAR` placeholders) |
 | `.../crowdsec/deploy_crowdsec.sh` | Inline network vars; sources secrets; renders → `/etc/crowdsec/` |
-| `.../crowdsec/crowdsec.env.example` | Secrets template (API keys, MikroTik credentials) |
+| `.../crowdsec/crowdsec.env.example` | Secrets template (API keys, MikroTik credentials, Telegram) |
+| `.../crowdsec/http.yaml` | Telegram notification template (`TELEGRAM_*` via envsubst) |
+| `.../crowdsec/profiles.yaml` | Ban profiles; `http_default` notifications enabled |
 | `/srv/crowdsec/crowdsec.env` | Real secrets (not in clone) |
 
 ### Deployment Strategy
@@ -36,6 +38,14 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
    - Restart `crowdsec`, firewall bouncer, and MikroTik bouncer (if present)
 
 To change LAPI bind, trusted subnet, or MikroTik address, edit the topology block at the top of `deploy_crowdsec.sh` and re-run the script.
+
+Telegram: `profiles.yaml` enables `http_default`. After deploy:
+
+```bash
+TMPDIR=/tmp cscli notifications test http_default
+```
+
+(`cscli` as root needs `TMPDIR=/tmp` or the HTTP plugin fails on `/tmp/user/0`.) The CrowdSec service itself already registered `http_default` at start.
 
 > [!NOTE]
 > Do **not** symlink rendered YAML into `/etc/crowdsec/` from the repo. Always use `deploy_crowdsec.sh` after template or secret changes.
