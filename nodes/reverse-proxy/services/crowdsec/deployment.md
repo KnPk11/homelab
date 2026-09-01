@@ -39,6 +39,19 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
 
 To change LAPI bind, trusted subnet, or MikroTik address, edit the topology block at the top of `deploy_crowdsec.sh` and re-run the script.
 
+### Allowlist (`my-trusted-ips`)
+
+LAPI database, not Git. After a nuke-and-pave, re-add:
+
+```bash
+cscli allowlists add my-trusted-ips 192.168.88.0/24 -d "Main LAN"
+cscli allowlists add my-trusted-ips 192.168.50.0/24 -d "Homelab LAN"
+cscli allowlists add my-trusted-ips 10.5.0.0/24 -d "WireGuard"
+cscli allowlists add my-trusted-ips 100.64.0.0/10 -d "Tailscale"
+# Current residential WAN — changes with DDNS; add/replace when the IP moves
+# cscli allowlists add my-trusted-ips [WAN-IP] -d "Current WAN (update when IP changes)"
+```
+
 Telegram: `profiles.yaml` enables `http_default`. After deploy:
 
 ```bash
