@@ -22,7 +22,7 @@ Successful `sshd` login → Homelab Watch. `session optional` on `/etc/pam.d/ssh
 | `k8s` | k3s |
 | `scratch-pc` | Least-trusted workstation — still has SSH |
 
-Logic lives only here. **Do not copy this into `nodes/`.** `rollout.sh` reads [inventory.yml](../../../inventory.yml) and runs `deploy.sh` on each host (creates `/usr/local/sbin/ssh-telegram-notify` → this directory in the clone).
+Logic lives only here. **Do not copy this into `nodes/`.** `rollout.sh` loops `DEFAULT_HOSTS` (the table above) and runs `deploy.sh` on each box — that creates `/usr/local/sbin/ssh-telegram-notify` → this directory in the clone. New machine: add it to `DEFAULT_HOSTS` in `rollout.sh`.
 
 ```bash
 # All inventory Linux SSH hosts (from ai-tools, God Mode key loaded):

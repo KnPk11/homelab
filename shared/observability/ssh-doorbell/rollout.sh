@@ -4,53 +4,36 @@
 # Version: 1.0
 # Date: 2026-09-01
 #
-# Reads inventory.yml (no per-node copies in Git). Run from ai-tools:
+# Host list is DEFAULT_HOSTS below (no per-node copies in Git). Run from ai-tools:
 #   ./rollout.sh
 #   ./rollout.sh --hosts scratch-pc,dns
 # =============================================================================
 set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 REPO="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-INVENTORY="${INVENTORY:-$REPO/inventory.yml}"
 SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
 REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/ssh-doorbell/deploy.sh"
 
-list_nodes() {
-  python3 - "$INVENTORY" <<'PY'
-import sys
-from pathlib import Path
-lines = Path(sys.argv[1]).read_text().splitlines()
-in_nodes = False
-for line in lines:
-    if line.startswith("nodes:"):
-        in_nodes = True
-        continue
-    if not in_nodes:
-        continue
-    if line and not line.startswith(" "):
-        break
-    if line.startswith("  ") and not line.startswith("    ") and line.rstrip().endswith(":"):
-        print(line.strip()[:-1])
-PY
-}
+# Every inventory Linux SSH host (skip Windows). Keep in sync with inventory.yml.
+DEFAULT_HOSTS=(
+  proxmox-host
+  docker-services
+  nas
+  lab-vm
+  reverse-proxy
+  ai-tools
+  dns
+  pulse
+  vpns
+  pbs
+  k8s
+  scratch-pc
+)
 
-HOSTS_FILTER=""
+HOSTS=("${DEFAULT_HOSTS[@]}")
 if [[ "${1:-}" == "--hosts" ]]; then
-  HOSTS_FILTER="${2:-}"
+  IFS=',' read -r -a HOSTS <<< "${2:-}"
   shift 2 || true
-fi
-
-mapfile -t ALL < <(list_nodes)
-if [[ -n "$HOSTS_FILTER" ]]; then
-  IFS=',' read -r -a WANT <<< "$HOSTS_FILTER"
-  HOSTS=()
-  for h in "${ALL[@]}"; do
-    for w in "${WANT[@]}"; do
-      [[ "$h" == "$w" ]] && HOSTS+=("$h")
-    done
-  done
-else
-  HOSTS=("${ALL[@]}")
 fi
 
 echo "Rollout SSH doorbell → ${HOSTS[*]}"
