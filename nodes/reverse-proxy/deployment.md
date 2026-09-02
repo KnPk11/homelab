@@ -21,6 +21,7 @@ Per-service guides cover `/srv/...` secrets, templates in the clone, and deploy/
 *   [CrowdSec IPS](services/CrowdSec/deployment.md) — `/srv/crowdsec/`
 *   [Fail2Ban Monitor](services/Fail2Ban%20Monitor/deployment.md) — `/srv/fail2ban-monitor/`
 *   [Web-compromise watch](services/web-compromise-watch/deployment.md) — Caddy uid shells → Homelab Watch
+*   [SSH doorbell](../../shared/observability/ssh-doorbell/deployment.md) — PAM successful SSH → Homelab Watch
 
 ## 3. Observability
 

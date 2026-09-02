@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# PAM sshd open_session → Homelab Watch. Always exit 0 so login cannot fail.
+exit_ok() { exit 0; }
+trap exit_ok EXIT
+
+[[ "${PAM_TYPE:-}" == "open_session" ]] || exit 0
+case "${PAM_SERVICE:-}" in
+  sshd|ssh) ;;
+  *) exit 0 ;;
+esac
+
+ENV_FILE=""
+for f in /etc/ssh/telegram.env /srv/homelab-watch/telegram.env; do
+  if [[ -r "$f" ]]; then
+    ENV_FILE="$f"
+    break
+  fi
+done
+[[ -n "$ENV_FILE" ]] || exit 0
+
+# shellcheck source=/dev/null
+set -a
+. "$ENV_FILE" || exit 0
+set +a
+BOT_TOKEN="${BOT_TOKEN:-${TELEGRAM_BOT_TOKEN:-}}"
+CHAT_ID="${CHAT_ID:-${TELEGRAM_CHAT_ID:-}}"
+[[ -n "$BOT_TOKEN" && -n "$CHAT_ID" ]] || exit 0
+
+host="$(hostname -s 2>/dev/null || echo unknown)"
+when="$(date -Is 2>/dev/null || date)"
+msg="SSH login
+host: ${host}
+user: ${PAM_USER:-?}
+from: ${PAM_RHOST:-?}
+via:  ${PAM_SERVICE}
+at:   ${when}"
+
+curl -sS --max-time 8 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+  --data-urlencode "chat_id=${CHAT_ID}" \
+  --data-urlencode "text=${msg}" \
+  >/dev/null 2>&1 || true
