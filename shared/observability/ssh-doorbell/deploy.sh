@@ -25,7 +25,7 @@ if [[ ! -x "$NOTIFY" ]]; then
 fi
 
 install -d -m 700 /srv/homelab-watch
-if [[ -f /srv/homelab-watch/telegram.env ]]; then
+if [[ -r /srv/homelab-watch/telegram.env && -s /srv/homelab-watch/telegram.env ]]; then
   install -m 600 /srv/homelab-watch/telegram.env /etc/ssh/telegram.env
 elif [[ -f /srv/crowdsec/crowdsec.env && ! -r /etc/ssh/telegram.env ]]; then
   python3 - <<'PY'
