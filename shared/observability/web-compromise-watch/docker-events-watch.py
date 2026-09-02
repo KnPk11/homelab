@@ -73,7 +73,7 @@ def handle_start(cid: str, known: set[str]) -> None:
         if port not in known:
             flags.append(f"new-port={port}")
     if flags:
-        notify(f"web-compromise {HOST}: docker start {name} {' '.join(flags)}")
+        notify(f"🐳 web-compromise {HOST}: docker start {name} {' '.join(flags)}")
 
 
 def main() -> int:

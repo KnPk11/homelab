@@ -80,7 +80,7 @@ scan() {
     fi
     echo "$now" > "$last"
     echo "$now" > "${STATE_DIR}/rate.${comm}.${uid}"
-    "$SEND" "web-compromise ${HOST}: uid=${uid} pid=${pid} comm=${comm}" || true
+    "$SEND" "🐚 web-compromise ${HOST}: uid=${uid} pid=${pid} comm=${comm}" || true
   done
   # Drop state for pids that exited.
   for f in "$STATE_DIR"/*; do

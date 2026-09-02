@@ -3,7 +3,7 @@
 > [!NOTE]
 > #Security #Telegram #Caddy #Docker
 
-Detect **web-user grew a reverse-shell tool** or **Docker published a new host port**. Not a SIEM.
+Detect **web-user grew a reverse-shell tool** (`🐚`) or **Docker published a new host port** (`🐳`). Not a SIEM.
 
 Logic lives only here. `rollout.sh` installs on the HTTP-facing hosts (not the whole inventory).
 

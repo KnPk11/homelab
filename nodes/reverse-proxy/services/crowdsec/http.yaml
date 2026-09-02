@@ -6,7 +6,7 @@ timeout: 10s
 format: |
   {
     "chat_id": "${TELEGRAM_CHAT_ID}",
-    "text": "{{range . -}}{{range .Decisions -}}CrowdSec: {{.Value}} → {{.Type}} {{.Duration}} ({{.Scenario}}){{end -}}{{end -}}"
+    "text": "{{range . -}}{{range .Decisions -}}🌐 CrowdSec: {{.Value}} → {{.Type}} {{.Duration}} ({{.Scenario}}){{end -}}{{end -}}"
   }
 url: https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage
 method: POST
