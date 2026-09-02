@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # PAM sshd open_session → Homelab Watch. Always exit 0 so login cannot fail.
+# Compact one-liner for known LAN / VPN CIDRs; full block for anything else.
 exit_ok() { exit 0; }
 trap exit_ok EXIT
 
@@ -26,14 +27,84 @@ BOT_TOKEN="${BOT_TOKEN:-${TELEGRAM_BOT_TOKEN:-}}"
 CHAT_ID="${CHAT_ID:-${TELEGRAM_CHAT_ID:-}}"
 [[ -n "$BOT_TOKEN" && -n "$CHAT_ID" ]] || exit 0
 
+# Same trusted ranges as CrowdSec my-trusted-ips / UFW (IPv4).
+LAN_CIDRS=(
+  192.168.50.0/24
+  192.168.88.0/24
+  127.0.0.1/32
+)
+VPN_CIDRS=(
+  10.5.0.0/24
+  100.64.0.0/10
+)
+
+ip_to_int() {
+  local a b c d
+  IFS=. read -r a b c d <<< "$1" || return 1
+  [[ "$a" && "$b" && "$c" && "$d" ]] || return 1
+  echo $(( (a << 24) + (b << 16) + (c << 8) + d ))
+}
+
+in_cidr() {
+  local ip="$1" cidr="$2"
+  local net prefix ipi neti mask bits
+  net="${cidr%/*}"
+  prefix="${cidr#*/}"
+  [[ "$prefix" == "$cidr" ]] && prefix=32
+  ipi=$(ip_to_int "$ip") || return 1
+  neti=$(ip_to_int "$net") || return 1
+  bits=$((32 - prefix))
+  if [[ "$bits" -le 0 ]]; then
+    [[ "$ipi" -eq "$neti" ]]
+    return
+  fi
+  mask=$(( (0xFFFFFFFF << bits) & 0xFFFFFFFF ))
+  (( (ipi & mask) == (neti & mask) ))
+}
+
+src_kind() {
+  local ip="$1" c
+  for c in "${LAN_CIDRS[@]}"; do
+    in_cidr "$ip" "$c" && { echo lan; return; }
+  done
+  for c in "${VPN_CIDRS[@]}"; do
+    in_cidr "$ip" "$c" && { echo vpn; return; }
+  done
+  echo other
+}
+
+ptr_short() {
+  local ip="$1" name
+  name="$(getent hosts "$ip" 2>/dev/null | awk '{print $2; exit}')" || true
+  name="${name%%.*}"
+  [[ "$name" && "$name" != "$ip" ]] && echo "$name"
+}
+
 host="$(hostname -s 2>/dev/null || echo unknown)"
-when="$(date -Is 2>/dev/null || date)"
-msg="SSH login
+from="${PAM_RHOST:-?}"
+user="${PAM_USER:-?}"
+kind="$(src_kind "$from")"
+when="$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date)"
+
+if [[ "$kind" == "lan" || "$kind" == "vpn" ]]; then
+  zone="LAN"
+  [[ "$kind" == "vpn" ]] && zone="VPN"
+  label="$(ptr_short "$from")"
+  if [[ -n "$label" ]]; then
+    msg="🏠 SSH ${user}@${host} from ${from} (${zone} ${label})
+${when}"
+  else
+    msg="🏠 SSH ${user}@${host} from ${from} (${zone})
+${when}"
+  fi
+else
+  msg="🚨 SSH login
 host: ${host}
-user: ${PAM_USER:-?}
-from: ${PAM_RHOST:-?}
+user: ${user}
+from: ${from}
 via:  ${PAM_SERVICE}
 at:   ${when}"
+fi
 
 curl -sS --max-time 8 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${CHAT_ID}" \
