@@ -26,8 +26,8 @@ if [[ ${#COMM_ARR[@]} -eq 0 ]]; then
   echo "exec-watch: WATCH_COMMS is empty" >&2
   exit 1
 fi
-if [[ -z "$CGROUP_REGEX" && -z "${WATCH_UIDS:-}" ]]; then
-  echo "exec-watch: set WATCH_UIDS and/or WATCH_CGROUP_REGEX" >&2
+if [[ -z "$CGROUP_REGEX" && -z "${WATCH_UIDS:-}" && "${ALLOW_ANY_UID:-}" != "1" ]]; then
+  echo "exec-watch: set WATCH_UIDS, WATCH_CGROUP_REGEX, or ALLOW_ANY_UID=1" >&2
   exit 1
 fi
 

@@ -48,7 +48,7 @@ See [scripts/deployment.md](scripts/deployment.md) — env under `/opt/scripts/S
 
 ## Web-compromise watch
 
-See [services/web-compromise-watch/deployment.md](services/web-compromise-watch/deployment.md). Docker events (privileged / host-net / new published port) plus `/proc` watch for `nc`/`ncat` in docker cgroups.
+See [shared web-compromise watch](../../shared/observability/web-compromise-watch/deployment.md). Docker events (privileged / host-net / new published port) plus `/proc` watch for `nc`/`ncat` in docker cgroups.
 
 ## Kopia backups
 
