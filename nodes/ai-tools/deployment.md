@@ -31,6 +31,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   [MikroTik config capture](services/mikrotik-backup/deployment.md) — scheduled export of critical router config into a **gitignored** local `.rsc` file.
 *   [Namecheap Dynamic DNS](services/namecheap-ddns/deployment.md) — keep `ip.[DOMAIN]` on the current WAN IPv4 (WireGuard locator).
 *   [God Mode + Git SSH key TTL unlock](services/ai-ssh-key/deployment.md) — passphrase-unlock `id_ed25519_ai` (lab) and `id_ed25519` (GitHub; formerly `svc_automation`) into ssh-agent with a **2h TTL** auto-unload watchdog.
+*   [SOPS + age (Master vs node keys)](services/sops-key/deployment.md) — Master Admin key in RAM on this host; per-node age keys on appliance boxes. Not the same as God Mode SSH.
 
 ## 3. Related shared tooling
 
