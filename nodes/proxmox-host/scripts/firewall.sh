@@ -31,6 +31,7 @@ PULSE_MONITOR_IP="192.168.50.88"
 VPNS_IP="192.168.50.87"
 PBS_IP="192.168.50.86"
 K8S_IP="192.168.50.96"
+SYSLOG_IP="192.168.50.89"
 
 # File Paths
 CLUSTER_FW="/etc/pve/firewall/cluster.fw"
@@ -48,6 +49,7 @@ FW_PULSE="/etc/pve/firewall/107.fw"
 FW_VPNS="/etc/pve/firewall/108.fw"
 FW_PBS="/etc/pve/firewall/109.fw"
 FW_MINI_K8S="/etc/pve/firewall/110.fw"
+FW_SYSLOG="/etc/pve/firewall/111.fw"
 
 
 # Backup Configuration
@@ -59,7 +61,7 @@ echo "--- Initializing Firewall Update ---"
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_WINDOWS" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S"; do
+for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_WINDOWS" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S" "$FW_SYSLOG"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
@@ -87,6 +89,7 @@ pulse-monitor $PULSE_MONITOR_IP   # Pulse monitoring LXC (CT 107)
 vpns $VPNS_IP             # VPN / Tailscale LXC (CT 108)
 pbs $PBS_IP               # Proxmox Backup Server LXC (CT 109)
 k8s $K8S_IP         # k3s control plane LXC (CT 110)
+syslog $SYSLOG_IP         # Off-box auth Loki LXC (CT 111)
 
 [group ssh-adm]
 # Allow SSH from Main LAN, VPN, and the AI Tools container
@@ -132,6 +135,10 @@ IN DNS(ACCEPT) -source vpn-net -log nolog
 [group log-svc]
 # Syslog ingestion (e.g., Mikrotik logs to Caddy)
 IN ACCEPT -p udp -dport 514 -source homelab-lan -log nolog
+
+[group auth-log-svc]
+# Off-box auth: rsyslog TCP :514 from homelab LAN. No web-pub, no Loki :3100.
+IN ACCEPT -p tcp -dport 514 -source homelab-lan -log nolog
 
 [group file-svc]
 # SMB/NFS for shared file hosts (OMV, docker-services, reverse-proxy trusted clients).
@@ -404,7 +411,21 @@ EOC
 
 echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
 
-# 14. Apply / Restart Service
+# 15. Guest 111: syslog / auth Loki LXC (.89)
+cat <<EOC > $FW_SYSLOG
+[OPTIONS]
+enable: 1
+
+[RULES]
+GROUP ssh-adm
+GROUP ping-trusted
+GROUP auth-log-svc
+GROUP file-svc
+EOC
+
+echo "[+] Generated rules for Guest 111 (syslog / auth Loki)."
+
+# 16. Apply / Restart Service
 
 echo "--- Validating Configuration ---"
 if pve-firewall compile > /dev/null; then

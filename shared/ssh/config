@@ -83,3 +83,8 @@ Host scratch-pc
     HostName 192.168.50.85
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
+
+Host syslog
+    HostName 192.168.50.89
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai

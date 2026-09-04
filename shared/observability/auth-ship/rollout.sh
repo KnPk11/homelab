@@ -1,20 +1,10 @@
 #!/usr/bin/env bash
-# =============================================================================
-# rollout.sh — install SSH doorbell on every inventory Linux host
-# Version: 1.0
-# Date: 2026-09-01
-#
-# Host list is DEFAULT_HOSTS below (no per-node copies in Git). Run from ai-tools:
-#   ./rollout.sh
-#   ./rollout.sh --hosts scratch-pc,dns
-# =============================================================================
+# Roll auth-ship to inventory Linux SSH hosts (same set as the SSH doorbell).
 set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 REPO="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
-REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/ssh-doorbell/deploy.sh"
-
-# Every inventory Linux SSH host (skip Windows). Keep in sync with inventory.yml.
+REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/auth-ship/deploy.sh"
 DEFAULT_HOSTS=(
   proxmox-host
   docker-services
@@ -28,16 +18,14 @@ DEFAULT_HOSTS=(
   pbs
   k8s
   scratch-pc
-  syslog
 )
 
 HOSTS=("${DEFAULT_HOSTS[@]}")
 if [[ "${1:-}" == "--hosts" ]]; then
   IFS=',' read -r -a HOSTS <<< "${2:-}"
-  shift 2 || true
 fi
 
-echo "Rollout SSH doorbell → ${HOSTS[*]}"
+echo "Rollout auth-ship → ${HOSTS[*]}"
 fail=0
 this="$(hostname -s 2>/dev/null || true)"
 for h in "${HOSTS[@]}"; do
@@ -49,7 +37,8 @@ for h in "${HOSTS[@]}"; do
     fi
     continue
   fi
-  if ssh -F "$SSH_CFG" -o BatchMode=yes -o ConnectTimeout=8 "$h" "test -x $REMOTE_DEPLOY && $REMOTE_DEPLOY"; then
+  if ssh -F "$SSH_CFG" -o BatchMode=yes -o ConnectTimeout=8 "$h" \
+    "test -x $REMOTE_DEPLOY && $REMOTE_DEPLOY"; then
     echo "OK $h"
   else
     echo "FAIL $h"

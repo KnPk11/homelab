@@ -1,0 +1,7 @@
+[Unit]
+Description=Scan off-box auth files → Homelab Watch
+
+[Service]
+Type=oneshot
+Environment=TELEGRAM_ENV=/srv/homelab-watch/telegram.env
+ExecStart=/usr/local/sbin/auth-watch

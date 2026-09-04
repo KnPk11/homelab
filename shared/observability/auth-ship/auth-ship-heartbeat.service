@@ -1,0 +1,6 @@
+[Unit]
+Description=Auth-ship heartbeat into authpriv (proves the forwarder is alive)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/logger -p authpriv.notice -t auth-ship heartbeat

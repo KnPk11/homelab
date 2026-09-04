@@ -1,0 +1,16 @@
+/mnt/logs/auth/*/auth.log {
+	daily
+	rotate 400
+	maxage 400
+	dateext
+	dateformat -%Y%m%d
+	compress
+	delaycompress
+	missingok
+	notifempty
+	create 0644 root root
+	sharedscripts
+	postrotate
+		systemctl kill -s HUP rsyslog.service >/dev/null 2>&1 || true
+	endscript
+}

@@ -58,3 +58,9 @@ nodes:
     type: bare-metal
     description: Disposable scratch dev workstation for web app prototyping
 
+  syslog:
+    ip: 192.168.50.89
+    proxmox_id: 111
+    type: lxc
+    description: Off-box auth logs (plaintext)
+

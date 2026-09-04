@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""Read off-box auth logs from /mnt/logs/auth/<host>/auth.log."""
+from __future__ import annotations
+
+import argparse
+import gzip
+import os
+import re
+import sys
+import time
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+LOGROOT = Path("/mnt/logs/auth")
+LINE_TS = re.compile(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+(\S+)\s+(.*)$")
+
+
+def parse_since(text: str) -> int:
+    units = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+    raw = text.strip().lower()
+    if raw.isdigit():
+        return int(raw)
+    if not raw or raw[-1] not in units:
+        raise argparse.ArgumentTypeError("use e.g. 15m, 1h, 24h, 7d")
+    try:
+        n = float(raw[:-1])
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("use e.g. 15m, 1h, 24h, 7d") from exc
+    return int(n * units[raw[-1]])
+
+
+def list_hosts() -> list[str]:
+    if not LOGROOT.is_dir():
+        return []
+    return sorted(p.name for p in LOGROOT.iterdir() if p.is_dir() and not p.name.startswith("."))
+
+
+def host_files(host: str) -> list[Path]:
+    d = LOGROOT / host
+    if not d.is_dir():
+        return []
+    files = [p for p in d.iterdir() if p.name.startswith("auth.log") and p.is_file()]
+    files.sort(key=lambda p: p.stat().st_mtime)
+    return files
+
+
+def open_log(path: Path):
+    if path.suffix == ".gz" or path.name.endswith(".gz"):
+        return gzip.open(path, "rt", encoding="utf-8", errors="replace")
+    return path.open("r", encoding="utf-8", errors="replace")
+
+
+def parse_line(line: str) -> tuple[datetime | None, str, str]:
+    m = LINE_TS.match(line.rstrip("\n"))
+    if not m:
+        return None, "", line.rstrip("\n")
+    ts = datetime.strptime(m.group(1), "%Y-%m-%d %H:%M:%S").replace(tzinfo=timezone.utc)
+    rest = m.group(3)
+    return ts, m.group(2), rest
+
+
+def iter_rows(hosts: list[str], cutoff: datetime | None):
+    for host in hosts:
+        for path in host_files(host):
+            if cutoff is not None:
+                try:
+                    mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+                except OSError:
+                    continue
+                if mtime < cutoff and path.name != "auth.log":
+                    # Rotated file entirely older than the window.
+                    if mtime < cutoff - timedelta(days=2):
+                        continue
+            try:
+                fh = open_log(path)
+            except OSError:
+                continue
+            with fh:
+                for raw in fh:
+                    ts, host_label, rest = parse_line(raw)
+                    if ts is None:
+                        if cutoff is None:
+                            yield None, host, raw.rstrip("\n")
+                        continue
+                    if cutoff is not None and ts < cutoff:
+                        continue
+                    yield ts, host_label or host, rest
+
+
+def print_row(ts: datetime | None, host: str, rest: str) -> None:
+    if ts is None:
+        print(f"{'':19}  {host:16} {rest}")
+        return
+    local = ts.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"{local}  {host:16} {rest}")
+
+
+def follow(hosts: list[str], keep: re.Pattern[str] | None) -> int:
+    inodes: dict[str, tuple[int, int]] = {}
+    fps: dict[str, object] = {}
+    try:
+        while True:
+            for host in hosts:
+                path = LOGROOT / host / "auth.log"
+                if not path.is_file():
+                    continue
+                st = path.stat()
+                key = host
+                ident = (st.st_ino, st.st_dev)
+                fp = fps.get(key)
+                if fp is None or inodes.get(key) != ident:
+                    if fp is not None:
+                        fp.close()  # type: ignore[union-attr]
+                    fp = path.open("r", encoding="utf-8", errors="replace")
+                    fp.seek(0, os.SEEK_END)
+                    fps[key] = fp
+                    inodes[key] = ident
+                while True:
+                    line = fp.readline()  # type: ignore[union-attr]
+                    if not line:
+                        break
+                    if keep and not keep.search(line):
+                        continue
+                    ts, host_label, rest = parse_line(line)
+                    print_row(ts, host_label or host, rest)
+                    sys.stdout.flush()
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print()
+        return 0
+    finally:
+        for fp in fps.values():
+            try:
+                fp.close()  # type: ignore[union-attr]
+            except OSError:
+                pass
+    return 0
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(
+        prog="auth-logs",
+        description="Read plaintext off-box auth logs on this syslog LXC.",
+    )
+    p.add_argument("host", nargs="?", help="directory name under /mnt/logs/auth, e.g. scratch-pc")
+    p.add_argument("-s", "--since", default="1h", help="lookback: 15m, 1h, 24h, 7d (default 1h)")
+    p.add_argument("-n", "--limit", type=int, default=200, help="max lines (default 200)")
+    p.add_argument("-g", "--grep", metavar="REGEX", help="keep lines matching this regex")
+    p.add_argument("--sshd", action="store_true", help="only sshd / sshd-session")
+    p.add_argument("--failed", action="store_true", help="failed / invalid SSH")
+    p.add_argument("--hosts", action="store_true", help="list host directories and exit")
+    p.add_argument("-f", "--follow", action="store_true", help="keep printing new lines")
+    args = p.parse_args()
+
+    known = list_hosts()
+    if args.hosts:
+        print("\n".join(known) if known else "(no files yet under /mnt/logs/auth)")
+        return 0
+
+    if args.host:
+        if known and args.host not in known:
+            print(
+                f"No logs for host={args.host!r}. Known: {', '.join(known) or '(none)'}",
+                file=sys.stderr,
+            )
+            return 1
+        hosts = [args.host]
+    else:
+        hosts = known
+        if not hosts:
+            print("No host directories under /mnt/logs/auth yet.", file=sys.stderr)
+            return 1
+
+    parts: list[str] = []
+    if args.sshd:
+        parts.append(r"(?i)sshd")
+    if args.failed:
+        parts.append(r"(?i)Failed password|Invalid user|authentication failure|Connection closed by authenticating")
+    if args.grep:
+        parts.append(args.grep)
+    keep = re.compile("|".join(f"(?:{x})" for x in parts)) if parts else None
+
+    if args.follow:
+        return follow(hosts, keep)
+
+    try:
+        since_s = parse_since(str(args.since))
+    except argparse.ArgumentTypeError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+    cutoff = datetime.now(timezone.utc) - timedelta(seconds=since_s)
+    rows: list[tuple[datetime | None, str, str]] = []
+    for ts, host, rest in iter_rows(hosts, cutoff):
+        line = rest if ts is None else f"{ts:%Y-%m-%d %H:%M:%S} {host} {rest}"
+        if keep and not keep.search(line) and not keep.search(rest):
+            continue
+        rows.append((ts, host, rest))
+    if args.limit and len(rows) > args.limit:
+        rows = rows[-args.limit :]
+    for ts, host, rest in rows:
+        print_row(ts, host, rest)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
