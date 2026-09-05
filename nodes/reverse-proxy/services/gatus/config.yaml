@@ -9,7 +9,8 @@ ui:
   title: "${DOMAIN_NAME} Status"
   header: "System Status"
 
-# Homelab Watch — custom sendMessage (one line). default-alert = every endpoint.
+# Homelab Watch — custom sendMessage (one line).
+# default-alert only fills thresholds; each endpoint still needs alerts: *homelab-watch.
 alerting:
   custom:
     url: "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -37,6 +38,8 @@ endpoints:
     group: Infrastructure
     url: "icmp://1.1.1.1"
     interval: 30s
+    alerts: &homelab-watch
+      - type: custom
     ui:
       hide-url: true
       hide-hostname: true
@@ -47,6 +50,7 @@ endpoints:
     group: Infrastructure
     url: "tcp://127.0.0.1:80"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -57,6 +61,7 @@ endpoints:
     group: Infrastructure
     url: "tcp://${DNS_NODE_IP}:53"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -67,6 +72,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${HOMELAB_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -77,6 +83,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${AITOOLS_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -87,6 +94,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${PULSE_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -97,6 +105,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${OPENCLAW_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -107,6 +116,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${OMV_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -117,6 +127,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${MINI_K8S_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -127,6 +138,7 @@ endpoints:
     group: Infrastructure
     url: "icmp://${SCRATCH_PC_NODE_IP}"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -138,6 +150,7 @@ endpoints:
     group: Storage
     url: "http://${HOMELAB_NODE_IP}:8104"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -148,6 +161,7 @@ endpoints:
     group: Storage
     url: "http://${HOMELAB_NODE_IP}:9101"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -158,6 +172,7 @@ endpoints:
     group: Storage
     url: "http://${AITOOLS_NODE_IP}:8384"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -169,6 +184,7 @@ endpoints:
     group: Media
     url: "http://${HOMELAB_NODE_IP}:8096"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -179,6 +195,7 @@ endpoints:
     group: Media
     url: "http://${HOMELAB_NODE_IP}:2342"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -189,6 +206,7 @@ endpoints:
     group: Media
     url: "http://${HOMELAB_NODE_IP}:2283"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -200,6 +218,7 @@ endpoints:
     group: AI
     url: "http://${HOMELAB_NODE_IP}:3002"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -211,6 +230,7 @@ endpoints:
     group: Tools
     url: "http://${HOMELAB_NODE_IP}:8180"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -221,6 +241,7 @@ endpoints:
     group: Tools
     url: "http://${HOMELAB_NODE_IP}:8094"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -231,6 +252,7 @@ endpoints:
     group: Tools
     url: "http://${MINI_K8S_NODE_IP}:18080"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -241,6 +263,7 @@ endpoints:
     group: Tools
     url: "http://${HOMELAB_NODE_IP}:8094"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -251,6 +274,7 @@ endpoints:
     group: Tools
     url: "http://${HOMELAB_NODE_IP}:5678"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true
@@ -262,6 +286,7 @@ endpoints:
     group: Monitoring
     url: "http://${HOMELAB_NODE_IP}:3005"
     interval: 30s
+    alerts: *homelab-watch
     ui:
       hide-url: true
       hide-hostname: true

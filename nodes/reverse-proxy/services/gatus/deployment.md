@@ -39,4 +39,4 @@ To change monitored node IPs, edit the topology block at the top of `deploy_gatu
 > [!NOTE]
 > Do **not** symlink the template into `/srv/gatus/`. Always use `deploy_gatus.sh` after template or secret changes so `envsubst` injects values.
 
-Telegram: custom `sendMessage` with `default-alert` on **every** endpoint. One line: `📡 Filebrowser down` / `📡 Filebrowser up`. Infra ICMP will overlap Pulse when a host dies — revisit later. Rendered `/srv/gatus/config.yaml` contains the token — mode `600`.
+Telegram: custom `sendMessage`. `default-alert` sets thresholds; every endpoint still needs `alerts: *homelab-watch` (`type: custom`) or Gatus never pages. One line: `📡 Filebrowser down` / `📡 Filebrowser up`. Infra ICMP will overlap Pulse when a host dies — revisit later. Rendered `/srv/gatus/config.yaml` contains the token — mode `600`.
