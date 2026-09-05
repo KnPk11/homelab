@@ -84,26 +84,22 @@ host="$(hostname -s 2>/dev/null || echo unknown)"
 from="${PAM_RHOST:-?}"
 user="${PAM_USER:-?}"
 kind="$(src_kind "$from")"
-when="$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null || date)"
 
 if [[ "$kind" == "lan" || "$kind" == "vpn" ]]; then
   zone="LAN"
   [[ "$kind" == "vpn" ]] && zone="VPN"
   label="$(ptr_short "$from")"
   if [[ -n "$label" ]]; then
-    msg="🏠 SSH ${user}@${host} from ${from} (${zone} ${label})
-${when}"
+    msg="🏠 SSH ${user}@${host} from ${from} (${zone} ${label})"
   else
-    msg="🏠 SSH ${user}@${host} from ${from} (${zone})
-${when}"
+    msg="🏠 SSH ${user}@${host} from ${from} (${zone})"
   fi
 else
   msg="🚨 SSH login
 host: ${host}
 user: ${user}
 from: ${from}
-via:  ${PAM_SERVICE}
-at:   ${when}"
+via:  ${PAM_SERVICE}"
 fi
 
 curl -sS --max-time 8 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
