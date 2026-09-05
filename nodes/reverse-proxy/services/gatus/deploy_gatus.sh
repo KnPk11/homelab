@@ -39,12 +39,13 @@ set -a
 # shellcheck source=/dev/null
 source "$ENV_FILE"
 set +a
-export DOMAIN_NAME
+export DOMAIN_NAME TELEGRAM_BOT_TOKEN TELEGRAM_CHAT_ID
 
 # Deploy config.yaml via envsubst
 echo "Deploying config.yaml..."
 mkdir -p /srv/gatus
 envsubst < "$SCRIPT_DIR/config.yaml" > /srv/gatus/config.yaml
+chmod 600 /srv/gatus/config.yaml
 
 echo "Restarting gatus..."
 systemctl restart gatus

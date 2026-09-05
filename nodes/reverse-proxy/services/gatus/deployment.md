@@ -1,6 +1,6 @@
 # Gatus Deployment Notes
 
-Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same approach as the UFW scripts. Secrets (`DOMAIN_NAME`) live under **`/srv/gatus/`** so the GitOps clone stays disposable. The config template and deploy script stay in the repo; rendered config goes to `/srv/gatus/config.yaml`.
+Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same approach as the UFW scripts. Secrets (`DOMAIN_NAME`, Homelab Watch token) live under **`/srv/gatus/`** so the GitOps clone stays disposable. The config template and deploy script stay in the repo; rendered config goes to `/srv/gatus/config.yaml`.
 
 ### Layout
 
@@ -8,7 +8,7 @@ Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same appr
 | :--- | :--- |
 | `.../gatus/config.yaml` | Tracked template (`$DOMAIN_NAME`, `$DNS_NODE_IP`, etc.) |
 | `.../gatus/deploy_gatus.sh` | Inline network vars; sources secrets; renders config + restarts |
-| `.../gatus/gatus.env.example` | Secrets template (`DOMAIN_NAME` only) |
+| `.../gatus/gatus.env.example` | Secrets template (`DOMAIN_NAME`, optional Telegram) |
 | `/srv/gatus/gatus.env` | Real secrets (not in clone) |
 | `/srv/gatus/config.yaml` | Rendered runtime config |
 
@@ -21,6 +21,8 @@ Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same appr
    sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/gatus/gatus.env.example /srv/gatus/gatus.env
    sudo chmod 600 /srv/gatus/gatus.env
    # edit /srv/gatus/gatus.env with DOMAIN_NAME
+   # Telegram: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID
+   # (same values as /etc/ssh/telegram.env)
    ```
 3. **Run the deploy script**:
    ```bash
@@ -36,3 +38,5 @@ To change monitored node IPs, edit the topology block at the top of `deploy_gatu
 
 > [!NOTE]
 > Do **not** symlink the template into `/srv/gatus/`. Always use `deploy_gatus.sh` after template or secret changes so `envsubst` injects values.
+
+Telegram: custom `sendMessage` with `default-alert` on **every** endpoint. One line: `📡 Filebrowser down` / `📡 Filebrowser up`. Infra ICMP will overlap Pulse when a host dies — revisit later. Rendered `/srv/gatus/config.yaml` contains the token — mode `600`.

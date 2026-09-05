@@ -9,6 +9,28 @@ ui:
   title: "${DOMAIN_NAME} Status"
   header: "System Status"
 
+# Homelab Watch — custom sendMessage (one line). default-alert = every endpoint.
+alerting:
+  custom:
+    url: "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+    method: "POST"
+    headers:
+      Content-Type: "application/json"
+    placeholders:
+      ALERT_TRIGGERED_OR_RESOLVED:
+        TRIGGERED: "down"
+        RESOLVED: "up"
+    body: |
+      {
+        "chat_id": "${TELEGRAM_CHAT_ID}",
+        "text": "📡 [ENDPOINT_NAME] [ALERT_TRIGGERED_OR_RESOLVED]"
+      }
+    default-alert:
+      enabled: true
+      failure-threshold: 3
+      success-threshold: 2
+      send-on-resolved: true
+
 endpoints:
   # --- Infrastructure ---
   - name: Internet
