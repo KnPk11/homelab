@@ -13,7 +13,10 @@ Pulse is a private multi-host monitoring dashboard for Proxmox and related infra
 Upstream installer runs **as root on the Proxmox host** and builds a Debian LXC with a **systemd** Pulse server.
 
 ```bash
+# Prefer latest stable tag at install time (example shape: v6.2.1)
 export PULSE_VERSION=[LATEST-PULSE-VERSION]
+# Optional auto-resolve (needs curl + jq on the Proxmox host):
+# export PULSE_VERSION="$(curl -fsSL https://api.github.com/repos/rcourtman/Pulse/releases/latest | jq -r .tag_name)"
 
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh"
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh.sshsig"
