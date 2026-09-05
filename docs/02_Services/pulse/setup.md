@@ -1,7 +1,7 @@
 # Pulse Deployment Notes
 
 > [!NOTE]
-> #Pulse #Monitoring #Proxmox #LXC
+> #Pulse #Monitoring #Proxmox #LXC #Telegram #Apprise
 
 
 ## 1. Description
@@ -13,10 +13,7 @@ Pulse is a private multi-host monitoring dashboard for Proxmox and related infra
 Upstream installer runs **as root on the Proxmox host** and builds a Debian LXC with a **systemd** Pulse server.
 
 ```bash
-# Prefer latest stable tag at install time (example shape: v6.2.1)
 export PULSE_VERSION=[LATEST-PULSE-VERSION]
-# Optional auto-resolve (needs curl + jq on the Proxmox host):
-# export PULSE_VERSION="$(curl -fsSL https://api.github.com/repos/rcourtman/Pulse/releases/latest | jq -r .tag_name)"
 
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh"
 curl -fsSLO "https://github.com/rcourtman/Pulse/releases/download/${PULSE_VERSION}/install.sh.sshsig"
@@ -38,16 +35,17 @@ pct exec <CT_ID> -- env PULSE_DATA_DIR=/etc/pulse /opt/pulse/bin/pulse bootstrap
 
 Manual “Add node” is easy to get wrong (self-signed TLS; Close without Save).
 
-**Preferred:** Pulse UI → **Settings → Infrastructure → Install on a host** (type **pve**), then run the generated command **as root on the Proxmox host** (not inside the CT). That creates a managed API token and writes `nodes.enc` in the CT.
+**Preferred:** Pulse UI → **Settings → Infrastructure → Install on a host** (type **pve**). Run the generated command **as root on the Proxmox host**, not inside the CT. That writes `nodes.enc`. Tokens are one-shot — regenerate from the UI.
 
-Example shape only (regenerate from UI; tokens are one-shot):
+**Firewall:** PVE must allow this CT to **TCP 8006** (`nodes/proxmox-host/scripts/firewall.sh`, alias `pulse-monitor`). Guest FW: `ssh-adm`, ping, **`proxy-back`** only (Caddy). No direct LAN/VPN to the Pulse port.
 
-```bash
-curl -fsSL 'http://<PULSE_IP>:<PORT>/api/setup-script?type=pve&host=https%3A%2F%2F<PVE_IP>%3A8006&pulse_url=http%3A%2F%2F<PULSE_IP>%3A<PORT>&backup_perms=true' \
-  | env PULSE_SETUP_TOKEN='<from-ui>' bash
-```
+### Unified agent on the Proxmox host
 
-**Firewall (required):** PVE host must allow this CT to reach **TCP 8006**. Repo source of truth: `nodes/proxmox-host/scripts/firewall.sh` (alias `pulse-monitor` + host rule). Guest firewall: SSH (`ssh-adm`), ping, **`proxy-back` only** for the UI (Caddy; no direct LAN/VPN to the port).
+API token ≠ host agent. Temperature / SMART needs **`pulse-agent`** on the hypervisor. Generate the installer in **Settings → Infrastructure** and run it **as root on pve1**, not in the Pulse CT.
+
+Caddy **308s HTTP → HTTPS**. If the snippet uses `http://pulse.example.com`, the agent never reports (`use the final Pulse URL explicitly`). After install, set `--url https://pulse.example.com` and `PULSE_URL` in `/var/lib/pulse-agent/connection.env`, then restart `pulse-agent`. Keep `--insecure` if the UI set it. Leave **command execution off**.
+
+Uninstall: `bash /var/lib/pulse-agent/install.sh --uninstall`.
 
 ## 4. Day-2 ops
 
@@ -73,7 +71,27 @@ export PULSE_VERSION=[LATEST-PULSE-VERSION]   # from GitHub Releases /latest
 
 Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metrics DB).
 
-## 5. Security / scope
+## 5. Notifications (Telegram)
+
+Threshold alerts (host/guest **down**) via Apprise. Not Pulse **AI Patrol**.
+
+The binary does not ship Telegram. Install the CLI, then **Alerts → Notifications** (stored in `/etc/pulse/apprise.enc`):
+
+```bash
+apt-get install -y apprise
+```
+
+```text
+tgram://[BOT-TOKEN]/[CHAT-ID]
+```
+
+Use the **full** BotFather token (digits, colon, then `AAF…`). A tail-only token makes `apprise` exit 1. Do not commit the token. **Send test** in the UI; the CT needs WAN to `api.telegram.org`.
+
+Page **offline / dead PBS**, not CPU or Docker image-update noise. Mute agents on machines that sleep. Grouping is ~60s — a blip that clears inside that window may never notify.
+
+**Patrol:** leave it in the Pulse UI (or turn auto-on-alert patrol off). Do not send Patrol to Telegram. The configured model `stepfun-ai/step-3.7-flash` returned **410 Gone** (EOL 2026-08-28); pick a live model if you still want UI analysis.
+
+## 6. Security / scope
 
 - **UI only via Caddy** (`access_policy_lan`). Guest FW does **not** open the port to main-lan/vpn; only `GROUP proxy-back`.
 - Auth required for stats (`PULSE_AUTH_*` after bootstrap). No guest/anonymous metrics mode.
@@ -81,7 +99,7 @@ Data/config (inside CT): `/etc/pulse/` (`nodes.enc`, `system.json`, `.env`, metr
 - CT **protection** enabled (prevents accidental delete/stop from UI without unlock).
 - Prefer static/DHCP reservation so `pulse-monitor` firewall alias stays valid.
 
-## 6. Related
+## 7. Related
 
 - Firewall: `nodes/proxmox-host/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
 - Private notes: `docs_private/services/public-homepage-and-host-monitoring.md`
