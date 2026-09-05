@@ -40,3 +40,16 @@ To prevent all nodes from hitting GitHub or the network at the exact same second
 ## 4. Proceed to Node-Specific Playbook
 
 Once the node is bootstrapped and pulling changes autonomously, return to the node's specific `deployment.md` file to deploy its services.
+
+## 5. Fleet-wide Homelab Watch
+
+Rolled out from **`ai-tools`**. Do **not** copy these into each `nodes/*/deployment.md` — the host lists live with the scripts.
+
+*   [SSH doorbell](../observability/ssh-doorbell/deployment.md) — PAM successful SSH on every Linux SSH host.
+*   [Weekly sweep](../observability/weekly-sweep/deployment.md) — Sunday timer. Reboot flags on the Linux sweep hosts, CrowdSec on reverse-proxy, DSTNAT from ai-tools, planted-file presence where a local list exists.
+
+```bash
+# on ai-tools, God Mode unlocked
+/opt/dev/homelab_repo/shared/observability/ssh-doorbell/rollout.sh
+/opt/dev/homelab_repo/shared/observability/weekly-sweep/rollout.sh
+```

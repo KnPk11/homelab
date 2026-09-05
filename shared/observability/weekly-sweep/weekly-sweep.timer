@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly 10-minute homelab sweep (Sunday 07:00)
+
+[Timer]
+OnCalendar=Sun 07:00
+Persistent=true
+RandomizedDelaySec=5min
+Unit=weekly-sweep.service
+
+[Install]
+WantedBy=timers.target

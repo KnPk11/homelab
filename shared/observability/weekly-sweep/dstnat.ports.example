@@ -1,0 +1,5 @@
+# Format only. One port/proto per line.
+# Copy to /var/lib/weekly-sweep/dstnat.ports on ai-tools and list
+# whatever you actually publish. Do not commit that file.
+80/tcp
+443/tcp
