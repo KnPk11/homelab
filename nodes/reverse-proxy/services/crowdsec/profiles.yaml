@@ -1,11 +1,21 @@
+# Telegram only for SSH brute-force and HTTP admin-interface probes.
+# All other remediations still ban; they just stay off Homelab Alerts.
+name: ssh_admin_ip_notify
+filters:
+ - Alert.Remediation == true && Alert.GetScope() == "Ip" && (Alert.GetScenario() contains "ssh-bf" || Alert.GetScenario() contains "ssh-slow-bf" || Alert.GetScenario() contains "http-admin")
+decisions:
+ - type: ban
+   duration: 4h
+notifications:
+ - http_default
+on_success: break
+---
 name: default_ip_remediation
 filters:
  - Alert.Remediation == true && Alert.GetScope() == "Ip"
 decisions:
  - type: ban
    duration: 4h
-notifications:
- - http_default
 on_success: break
 ---
 name: default_range_remediation
@@ -14,7 +24,5 @@ filters:
 decisions:
  - type: ban
    duration: 4h
-notifications:
- - http_default
 on_success: break
 

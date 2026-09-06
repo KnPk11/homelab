@@ -52,7 +52,7 @@ cscli allowlists add my-trusted-ips 100.64.0.0/10 -d "Tailscale"
 # cscli allowlists add my-trusted-ips [WAN-IP] -d "Current WAN (update when IP changes)"
 ```
 
-Telegram: `profiles.yaml` enables `http_default`. Ban lines are prefixed `🌐`. After deploy:
+Telegram: `profiles.yaml` sends `http_default` only for SSH brute-force (`ssh-bf`, `ssh-slow-bf`) and HTTP admin-interface probing. Other bans (generic http-probing, user-agents, community ranges) still apply, silently. Ban lines are prefixed `🌐`. After deploy:
 
 ```bash
 TMPDIR=/tmp cscli notifications test http_default
