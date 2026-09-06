@@ -1,8 +1,9 @@
-# Telegram only for SSH brute-force and HTTP admin-interface probes.
+# Telegram only for SSH brute-force, HTTP admin probes, and Fail2Ban
+# caddy-authcodes (cscli scenario string is "Fail2Ban: caddy-authcodes").
 # All other remediations still ban; they just stay off Homelab Alerts.
 name: ssh_admin_ip_notify
 filters:
- - Alert.Remediation == true && Alert.GetScope() == "Ip" && (Alert.GetScenario() contains "ssh-bf" || Alert.GetScenario() contains "ssh-slow-bf" || Alert.GetScenario() contains "http-admin")
+ - Alert.Remediation == true && Alert.GetScope() == "Ip" && (Alert.GetScenario() contains "ssh-bf" || Alert.GetScenario() contains "ssh-slow-bf" || Alert.GetScenario() contains "http-admin" || Alert.GetScenario() contains "caddy-authcodes")
 decisions:
  - type: ban
    duration: 4h
