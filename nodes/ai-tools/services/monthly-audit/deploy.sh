@@ -14,7 +14,6 @@ TG=/etc/ssh/telegram.env
 cat > /etc/default/monthly-audit <<EOF
 TELEGRAM_ENV=${TG}
 REPO=/opt/dev/homelab_repo
-AUDIT_LLM=agy
 # AUDIT_MODEL=gemini-3.8-flash-high
 EOF
 chmod 644 /etc/default/monthly-audit
@@ -22,4 +21,4 @@ chmod 644 /etc/default/monthly-audit
 systemctl daemon-reload
 systemctl enable --now monthly-audit-reminder.timer
 echo "monthly-audit installed. reminder: $(systemctl show monthly-audit-reminder.timer -p NextElapseUSec --value 2>/dev/null || true)"
-echo "Run: monthly-audit --light   or   monthly-audit --deep"
+echo "Run: monthly-audit --light --llm agy   or   --llm grok"

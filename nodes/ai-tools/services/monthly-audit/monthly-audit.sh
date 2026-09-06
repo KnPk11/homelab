@@ -29,17 +29,17 @@ DEPTH=""
 DO_LOCK=0
 DO_LLM=1
 DO_TELEGRAM=1
-LLM="${AUDIT_LLM:-agy}"
+LLM=""
 
 usage() {
   cat <<EOF
-Usage: monthly-audit [--light|--deep] [--llm agy|grok] [--lock] [--no-llm] [--no-telegram]
+Usage: monthly-audit --light|--deep --llm agy|grok [--lock] [--no-llm] [--no-telegram]
 
 Unlock God Mode first (ai-key-unlock && source ~/.ssh/ai-key-agent.sh).
 
   --light        playbook monthly light (CrowdSec/Caddy, DSTNAT, keys, reboot, updates)
   --deep         light plus Lynis on guests and Docker Bench on docker-services
-  --llm agy|grok  Antigravity (default) or Grok CLI. AUDIT_LLM in /etc/default/monthly-audit
+  --llm agy|grok  required when the model runs (no default)
   --lock         unload God Mode before the LLM (default: leave the TTL watchdog to lock)
   --no-llm       stop after snapshot
   --no-telegram  print digest, do not POST
@@ -72,6 +72,20 @@ if [[ -z "$DEPTH" ]]; then
     echo "monthly-audit: pass --light or --deep" >&2
     exit 2
   fi
+fi
+
+if [[ "$DO_LLM" -eq 1 ]]; then
+  if [[ -z "$LLM" && -t 0 ]]; then
+    read -r -p "LLM? [agy|grok]: " ans
+    LLM="${ans,,}"
+  fi
+  case "$LLM" in
+    agy|antigravity|grok) ;;
+    *)
+      echo "monthly-audit: pass --llm agy or --llm grok" >&2
+      exit 2
+      ;;
+  esac
 fi
 
 # shellcheck source=/dev/null

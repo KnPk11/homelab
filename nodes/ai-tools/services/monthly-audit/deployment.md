@@ -17,13 +17,14 @@ You unlock, then pick depth (flag or prompt):
 
 Then LLM → Homelab Watch. God Mode stays loaded for your usual TTL; pass `--lock` if you want it unloaded before the model runs. Empty buckets stay in the message.
 
-Default LLM is **Antigravity** (`agy --print --mode plan --sandbox --json-schema`). Grok is `--llm grok`. Set `AUDIT_LLM` / `AUDIT_MODEL` in `/etc/default/monthly-audit`. Do not use `agy --dangerously-skip-permissions`.
+`--llm agy` or `--llm grok` is **required** (no default). Antigravity runs `agy --print --mode plan --sandbox --json-schema`. Optional `AUDIT_MODEL` in `/etc/default/monthly-audit`. Do not use `agy --dangerously-skip-permissions`.
 
 ```bash
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh
-monthly-audit --light
-# or
-monthly-audit --deep
+monthly-audit --light --llm agy
+monthly-audit --light --llm grok
+monthly-audit --deep --llm agy
+monthly-audit --deep --llm grok
 ```
 
 Debug: `--no-llm` writes `/var/lib/monthly-audit/latest` and stops before the model.

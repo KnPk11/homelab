@@ -18,15 +18,17 @@ Unlock God Mode on ai-tools:
 
   ai-key-unlock && source ~/.ssh/ai-key-agent.sh
 
-Then pick a depth:
+Then pick depth and LLM (both required, no default):
 
 LIGHT
-  monthly-audit --light
+  monthly-audit --light --llm agy
+  monthly-audit --light --llm grok
   CrowdSec, Caddy, DSTNAT, key status, reboot flags, updates
   No Lynis / Docker Bench
 
 DEEP
-  monthly-audit --deep
+  monthly-audit --deep --llm agy
+  monthly-audit --deep --llm grok
   Everything in light, plus Lynis on guests and Docker Bench on docker-services
 
 The digest lands here:
