@@ -1,0 +1,11 @@
+[Unit]
+Description=Audit reminder (every other Sunday 09:00)
+
+[Timer]
+OnCalendar=Sun 09:00
+Persistent=true
+RandomizedDelaySec=5min
+Unit=monthly-audit-reminder.service
+
+[Install]
+WantedBy=timers.target

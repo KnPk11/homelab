@@ -1,0 +1,8 @@
+[Unit]
+Description=Monthly audit reminder (Homelab Watch)
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/monthly-audit
+ExecStart=/usr/local/sbin/monthly-audit-reminder

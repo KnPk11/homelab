@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["fix_now", "track", "needs_baseline_update", "accepted"],
+  "properties": {
+    "mode": { "type": "string" },
+    "fix_now": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["host", "fact"],
+        "properties": {
+          "host": { "type": "string" },
+          "fact": { "type": "string" },
+          "why": { "type": "string" }
+        }
+      }
+    },
+    "track": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["host", "fact"],
+        "properties": {
+          "host": { "type": "string" },
+          "fact": { "type": "string" },
+          "why": { "type": "string" }
+        }
+      }
+    },
+    "needs_baseline_update": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["host", "fact"],
+        "properties": {
+          "host": { "type": "string" },
+          "fact": { "type": "string" },
+          "why": { "type": "string" }
+        }
+      }
+    },
+    "accepted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["control"],
+        "properties": {
+          "control": { "type": "string" },
+          "fact": { "type": "string" }
+        }
+      }
+    }
+  }
+}
