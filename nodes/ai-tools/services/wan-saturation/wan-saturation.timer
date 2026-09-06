@@ -1,0 +1,11 @@
+[Unit]
+Description=WAN saturation check every minute
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=10s
+Persistent=false
+Unit=wan-saturation.service
+
+[Install]
+WantedBy=timers.target

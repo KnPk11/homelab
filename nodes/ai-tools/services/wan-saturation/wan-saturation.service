@@ -1,0 +1,8 @@
+[Unit]
+Description=WAN saturation check (MikroTik pppoe-out1)
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/wan-saturation
+ExecStart=/usr/local/sbin/wan-saturation
