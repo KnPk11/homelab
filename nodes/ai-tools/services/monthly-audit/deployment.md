@@ -27,6 +27,8 @@ monthly-audit --deep --llm agy
 monthly-audit --deep --llm grok
 ```
 
-Debug: `--no-llm` writes `/var/lib/monthly-audit/latest` and stops before the model.
+Debug: `--no-llm` writes `/var/lib/monthly-audit/latest` and stops before the model. Retry the model on an existing snapshot (no God Mode): `monthly-audit --from-snap --llm grok`.
+
+Grok is `grok --prompt-file` with inline `--json-schema`, `--max-turns 8`, `--verbatim`, and tools denied so it cannot spend the turn on `read_file`.
 
 Playbook: [security-audit-playbook.md](../../../../docs/03_Maintenance/security-audit-playbook.md). Pointer: [universal node bootstrap](../../../../shared/docs/universal-node-bootstrap.md) §5.

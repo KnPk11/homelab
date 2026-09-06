@@ -42,16 +42,20 @@ DO_LOCK=0
 DO_LLM=1
 DO_TELEGRAM=1
 LLM=""
+FROM_SNAP=""
 
 usage() {
   cat <<EOF
 Usage: monthly-audit --light|--deep --llm agy|grok [--lock] [--no-llm] [--no-telegram]
+       monthly-audit --from-snap [DIR] --llm agy|grok [--no-telegram]
 
 Unlock God Mode first (ai-key-unlock && source ~/.ssh/ai-key-agent.sh).
+--from-snap skips SSH collect (no unlock needed); default DIR is /var/lib/monthly-audit/latest.
 
   --light        playbook monthly light (CrowdSec/Caddy, DSTNAT, keys, reboot, updates)
   --deep         light plus Lynis on guests and Docker Bench on docker-services
   --llm agy|grok  required when the model runs (no default)
+  --from-snap [DIR]  reuse a snapshot; skip collect and God Mode
   --lock         unload God Mode before the LLM (default: leave the TTL watchdog to lock)
   --no-llm       stop after snapshot
   --no-telegram  print digest, do not POST
@@ -63,6 +67,15 @@ while [[ $# -gt 0 ]]; do
     --light) DEPTH=light; shift ;;
     --deep) DEPTH=deep; shift ;;
     --llm) LLM="${2:-}"; shift 2 ;;
+    --from-snap)
+      if [[ -n "${2:-}" && "$2" != --* ]]; then
+        FROM_SNAP=$2
+        shift 2
+      else
+        FROM_SNAP=$SNAP_ROOT/latest
+        shift
+      fi
+      ;;
     --lock) DO_LOCK=1; shift ;;
     --no-lock) DO_LOCK=0; shift ;;
     --no-llm) DO_LLM=0; shift ;;
@@ -71,6 +84,17 @@ while [[ $# -gt 0 ]]; do
     *) usage >&2; exit 2 ;;
   esac
 done
+
+if [[ -n "$FROM_SNAP" ]]; then
+  FROM_SNAP=$(readlink -f "$FROM_SNAP" || true)
+  if [[ -z "$FROM_SNAP" || ! -d "$FROM_SNAP" ]]; then
+    echo "monthly-audit: snapshot not found (pass --from-snap DIR)" >&2
+    exit 1
+  fi
+  if [[ -z "$DEPTH" && -f "$FROM_SNAP/mode" ]]; then
+    DEPTH=$(tr -d '[:space:]' <"$FROM_SNAP/mode")
+  fi
+fi
 
 if [[ -z "$DEPTH" ]]; then
   if [[ -t 0 ]]; then
@@ -170,6 +194,13 @@ for part in chunks:
 PY
 }
 
+if [[ -n "$FROM_SNAP" ]]; then
+  SNAP=$FROM_SNAP
+  chmod 700 "$SNAP_ROOT" "$SNAP"
+  ln -sfn "$SNAP" "$SNAP_ROOT/latest"
+  echo "$DEPTH" >"$SNAP/mode"
+  log "reusing snapshot $SNAP (skip collect)"
+else
 SNAP="$SNAP_ROOT/$(date +%Y%m%d-%H%M%S)-$DEPTH"
 mkdir -p "$SNAP"
 chmod 700 "$SNAP_ROOT" "$SNAP"
@@ -298,9 +329,11 @@ if [[ "$DO_LOCK" -eq 1 ]]; then
 else
   log "leaving God Mode loaded (TTL watchdog will unload)"
 fi
+fi
 
 PROMPT="$SNAP/prompt.txt"
 {
+  echo "Do not call tools. The snapshot is already in this message. Output JSON matching the schema only."
   echo "You are tagging a read-only homelab security snapshot."
   echo "Output MUST match the JSON schema. No essays. No secret values, tokens, keys, .env contents, passwords."
   echo "Do not invent hosts. Empty arrays are required when there is nothing to say."
@@ -320,7 +353,7 @@ if len(text) > 24000:
 PY
   echo
   echo "===== SNAPSHOT FILES ====="
-  find "$SNAP" -type f ! -name prompt.txt ! -name digest.json ! -name digest.md | sort | while read -r f; do
+  find "$SNAP" -type f ! -name prompt.txt ! -name digest.json ! -name digest.md ! -name llm.err | sort | while read -r f; do
     echo
     echo "----- ${f#"$SNAP"/} -----"
     clip "$f" 220
@@ -373,11 +406,16 @@ Mode: $DEPTH. Empty arrays are required when there is nothing to report."
       log "grok CLI missing; snapshot left at $SNAP"
       exit 1
     fi
+    # Schema must be inline JSON (file path is ignored). --max-turns 1 cancelled
+    # after grok tried read_file; deny tools and keep a few turns as a backstop.
     grok --prompt-file "$PROMPT" \
       --json-schema "$(cat "$SCHEMA")" \
-      --max-turns 1 \
+      --max-turns 8 \
       --no-subagents \
+      --no-plan \
+      --verbatim \
       --disable-web-search \
+      --disallowed-tools run_terminal_command,run_terminal_cmd,read_file,search_replace,write,grep,list_dir,web_search,web_fetch,open_page,todo_write \
       --output-format json \
       >"$DIGEST_JSON" 2>"$LLM_ERR"
     ;;
@@ -388,40 +426,68 @@ Mode: $DEPTH. Empty arrays are required when there is nothing to report."
 esac
 grc=$?
 set -e
-if [[ "$grc" -ne 0 || ! -s "$DIGEST_JSON" ]]; then
-  log "${LLM} failed (rc=$grc). See $LLM_ERR"
+fail_llm() {
+  local why=$1
+  log "$why"
   if [[ "$DO_TELEGRAM" -eq 1 ]]; then
     send_tg "📋 Audit failed
 mode: $DEPTH
 llm: $LLM rc $grc
-snapshot: $SNAP" || true
+snapshot: $SNAP
+$why" || true
   fi
   exit 1
+}
+
+if [[ ! -s "$DIGEST_JSON" ]]; then
+  fail_llm "${LLM} failed (rc=$grc, empty digest). See $LLM_ERR"
+fi
+if [[ "$grc" -ne 0 ]]; then
+  log "${LLM} rc=$grc (digest used only if structured output is complete). See $LLM_ERR"
 fi
 
 DIGEST_MD="$SNAP/digest.md"
+set +e
 python3 - "$DIGEST_JSON" "$DEPTH" >"$DIGEST_MD" <<'PY'
 import json, sys
 raw = open(sys.argv[1], encoding="utf-8").read()
 mode = sys.argv[2]
-data = json.loads(raw)
-# grok/agy --output-format json may wrap (agy uses structured_output)
-if isinstance(data, dict) and "fix_now" not in data:
-    for k in ("structured_output", "data", "result", "output", "message", "response"):
-        val = data.get(k)
-        if isinstance(val, dict) and "fix_now" in val:
-            data = val
-            break
-        if isinstance(val, str) and val.strip():
-            try:
-                inner = json.loads(val)
-            except json.JSONDecodeError:
-                inner = None
-            if isinstance(inner, dict) and "fix_now" in inner:
-                data = inner
+wrapper = json.loads(raw)
+
+def as_digest(val):
+    if isinstance(val, dict) and "fix_now" in val:
+        return val
+    if isinstance(val, str) and val.strip():
+        try:
+            inner = json.loads(val)
+        except json.JSONDecodeError:
+            return None
+        if isinstance(inner, dict) and "fix_now" in inner:
+            return inner
+    return None
+
+stop = str(wrapper.get("stopReason") or wrapper.get("stop_reason") or "") if isinstance(wrapper, dict) else ""
+cancelled = stop in (
+    "cancelled", "canceled", "max_turns", "max_turn_requests", "error", "refusal"
+) or (isinstance(wrapper, dict) and wrapper.get("structuredOutputError"))
+
+# Prefer the constrained object. grok cancelled at max-turns can leave a stub
+# in `text` with empty buckets — do not treat that as a real audit.
+data = None
+if isinstance(wrapper, dict):
+    data = as_digest(wrapper.get("structured_output")) or as_digest(wrapper.get("structuredOutput"))
+    if data is None and "fix_now" in wrapper:
+        data = wrapper
+    if data is None:
+        text_digest = None
+        for k in ("data", "result", "output", "message", "response", "text"):
+            text_digest = as_digest(wrapper.get(k))
+            if text_digest:
                 break
-if isinstance(data, dict) and "fix_now" not in data:
-    raise SystemExit("digest JSON missing fix_now (agy wrapper empty?)")
+        if text_digest and not cancelled:
+            data = text_digest
+if data is None:
+    raise SystemExit("digest JSON missing fix_now (cancelled or empty wrapper)")
 label = "deep" if mode == "deep" else "monthly light"
 lines = [f"Homelab audit — {label}", ""]
 
@@ -451,6 +517,11 @@ bucket("NEEDS BASELINE UPDATE", "needs_baseline_update", None)
 bucket("ACCEPTED", "accepted", None)
 print("\n".join(lines).rstrip())
 PY
+prc=$?
+set -e
+if [[ "$prc" -ne 0 ]]; then
+  fail_llm "${LLM} digest unwrap failed (rc=$prc). See $DIGEST_JSON and $LLM_ERR"
+fi
 chmod 600 "$DIGEST_MD" "$DIGEST_JSON"
 
 log "digest written $DIGEST_MD"
