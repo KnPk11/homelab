@@ -9,7 +9,19 @@ SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 [[ -r /etc/default/monthly-audit ]] && . /etc/default/monthly-audit
 REPO="${REPO:-/opt/dev/homelab_repo}"
 SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
-SCHEMA="${SCHEMA:-$SCRIPT_DIR/digest.schema.json}"
+if [[ -z "${SCHEMA:-}" ]]; then
+  for cand in \
+    "$REPO/nodes/ai-tools/services/monthly-audit/digest.schema.json" \
+    /usr/local/share/monthly-audit/digest.schema.json \
+    "$SCRIPT_DIR/digest.schema.json"
+  do
+    if [[ -f "$cand" ]]; then SCHEMA=$cand; break; fi
+  done
+fi
+if [[ -z "${SCHEMA:-}" || ! -f "$SCHEMA" ]]; then
+  echo "monthly-audit: digest.schema.json not found" >&2
+  exit 1
+fi
 PLAYBOOK="$REPO/docs/03_Maintenance/security-audit-playbook.md"
 ENV_FILE="${TELEGRAM_ENV:-/etc/ssh/telegram.env}"
 [[ -s "$ENV_FILE" ]] || ENV_FILE=/srv/homelab-watch/telegram.env
@@ -331,13 +343,30 @@ case "$LLM" in
       log "agy (Antigravity) missing; snapshot left at $SNAP"
       exit 1
     fi
-    # plan + sandbox: no SSH after lock. Do not pass --dangerously-skip-permissions.
-    agy_args=(agy --print --json-schema "$SCHEMA" --output-format json --mode plan --sandbox --disable-slash-commands)
+    # --print must take the prompt as its value; a bare --print eats the next flag.
+    # Do not stuff the 64k snapshot into --print: agy then calls RunCommand,
+    # headless denies it, and response is empty. Point it at prompt.txt instead.
+    # Do not pass --dangerously-skip-permissions.
+    ws="$SNAP/agy-ws"
+    mkdir -p "$ws"
+    cp -a "$PROMPT" "$ws/prompt.txt"
+    cp -a "$SCHEMA" "$ws/digest.schema.json"
+    cat >"$ws/GEMINI.md" <<'EOF'
+This workspace is a finished read-only audit snapshot. Do not run shell or SSH.
+Fill the JSON schema from prompt.txt only. Tools will abort this headless job.
+EOF
+    agy_print="Do not use the command/shell tool. It aborts this job.
+Read prompt.txt in this workspace and output JSON matching digest.schema.json.
+Mode: $DEPTH. Empty arrays are required when there is nothing to report."
+    agy_args=(agy --json-schema "$SCHEMA" --output-format json --mode plan --sandbox --add-dir "$ws")
     if [[ -n "${AUDIT_MODEL:-}" ]]; then
       agy_args+=(--model "$AUDIT_MODEL")
     fi
-    agy_args+=(--prompt "$(cat "$PROMPT")")
-    "${agy_args[@]}" >"$DIGEST_JSON" 2>"$LLM_ERR"
+    agy_args+=(--print="$agy_print")
+    (
+      cd "$ws"
+      "${agy_args[@]}"
+    ) >"$DIGEST_JSON" 2>"$LLM_ERR"
     ;;
   grok)
     if ! command -v grok >/dev/null; then
@@ -376,20 +405,23 @@ import json, sys
 raw = open(sys.argv[1], encoding="utf-8").read()
 mode = sys.argv[2]
 data = json.loads(raw)
-# grok --output-format json may wrap
+# grok/agy --output-format json may wrap (agy uses structured_output)
 if isinstance(data, dict) and "fix_now" not in data:
-    for k in ("data", "result", "output", "message"):
-        if isinstance(data.get(k), dict) and "fix_now" in data[k]:
-            data = data[k]
+    for k in ("structured_output", "data", "result", "output", "message", "response"):
+        val = data.get(k)
+        if isinstance(val, dict) and "fix_now" in val:
+            data = val
             break
-        if isinstance(data.get(k), str):
+        if isinstance(val, str) and val.strip():
             try:
-                inner = json.loads(data[k])
-                if isinstance(inner, dict) and "fix_now" in inner:
-                    data = inner
-                    break
+                inner = json.loads(val)
             except json.JSONDecodeError:
-                pass
+                inner = None
+            if isinstance(inner, dict) and "fix_now" in inner:
+                data = inner
+                break
+if isinstance(data, dict) and "fix_now" not in data:
+    raise SystemExit("digest JSON missing fix_now (agy wrapper empty?)")
 label = "deep" if mode == "deep" else "monthly light"
 lines = [f"Homelab audit — {label}", ""]
 

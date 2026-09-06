@@ -3,8 +3,10 @@
 set -euo pipefail
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
+install -d -m 755 /usr/local/share/monthly-audit
 install -m 755 "$SCRIPT_DIR/monthly-audit.sh" /usr/local/sbin/monthly-audit
 install -m 755 "$SCRIPT_DIR/reminder.sh" /usr/local/sbin/monthly-audit-reminder
+install -m 644 "$SCRIPT_DIR/digest.schema.json" /usr/local/share/monthly-audit/digest.schema.json
 install -m 644 "$SCRIPT_DIR/reminder.service" /etc/systemd/system/monthly-audit-reminder.service
 install -m 644 "$SCRIPT_DIR/reminder.timer" /etc/systemd/system/monthly-audit-reminder.timer
 install -d -m 700 /var/lib/monthly-audit
