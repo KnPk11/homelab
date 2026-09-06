@@ -6,9 +6,19 @@ trap exit_ok EXIT
 
 [[ "${PAM_TYPE:-}" == "open_session" ]] || exit 0
 case "${PAM_SERVICE:-}" in
-  sshd|ssh) ;;
+  sshd|ssh|sshd-session) ;;
   *) exit 0 ;;
 esac
+
+# Drop CR/LF so a CRLF hostname or RHOST cannot become a blank Telegram line.
+clean() {
+  local s="$1"
+  s="${s//$'\r'/}"
+  s="${s//$'\n'/ }"
+  s="${s#"${s%%[![:space:]]*}"}"
+  s="${s%"${s##*[![:space:]]}"}"
+  printf '%s' "$s"
+}
 
 ENV_FILE=""
 for f in /etc/ssh/telegram.env /srv/homelab-watch/telegram.env; do
@@ -80,15 +90,20 @@ ptr_short() {
   [[ "$name" && "$name" != "$ip" ]] && echo "$name"
 }
 
-host="$(hostname -s 2>/dev/null || echo unknown)"
-from="${PAM_RHOST:-?}"
-user="${PAM_USER:-?}"
+host="$(clean "$(hostname -s 2>/dev/null || echo unknown)")"
+from="$(clean "${PAM_RHOST:-?}")"
+user="$(clean "${PAM_USER:-?}")"
+# OpenSSH sometimes passes IPv4-mapped IPv6 for a LAN client.
+if [[ "$from" == ::ffff:* ]]; then
+  from="$(clean "${from#::ffff:}")"
+fi
+[[ "$from" == ::1 ]] && from=127.0.0.1
 kind="$(src_kind "$from")"
 
 if [[ "$kind" == "lan" || "$kind" == "vpn" ]]; then
   zone="LAN"
   [[ "$kind" == "vpn" ]] && zone="VPN"
-  label="$(ptr_short "$from")"
+  label="$(clean "$(ptr_short "$from")")"
   if [[ -n "$label" ]]; then
     msg="🏠 SSH ${user}@${host} from ${from} (${zone} ${label})"
   else
@@ -102,7 +117,13 @@ from: ${from}
 via:  ${PAM_SERVICE}"
 fi
 
+# Strip CR and trailing space only — keep 🚨 multiline breaks.
+msg="${msg//$'\r'/}"
+msg="${msg%"${msg##*[![:space:]]}"}"
+[[ -n "$msg" ]] || exit 0
+
 curl -sS --max-time 8 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${CHAT_ID}" \
   --data-urlencode "text=${msg}" \
+  --data-urlencode "disable_web_page_preview=true" \
   >/dev/null 2>&1 || true
