@@ -14,6 +14,8 @@ TG=/etc/ssh/telegram.env
 cat > /etc/default/monthly-audit <<EOF
 TELEGRAM_ENV=${TG}
 REPO=/opt/dev/homelab_repo
+AUDIT_LLM=agy
+# AUDIT_MODEL=gemini-3.8-flash-high
 EOF
 chmod 644 /etc/default/monthly-audit
 

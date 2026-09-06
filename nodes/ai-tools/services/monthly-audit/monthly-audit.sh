@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
-# Occasional manual audit. You unlock God Mode; this snapshots, locks, then Grok.
+# Occasional manual audit. You unlock God Mode; this snapshots, locks, then agy (or grok).
 #   monthly-audit --light | --deep
 # Not OpenClaw/Hermes. Homelab Watch only.
 set -euo pipefail
 
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+# shellcheck source=/dev/null
+[[ -r /etc/default/monthly-audit ]] && . /etc/default/monthly-audit
 REPO="${REPO:-/opt/dev/homelab_repo}"
 SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
 SCHEMA="${SCHEMA:-$SCRIPT_DIR/digest.schema.json}"
@@ -27,15 +29,17 @@ DEPTH=""
 DO_LOCK=1
 DO_LLM=1
 DO_TELEGRAM=1
+LLM="${AUDIT_LLM:-agy}"
 
 usage() {
   cat <<EOF
-Usage: monthly-audit [--light|--deep] [--no-lock] [--no-llm] [--no-telegram]
+Usage: monthly-audit [--light|--deep] [--llm agy|grok] [--no-lock] [--no-llm] [--no-telegram]
 
 Unlock God Mode first (ai-key-unlock && source ~/.ssh/ai-key-agent.sh).
 
   --light        playbook monthly light (CrowdSec/Caddy, DSTNAT, keys, reboot, updates)
   --deep         light plus Lynis on guests and Docker Bench on docker-services
+  --llm agy|grok  Antigravity (default) or Grok CLI. AUDIT_LLM in /etc/default/monthly-audit
   --no-lock      leave God Mode loaded (debug)
   --no-llm       stop after snapshot
   --no-telegram  print digest, do not POST
@@ -46,6 +50,7 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --light) DEPTH=light; shift ;;
     --deep) DEPTH=deep; shift ;;
+    --llm) LLM="${2:-}"; shift 2 ;;
     --no-lock) DO_LOCK=0; shift ;;
     --no-llm) DO_LLM=0; shift ;;
     --no-telegram) DO_TELEGRAM=0; shift ;;
@@ -301,29 +306,50 @@ if [[ "$DO_LLM" -ne 1 ]]; then
   exit 0
 fi
 
-if ! command -v grok >/dev/null; then
-  log "grok CLI missing; snapshot left at $SNAP"
-  exit 1
-fi
-
-log "running grok (keys already locked)"
 DIGEST_JSON="$SNAP/digest.json"
+LLM_ERR="$SNAP/llm.err"
+log "running ${LLM} (keys already locked)"
 set +e
-grok --prompt-file "$PROMPT" \
-  --json-schema "$(cat "$SCHEMA")" \
-  --max-turns 1 \
-  --no-subagents \
-  --disable-web-search \
-  --output-format json \
-  >"$DIGEST_JSON" 2>"$SNAP/grok.err"
+case "$LLM" in
+  agy|antigravity)
+    if ! command -v agy >/dev/null; then
+      log "agy (Antigravity) missing; snapshot left at $SNAP"
+      exit 1
+    fi
+    # plan + sandbox: no SSH after lock. Do not pass --dangerously-skip-permissions.
+    agy_args=(agy --print --json-schema "$SCHEMA" --output-format json --mode plan --sandbox --disable-slash-commands)
+    if [[ -n "${AUDIT_MODEL:-}" ]]; then
+      agy_args+=(--model "$AUDIT_MODEL")
+    fi
+    agy_args+=(--prompt "$(cat "$PROMPT")")
+    "${agy_args[@]}" >"$DIGEST_JSON" 2>"$LLM_ERR"
+    ;;
+  grok)
+    if ! command -v grok >/dev/null; then
+      log "grok CLI missing; snapshot left at $SNAP"
+      exit 1
+    fi
+    grok --prompt-file "$PROMPT" \
+      --json-schema "$(cat "$SCHEMA")" \
+      --max-turns 1 \
+      --no-subagents \
+      --disable-web-search \
+      --output-format json \
+      >"$DIGEST_JSON" 2>"$LLM_ERR"
+    ;;
+  *)
+    log "unknown --llm $LLM (use agy or grok)"
+    exit 2
+    ;;
+esac
 grc=$?
 set -e
 if [[ "$grc" -ne 0 || ! -s "$DIGEST_JSON" ]]; then
-  log "grok failed (rc=$grc). See $SNAP/grok.err"
+  log "${LLM} failed (rc=$grc). See $LLM_ERR"
   if [[ "$DO_TELEGRAM" -eq 1 ]]; then
     send_tg "📋 Audit failed
 mode: $DEPTH
-grok rc $grc
+llm: $LLM rc $grc
 snapshot: $SNAP" || true
   fi
   exit 1

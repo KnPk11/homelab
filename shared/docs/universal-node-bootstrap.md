@@ -47,7 +47,7 @@ Rolled out from **`ai-tools`**. Do **not** copy these into each `nodes/*/deploym
 
 *   [SSH doorbell](../observability/ssh-doorbell/deployment.md) — PAM successful SSH on every Linux SSH host.
 *   [Weekly sweep](../observability/weekly-sweep/deployment.md) — Sunday timer. Reboot flags on the Linux sweep hosts, CrowdSec on reverse-proxy, DSTNAT from ai-tools, planted-file presence where a local list exists.
-*   [Monthly audit](../../nodes/ai-tools/services/monthly-audit/deployment.md) — every-other-Sunday 09:00 reminder (no keys). You unlock God Mode and run `--light` or `--deep`; keys lock before Grok; digest to Homelab Watch.
+*   [Monthly audit](../../nodes/ai-tools/services/monthly-audit/deployment.md) — every-other-Sunday 09:00 reminder (no keys). You unlock God Mode and run `--light` or `--deep`; keys lock before Antigravity (`agy`) or Grok; digest to Homelab Watch.
 
 ```bash
 # on ai-tools, God Mode unlocked

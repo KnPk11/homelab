@@ -15,7 +15,9 @@ You unlock, then pick depth (flag or prompt):
 | `--light` | CrowdSec/Caddy skim, MikroTik DSTNAT + control plane, key status, reboot flags, apt simulation, docker image names, secret **modes** only |
 | `--deep` | light + Lynis `--quick` on guests + Docker Bench WARN/FAIL on `docker-services` |
 
-Then: **`ai-key-lock`** → Grok CLI (`--prompt-file`, JSON schema, no extra SSH) → Homelab Watch. Empty buckets stay in the message.
+Then: **`ai-key-lock` immediately** → LLM → Homelab Watch. Empty buckets stay in the message.
+
+Default LLM is **Antigravity** (`agy --print --mode plan --sandbox --json-schema`). Grok is `--llm grok`. Set `AUDIT_LLM` / `AUDIT_MODEL` in `/etc/default/monthly-audit`. Do not use `agy --dangerously-skip-permissions`.
 
 ```bash
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh
