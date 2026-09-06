@@ -11,6 +11,9 @@ BOT_TOKEN="${BOT_TOKEN:-${TELEGRAM_BOT_TOKEN:-}}"
 CHAT_ID="${CHAT_ID:-${TELEGRAM_CHAT_ID:-}}"
 [[ -n "$BOT_TOKEN" && -n "$CHAT_ID" ]] || exit 0
 
+STATE_DIR="${AUTH_WATCH_STATE:-/var/lib/auth-watch}"
+install -d -m 700 "$STATE_DIR"
+
 send() {
   python3 - "$BOT_TOKEN" "$CHAT_ID" "📜 $1" <<'PY' || true
 import sys, urllib.parse, urllib.request
@@ -59,12 +62,27 @@ for h in "${arr[@]}"; do
   h="${h// /}"
   [[ -n "$h" ]] || continue
   f="$LOGROOT/$h/auth.log"
+  mark="$STATE_DIR/${h}.silent"
+  silent=0
   if [[ ! -f "$f" ]]; then
-    send "auth: no file for ${h} (shipper?)"
-    continue
+    silent=1
+    reason="no file for ${h} (shipper?)"
+  else
+    mtime="$(stat -c %Y "$f" 2>/dev/null || echo 0)"
+    if [[ "$mtime" -lt "$cutoff_epoch" ]]; then
+      silent=1
+      reason="no lines from ${h} for 15m (shipper?)"
+    fi
   fi
-  mtime="$(stat -c %Y "$f" 2>/dev/null || echo 0)"
-  if [[ "$mtime" -lt "$cutoff_epoch" ]]; then
-    send "auth: no lines from ${h} for 15m (shipper?)"
+  if [[ "$silent" -eq 1 ]]; then
+    if [[ ! -f "$mark" ]]; then
+      send "auth: ${reason}"
+      : >"$mark"
+    fi
+  else
+    if [[ -f "$mark" ]]; then
+      send "auth: ${h} shipping again"
+      rm -f "$mark"
+    fi
   fi
 done

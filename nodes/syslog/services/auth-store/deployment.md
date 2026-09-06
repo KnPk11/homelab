@@ -23,4 +23,4 @@ auth-logs -f reverse-proxy
 tail -F /mnt/logs/auth/scratch-pc/auth.log
 ```
 
-`auth-watch.timer` (every 5 minutes) Telegrams `useradd`/`usermod` and a host whose `auth.log` has not grown for 15 minutes (heartbeat missing).
+`auth-watch.timer` (every 5 minutes) Telegrams `useradd`/`usermod` and a host whose `auth.log` has not grown for 15 minutes (heartbeat missing). Silent-host alerts fire **once** until that host ships again.

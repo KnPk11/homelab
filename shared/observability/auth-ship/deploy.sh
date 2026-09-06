@@ -30,8 +30,9 @@ fi
 install -m 644 "$REPO_DIR/99-auth-offbox.conf" /etc/rsyslog.d/99-auth-offbox.conf
 install -m 644 "$REPO_DIR/auth-ship-heartbeat.service" /etc/systemd/system/auth-ship-heartbeat.service
 install -m 644 "$REPO_DIR/auth-ship-heartbeat.timer" /etc/systemd/system/auth-ship-heartbeat.timer
-systemctl restart rsyslog
 systemctl daemon-reload
+systemctl enable --now rsyslog.service
+systemctl restart rsyslog.service
 systemctl enable --now auth-ship-heartbeat.timer
 systemctl is-active rsyslog
 echo "auth-ship on ${host} → 192.168.50.89:514"
