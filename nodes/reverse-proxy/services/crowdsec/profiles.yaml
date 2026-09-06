@@ -3,7 +3,7 @@ filters:
  - Alert.Remediation == true && Alert.GetScope() == "Ip"
 decisions:
  - type: ban
-   duration: 2h
+   duration: 4h
 notifications:
  - http_default
 on_success: break
@@ -13,7 +13,7 @@ filters:
  - Alert.Remediation == true && Alert.GetScope() == "Range"
 decisions:
  - type: ban
-   duration: 2h
+   duration: 4h
 notifications:
  - http_default
 on_success: break
