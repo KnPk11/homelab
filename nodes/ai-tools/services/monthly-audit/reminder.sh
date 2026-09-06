@@ -29,7 +29,7 @@ DEEP
   monthly-audit --deep
   Everything in light, plus Lynis on guests and Docker Bench on docker-services
 
-After the snapshot, God Mode locks before Grok runs. The digest lands here:
+The digest lands here:
 
   FIX NOW / TRACK / NEEDS BASELINE UPDATE / ACCEPTED
 

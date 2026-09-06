@@ -15,7 +15,7 @@ You unlock, then pick depth (flag or prompt):
 | `--light` | CrowdSec/Caddy skim, MikroTik DSTNAT + control plane, key status, reboot flags, apt simulation, docker image names, secret **modes** only |
 | `--deep` | light + Lynis `--quick` on guests + Docker Bench WARN/FAIL on `docker-services` |
 
-Then: **`ai-key-lock` immediately** → LLM → Homelab Watch. Empty buckets stay in the message.
+Then LLM → Homelab Watch. God Mode stays loaded for your usual TTL; pass `--lock` if you want it unloaded before the model runs. Empty buckets stay in the message.
 
 Default LLM is **Antigravity** (`agy --print --mode plan --sandbox --json-schema`). Grok is `--llm grok`. Set `AUDIT_LLM` / `AUDIT_MODEL` in `/etc/default/monthly-audit`. Do not use `agy --dangerously-skip-permissions`.
 
@@ -26,6 +26,6 @@ monthly-audit --light
 monthly-audit --deep
 ```
 
-Debug: `--no-lock --no-llm` writes `/var/lib/monthly-audit/latest` and leaves keys loaded.
+Debug: `--no-llm` writes `/var/lib/monthly-audit/latest` and stops before the model.
 
 Playbook: [security-audit-playbook.md](../../../../docs/03_Maintenance/security-audit-playbook.md). Pointer: [universal node bootstrap](../../../../shared/docs/universal-node-bootstrap.md) §5.

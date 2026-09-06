@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Occasional manual audit. You unlock God Mode; this snapshots, locks, then agy (or grok).
+# Occasional manual audit. You unlock God Mode; this snapshots, then agy (or grok).
 #   monthly-audit --light | --deep
 # Not OpenClaw/Hermes. Homelab Watch only.
 set -euo pipefail
@@ -26,21 +26,21 @@ LYNIS_HOSTS=(
 )
 
 DEPTH=""
-DO_LOCK=1
+DO_LOCK=0
 DO_LLM=1
 DO_TELEGRAM=1
 LLM="${AUDIT_LLM:-agy}"
 
 usage() {
   cat <<EOF
-Usage: monthly-audit [--light|--deep] [--llm agy|grok] [--no-lock] [--no-llm] [--no-telegram]
+Usage: monthly-audit [--light|--deep] [--llm agy|grok] [--lock] [--no-llm] [--no-telegram]
 
 Unlock God Mode first (ai-key-unlock && source ~/.ssh/ai-key-agent.sh).
 
   --light        playbook monthly light (CrowdSec/Caddy, DSTNAT, keys, reboot, updates)
   --deep         light plus Lynis on guests and Docker Bench on docker-services
   --llm agy|grok  Antigravity (default) or Grok CLI. AUDIT_LLM in /etc/default/monthly-audit
-  --no-lock      leave God Mode loaded (debug)
+  --lock         unload God Mode before the LLM (default: leave the TTL watchdog to lock)
   --no-llm       stop after snapshot
   --no-telegram  print digest, do not POST
 EOF
@@ -51,6 +51,7 @@ while [[ $# -gt 0 ]]; do
     --light) DEPTH=light; shift ;;
     --deep) DEPTH=deep; shift ;;
     --llm) LLM="${2:-}"; shift 2 ;;
+    --lock) DO_LOCK=1; shift ;;
     --no-lock) DO_LOCK=0; shift ;;
     --no-llm) DO_LLM=0; shift ;;
     --no-telegram) DO_TELEGRAM=0; shift ;;
@@ -269,7 +270,7 @@ if [[ "$DO_LOCK" -eq 1 ]]; then
   log "locking God Mode"
   ai-key-lock || true
 else
-  log "skipping lock (--no-lock)"
+  log "leaving God Mode loaded (TTL watchdog will unload)"
 fi
 
 PROMPT="$SNAP/prompt.txt"
@@ -308,7 +309,7 @@ fi
 
 DIGEST_JSON="$SNAP/digest.json"
 LLM_ERR="$SNAP/llm.err"
-log "running ${LLM} (keys already locked)"
+log "running ${LLM}"
 set +e
 case "$LLM" in
   agy|antigravity)
