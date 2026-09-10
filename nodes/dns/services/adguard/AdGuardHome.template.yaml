@@ -176,6 +176,11 @@ filtering:
     - domain: mediamtx.{{DOMAIN_NAME}}
       answer: {{HOMELAB_NODE_IP}}
       enabled: true
+    # Direct to MediaMTX (not Caddy). Wildcard *.domain otherwise sends stream
+    # to the proxy, which does not terminate RTSP/RTMP/HLS on 8554/1935/8888.
+    - domain: stream.{{DOMAIN_NAME}}
+      answer: {{HOMELAB_NODE_IP}}
+      enabled: true
     # Direct to OMV (not Caddy). Wildcard *.domain otherwise sends nas to the proxy,
     # which does not terminate SMB/OMV UI.
     - domain: nas.{{DOMAIN_NAME}}
