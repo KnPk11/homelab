@@ -92,6 +92,21 @@ Use the **full** BotFather token (digits, colon, then `AAF…`). A tail-only tok
 
 Page **offline / dead PBS**, not CPU or Docker image-update noise. Mute agents on machines that sleep. Grouping is ~60s — a blip that clears inside that window may never notify.
 
+Telegram **minimum severity is critical**. Pulse notifies on the **first fire only** — it does not send again when an open warning later becomes critical.
+
+### Backup age (PBS / vzdump)
+
+**Alerts → Thresholds → Backups.** These are the lab defaults:
+
+| Setting | Value | Why |
+| :--- | :--- | :--- |
+| Warning days | **Disabled** (`0`) | A 1-day warning opens every morning before the 04:00 vzdump finishes. Telegram ignores it, then the later critical never pages. |
+| Critical days | **2** | First fire is already critical, so a missed night reaches Telegram. |
+| Fresh hours | **24** | Recovery view: last backup is still fresh. |
+| Stale hours | **48** | Recovery view: last backup is stale. Does **not** drive Telegram. |
+
+Do not set critical days to `1` unless you want a Telegram burst from every guest while it waits its turn in the nightly job. After changing thresholds, an **already-open** backup-age alert will not re-page; it notifies again only after it resolves and re-fires.
+
 **Patrol:** leave it in the Pulse UI (or turn auto-on-alert patrol off). Do not send Patrol to Telegram. The configured model `stepfun-ai/step-3.7-flash` returned **410 Gone** (EOL 2026-08-28); pick a live model if you still want UI analysis.
 
 ## 6. Security / scope
