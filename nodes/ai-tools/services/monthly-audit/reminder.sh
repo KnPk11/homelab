@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Every-other-Sunday Homelab Watch nudge. No SSH, no God Mode, no model.
+# Weekly Sunday Homelab Watch nudge. No SSH, no God Mode, no model.
 set -euo pipefail
 ENV_FILE="${TELEGRAM_ENV:-/etc/ssh/telegram.env}"
 [[ -s "$ENV_FILE" ]] || ENV_FILE=/srv/homelab-watch/telegram.env
 STAMP="${REMINDER_STAMP:-/var/lib/monthly-audit/last-reminder}"
-MIN_GAP_DAYS="${REMINDER_GAP_DAYS:-13}"
+MIN_GAP_DAYS="${REMINDER_GAP_DAYS:-6}"
 DRY_RUN=0
 FORCE=0
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=1

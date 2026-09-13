@@ -1,5 +1,5 @@
 [Unit]
-Description=Audit reminder (every other Sunday 09:00)
+Description=Audit reminder (every Sunday 09:00)
 
 [Timer]
 OnCalendar=Sun 09:00

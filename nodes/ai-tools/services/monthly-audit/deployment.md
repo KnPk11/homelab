@@ -4,7 +4,7 @@ Manual audit job with a **reminder** (that does not need unlocking SSH keys). Ho
 
 ## Reminder
 
-Timer is **every Sunday 09:00**; the script skips if it already sent within 13 days, so you get a fat Homelab Watch nudge **every other Sunday**. No keys. Preview: `monthly-audit-reminder --dry-run`. Force: `monthly-audit-reminder --force`.
+Timer is **every Sunday 09:00**. The script skips only if it already sent within 6 days (anti-double-fire), so you get a Homelab Watch nudge **weekly**. No keys. Preview: `monthly-audit-reminder --dry-run`. Force: `monthly-audit-reminder --force`.
 
 ## Job
 
