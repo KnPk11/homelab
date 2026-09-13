@@ -1,7 +1,7 @@
 #!/bin/bash
 # =============================================================================
 # scrape_configs_and_secrets.sh
-# Version: 2.13
+# Version: 2.14
 # Date: 2026-09-13
 #
 # Centralised live-node configs & secrets backup into secrets_vault (rsync, no SOPS).
@@ -100,7 +100,7 @@ sweep_remote_path() {
                 -o -name \"*.pwd\" -o -name \"gcp-creds.json\" -o -name \"postgres_password\" \
                 -o -name \"*.config\" -o -name \"*.kopia-password\" -o -name \"*kopia-password*\" \
                 -o -name \"main-repo.config\" -o -name \"repository.config\" \
-            \)" 2>/dev/null | grep '^\./' || true
+            \) ! -name '*sops*'" 2>/dev/null | grep '^\./' || true
     )"
     if [[ -z "$list" ]]; then
         echo "  (no matching files under $SRC — skipped)"
