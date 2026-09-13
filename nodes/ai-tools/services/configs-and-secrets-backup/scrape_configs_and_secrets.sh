@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # scrape_configs_and_secrets.sh
-# Version: 2.12
-# Date: 2026-07-25
+# Version: 2.13
+# Date: 2026-09-13
 #
 # Centralised live-node configs & secrets backup into secrets_vault (rsync, no SOPS).
 # Requires God Mode SSH (ai-key-unlock). ON DEMAND ONLY — not for cron.
@@ -63,6 +63,8 @@ PATH_SWEEPS=(
     "docker-services:/srv"
     "docker-services:/opt/scripts/Security"
     "lab-vm:/opt/scripts/Security"
+    # Public web-apps clone (story-cards/.env; other apps may add .env later)
+    "lab-vm:/opt/web-apps"
     "nas:/opt/scripts/Security"
     "proxmox-host:/opt/scripts/Security"
     # Kopia client config + password (next to backup scripts)
