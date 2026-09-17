@@ -11,7 +11,7 @@ if [[ -f "$ENV_FILE" ]]; then
   set +a
 fi
 
-INTERVAL="${INTERVAL:-5}"
+INTERVAL="${INTERVAL:-10}"
 HOST="$(hostname -s)"
 SEND="${TELEGRAM_SEND:-/usr/local/sbin/homelab-watch-send}"
 STATE_DIR="${STATE_DIR:-/run/web-compromise-watch}"

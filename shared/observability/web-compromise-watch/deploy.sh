@@ -33,7 +33,7 @@ write_exec_env() {
       cat >"$dest" <<'EOF'
 WATCH_UIDS=999
 WATCH_COMMS=sh,bash,dash,nc,ncat,netcat,socat,python,python3,perl
-INTERVAL=5
+INTERVAL=10
 RATE_SEC=60
 TELEGRAM_ENV=/srv/homelab-watch/telegram.env
 TELEGRAM_SEND=/usr/local/sbin/homelab-watch-send
@@ -43,7 +43,7 @@ EOF
       cat >"$dest" <<'EOF'
 WATCH_CGROUP_REGEX=docker
 WATCH_COMMS=nc,ncat,netcat,socat
-INTERVAL=5
+INTERVAL=10
 RATE_SEC=60
 TELEGRAM_ENV=/srv/homelab-watch/telegram.env
 TELEGRAM_SEND=/usr/local/sbin/homelab-watch-send
@@ -54,7 +54,7 @@ EOF
       cat >"$dest" <<'EOF'
 WATCH_COMMS=nc,ncat,netcat,socat
 ALLOW_ANY_UID=1
-INTERVAL=5
+INTERVAL=10
 RATE_SEC=60
 TELEGRAM_ENV=/srv/homelab-watch/telegram.env
 TELEGRAM_SEND=/usr/local/sbin/homelab-watch-send
