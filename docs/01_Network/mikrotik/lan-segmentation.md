@@ -28,7 +28,7 @@ To make `ether3` and `ether4` talk to each other while sharing the `[HOMELAB-GW]
     dns-server=[ADGUARD-IP]
 ```
 
-Same AdGuard-only DHCP DNS as main LAN and guest (see [setup.md](setup.md) / AdGuard docs). Failover is router-side (`CheckAdGuard`), not a public secondary on DHCP.
+Same AdGuard-only DHCP DNS as main LAN (see [setup.md](setup.md) / AdGuard docs). Failover is router-side (`CheckAdGuard`), not a public secondary on DHCP. (Note: `guest-vlan` is an intentional exception with `1.1.1.1` as secondary fallback for strict IoT hardware.)
 
 ### Interface list
 

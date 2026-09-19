@@ -113,26 +113,30 @@ Under **Settings** → **DNS settings** → **Upstream DNS servers**, use two **
 
 ### Client DNS via MikroTik DHCP (current)
 
-Clients should query **AdGuard only** (so logs show real device IPs and filtering is not bypassed):
+Clients on trusted networks should query **AdGuard only** (so logs show real device IPs and filtering is not bypassed), whilst the IoT/guest network includes a secondary fallback:
 
-1. **IP** → **DHCP Server** → **Networks** (main LAN, homelab, guest — all of them).
+1. **IP** → **DHCP Server** → **Networks** (main LAN, homelab, guest).
 2. **DNS Servers:**
 
 ```bash
 /ip dhcp-server network
 set [find comment=defconf] dns-server=[ADGUARD-IP]
 set [find comment=homelab] dns-server=[ADGUARD-IP]
-set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
+set [find comment=guest-vlan] dns-server=[ADGUARD-IP],1.1.1.1
 ```
 
-| Order | Server | Role |
-|-------|--------|------|
-| 1 | `[ADGUARD-IP]` | Filtering, rewrites, lab DNS — sole resolver advertised to clients |
+| Subnet / Network | DNS Server(s) | Role |
+|---|---|---|
+| `defconf` (Main LAN) | `[ADGUARD-IP]` | Sole resolver advertised to trusted clients |
+| `homelab` | `[ADGUARD-IP]` | Sole resolver advertised to homelab servers |
+| `guest-vlan` (IoT / Guest) | `[ADGUARD-IP],1.1.1.1` | Primary AdGuard with public fallback for strict IoT hardware |
 
 Clients need a **new DHCP lease** (or renew) after this change.
 
 > [!WARNING]
-> Do **not** put `1.1.1.1` (or other public DNS) as a DHCP secondary. Many clients query both resolvers and **bypass AdGuard** even while dns is healthy.
+> **No public secondary on trusted networks:** Do **not** put `1.1.1.1` (or other public DNS) as a DHCP secondary on the main LAN or homelab networks. Many operating systems (Windows, macOS, Linux) query both resolvers concurrently or round-robin, which **bypasses AdGuard** even while it is healthy. Outages on these subnets are handled cleanly by router-side failover (`CheckAdGuard`).
+>
+> **Guest / IoT VLAN exception:** The `guest-vlan` (`192.168.101.0/24`) is an intentional exception where `1.1.1.1` is configured as a secondary DNS server. Certain IoT devices (notably Apple HomeKit-certified models such as TP-Link Tapo C125 cameras) fail DHCP negotiation or abandon cloud connectivity if presented solely with a single off-subnet DNS server (`[ADGUARD-IP]`), dropping to link-local APIPA (`169.254.x.x`). While simpler devices (e.g. Tapo C120) tolerate single DNS, the secondary public resolver guarantees multi-vendor reliability across the IoT fleet. Because the IoT VLAN is untrusted and isolated by the firewall, smart device connectivity takes priority over strict ad-blocking.
 
 #### Router-side failover when AdGuard is down
 
@@ -191,14 +195,14 @@ These rules must be placed **before** the global isolation rule to allow DNS tra
 
 **3. DHCP Configuration**
 
-The DHCP server for the `guest-vlan` was updated to point directly to the AdGuard IP.
+The DHCP server for `guest-vlan` is configured with AdGuard as primary and a public fallback resolver (`1.1.1.1`):
 
 ```bash
-/ip dhcp-server network set [find address="[GUEST-VLAN-SUBNET]/24"] \
-    dns-server=[ADGUARD-IP]
+/ip dhcp-server network set [find comment=guest-vlan] \
+    dns-server=[ADGUARD-IP],1.1.1.1
 ```
 
-(Same AdGuard-only DHCP DNS as the other networks.)
+(Trusted subnets use `[ADGUARD-IP]` only; `guest-vlan` retains `1.1.1.1` fallback for strict IoT device compatibility.)
 
 ### Reverse Proxy & Real IPs
 

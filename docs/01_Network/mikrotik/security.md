@@ -232,7 +232,7 @@ A "Physical Security" best practice. Disabling unused ports (`etherX`) prevents 
 /ip dns set cache-max-ttl=24h
 ```
 
-Clients: DHCP **AdGuard only** (`[ADGUARD-IP]`) plus router `CheckAdGuard` / Failover Trap when dns is down — see [setup.md](setup.md). Avoid dual public DNS on DHCP (clients bypass filtering).
+Clients: DHCP **AdGuard only** (`[ADGUARD-IP]`) on trusted networks plus router `CheckAdGuard` / Failover Trap when dns is down — see [setup.md](setup.md). Avoid dual public DNS on trusted DHCP (clients bypass filtering). Note: `guest-vlan` (IoT) is an intentional exception with `[ADGUARD-IP],1.1.1.1` for IoT device compatibility.
 
 ### NTP
 

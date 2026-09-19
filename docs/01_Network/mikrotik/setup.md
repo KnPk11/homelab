@@ -18,19 +18,21 @@ Set a static IP for the secondary router (Asus):
 
 ### Client DNS (DHCP — preferred)
 
-Hand clients **only AdGuard** so filtering and local rewrites always apply (no public secondary that clients can race to):
+Hand clients **only AdGuard** on trusted networks so filtering and local rewrites always apply (no public secondary that clients can race to), whilst providing a public secondary fallback on the IoT/guest network:
 
 ```bash
 /ip dhcp-server network
 set [find comment=defconf] dns-server=[ADGUARD-IP]
 set [find comment=homelab] dns-server=[ADGUARD-IP]
-set [find comment=guest-vlan] dns-server=[ADGUARD-IP]
+set [find comment=guest-vlan] dns-server=[ADGUARD-IP],1.1.1.1
 ```
 
 **Resilience when dns is down:** MikroTik script `CheckAdGuard` + scheduler `DNS_Health_Check` (every 1m) plus the **AdGuard Failover Trap** NAT. See [AdGuard Home setup — DNS failover](../../02_Services/adguard-home/setup.md#client-dns-via-mikrotik-dhcp-current).
 
 > [!NOTE]
-> Dual DHCP DNS (`[ADGUARD-IP],1.1.1.1`) was tried for simple client failover but causes **random AdGuard bypass** (clients often query both resolvers). Prefer AdGuard-only + router health script.
+> **Dual DHCP DNS on trusted LAN:** Dual DHCP DNS (`[ADGUARD-IP],1.1.1.1`) causes random AdGuard bypass on workstations and mobile devices (clients often query both resolvers). Keep trusted subnets AdGuard-only with router health script failover.
+>
+> **Guest / IoT VLAN exception:** `guest-vlan` (VLAN 10) intentionally includes `1.1.1.1` as a secondary resolver. Certain IoT devices (such as TP-Link Tapo C125 smart cameras) fail DHCP negotiation or drop cloud connectivity and revert to APIPA (`169.254.x.x`) if handed only a single off-subnet internal DNS address.
 
 See also [AdGuard Home setup](../../02_Services/adguard-home/setup.md) (upstream resolvers, punch-hole rules).
 
