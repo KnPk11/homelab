@@ -161,6 +161,18 @@ Above isolate; use an address-list of AI hosts on the trusted LAN:
     place-before=[find where comment="Isolate Homelab & IoT"]
 ```
 
+### DHCP for Untrusted subnets (input)
+
+When DHCP servers run on untrusted interfaces (`guest-vlan`, `homelab-bridge`), client renewal packets (unicast UDP port 67 to gateway) hit the router's `input` chain. An explicit accept rule before `drop all not coming from LAN` is required so renewals and rebinds succeed without dropping devices into link-local APIPA:
+
+```bash
+/ip firewall filter add chain=input action=accept protocol=udp dst-port=67 \
+    in-interface-list=Untrusted comment="Accept DHCP from Untrusted" \
+    place-before=[find where comment~"defconf: drop all not coming from LAN"]
+```
+
+For IoT subnets with strict or embedded clients (such as Tapo smartcams), also set `always-broadcast=yes` and extend lease times (`lease-time=1d`) on `/ip dhcp-server` to avoid unnecessary renewal churn.
+
 ### Router management from Homelab
 
 Homelab is **Untrusted** → blocked by `drop all not coming from LAN` for input, **except** explicit allows (e.g. agent SSH from ai-tools — see [ai-ssh-access.md](ai-ssh-access.md)). Do **not** open general Homelab → router admin.
