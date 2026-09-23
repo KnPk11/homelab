@@ -443,7 +443,11 @@ openclaw.{$DOMAIN_NAME} {
     import common-logging-plaintext openclaw
     import common-logging openclaw
 
-    reverse_proxy 192.168.50.91:18789
+    reverse_proxy 192.168.50.91:18789 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto https
+    }
 }
 
 hermes.{$DOMAIN_NAME} {
