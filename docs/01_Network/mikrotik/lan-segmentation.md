@@ -171,7 +171,13 @@ When DHCP servers run on untrusted interfaces (`guest-vlan`, `homelab-bridge`), 
     place-before=[find where comment~"defconf: drop all not coming from LAN"]
 ```
 
-For IoT subnets with strict or embedded clients (such as Tapo smartcams), also set `always-broadcast=yes` and extend lease times (`lease-time=1d`) on `/ip dhcp-server` to avoid unnecessary renewal churn.
+For IoT subnets with strict or embedded clients (such as Tapo smartcams):
+- **Do not enforce `always-broadcast=yes` on the DHCP server:** ESP8266/ESP32 microcontrollers (e.g. BlitzWolf smart plugs) send unicast DHCP requests; enforcing broadcast replies causes the Asus AP guest bridge (`br1`) to drop responses and prevents smart plugs from binding. Keep `always-broadcast=no`.
+- **Extended lease time for strict hardware:** Apple HomeKit-certified devices (such as Tapo C125 cameras) aggressively latch onto link-local APIPA (`169.254.x.x`) if a standard 12-hour renewal experiences transient Wi-Fi jitter. Configure extended 30-day lease durations (`lease-time=30d` / `4w2d`) directly on their static reservations to minimise renewal churn:
+  ```bash
+  /ip dhcp-server lease set [find comment~"Tapo"] lease-time=30d
+  ```
+- **Recovery if cameras drop to APIPA:** Once a Tapo C125 drops to APIPA, embedded firmware often refuses to leave link-local mode while the Wi-Fi link remains associated. Rebooting the Asus AP (`https://192.168.88.2:8443` or physical power cycle) resets the radio link across the guest VLAN, clearing the stale APIPA state and completing a clean DHCP handshake.
 
 ### Router management from Homelab
 
