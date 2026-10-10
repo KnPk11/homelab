@@ -46,6 +46,12 @@ To prevent all nodes from hitting GitHub or the network at the exact same second
 | **`/opt/homelab-repo`** | **Yes** (All nodes) | Fleet-wide infrastructure configs, maintenance playbooks, and shared system utilities across all 13 Linux nodes. Updates take effect on subsequent script executions without requiring process restarts. |
 | **`/opt/de-portfolio`** | **Yes** (`docker-services` only) | Apache Airflow DAGs (`/srv/airflow/dags -> /opt/de-portfolio/airflow`). Airflow's DAG processor continuously rescans DAG definitions dynamically (~30s loop), hot-reloading pipeline updates automatically with zero container downtime. |
 | **`/opt/web-apps`** | **No** (Deliberately excluded) | Web applications (`story-cards`, `homelab-dashboard`) run persistent in-memory processes (Python, Node). Background Git pulls do not restart running daemons and risk desynchronising dependencies (`venv`, `npm`) or database schemas. Web applications are updated via deliberate push/SSH deployments (`git pull` followed by process restart and verification). |
+| **`/opt/web-apps-private`** | **No** (Ad-hoc / Private) | Ad-hoc, experimental, or untracked private applications and background monitors on `scratch-pc` or `lab-vm` (e.g. `rtx-5090-scan-monitor`). Managed locally or synced from `ai-tools:/opt/dev/projects_private/`. Decoupled completely from public GitOps automation. |
+
+> [!NOTE]
+> **Application Directory Conventions**:
+> - **`/opt/web-apps`**: Public web applications repository (`github.com/KnPk11/web-apps`). Deployed explicitly.
+> - **`/opt/web-apps-private`**: Private, experimental, or host-specific applications and ad-hoc scripts. Authored under `ai-tools:/opt/dev/projects_private/` or maintained host-locally, kept completely outside public GitOps pipelines.
 
 ## 4. Proceed to Node-Specific Playbook
 
