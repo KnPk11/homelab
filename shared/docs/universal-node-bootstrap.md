@@ -37,6 +37,16 @@ To prevent all nodes from hitting GitHub or the network at the exact same second
    XX * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1
    ```
 
+### Repository Scope & Deployment Rationale
+
+`auto_pull_repo.sh` manages specific repositories based on their execution model:
+
+| Repository | Auto-Pull Enabled? | Rationale |
+| :--- | :--- | :--- |
+| **`/opt/homelab-repo`** | **Yes** (All nodes) | Fleet-wide infrastructure configs, maintenance playbooks, and shared system utilities across all 13 Linux nodes. Updates take effect on subsequent script executions without requiring process restarts. |
+| **`/opt/de-portfolio`** | **Yes** (`docker-services` only) | Apache Airflow DAGs (`/srv/airflow/dags -> /opt/de-portfolio/airflow`). Airflow's DAG processor continuously rescans DAG definitions dynamically (~30s loop), hot-reloading pipeline updates automatically with zero container downtime. |
+| **`/opt/web-apps`** | **No** (Deliberately excluded) | Web applications (`story-cards`, `homelab-dashboard`) run persistent in-memory processes (Python, Node). Background Git pulls do not restart running daemons and risk desynchronising dependencies (`venv`, `npm`) or database schemas. Web applications are updated via deliberate push/SSH deployments (`git pull` followed by process restart and verification). |
+
 ## 4. Proceed to Node-Specific Playbook
 
 Once the node is bootstrapped and pulling changes autonomously, return to the node's specific `deployment.md` file to deploy its services.

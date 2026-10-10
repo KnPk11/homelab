@@ -1,11 +1,18 @@
 #!/bin/bash
 # =============================================================================
 # auto_pull_repo.sh
-# Version: 1.5
+# Version: 1.6
 # Date: 2026-10-10
 #
-# Hard-reset /opt/homelab-repo, /opt/de-portfolio, and /opt/web-apps to origin/main so nodes
+# Hard-reset /opt/homelab-repo and /opt/de-portfolio to origin/main so nodes
 # track GitOps (cron-friendly).
+#
+# NOTE ON /opt/web-apps EXCLUSION:
+# Web applications (e.g. story-cards, homelab-dashboard) are intentionally NOT
+# automatically pulled here. Unlike Airflow DAGs (which hot-reload dynamically
+# on disk change) or static infra scripts, web apps run persistent in-memory
+# processes that require explicit restarts, virtualenv updates, or database
+# migrations. Web apps are deployed via deliberate push/SSH workflows instead.
 #
 # Usage:
 #   Run via cron on target nodes (e.g. hourly or daily).
@@ -27,4 +34,3 @@ sync_repo() {
 
 sync_repo "/opt/homelab-repo" "main"
 sync_repo "/opt/de-portfolio" "main"
-sync_repo "/opt/web-apps" "main"
