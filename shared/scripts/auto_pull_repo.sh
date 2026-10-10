@@ -1,10 +1,10 @@
 #!/bin/bash
 # =============================================================================
 # auto_pull_repo.sh
-# Version: 1.4
-# Date: 2026-08-30
+# Version: 1.5
+# Date: 2026-10-10
 #
-# Hard-reset /opt/homelab-repo and /opt/de-portfolio to origin/main so nodes
+# Hard-reset /opt/homelab-repo, /opt/de-portfolio, and /opt/web-apps to origin/main so nodes
 # track GitOps (cron-friendly).
 #
 # Usage:
@@ -27,3 +27,4 @@ sync_repo() {
 
 sync_repo "/opt/homelab-repo" "main"
 sync_repo "/opt/de-portfolio" "main"
+sync_repo "/opt/web-apps" "main"
