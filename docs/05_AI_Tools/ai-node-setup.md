@@ -164,63 +164,66 @@ credentials.json
 .git/
 ```
 
-#### Grok Safeguards (Bubblewrap Sandbox)
+#### Grok Safeguards (Permission Deny Rules & Gitignore)
 
-   Grok has no `.grokignore` equivalent of `.geminiignore`. Use config + sandbox instead so tools skip gitignored files and the OS blocks live secrets.
+Grok has no `.grokignore` equivalent of `.agignore`. We protect sensitive credentials through native configuration: automatic `.gitignore` suppression, fine-grained `[permission]` deny lists, and `auto` permission mode.
 
-   1. **Install bubblewrap** (required on Linux for sandbox `deny` lists):
+> [!NOTE]
+> **Legacy Bubblewrap Sandbox**: We previously ran Grok with an OS-level `bubblewrap` (bwrap) sandbox profile (`homelab` in `~/.grok/sandbox.toml`). However, following the Grok 1.0 CLI update, Grok enforces a fail-closed check requiring kernel Landlock LSM support. Because `ai-tools` runs inside an unprivileged Proxmox LXC container where Landlock is unsupported, this caused Grok to fail at launch (`error: could not apply the 'homelab' sandbox profile`). Furthermore, orphaned mode-000 stubs (`sandbox-blocked.*`) accumulated whenever sessions terminated abruptly. We therefore set `[sandbox] profile = "off"` and shifted enforcement to Grok's application-level permission engine.
 
-      ```bash
-      sudo apt install -y bubblewrap
-      ```
+1. **`~/.grok/config.toml` Setup**:
+   
+   Configure `.gitignore` respect, set `permission_mode` to `auto` (avoiding unconstrained YOLO execution), and define explicit `deny` rules for secrets:
 
-   2. **`~/.grok/config.toml`** — respect `.gitignore` and default to the homelab sandbox profile:
+   ```toml
+   [ui]
+   permission_mode = "auto"
 
-      ```toml
-      [tools]
-      respect_gitignore = true
+   [tools]
+   respect_gitignore = true
 
-      [sandbox]
-      profile = "homelab"
-      ```
+   [permission]
+   deny = [
+     "Read(**/.env)",
+     "Read(**/*.env)",
+     "Read(**/*.secret)",
+     "Read(**/*.key)",
+     "Read(**/*.pem)",
+     "Read(**/*.pwd)",
+     "Read(**/.secrets)",
+     "Read(**/.secrets/**)",
+     "Read(/opt/dev/secrets_vault/**)",
+     "Read(/srv/**/.env)",
+     "Read(/srv/**/*.env)",
+     "Read(/srv/**/*.secret)",
+     "Read(/srv/**/*.key)",
+     "Read(/srv/**/*.pem)",
+     "Read(/srv/**/*.pwd)",
+     "Read(/srv/**/.secrets)",
+     "Read(/srv/**/.secrets/**)",
+     "Edit(**/.env)",
+     "Edit(**/*.env)",
+     "Edit(**/*.secret)",
+     "Edit(**/*.key)",
+     "Edit(**/*.pem)",
+     "Edit(**/*.pwd)",
+     "Edit(**/.secrets)",
+     "Edit(**/.secrets/**)",
+     "Edit(/opt/dev/secrets_vault/**)",
+     "Bash(rm -rf *)",
+   ]
 
-   3. **`~/.grok/sandbox.toml`** — custom profile that extends `workspace`, allows writes under `/opt/dev`, and kernel-denies the vault / `/srv` secret globs:
-
-      ```toml
-      [profiles.homelab]
-      extends = "workspace"
-      read_write = ["/opt/dev"]
-
-      deny = [
-        "/opt/dev/secrets_vault",
-        "/srv/**/.env",
-        "/srv/**/*.env",
-        "/srv/**/*.secret",
-        "/srv/**/*.key",
-        "/srv/**/*.pem",
-        "/srv/**/*.pwd",
-        "/srv/**/.secrets",
-        "/srv/**/.secrets/**",
-        "**/.env",
-        "**/*.env",
-        "**/*.secret",
-        "**/*.key",
-        "**/*.pem",
-        "**/*.pwd",
-        "**/.secrets",
-        "**/.secrets/**",
-      ]
-      ```
+   [sandbox]
+   profile = "off"
+   ```
 
 > [!IMPORTANT]
-> **Grok sandbox caveats**
+> **Safeguard details**
 >
-> - Sandbox is fixed at process start. Change profile only on a **new** session (`grok --sandbox off` / `homelab` / `workspace`).
-> - Relative globs (`**/…`) are anchored at the **session workspace CWD**. Absolute directory denies (e.g. `secrets_vault`) always apply.
-> - Do **not** deny a **non-existent** path under the repo (e.g. a legacy `shared/vpn-configs/.secrets`). Bubblewrap will create a mode-`000` empty stub there every sandboxed session. VPN material belongs in `/opt/dev/secrets_vault` and `/srv`, not the Git clone.
-> - Do **not** use a broad absolute pattern like `/opt/dev/**/*.env` if you have project fixtures with a **directory** named `.env` (e.g. dbt under `/opt/dev/projects/`) — bubblewrap can fail closed and refuse to start.
-> - Patterns like `*.env` / `*.secret` do **not** match templates (`*.env.example`, `*.secret.example`).
-> - Repo secrets policy still lives in `.gitignore` (decrypted stubs + `.secrets/`). Live credentials should stay under `/srv` on nodes and the central vault, not in Git.
+> - `deny` rules always take precedence over `allow` and cannot be bypassed by permission modes.
+> - Example templates (`*.env.example`, `*.secret.template`) are intentionally **unblocked**, allowing agents to safely inspect configuration schemas and debug setups.
+> - Direct tools (`read_file`, `grep`, `edit_file`) as well as direct shell invocations (e.g. `cat .env`) are intercepted and rejected by Grok.
+> - Live credentials should remain under `/srv` on nodes and dispatched to backup rather than stored long-term in local project clones.
 
 #### Auditing
 
