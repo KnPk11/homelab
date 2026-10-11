@@ -178,6 +178,7 @@ For IoT subnets with strict or embedded clients (such as Tapo smartcams):
   /ip dhcp-server lease set [find comment~"Tapo"] lease-time=30d
   ```
 - **Recovery if cameras drop to APIPA:** Once a Tapo C125 drops to APIPA, embedded firmware often refuses to leave link-local mode while the Wi-Fi link remains associated. Rebooting the Asus AP (`https://192.168.88.2:8443` or physical power cycle) resets the radio link across the guest VLAN, clearing the stale APIPA state and completing a clean DHCP handshake.
+- **Asus radio stall (same reboot):** The RT-AX88U can leave a client associated while other LAN devices can no longer reach it. Seen 2026-10-11 with the Canon PIXMA TS5350i on `K_main_2G` (`192.168.88.232`, `DC:C2:C9:E4:7D:E5`): MikroTik could ping it, but K1 and K3 could not discover it. K1 failed ARP (`Destination host unreachable`, then `Request timed out` after a static neighbor) and could still ping other PCs. `K_main` AP isolation was already off. Rebooting the Asus and the printer made it discoverable again. The same stuck radio shows up as Tapo cameras going offline with no config change. Reboot the AP; power-cycling only the client often leaves the association stuck.
 
 ### Router management from Homelab
 
