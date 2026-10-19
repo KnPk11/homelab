@@ -28,6 +28,46 @@ Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource
    - Run the agent using the `agy` command.
    - Use the `/model` command to set the required model.
    - Use the `/usage` command to check model usage.
+   - Use `agy --remote-control` or the `agy remote-control` daemon for web/cloud dashboard management.
+   - For remote mobile control without SSH/VPN dropouts, refer to the [Telegram Terminal Setup](../02_Services/telegram-terminal/setup.md).
+
+4. **Turbo / Auto-Approval Mode Configuration**:
+   To enable unattended auto-approval ("turbo mode") for tools and commands without prompting for interactive confirmation each time, configure [`~/.gemini/antigravity-cli/settings.json`](file:///root/.gemini/antigravity-cli/settings.json):
+
+   ```json
+   {
+     "toolPermission": "always-proceed",
+     "mode": "accept-edits",
+     "allowNonWorkspaceAccess": true
+   }
+   ```
+
+5. **Remote Control Functionality (`agy remote-control`)**:
+   Antigravity provides native remote control capabilities, linking headless CLI sessions running on the node directly to Google's official web console ([antigravity.google.com](https://antigravity.google.com)) or desktop client. This enables real-time monitoring and control of long-running agent workflows without maintaining an open SSH session.
+
+   - **Manage Background Daemon**:
+     Register and start the persistent user systemd service ([`antigravity-cli-daemon.service`](file:///root/.config/systemd/user/antigravity-cli-daemon.service)) executing `agy remote-control serve`:
+     ```bash
+     # Register and enable boot-persistent daemon with an instance name
+     agy remote-control start --name ai-tools
+
+     # Verify operational status and dashboard instance link
+     agy remote-control status
+
+     # Inspect daemon service logs
+     journalctl --user -u antigravity-cli-daemon.service -n 50 -f
+
+     # Stop and unregister daemon
+     agy remote-control stop
+     ```
+     > [!NOTE]
+     > Use the `--session` flag (`agy remote-control start --session`) if you only wish to run the daemon for the duration of the current login session rather than persisting across reboots.
+
+   - **Ad-hoc CLI Session Remote Control**:
+     To attach a remote connection directly to an interactive CLI session on launch:
+     ```bash
+     agy --remote-control
+     ```
 
 ### 3.2. Grok CLI Setup
 
