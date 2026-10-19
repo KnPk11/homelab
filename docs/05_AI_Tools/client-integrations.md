@@ -5,7 +5,9 @@
 
 ## 1. Description
 
-A consolidated reference for connecting personal productivity tools and development environments to self-hosted AI services and local LLM providers.
+A consolidated reference for quick setup of personal productivity tools and development environments (AnyType, Obsidian, VS Code) connecting to self-hosted AI services and local LLM providers that do not have dedicated service guides.
+
+For standalone daemons with dedicated deployment and security guides, refer directly to their service documentation (e.g. [Telegram Terminal Setup](../02_Services/telegram-terminal/setup.md)).
 
 ## 2. AnyType Integration
 
