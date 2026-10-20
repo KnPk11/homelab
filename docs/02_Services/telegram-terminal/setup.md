@@ -53,13 +53,13 @@ The service establishes outbound HTTPS long-polling connections directly to Tele
    Clone the application from [`KnPk11/ai-telegram-suite`](https://github.com/KnPk11/ai-telegram-suite) and install dependencies:
 
    ```bash
-   git clone git@github.com:KnPk11/ai-telegram-suite.git /root/telegram-terminal
-   cd /root/telegram-terminal
+   git clone git@github.com:KnPk11/ai-telegram-suite.git /opt/telegram-terminal
+   cd /opt/telegram-terminal
    npm install
    ```
 
 3. **Configure Environment**:
-   Create the runtime environment file `/root/telegram-terminal/.env`:
+   Create the runtime environment file `/opt/telegram-terminal/.env`:
 
    ```ini
    BOT_TOKEN=[TELEGRAM-BOT-TOKEN]
