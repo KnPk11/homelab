@@ -28,7 +28,7 @@ Periodic **read-only** security audit for a human or AI agent on **ai-tools**. R
 - Host aliases from [shared/ssh/config](../../shared/ssh/config); inventory in [inventory.yml](../../inventory.yml).
 - No secret contents in chat/git/report. Audit-only by default. Done = report + filed todos, not better scores.
 
-**Related:** [lynis](../02_Services/lynis/setup.md) · [docker-bench](../02_Services/docker-bench/setup.md) · [docker-host/security](../00_Infrastructure/docker-host/security.md) · [crowdsec](../02_Services/crowdsec/setup.md) · [mikrotik/security](../01_Network/mikrotik/security.md) · [caddy/security](../02_Services/caddy/security.md) · [ai-node-setup](../05_AI_Tools/ai-node-setup.md) · private: `lynis-audit.md`, `mikrotik-firewall-audit.md`, `linux-host-hygiene.md`, `ai-tools-hardening.md`
+**Related:** [lynis](../02_Services/lynis/setup.md) · [docker-bench](../02_Services/docker-bench/setup.md) · [docker-host/security](../00_Infrastructure/docker-host/security.md) · [crowdsec](../02_Services/crowdsec/setup.md) · [mikrotik/security](../01_Network/mikrotik/security.md) · [caddy/security](../02_Services/caddy/security.md) · [ai-tools/security](../05_AI_Tools/security.md) · private: `lynis-audit.md`, `mikrotik-firewall-audit.md`, `linux-host-hygiene.md`, `ai-tools-hardening.md`
 
 ## 🤖 2. Agent protocol
 
