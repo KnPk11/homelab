@@ -15,9 +15,11 @@ Antigravity Remote Control is another option for that phone access. It does not 
 
 ### 2.1. Dual-Engine Architecture
 The daemon integrates two agent runtime binaries into a unified Telegram interface:
-- **Google Antigravity (`agy`)**: High-capability multi-model reasoning suite utilising Gemini 3.8 Flash, Gemini 3.1 Pro, Claude Sonnet 4.6, Claude Opus 4.6, and GPT-OSS 120B with native tool tracking and skill execution.
-- **xAI Grok Build (`grok`)**: High-velocity autonomous agent engine utilising Grok 4.7, Grok 4.7 Fast, Grok 4.6, and Grok 4.5 with NDJSON event streaming and automated permission bypass.
+- **Google Antigravity (`agy`)**: Multi-model reasoning suite (Gemini, Claude and GPT-OSS families) with native tool tracking and skill execution.
+- **xAI Grok Build (`grok`)**: Autonomous agent engine (Grok model family) with NDJSON event streaming and automated permission bypass.
 - **Engine Switching**: Seamless toggling at runtime via the `/engine` command with dedicated inline buttons.
+- **Dynamic Model Lists**: The `/model` menu is built from `agy models` / `grok models` at runtime, so new models appear without code changes. Lists are cached for an hour, pre-fetched at startup, and can be refreshed on demand from the menu. If the CLI call fails, the last good list (or a small built-in fallback) is shown.
+- **Non-Blocking Turns**: Agent turns run in the background, so `/stop`, `/model`, `/status` and other topics stay responsive while a long turn is running. Each topic still runs one turn at a time.
 
 ### 2.2. Mobile Keyboard & Conversational Typing
 Terminal emulators on Android disable autocorrect, spellcheck, swipe typing, and word predictions because they enforce raw character mode. Routing prompts through Telegram restores full conversational typing:
@@ -66,9 +68,12 @@ The service establishes outbound HTTPS long-polling connections directly to Tele
    ALLOWED_CHAT_IDS=[TELEGRAM-USER-ID]
    DEFAULT_ENGINE=agy
    DEFAULT_WORKSPACE=/root
-   DEFAULT_MODEL=gemini-3.8-flash-high
+   DEFAULT_AGY_MODEL=gemini-3.8-flash-high
    DEFAULT_GROK_MODEL=grok-4.7
    ```
+
+   > [!TIP]
+   > **Model IDs**: Run `agy models` or `grok models` on the host to list valid IDs for the defaults.
 
 4. **Install Systemd Service**:
    Deploy the service unit to ensure automatic startup and restart persistence:
@@ -98,7 +103,7 @@ The service establishes outbound HTTPS long-polling connections directly to Tele
 | **Topic Sessions** | `/sessions` or `/topics` | Displays a list of all active topics/threads in the chat, their engine, model, and running status. |
 | **Topic Label** | `/name <title>` | Views or customises the nickname for the current topic. |
 | **Engine Selection** | `/engine` | Displays inline buttons to switch between **Google Antigravity** and **xAI Grok** for the current topic. An engine with no session in the topic receives the topic memory on its next message. |
-| **Model Selection** | `/model` | Displays interactive inline buttons tailored to the active engine for the current topic (Antigravity: Gemini/Claude/GPT; Grok: Grok 4.7/4.6/4.5). |
+| **Model Selection** | `/model` | Displays inline buttons with the live model list of the active engine for the current topic (fetched from `agy models` / `grok models`), plus a **🔄 Refresh list** button. |
 | **Reasoning Effort** | `/effort` | Displays inline buttons to switch reasoning effort (`low`, `medium`, `high`, `max`/`xhigh`). |
 | **New Session** | `/new` | Archives the topic memory, clears both engine sessions, and starts fresh on the next prompt. |
 | **Implementation Plan** | `/plan <task>` | Runs the active agent in plan-only mode (`--mode plan` / `--permission-mode plan`). |
