@@ -24,7 +24,7 @@ mkdir -p "$TARGET_DIR"
 if [[ -f "$ENV_FILE" ]]; then
     echo "[+] Decrypting .env to $TARGET_DIR/.env..."
     sops -d "$ENV_FILE" > "$TARGET_DIR/.env"
-    chmod 600 "$TARGET_DIR/.env"
+    chmod 644 "$TARGET_DIR/.env"
 else
     echo "[!] Warning: $ENV_FILE not found in $SCRIPT_DIR"
 fi
