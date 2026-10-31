@@ -220,6 +220,18 @@ portainer.{$DOMAIN_NAME} {
     }
 }
 
+gitea.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext gitea
+    import common-logging gitea
+
+    reverse_proxy 192.168.50.95:3000 {
+        header_up X-Real-IP {remote_host}
+    }
+}
+
 influxdb.{$DOMAIN_NAME} {
     import common-headers
     import common-robots

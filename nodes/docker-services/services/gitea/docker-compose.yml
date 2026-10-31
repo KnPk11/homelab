@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  gitea:
+    image: gitea/gitea:1.27.1
+    container_name: gitea
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ${GITEA_ENV_PATH:-/srv/gitea/.env}
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - TZ=Europe/London
+      - GITEA__server__HTTP_PORT=3000
+      - GITEA__server__DISABLE_SSH=true
+      - GITEA__server__START_SSH_SERVER=false
+      - GITEA__service__DISABLE_REGISTRATION=true
+      - GITEA__service__REQUIRE_SIGNIN_VIEW=true
+      - GITEA__session__COOKIE_SECURE=true
+      - GITEA__security__REVERSE_PROXY_TRUSTED_PROXIES=192.168.50.101/32,172.16.0.0/12
+    volumes:
+      - /srv/gitea:/data
+    networks:
+      - caddy_private
+    labels:
+      - "wud.tag.include=^\\d+\\.\\d+\\.\\d+$"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.00'
+          memory: 512M
+        reservations:
+          cpus: '0.10'
+          memory: 128M
+
+networks:
+  caddy_private:
+    external: true
