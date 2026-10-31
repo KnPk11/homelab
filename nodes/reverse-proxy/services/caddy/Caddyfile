@@ -660,4 +660,17 @@ sleep.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.91:10750
 }
 
+paperclip.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_lan
+    import common-logging-plaintext paperclip
+    import common-logging paperclip
+    import honeypots-and-traps
+
+    reverse_proxy 192.168.50.91:3100 {
+        flush_interval -1
+    }
+}
+
 import Caddyfile.experimental*
