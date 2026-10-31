@@ -1,8 +1,8 @@
 #!/bin/bash
 # =============================================================================
 # scrape_configs_and_secrets.sh
-# Version: 2.14
-# Date: 2026-09-13
+# Version: 2.15
+# Date: 2026-10-31
 #
 # Centralised live-node configs & secrets backup into secrets_vault (rsync, no SOPS).
 # Requires God Mode SSH (ai-key-unlock). ON DEMAND ONLY — not for cron.
@@ -156,6 +156,18 @@ ssh_root "$OPENCLAW_IP" "cat /home/k/.hermes/.env" \
     > "$DEST/.env" 2>/dev/null || true
 ssh_root "$OPENCLAW_IP" "cat /home/k/.hermes/auth.json" \
     > "$DEST/auth.json" 2>/dev/null || true
+
+echo "Backing up /opt/paperclip on lab-vm..."
+DEST="$(vault_path "lab-vm" "/opt/paperclip/data/instances/default")"
+mkdir -p "$DEST/secrets"
+ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/.env" \
+    > "$DEST/.env" 2>/dev/null || true
+ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/config.json" \
+    > "$DEST/config.json" 2>/dev/null || true
+ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/secrets/master.key" \
+    > "$DEST/secrets/master.key" 2>/dev/null || true
+ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/secrets/decision-signing.key" \
+    > "$DEST/secrets/decision-signing.key" 2>/dev/null || true
 
 # AnyType self-host (docker-services) — YAML/identity not matched by env/secret globs.
 # PATH_SWEEPS already gets /srv/anytype-sync-logic/.env (+ .env.override if present).
