@@ -659,7 +659,7 @@ storycards.{$DOMAIN_NAME} {
     import access_policy_wan 75 30s
     import common-logging-plaintext pages
     import common-logging pages
-    reverse_proxy 192.168.50.91:33363
+    reverse_proxy 192.168.50.85:33363
 }
 
 sleep.{$DOMAIN_NAME} {
@@ -669,7 +669,7 @@ sleep.{$DOMAIN_NAME} {
     import common-logging-plaintext pages
     import common-logging pages
 
-    reverse_proxy 192.168.50.91:10750
+    reverse_proxy 192.168.50.85:10750
 }
 
 paperclip.{$DOMAIN_NAME} {

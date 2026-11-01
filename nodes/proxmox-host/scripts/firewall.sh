@@ -268,7 +268,7 @@ GROUP ping-trusted
 IN ACCEPT -p udp -dport 8472 -source k8s -log nolog # k3s flannel VXLAN
 IN ACCEPT -p udp -dport 8472 -source scratch-pc -log nolog # k3s flannel VXLAN (worker-to-worker)
 IN ACCEPT -p tcp -dport 10250 -source k8s -log nolog # k3s kubelet
-IN ACCEPT -p tcp -dport 30363 -source homelab-lan -log nolog # k3s storycards NodePort
+IN ACCEPT -p tcp -dport 3100 -source vpn-net -log nolog # Paperclip Web UI from VPN
 EOC
 
 echo "[+] Generated rules for Guest 103 (Openclaw / k3s worker)."
