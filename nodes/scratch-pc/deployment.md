@@ -95,7 +95,7 @@ Filename        Type        Size (KiB)    Priority    Role
 
 Because `scratch-pc` is physical hardware not directly snapshotted by Proxmox Backup Server (PBS), stateful app data is automatically backed up to OpenMediaVault (`192.168.50.90` / VM 101):
 * **NFS Automount**: `192.168.50.90:/files` mounted at `/mnt/nas` via systemd automount in `/etc/fstab`.
-* **Backup Destination**: `/mnt/nas/Apps/backups/`.
+* **Backup Destination**: `/mnt/nas/Apps/webapp_backups/`.
 * **Backup Script**: `/usr/local/bin/homelab-scratch-backup.sh`.
   - Performs clean non-blocking SQLite hot backups (`.backup`) of `storycards` (`stories.db`), storing compressed daily snapshots (`stories_*.db.gz`, 14-day retention) and `stories-latest.db`.
   - Backs up other web app files (e.g. `.env` files, encrypted `secrets.sops.env`, media and images (`uploads/`), `metadata.json`, `pending/`).
