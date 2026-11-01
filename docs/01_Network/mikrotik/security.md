@@ -161,11 +161,13 @@ Main `bridge` also uses **VLAN filtering** (guest trunk on `ether2`). Homelab st
 
 ### Input skeleton
 
-1. Established / invalid / ICMP / loopback  
-2. WG handshake; pinholes (CrowdSec API, agent SSH, …)  
-3. Port knock + rate-limited SSH from LAN + drop other SSH  
-4. **`drop !LAN`**  
-5. **Allow LAN remaining input** + **drop all other input**
+1. **WG handshake** (placed at rule index 1 above CrowdSec drops to ensure VPN administrative access is never severed if a roaming client IP is banned)
+2. **CrowdSec input drops** (managed dynamically by `cs-routeros-bouncer` using `rule_placement: after_comment` matching `Allow WireGuard handshake`)
+3. Established / invalid / ICMP / loopback  
+4. Pinholes (CrowdSec API, agent SSH, …)  
+5. Port knock + rate-limited SSH from LAN + drop other SSH  
+6. **`drop !LAN`**  
+7. **Allow LAN remaining input** + **drop all other input**
 
 ### Address lists
 

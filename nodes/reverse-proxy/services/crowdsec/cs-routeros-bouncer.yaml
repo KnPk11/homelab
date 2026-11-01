@@ -19,6 +19,11 @@ firewall:
     enabled: true
     chains: ["input", "forward"]
   address_list: "CrowdSec_Blacklist"
+  rule_placement:
+    strategy: "after_comment"
+    comment: "Allow WireGuard handshake"
+    comment_match: "contains"
+    fallback: "top"
 
 metrics:
   enabled: false

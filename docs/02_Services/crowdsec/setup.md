@@ -128,6 +128,18 @@ The bouncer runs on the Caddy LXC and pushes **"Local Only"** bans to the router
 ```yaml
 crowdsec:
   api_url: "http://[LAPI-IP]:8080/"
+
+firewall:
+  filter:
+    enabled: true
+    chains: ["input", "forward"]
+  address_list: "CrowdSec_Blacklist"
+  # Place bouncer rules below WireGuard handshake to prevent management lockout
+  rule_placement:
+    strategy: "after_comment"
+    comment: "Allow WireGuard handshake"
+    comment_match: "contains"
+    fallback: "top"
 ```
 
 ## 7. Local Server Protection (The Global Shield)

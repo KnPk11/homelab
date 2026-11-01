@@ -92,9 +92,12 @@ Treats WG clients as trusted for management (same as main LAN list membership):
 
 **Allow WireGuard handshake (WAN input):**
 
+> [!IMPORTANT]
+> This rule must be positioned at rule index 1 (above dynamic CrowdSec bouncer drop rules) using `place-before=1` or `place-before=0`. WireGuard is crypto-routed and completely silent to unauthorised packets (it silently drops packets lacking a valid cryptographic signature without returning any handshake response). Keeping this port open above CrowdSec drops ensures remote administrators are never locked out of their primary VPN gateway if their roaming mobile or remote IP accidentally triggers an edge ban.
+
 ```bash
 /ip firewall filter add action=accept chain=input protocol=udp dst-port=51821 \
-    in-interface-list=WAN comment="Allow WireGuard handshake" log=yes log-prefix=wg_handshake
+    in-interface-list=WAN comment="Allow WireGuard handshake" log=yes log-prefix=wg_handshake place-before=1
 ```
 
 
@@ -111,7 +114,8 @@ add action=change-mss chain=forward out-interface=wireguard1 new-mss=clamp-to-pm
 ## Client Configuration (Example)
 
 - **Addresses:** `[WG-SUBNET].2/32`
-- **DNS:** Prefer **`[ADGUARD-IP]`** only (same as house DHCP). Using only `[WG-SUBNET].1` forces all client queries through the router.
-- **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed
+- **DNS:** Prefer **`[ADGUARD-IP]`** only (same as house DHCP). Using only `[WG-SUBNET].1` forces all client queries through the router. Directing client DNS queries through AdGuard ensures internal hostnames (e.g. `*.domain`) resolve to Caddy's internal IP rather than the public WAN IP, preventing accidental 403 lockouts against `access_policy_lan`.
+- **Allowed IPs:** `0.0.0.0/0` (full tunnel) or split as needed.
+- **Always-on VPN / On-Demand:** Strongly recommended on mobile devices to prevent traffic leaking to public cellular networks when roaming between Wi-Fi access points.
 - **Endpoint:**  MikroTik Cloud `[DDNS_NAME].sn.mynetname.net:51821`, or `ip.[DOMAIN]:51821` (using dynamic DNS) as fallback only if Mikrotik's Cloud is itself experiencing DNS issues.
 - **Public Key:** `[ROUTER-WG-PUBLIC-KEY]`

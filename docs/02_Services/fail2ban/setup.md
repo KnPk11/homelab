@@ -97,10 +97,15 @@ sudo nano /etc/fail2ban/filter.d/caddy-authcodes.conf
 [Definition]
 # Unauthorised, failed auth, too many requests
 failregex = ^<HOST> - - .+\s(401|403)\s.+
-# access_policy_lan answers "LAN party only." — a 403 whose body is 15 bytes.
-# A dashboard refresh is dozens of these, and they are not auth failures.
-ignoreregex = ^<HOST> - - \[.*\] ".*" 403 15$
+ignoreregex =
 ```
+
+> [!IMPORTANT]
+> **Do Not Ignore LAN-Only 403s in Fail2Ban**
+> 
+> Caddy's `access_policy_lan` issues a 403 response ("LAN party only.") strictly to requests originating from outside authorised subnets (LAN, WireGuard, and Tailscale). Ignoring these lines undermines security by allowing external WAN scanners to probe private service endpoints without consequence.
+> 
+> If a legitimate mobile client trips `caddy-authcodes` when refreshing dashboards (e.g., Pulse) whilst away from home, the client has bypassed the VPN tunnel (e.g., due to cellular roaming or external DNS resolution). Resolve this at the client level by enabling **Always-on VPN** and directing DNS to AdGuard Home rather than suppressing security filters.
 
 Create the `caddy-sensitivepaths` regex rule:
 
