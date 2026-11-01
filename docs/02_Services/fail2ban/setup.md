@@ -97,7 +97,9 @@ sudo nano /etc/fail2ban/filter.d/caddy-authcodes.conf
 [Definition]
 # Unauthorised, failed auth, too many requests
 failregex = ^<HOST> - - .+\s(401|403)\s.+
-ignoreregex =
+# access_policy_lan answers "LAN party only." — a 403 whose body is 15 bytes.
+# A dashboard refresh is dozens of these, and they are not auth failures.
+ignoreregex = ^<HOST> - - \[.*\] ".*" 403 15$
 ```
 
 Create the `caddy-sensitivepaths` regex rule:
