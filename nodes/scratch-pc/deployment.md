@@ -80,7 +80,7 @@ Filename        Type        Size (KiB)    Priority    Role
 * **NVIDIA Model Benchmark (`nvidia-model-bench`)**: Port `8585`, systemd service `nvidia-model-bench.service`.
 * **Night-Time Ambient Web App (`night-time`)**: Port `10750`, systemd unit `night-time.service`. Reverse-proxied via `https://sleep.example.com`.
 * **Eurostar Price Tracker (`eurostar-tracker`)**: Port `5000`, systemd unit `eurostar-tracker.service`.
-* **Markpress Preview Server (`webapp`)**: Port `8010`, systemd service `webapp.service`.
+* **Markpress Preview Server (`markpress`)**: Port `8010`, systemd unit `markpress.service` (located in `/opt/web-apps-private/markpress`).
 
 ---
 
