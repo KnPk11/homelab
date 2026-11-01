@@ -272,15 +272,18 @@ filebrowser.{$DOMAIN_NAME} {
     reverse_proxy 192.168.50.95:9101
 }
 
-# copyparty.{$DOMAIN_NAME} {
-#     import common-headers
-#     import common-robots
-#     import access_policy_wan 100 30s
-#     import common-logging-plaintext copyparty
-#     import common-logging copyparty
+media.{$DOMAIN_NAME} {
+    import common-headers
+    import common-robots
+    import access_policy_wan 250 30s
+    import common-logging-plaintext media
+    import common-logging media
 
-#     reverse_proxy copyparty:3923
-# }
+    reverse_proxy 192.168.50.85:3923 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+    }
+}
 
 photoprism.{$DOMAIN_NAME} {
     import common-headers
