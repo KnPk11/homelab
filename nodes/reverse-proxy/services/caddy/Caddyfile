@@ -650,7 +650,7 @@ ocstats.{$DOMAIN_NAME} {
     import common-logging-plaintext pages
     import common-logging pages
 
-    reverse_proxy 192.168.50.91:10482
+    reverse_proxy 192.168.50.85:10482
 }
 
 storycards.{$DOMAIN_NAME} {
