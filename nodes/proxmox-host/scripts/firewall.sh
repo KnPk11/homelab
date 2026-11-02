@@ -213,6 +213,11 @@ GROUP file-svc
 GROUP streaming-pub
 GROUP anytype-pub
 GROUP nc-talk-pub
+
+# qBittorrent Web UI (direct LAN/VPN access)
+IN ACCEPT -p tcp -dport 8091 -source main-lan -log nolog
+IN ACCEPT -p tcp -dport 8091 -source vpn-net -log nolog
+IN ACCEPT -p tcp -dport 8091 -source homelab-lan -log nolog
 EOC
 
 echo "[+] Generated rules for Guest 100 (Homelab)."

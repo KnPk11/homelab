@@ -72,6 +72,9 @@ ufw allow 1011:1016/udp comment 'AnyType Sync UDP'
 ufw allow 3478 comment 'Nextcloud Talk STUN/TURN'
 ufw allow 8105/tcp comment 'Nextcloud Talk HPB'
 
+# --- qBittorrent ---
+ufw allow 8091/tcp comment 'qBittorrent Web UI'
+
 # 6. PUBLIC SERVICES (only Caddy needs to be public)
 echo "[Step 6] Allowing public web traffic..."
 # 7. IPv6
