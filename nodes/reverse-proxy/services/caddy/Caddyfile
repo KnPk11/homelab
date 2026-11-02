@@ -279,9 +279,64 @@ media.{$DOMAIN_NAME} {
     import common-logging-plaintext media
     import common-logging media
 
-    reverse_proxy 192.168.50.85:3923 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
+    # Playback links stay public. Streaming players GET and range-read the file
+    # without credentials. The UI, directory listings, and uploads do not match
+    # this and fall through to Basic auth.
+    @public_media {
+        method GET HEAD
+        path_regexp (?i)\.(mp3|mp4|m4a|aac|flac|ogg|opus|wav|mkv|webm|mov|avi|m4v|jpg|jpeg|png|gif|webp)$
+    }
+
+    handle @public_media {
+        reverse_proxy 192.168.50.85:3923 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up -Authorization
+            header_up -X-Auth-User
+            header_up -{$MEDIA_IDP_HEADER}
+
+            # A missing media URL must not fall back to the file browser.
+            @missing status 404
+            handle_response @missing {
+                respond "Not found" 404
+            }
+        }
+    }
+
+    # Private ranges and VPNs. 10/8 covers the WireGuard nets, 100.64/10 is
+    # Tailscale, fc00::/7 is IPv6 ULA (including Tailscale), and IPV6_PREFIX
+    # is this house. The shared login name is media. A trusted client is
+    # owner. Everyone else who passes Basic auth is pub.
+    @trusted_client {
+        remote_ip 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 127.0.0.0/8 169.254.0.0/16 100.64.0.0/10 fc00::/7 fe80::/10 ::1 {$IPV6_PREFIX}
+    }
+
+    handle @trusted_client {
+        basic_auth {
+            media {$MEDIA_PASS_HASH}
+        }
+
+        reverse_proxy 192.168.50.85:3923 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up -Authorization
+            header_up X-Auth-User owner
+            header_up {$MEDIA_IDP_HEADER} 1
+        }
+    }
+
+    handle {
+        basic_auth {
+            media {$MEDIA_PASS_HASH}
+        }
+
+        reverse_proxy 192.168.50.85:3923 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up -Authorization
+            header_up X-Auth-User pub
+            header_up {$MEDIA_IDP_HEADER} 1
+        }
     }
 }
 

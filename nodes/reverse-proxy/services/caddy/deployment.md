@@ -22,6 +22,10 @@ Network topology (backend node IPs and trusted LAN CIDRs) is **hardcoded in the 
 | `GLANCES_HASH` | Basic-auth hash for glances |
 | `WUD_HASH` | Basic-auth hash for WUD |
 | `IPV6_PREFIX` | Trusted IPv6 prefix in private-only matchers |
+| `MEDIA_PASS_HASH` | bcrypt hash for the `media` site login |
+| `MEDIA_IDP_HEADER` | Header name sent to copyparty only after that login |
+
+The `media` login name is `media`. After that login, Caddy sets `X-Auth-User` to `owner` for a private or VPN address and to `pub` for any other address. Playback of a media file does not use this login.
 
 ### Deployment Strategy
 
