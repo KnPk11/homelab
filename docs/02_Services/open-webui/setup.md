@@ -30,6 +30,8 @@ Open WebUI is a self-hosted chat front end for local or remote LLMs (e.g. Ollama
 2. Close the settings, click on **Developer** in the top-left bar -> **Server Settings**, enable the relevant sections, and start the server.
 3. In Open WebUI, navigate to **Admin Panel** -> **Settings** and add the connection: `http://[SERVICE-IP]:1234/v1` (no authentication required).
 
+The gaming PC server, firewall, and the CLI options are in [LM Studio on the gaming PC](../../05_AI_Tools/lm-studio/setup.md).
+
 > [!TIP]
 > **Multiple Computing Devices**: If utilising multiple computers for better availability, add each as a separate OpenAI API connection. Consider prefixing model names to identify which device is serving them.
 

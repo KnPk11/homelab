@@ -51,6 +51,8 @@ When deploying autonomous AI agents, it is crucial to establish strict boundarie
 
 - **Antigravity (`.agignore`)**: Refer to [Antigravity Setup](antigravity/setup.md#5-safeguards--context-boundaries).
 - **Grok CLI (`~/.grok/config.toml`)**: Refer to [Grok CLI Setup](grok/setup.md#4-safeguards--permission-rules).
+- **NVIDIA Build free key**: Do not attach it to an agent on this node. See [NVIDIA Build data boundary](nvidia-build.md).
+- **LM Studio on the gaming PC**: Options for calling it from a CLI. See [LM Studio on the gaming PC](lm-studio/setup.md).
 
 ### Auditing
 
