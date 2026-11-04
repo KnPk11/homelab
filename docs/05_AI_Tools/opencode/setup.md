@@ -58,3 +58,20 @@ Custom OpenAI-compatible endpoints (e.g., [Open WebUI](../../02_Services/open-we
      }
    }
    ```
+
+## 5. Context window
+
+Each local model needs an explicit window. LM Studio's `/v1/models` list does not tell OpenCode how long a context the model was loaded with.
+
+```json
+"google/gemma-2-9b": {
+  "name": "Gemma 2 9B",
+  "limit": { "context": 125000, "output": 8192 }
+}
+```
+
+`limit.context` is the window OpenCode plans for, including the prompt and tool output. `limit.output` is the reply budget it requests. 8192 leaves the rest of the 125000 for the prompt.
+
+On this install, a model with no `limit` is treated as a window of 0, so OpenCode does not compact, and the reply request falls back to 32000 tokens.
+
+Load that model in LM Studio at 125000 tokens, and only keep models that can hold it. See [Context length](../lm-studio/setup.md#7-context-length). The Telegram wrapper does not pass a context length.

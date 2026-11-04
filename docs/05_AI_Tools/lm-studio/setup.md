@@ -15,8 +15,27 @@ On the gaming PC, in LM Studio:
 
 1. **App Settings** → **Developer** → enable **Local LLM Service (headless)**.
 2. **Developer** (top-left) → **Server Settings**. Enable the server and start it. The default port is `1234`.
-3. Load a model that LM Studio marks as able to call tools and preferably fits fulle on the RTX 5090 card.
+3. Load a model that LM Studio marks as able to call tools and preferably fits fully on the RTX 5090 card.
 4. Leave the PC awake while agents are using it. Grok and Antigravity must keep a cloud model as the parent so a powered-off PC does not stop the session.
+
+<a id="binding-network-interface-tailscale-override"></a>
+### Binding network interface (Tailscale / VPN override)
+
+When serving over the LAN, if Tailscale or another mesh VPN / virtual adapter is active on the Windows host, LM Studio's Server Mode may automatically bind to the Tailscale virtual interface (e.g. `100.x.y.z`) rather than the physical LAN adapter. When this occurs, other devices on the LAN (`192.168.88.0/24`) cannot reach the server on port `1234`.
+
+To override the binding interface and force LM Studio to listen on the correct physical LAN IP:
+
+1. Stop the server in LM Studio.
+2. Edit `C:\Users\K\.lmstudio\.internal\http-server-config.json` on the Windows host:
+
+   ```json
+   {
+     "networkInterface": "192.168.88.250"
+   }
+   ```
+
+   Set `"networkInterface"` to your machine's static LAN IP address (e.g. `192.168.88.250`).
+3. Start the server in LM Studio and verify it binds to the designated LAN address.
 
 From `ai-tools` (`192.168.50.105`):
 
@@ -61,11 +80,11 @@ The field list for Grok is the one in [How to Run Grok Build with Local Models](
    base_url = "http://<gaming-pc>:1234/v1"
    name = "Gaming PC"
    api_backend = "chat_completions"
-   context_window = 32768
+   context_window = 125000
    ```
 
-3. Set `context_window` to the length LM Studio loaded for that model. Restart Grok. `/model` lists **Gaming PC**. Leave the default model on Grok, and select **Gaming PC** for a turn that should run on the card.
-4. For OpenCode, add a provider the same way as in [OpenCode Setup](../opencode/setup.md#4-local-llm-providers). `baseURL` is `http://<gaming-pc>:1234/v1`. The model keys are the ids from `/v1/models`. If OpenCode asks for a key, any placeholder works for this server.
+3. Set `context_window` to the length LM Studio loaded for that model. For agent turns the default is 125000. See [Context length](#7-context-length). Restart Grok. `/model` lists **Gaming PC**. Leave the default model on Grok, and select **Gaming PC** for a turn that should run on the card.
+4. For OpenCode, add a provider the same way as in [OpenCode Setup](../opencode/setup.md#4-local-llm-providers). `baseURL` is `http://<gaming-pc>:1234/v1`. The model keys are the ids from `/v1/models`. Set `limit.context` to the loaded length, normally 125000. See [Context length](#7-context-length). If OpenCode asks for a key, any placeholder works for this server.
 5. For any other CLI with per-model base URLs, add one entry and point that entry's URL at port `1234`.
 
 A loaded model that cannot emit tool calls will fail when the CLI asks it to edit or run commands. Keep those turns on the cloud model, or use the skill in the next section for text-only jobs.
@@ -106,6 +125,27 @@ If you adopt one of the options above:
 | A turn you are willing to run on the card | A CLI from section 4, with that turn on the gaming PC model |
 | A short pasted snippet: summary, reword, names | The skill in section 5, or Hermes / Paperclip pointed at LM Studio |
 | Live tree, deploy config, credentials, refactors that apply patches | The cloud parent |
+
+## 7. Context length
+
+The chat slider applies only when LM Studio loads the model from the app. A request to the server does not include a context length. Just-in-time loads from OpenCode, Grok, Open WebUI, or the Telegram wrapper ignore that slider.
+
+The length is fixed when the model enters memory:
+
+1. An explicit load wins: `lms load <model> --context-length 125000`, or `POST /api/v1/models/load` with `"context_length": 125000`.
+2. Otherwise LM Studio uses the per-model default under **My Models**, on that model's gear icon. Save the agent default there so server loads pick it up.
+3. Otherwise it uses its own built-in default, which is often far below the length the model was trained for.
+
+A model that is already in memory keeps its loaded length. After changing the default, unload it before the next request. The Developer tab, or `lms ps`, shows the length actually in memory.
+
+For agent turns, load at **125000** tokens, and only load models that can hold that on this PC. A model trained for a short window can still be a poor fit at 125000 even when the card has the memory. Point the client at the same number:
+
+- Grok: `context_window = 125000` on the entry in [section 4](#4-several-models-in-one-cli).
+- OpenCode: `limit.context` and `limit.output` in [OpenCode Setup](../opencode/setup.md#5-context-window).
+
+OpenCode does not read the loaded length back from LM Studio. With no `limit`, it does not compact the session, and it asks for up to 32000 reply tokens. If the loaded window is smaller than the prompt plus that reply, LM Studio rejects or truncates the turn while OpenCode still treats the window as unlimited.
+
+The Telegram wrapper does not set a context size. It only passes the model id.
 
 ## Checks
 

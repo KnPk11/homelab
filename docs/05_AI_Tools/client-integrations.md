@@ -34,7 +34,13 @@ Connect Obsidian to your local AI node for enhanced note-taking and analysis.
 
 1. **Host Configuration**:
    - Ensure LM Studio is running in **Server Mode**.
-   - Verify the binding IP in `.lmstudio\.internal\http-server-config.json` if using mesh networks (e.g., Tailscale).
+   - **Network Interface Override**: If running mesh networks (e.g., Tailscale), LM Studio may bind to the Tailscale virtual interface instead of the LAN adapter. Override the binding IP in `C:\Users\[USERNAME]\.lmstudio\.internal\http-server-config.json`:
+     ```json
+     {
+       "networkInterface": "192.168.88.250"
+     }
+     ```
+     See [LM Studio Server Mode override](lm-studio/setup.md#binding-network-interface-tailscale-override).
 2. **Plugin Setup**:
    - Install the **Private AI** extension from the Obsidian community marketplace.
    - Update the API and Embedding endpoints to point at your node:
