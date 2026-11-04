@@ -127,6 +127,9 @@ caddy hash-password --plaintext "[PASSWORD]"
 # View command history
 history
 
+# Edit command history file
+nano ~/.bash_history
+
 # Delete specific history entries
 for i in {1..3}; do history -d $(history 1 | awk '{print $1}'); done
 ```
