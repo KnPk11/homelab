@@ -62,7 +62,6 @@ PATH_SWEEPS=(
     "dns:/srv"
     "docker-services:/srv"
     "docker-services:/opt/scripts/Security"
-    "lab-vm:/opt/scripts/Security"
     # Public web-apps clone (story-cards/.env; other apps may add .env later)
     "lab-vm:/opt/web-apps"
     "nas:/opt/scripts/Security"
