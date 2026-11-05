@@ -37,21 +37,17 @@ docker exec -u git -w /tmp "$CONTAINER_NAME" gitea dump \
 
 # 4. Copy dump archive from container to OMV storage
 DEST_FILE="$BACKUP_ROOT/gitea_dump_${TIMESTAMP}.zip"
-LATEST_FILE="$BACKUP_ROOT/gitea-latest.zip"
 
 echo "Copying dump archive to $DEST_FILE..."
 docker cp "${CONTAINER_NAME}:${TEMP_DUMP}" "$DEST_FILE"
+chmod 644 "$DEST_FILE"
 
 # Clean up temp file inside container
 docker exec -u git "$CONTAINER_NAME" rm -f "$TEMP_DUMP"
 
-# Maintain gitea-latest.zip pointer
-cp -f "$DEST_FILE" "$LATEST_FILE"
-chmod 644 "$DEST_FILE" "$LATEST_FILE"
-
-# 5. Prune backups older than 14 days
-echo "Pruning snapshots older than 14 days in $BACKUP_ROOT..."
-find "$BACKUP_ROOT" -name "gitea_dump_*.zip" -type f -mtime +14 -delete || true
+# 5. Prune backups older than 7 days
+echo "Pruning snapshots older than 7 days in $BACKUP_ROOT..."
+find "$BACKUP_ROOT" -name "gitea_dump_*.zip" -type f -mtime +7 -delete || true
 
 BACKUP_SIZE=$(ls -lh "$DEST_FILE" | awk '{print $5}')
 logger -t "$LOG_TAG" "Gitea backup completed successfully. File: $DEST_FILE ($BACKUP_SIZE)"

@@ -3,7 +3,7 @@
 Automated daily backup service for the Gitea container to OMV NFS storage (`/mnt/nas/Apps/gitea_backups`).
 
 ## Components
-* `gitea-backup.sh`: Executes an atomic `gitea dump` inside the container, copies the archive to `/mnt/nas/Apps/gitea_backups/`, maintains `gitea-latest.zip`, and prunes snapshots older than 14 days.
+* `gitea-backup.sh`: Executes an atomic `gitea dump` inside the container, copies the timestamped archive (`gitea_dump_<TIMESTAMP>.zip`) to `/mnt/nas/Apps/gitea_backups/`, and prunes snapshots older than 7 days.
 * `gitea-backup.service`: Oneshot systemd service running `/usr/local/bin/gitea-backup.sh`.
 * `gitea-backup.timer`: Systemd timer firing daily at 02:00:00 UTC (with a randomised delay of up to 10 minutes).
 * `install.sh`: Installs the script to `/usr/local/bin/` and enables the systemd timer.
