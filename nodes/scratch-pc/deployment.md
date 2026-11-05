@@ -74,7 +74,7 @@ Filename        Type        Size (KiB)    Priority    Role
 ## 3. Example Services Hosted on this Node
 
 * **Pulse Agent**: Homelab metrics and telemetry reporting agent.
-* **System Usage Stats (`ocstats`)**: Port `10482`, systemd service `ocstats.service`. Real-time telemetry dashboard for `scratch-pc` reverse-proxied via `https://ocstats.example.com`.
+* **System Usage Stats (`sys-stats`)**: Port `10482`, systemd service `ocstats.service`. Real-time telemetry dashboard for `scratch-pc` reverse-proxied via `https://sys-stats.example.com`.
 * **StoryCards (`storycards`)**: Port `33363`, systemd services `storycards.service`, `storycards-worker.service`, `storycards-fetcher.service`. Reverse-proxied via `https://storycards.example.com`. SQLite database snapshots and configuration backed up automatically to OpenMediaVault.
 * **Homelab Command Centre (`homelab-dashboard`)**: Port `8088`, systemd service `homelab-dashboard.service`.
 * **NVIDIA Model Benchmark (`nvidia-model-bench`)**: Port `8585`, systemd service `nvidia-model-bench.service`.

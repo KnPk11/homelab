@@ -701,7 +701,7 @@ gatus.{$DOMAIN_NAME} {
     }
 }
 
-ocstats.{$DOMAIN_NAME} {
+sys-stats.{$DOMAIN_NAME} {
     import common-headers
     import common-robots
     import access_policy_lan
