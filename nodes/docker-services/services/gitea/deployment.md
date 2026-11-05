@@ -19,3 +19,13 @@ Gitea is deployed on `docker-services` (`192.168.50.95`) as a hardened Docker Co
    - **Name**: `gitea`
    - **Repository URL**: `https://github.com/KnPk11/homelab`
    - **Compose path**: `nodes/docker-services/services/gitea/docker-compose.yml`
+
+## Automated Backups
+
+Gitea organises an atomic `gitea dump` pipeline targeting OMV NFS storage (`/mnt/nas/Apps/gitea_backups`).
+To install or refresh the backup timer:
+```bash
+cd /opt/homelab-repo/nodes/docker-services/services/gitea/backup
+sudo ./install.sh
+```
+

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Gitea Backup to OMV Timer
+After=network.target
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
