@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily GitHub Backup to OMV Timer
+After=network.target
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

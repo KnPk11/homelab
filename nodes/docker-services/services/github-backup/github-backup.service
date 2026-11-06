@@ -1,0 +1,13 @@
+[Unit]
+Description=Automated GitHub Account and Repositories Backup to OMV
+After=docker.service mnt-nas.mount
+Wants=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/github-backup.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
