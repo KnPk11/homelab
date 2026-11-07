@@ -116,34 +116,57 @@ if [[ ! -s "${TEMP_EXPORT}" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Write local backup (directly to /srv/mikrotik-backup/backups with timestamp)
+# Update Git repository & push to Gitea
 # ---------------------------------------------------------------------------
-mkdir -p "${LOCAL_BACKUP_DIR}"
-
-# Get the most recent backup to check for changes
-LATEST_BACKUP=$(ls -t "${LOCAL_BACKUP_DIR}"/mikrotik-config-export-*.rsc 2>/dev/null | head -n 1 || true)
+GIT_REPO_DIR="${GIT_REPO_DIR:-/srv/mikrotik-config}"
+CONFIG_TARGET="${GIT_REPO_DIR}/mikrotik-config.rsc"
 
 hash_config() {
   grep -v "^#" "$1" | md5sum | awk '{print $1}'
 }
 
+if [[ -d "${GIT_REPO_DIR}/.git" ]]; then
+  NEW_HASH=$(hash_config "${TEMP_EXPORT}")
+  OLD_HASH=""
+  if [[ -f "${CONFIG_TARGET}" ]]; then
+    OLD_HASH=$(hash_config "${CONFIG_TARGET}")
+  fi
+
+  if [[ "${NEW_HASH}" == "${OLD_HASH}" ]]; then
+    log "No changes detected (hashes match exactly). Skipping."
+  else
+    cp "${TEMP_EXPORT}" "${CONFIG_TARGET}"
+    chmod 600 "${CONFIG_TARGET}"
+    git -C "${GIT_REPO_DIR}" add mikrotik-config.rsc
+    git -C "${GIT_REPO_DIR}" commit -m "chore(router): auto-capture $(date '+%Y-%m-%d %H:%M:%S')"
+    git -C "${GIT_REPO_DIR}" push origin main
+    log "Backup committed and pushed to Gitea (kp/mikrotik-config)."
+  fi
+else
+  log "WARNING: Git repository not found at ${GIT_REPO_DIR}."
+fi
+
+# ---------------------------------------------------------------------------
+# Write local fallback backup (directly to /srv/mikrotik-backup/backups with timestamp)
+# ---------------------------------------------------------------------------
+mkdir -p "${LOCAL_BACKUP_DIR}"
+
+LATEST_BACKUP=$(ls -t "${LOCAL_BACKUP_DIR}"/mikrotik-config-export-*.rsc 2>/dev/null | head -n 1 || true)
+
 if [[ -n "${LATEST_BACKUP}" ]]; then
   NEW_HASH=$(hash_config "${TEMP_EXPORT}")
   OLD_HASH=$(hash_config "${LATEST_BACKUP}")
   
-  if [[ "${NEW_HASH}" == "${OLD_HASH}" ]]; then
-    log "No changes detected (hashes match exactly). Skipping."
-  else
+  if [[ "${NEW_HASH}" != "${OLD_HASH}" ]]; then
     cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
     chmod 600 "${LOCAL_BACKUP}"
-    log "Backup updated: ${LOCAL_BACKUP}"
+    log "Fallback backup updated: ${LOCAL_BACKUP}"
   fi
 else
   cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
   chmod 600 "${LOCAL_BACKUP}"
-  log "Backup updated: ${LOCAL_BACKUP}"
+  log "Fallback backup updated: ${LOCAL_BACKUP}"
 fi
 
 # Clean up backups older than 90 days
 find "${LOCAL_BACKUP_DIR}" -type f -name "mikrotik-config-export-*.rsc" -mtime "+${RETENTION_DAYS}" -delete
-log "Cleaned up backups older than ${RETENTION_DAYS} days."

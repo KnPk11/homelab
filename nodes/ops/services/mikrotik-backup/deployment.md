@@ -10,11 +10,12 @@ Because the edge router is treated as a manually configured "pet" rather than a 
 
 Instead, a scheduled script pulls a **targeted, segmented backup** of the most critical and time-consuming components (Firewall rules, NAT, Interfaces, VLANs, DHCP leases, and DNS) directly from the router into a highly readable local file.
 
-## 2. Automated Config Capture (Cron)
+## 2. Automated Config Capture (Cron & Gitea)
 
-A pull script runs every 3 hours on **ops** (CT 112), connects to the router via SSH, and writes timestamped backups to `/srv/mikrotik-backup/backups/mikrotik-config-export-YYYYMMDD-HHMMSS.rsc`. Backups are deduplicated by hash (only changed configurations produce a new file) and retained for 90 days.
+A pull script runs every 3 hours on **ops** (CT 112), connects to the router via SSH, and commits changes directly into a private self-hosted Gitea repository (`https://gitea.[DOMAIN]/kp/mikrotik-config`). If no changes are detected between runs, no commits are produced. Backups are also mirrored to `/srv/mikrotik-backup/backups/`.
 
 **Script:** `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh`
+**Git Repository:** `/srv/mikrotik-config` (upstream: `https://gitea.[DOMAIN]/kp/mikrotik-config.git`)
 
 ### One-time cron setup
 
@@ -43,16 +44,20 @@ On the router (as `svc_ai`, God Mode unlocked):
 
 The capture script defaults to `~/.ssh/id_ed25519_mt_backup` (`ROUTER_SSH_IDENTITY` to override).
 
-## 3. Restoring Configs
+## 3. Auditing & Restoring Configs
 
-If you make a mistake or need to rebuild a section of the router:
-1. Inspect the latest backup in `/srv/mikrotik-backup/backups/`.
-2. Locate the specific rule or section you need (e.g., under the `🖥️ DHCP & STATIC LEASES` header).
-3. Connect to the router via WinBox or SSH and manually recreate or paste the specific `add` commands.
+* **Visual Diffs & History:** Browse `https://gitea.[DOMAIN]/kp/mikrotik-config` to view every configuration change, side-by-side diff, and commit log with original timestamps.
+* **Monthly Audit Integration:** `monthly-audit.sh` on **ai-tools** automatically pulls from Gitea and extracts the latest RouterOS commit diff into the audit digest.
+* **Restoring:**
+  1. Open `mikrotik-config.rsc` from Gitea or `/opt/dev/secrets_vault/mikrotik-config/`.
+  2. Locate the specific section you need (e.g., under the `🖥️ DHCP & STATIC LEASES` header).
+  3. Connect to the router via WinBox or SSH and paste or apply the commands.
 
 ## 4. Files
 
 | File | Purpose |
 |------|---------|
-| `/srv/mikrotik-backup/backups/` | Targeted component backups — local backups on **ops**, backed up to PBS |
+| `https://gitea.[DOMAIN]/kp/mikrotik-config.git` | Primary private GitOps backup repository in self-hosted Gitea |
+| `/srv/mikrotik-config/` | Working clone on **ops** (CT 112) |
+| `/opt/dev/secrets_vault/mikrotik-config/` | Working clone on **ai-tools** (CT 105) for local VS Code & offline vault sweeps |
 | `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh` | Automated pull script — runs via cron on **ops** |
