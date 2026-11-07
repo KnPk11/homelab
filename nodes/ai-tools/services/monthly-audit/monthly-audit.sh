@@ -30,11 +30,11 @@ PRIVATE_DOCS=/opt/dev/docs_private/security
 
 LIGHT_HOSTS=(
   proxmox-host docker-services nas lab-vm reverse-proxy dns
-  pulse vpns pbs k8s scratch-pc syslog
+  pulse vpns pbs k8s scratch-pc syslog ops
 )
 LYNIS_HOSTS=(
   docker-services nas lab-vm reverse-proxy ai-tools dns
-  pulse vpns pbs k8s scratch-pc syslog
+  pulse vpns pbs k8s scratch-pc syslog ops
 )
 
 DEPTH=""
@@ -267,6 +267,28 @@ EOS
 log "mikrotik dstnat + resource (svc_backup job key; God Mode router is not used here)"
 remote mikrotik-backup "$SNAP/mikrotik.txt" \
   '/system resource print; /system package update print; /ip service print; /ip firewall nat print where chain=dstnat' || true
+
+# Synchronise router exports from ops and capture config diff if changes exist
+if ssh_cmd ops "test -d /srv/mikrotik-backup/backups" >/dev/null 2>&1; then
+  log "syncing mikrotik exports from ops to /opt/dev/secrets_vault/mikrotik-backups"
+  rsync -av root@192.168.50.112:/srv/mikrotik-backup/backups/ /opt/dev/secrets_vault/mikrotik-backups/ >/dev/null 2>&1 || true
+fi
+
+{
+  VAULT_DIR="/opt/dev/secrets_vault/mikrotik-backups"
+  mapfile -t RSC_FILES < <(ls -t "${VAULT_DIR}"/mikrotik-config-export-*.rsc 2>/dev/null | head -n 2)
+  if [[ "${#RSC_FILES[@]}" -ge 2 ]]; then
+    echo "=== RouterOS Config Changes (${RSC_FILES[1]##*/} -> ${RSC_FILES[0]##*/}) ==="
+    DIFF_CONTENT=$(diff -u "${RSC_FILES[1]}" "${RSC_FILES[0]}" 2>/dev/null | grep -vE "^[-+]#" | grep -E "^\+[^\+]|^\-[^\-]" || true)
+    if [[ -n "$DIFF_CONTENT" ]]; then
+      echo "$DIFF_CONTENT"
+    else
+      echo "No logic changes detected between latest exports."
+    fi
+  else
+    echo "Fewer than 2 exports available for comparison."
+  fi
+} >"$SNAP/mikrotik-diff.txt"
 
 log "git hygiene (names only)"
 {
