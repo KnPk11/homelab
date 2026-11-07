@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install WAN saturation timer on ai-tools (mikrotik-backup key required).
+# Install WAN saturation timer on ops (CT 112) (mikrotik-backup key required).
 set -euo pipefail
 SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
@@ -20,9 +20,12 @@ fi
 TG=/etc/ssh/telegram.env
 [[ -s "$TG" ]] || TG=/srv/homelab-watch/telegram.env
 
+SSH_PATH="/opt/homelab-repo/shared/ssh/config"
+[[ -f "$SSH_PATH" ]] || SSH_PATH="/opt/dev/homelab_repo/shared/ssh/config"
+
 cat > /etc/default/wan-saturation <<EOF
 TELEGRAM_ENV=${TG}
-SSH_CFG=/opt/dev/homelab_repo/shared/ssh/config
+SSH_CFG=${SSH_PATH}
 WAN_IFACE=pppoe-out1
 RX_MBPS=900
 TX_MBPS=110

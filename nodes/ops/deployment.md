@@ -35,5 +35,5 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 | [Namecheap Dynamic DNS](services/namecheap-ddns/deployment.md) | Every 5 mins (cron) | Synchronises residential WAN IPv4 with `ip.[DOMAIN]` |
 | [Homelab Watch](services/homelab-watch/deployment.md) | On-demand / timers | Alert dispatch gateway to Telegram (`telegram.env`) |
 | [Monthly Audit Reminder](services/monthly-audit-reminder/deployment.md) | Every Sunday 09:00 (timer) | Scheduled notification to trigger audit runs |
-| WAN Saturation | Every minute (timer) | Monitors `pppoe-out1` saturation via router telemetry |
+| [WAN Saturation](services/wan-saturation/deployment.md) | Every minute (timer) | Monitors `pppoe-out1` saturation via router telemetry |
 | MikroTik Config Capture | Every 3 hours (cron) | Pulls config exports via dedicated `svc_backup` key |

@@ -6,7 +6,8 @@ set -euo pipefail
 # shellcheck source=/dev/null
 [[ -r /etc/default/wan-saturation ]] && . /etc/default/wan-saturation
 
-SSH_CFG="${SSH_CFG:-/opt/dev/homelab_repo/shared/ssh/config}"
+SSH_CFG="${SSH_CFG:-/opt/homelab-repo/shared/ssh/config}"
+[[ -f "$SSH_CFG" ]] || SSH_CFG=/opt/dev/homelab_repo/shared/ssh/config
 WAN_IFACE="${WAN_IFACE:-pppoe-out1}"
 RX_MBPS="${RX_MBPS:-900}"
 TX_MBPS="${TX_MBPS:-110}"
