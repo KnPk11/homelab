@@ -12,9 +12,9 @@ Instead, a scheduled script pulls a **targeted, segmented backup** of the most c
 
 ## 2. Automated Config Capture (Cron & Gitea)
 
-A pull script runs every 3 hours on **ops** (CT 112), connects to the router via SSH, and commits changes directly into a private self-hosted Gitea repository (`https://gitea.[DOMAIN]/kp/mikrotik-config`). If no changes are detected between runs, no commits are produced. Backups are also mirrored to `/srv/mikrotik-backup/backups/`.
+A pull script runs every 3 hours on **ops** (CT 112), connects to the router via SSH, and commits changes directly into a private self-hosted Gitea repository (`https://gitea.[DOMAIN]/kp/mikrotik-config`). If no changes are detected between runs, no commits are produced.
 
-**Script:** `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh`
+**Script:** `nodes/ops/services/mikrotik-config/capture-mikrotik-config.sh`
 **Git Repository:** `/srv/mikrotik-config` (upstream: `https://gitea.[DOMAIN]/kp/mikrotik-config.git`)
 
 ### One-time cron setup
@@ -26,7 +26,7 @@ crontab -e
 Add the following line:
 
 ```
-0 */3 * * * /opt/homelab-repo/nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+0 */3 * * * /opt/homelab-repo/nodes/ops/services/mikrotik-config/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 ```
 
 ### SSH key prerequisite
@@ -60,4 +60,4 @@ The capture script defaults to `~/.ssh/id_ed25519_mt_backup` (`ROUTER_SSH_IDENTI
 | `https://gitea.[DOMAIN]/kp/mikrotik-config.git` | Primary private GitOps backup repository in self-hosted Gitea |
 | `/srv/mikrotik-config/` | Working clone on **ops** (CT 112) |
 | `/opt/dev/secrets_vault/mikrotik-config/` | Working clone on **ai-tools** (CT 105) for local VS Code & offline vault sweeps |
-| `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh` | Automated pull script — runs via cron on **ops** |
+| `nodes/ops/services/mikrotik-config/capture-mikrotik-config.sh` | Automated pull script — runs via cron on **ops** |

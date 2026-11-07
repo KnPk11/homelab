@@ -120,8 +120,8 @@ source ~/.ssh/ai-key-agent.sh
 Cron on **ops** (CT 112) runs `capture-mikrotik-config.sh` every 3 hours:
 
 - Uses `svc_backup` (or configured SSH user) against the router.
-- Writes timestamped `.rsc` exports under `/srv/mikrotik-backup/backups/`.
-- Human-readable RouterOS script; treat as sensitive and keep in `/srv`.
+- Commits and pushes changes directly to private Gitea repository (`kp/mikrotik-config`).
+- Human-readable RouterOS script; tracked with full Git version control and history.
 
 ### Manual binary backup (full state)
 
