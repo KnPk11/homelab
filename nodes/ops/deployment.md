@@ -36,4 +36,4 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 | [Homelab Watch](services/homelab-watch/deployment.md) | On-demand / timers | Alert dispatch gateway to Telegram (`telegram.env`) |
 | [Monthly Audit Reminder](services/monthly-audit-reminder/deployment.md) | Every Sunday 09:00 (timer) | Scheduled notification to trigger audit runs |
 | [WAN Saturation](services/wan-saturation/deployment.md) | Every minute (timer) | Monitors `pppoe-out1` saturation via router telemetry |
-| MikroTik Config Capture | Every 3 hours (cron) | Pulls config exports via dedicated `svc_backup` key |
+| [MikroTik Config Capture](services/mikrotik-backup/deployment.md) | Every 3 hours (cron) | Pulls config exports via dedicated `svc_backup` key |

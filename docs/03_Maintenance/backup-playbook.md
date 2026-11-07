@@ -117,11 +117,11 @@ source ~/.ssh/ai-key-agent.sh
 
 ### Automated export (preferred)
 
-Cron on **ai-tools** runs `capture-mikrotik-config.sh` every few hours:
+Cron on **ops** (CT 112) runs `capture-mikrotik-config.sh` every 3 hours:
 
 - Uses `svc_backup` (or configured SSH user) against the router.
-- Writes timestamped `.rsc` exports under `/opt/dev/secrets_vault/mikrotik-backups/`.
-- Human-readable RouterOS script; treat as sensitive and keep in the vault.
+- Writes timestamped `.rsc` exports under `/srv/mikrotik-backup/backups/`.
+- Human-readable RouterOS script; treat as sensitive and keep in `/srv`.
 
 ### Manual binary backup (full state)
 

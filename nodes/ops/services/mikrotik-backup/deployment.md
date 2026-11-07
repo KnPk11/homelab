@@ -12,9 +12,9 @@ Instead, a scheduled script pulls a **targeted, segmented backup** of the most c
 
 ## 2. Automated Config Capture (Cron)
 
-A pull script runs every 3 hours on `ai-tools`, SSHes into the router, and writes a **local plaintext backup** to `nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc`. This file is gitignored to prevent leaking network topology to the remote repository.
+A pull script runs every 3 hours on **ops** (CT 112), connects to the router via SSH, and writes timestamped backups to `/srv/mikrotik-backup/backups/mikrotik-config-export-YYYYMMDD-HHMMSS.rsc`. Backups are deduplicated by hash (only changed configurations produce a new file) and retained for 90 days.
 
-**Script:** `nodes/ai-tools/services/mikrotik-backup/capture-mikrotik-config.sh`
+**Script:** `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh`
 
 ### One-time cron setup
 
@@ -25,19 +25,15 @@ crontab -e
 Add the following line:
 
 ```
-0 */3 * * * /opt/dev/homelab_repo/nodes/ai-tools/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+0 */3 * * * /opt/homelab-repo/nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 ```
 
 ### SSH key prerequisite
 
 Cron has **no ssh-agent**, so this job must use a **passphrase-less** key. Do not point it at God Mode (`id_ed25519_ai`) or the GitHub key (`id_ed25519`) — both are encrypted and fail in BatchMode as `Permission denied (publickey)`.
 
-On **ai-tools**:
-
-```bash
-# One-time: dedicated job key (not in Git)
-ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_mt_backup -N '' -C svc_backup
-```
+The dedicated job key lives at `/root/.ssh/id_ed25519_mt_backup` on **ops** (copied from `ai-tools`).
+Firewall rule on MikroTik accepts incoming SSH on port 22 from `192.168.50.112`.
 
 On the router (as `svc_ai`, God Mode unlocked):
 
@@ -50,7 +46,7 @@ The capture script defaults to `~/.ssh/id_ed25519_mt_backup` (`ROUTER_SSH_IDENTI
 ## 3. Restoring Configs
 
 If you make a mistake or need to rebuild a section of the router:
-1. Open `nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc` locally.
+1. Inspect the latest backup in `/srv/mikrotik-backup/backups/`.
 2. Locate the specific rule or section you need (e.g., under the `🖥️ DHCP & STATIC LEASES` header).
 3. Connect to the router via WinBox or SSH and manually recreate or paste the specific `add` commands.
 
@@ -58,5 +54,5 @@ If you make a mistake or need to rebuild a section of the router:
 
 | File | Purpose |
 |------|---------|
-| `nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc` | Targeted component backup — **gitignored**, local backup only |
-| `nodes/ai-tools/services/mikrotik-backup/capture-mikrotik-config.sh` | Automated pull script — runs via cron on `ai-tools` |
+| `/srv/mikrotik-backup/backups/` | Targeted component backups — local backups on **ops**, backed up to PBS |
+| `nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh` | Automated pull script — runs via cron on **ops** |

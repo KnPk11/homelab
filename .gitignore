@@ -34,6 +34,8 @@ __pycache__/
 # MikroTik config & logs — contains sensitive network topology, kept as local backup only
 nodes/ai-tools/services/mikrotik-backup/mikrotik-config-export.rsc
 nodes/ai-tools/services/mikrotik-backup/CHANGELOG.md
+nodes/ops/services/mikrotik-backup/mikrotik-config-export.rsc
+nodes/ops/services/mikrotik-backup/CHANGELOG.md
 
 nodes/reverse-proxy/services/caddy/Caddyfile.experimental*
 

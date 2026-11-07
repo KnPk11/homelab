@@ -19,20 +19,14 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 *   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** where it applies (this host may already be the Git source of truth rather than a pure pull-only node).
 *   Clone or restore **`/opt/dev/homelab_repo`** (and remotes) as your working tree.
-*   **Cron (examples already used on this host):**
-    *   MikroTik capture (every 3 hours): see service guide below.
-
-## 2. Included Services
-
-*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape_configs_and_secrets.sh) — header documents vault layout and `PATH_SWEEPS`.
+*   **Operations Migration:** Unattended operations (DDNS, WAN saturation, MikroTik backups, and Homelab Watch reminders) run on the dedicated **[ops CT 112](../ops/deployment.md)** LXC.
 
 ## 2. Services on this node
 
-*   [MikroTik config capture](services/mikrotik-backup/deployment.md) — scheduled export of critical router config into a **gitignored** local `.rsc` file.
-*   [WAN saturation](services/wan-saturation/deployment.md) — minute timer, `pppoe-out1` RX/TX vs circuit 900/110, Homelab Watch if the pipe stays full.
-*   [Namecheap Dynamic DNS](services/namecheap-ddns/deployment.md) — keep `ip.[DOMAIN]` on the current WAN IPv4 (WireGuard locator).
+*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape_configs_and_secrets.sh) — on-demand scraper sweeping remote `/srv` secrets into central vault.
 *   [God Mode + Git SSH key TTL unlock](services/ai-ssh-key/deployment.md) — passphrase-unlock `id_ed25519_ai` (lab) and `id_ed25519` (GitHub; formerly `svc_automation`) into ssh-agent with a **2h TTL** auto-unload watchdog.
 *   [SOPS + age (Master vs node keys)](services/sops-key/deployment.md) — Master Admin key in RAM on this host; per-node age keys on appliance boxes. Not the same as God Mode SSH.
+*   [Monthly Audit](services/monthly-audit/deployment.md) — interactive snapshot audit run by the AI agent on-demand.
 *   [Telegram Terminal](services/telegram-terminal/deployment.md) — Headless mobile terminal wrapper for bash and Antigravity (`agy`) agents via Telegram long-polling.
 
 ## 3. Related shared tooling

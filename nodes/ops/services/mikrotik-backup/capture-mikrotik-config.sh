@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # =============================================================================
 # capture-mikrotik-config.sh
-# Version: 1.5
-# Date: 2026-08-24
+# Version: 1.6
+# Date: 2026-11-07
 #
 # capture-mikrotik-config.sh — Exports MikroTik RouterOS config via SSH
-# and writes it to a local gitignored file for backup by scrape_configs_and_secrets.sh.
+# and writes it to a local backup directory for automated retention and scraping.
 #
-# Runs as a cron job on ai-tools every 3 hours.
+# Runs as a cron job on ops (CT 112) every 3 hours.
 #
 # Usage:
-#   # cron every few hours on ai-tools
-#   0 */3 * * * /opt/dev/homelab_repo/nodes/ai-tools/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
+#   # cron on ops
+#   0 */3 * * * /opt/homelab-repo/nodes/ops/services/mikrotik-backup/capture-mikrotik-config.sh >> /var/log/capture-mikrotik-config.log 2>&1
 # =============================================================================
 
 set -euo pipefail
@@ -24,8 +24,8 @@ ROUTER_SSH_HOST="${ROUTER_SSH_HOST:-192.168.88.1}"
 ROUTER_SSH_PORT="${ROUTER_SSH_PORT:-22}"
 # Passwordless job key (NOT God Mode, NOT the GitHub key). Cron has no ssh-agent.
 ROUTER_SSH_IDENTITY="${ROUTER_SSH_IDENTITY:-$HOME/.ssh/id_ed25519_mt_backup}"
-REPO_DIR="${REPO_DIR:-/opt/dev/homelab_repo}"
-LOCAL_BACKUP_DIR="/opt/dev/secrets_vault/mikrotik-backups"
+REPO_DIR="${REPO_DIR:-/opt/homelab-repo}"
+LOCAL_BACKUP_DIR="${LOCAL_BACKUP_DIR:-/srv/mikrotik-backup/backups}"
 LOCAL_BACKUP="${LOCAL_BACKUP_DIR}/mikrotik-config-export-$(date +%Y%m%d-%H%M%S).rsc"
 RETENTION_DAYS="${RETENTION_DAYS:-90}"
 
@@ -116,7 +116,7 @@ if [[ ! -s "${TEMP_EXPORT}" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Write local backup (directly to secrets_vault with timestamp)
+# Write local backup (directly to /srv/mikrotik-backup/backups with timestamp)
 # ---------------------------------------------------------------------------
 mkdir -p "${LOCAL_BACKUP_DIR}"
 
@@ -135,10 +135,12 @@ if [[ -n "${LATEST_BACKUP}" ]]; then
     log "No changes detected (hashes match exactly). Skipping."
   else
     cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
+    chmod 600 "${LOCAL_BACKUP}"
     log "Backup updated: ${LOCAL_BACKUP}"
   fi
 else
   cp "${TEMP_EXPORT}" "${LOCAL_BACKUP}"
+  chmod 600 "${LOCAL_BACKUP}"
   log "Backup updated: ${LOCAL_BACKUP}"
 fi
 

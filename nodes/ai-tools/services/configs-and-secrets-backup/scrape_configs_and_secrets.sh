@@ -56,10 +56,12 @@ declare -A NODES=(
     ["docker-services"]="192.168.50.95"
     ["nas"]="192.168.50.90"
     ["lab-vm"]="192.168.50.91"
+    ["ops"]="192.168.50.112"
 )
 PATH_SWEEPS=(
     "reverse-proxy:/srv"
     "dns:/srv"
+    "ops:/srv"
     "docker-services:/srv"
     "docker-services:/opt/scripts/Security"
     # Public web-apps clone (story-cards/.env; other apps may add .env later)
@@ -99,6 +101,7 @@ sweep_remote_path() {
                 -o -name \"*.pwd\" -o -name \"gcp-creds.json\" -o -name \"postgres_password\" \
                 -o -name \"*.config\" -o -name \"*.kopia-password\" -o -name \"*kopia-password*\" \
                 -o -name \"main-repo.config\" -o -name \"repository.config\" \
+                -o -name \"*.rsc\" \
             \) ! -name '*sops*'" 2>/dev/null | grep '^\./' || true
     )"
     if [[ -z "$list" ]]; then

@@ -71,8 +71,8 @@ ai-key-lock    # when finished (or wait for TTL)
 | User | `[AGENT-USER]` (live: `svc_ai` / `svc_backup`) |
 | Group | `full` (for `svc_ai`), `read` (for `svc_backup`) |
 | Auth | SSH key (Ed25519); God Mode key is passphrase-protected |
-| Source IP | `[AGENT-CONTAINER-IP]` (live: ai-tools) |
+| Source IP | `[AGENT-CONTAINER-IP]` (live: `ai-tools` `.105` for `svc_ai`, `ops` `.112` for `svc_backup`) |
 | Port | 22 |
 | Admin key ops | Host-wide TTL unlock on ai-tools (`ai-key-*`, default 1h) — see §5 |
 
-Backup cron: `capture-mikrotik-config.sh` uses `ROUTER_SSH_USER` (default `svc_backup`) and is **independent** of the God Mode TTL unlock.
+Backup cron: `capture-mikrotik-config.sh` runs on **ops** (CT 112), uses `ROUTER_SSH_USER` (default `svc_backup`), and is **independent** of the God Mode TTL unlock.
