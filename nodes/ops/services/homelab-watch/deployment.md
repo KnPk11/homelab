@@ -3,13 +3,13 @@
 > [!NOTE]
 > #Telegram #Security #Monitoring
 >
-> **Host:** `ai-tools` (secret copy). Same bot is used by CrowdSec, PAM, canaries.
+> **Host:** `ops` (CT 112). Same bot is used by CrowdSec, PAM, canaries.
 
 Runtime file: `/srv/homelab-watch/telegram.env` (mode `600`). Git holds `telegram.env.example` and the SOPS-encrypted `telegram.env`.
 
 ```bash
 mkdir -p /srv/homelab-watch
-sops -d /opt/homelab-repo/nodes/ai-tools/services/homelab-watch/telegram.env > /srv/homelab-watch/telegram.env
+sops -d /opt/homelab-repo/nodes/ops/services/homelab-watch/telegram.env > /srv/homelab-watch/telegram.env
 chmod 600 /srv/homelab-watch/telegram.env
 ```
 

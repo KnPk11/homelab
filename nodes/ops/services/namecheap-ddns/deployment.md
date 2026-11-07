@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > **Tags:** #DNS #DDNS #Namecheap #WireGuard #Networking
-> **Host:** `ai-tools` | **Interval:** Every 5 minutes
+> **Host:** `ops` (CT 112) | **Interval:** Every 5 minutes
 
 ## 1. Overview
 
@@ -14,10 +14,7 @@ WireGuard clients use `ip.[DOMAIN]:51821` as their endpoint. Because this record
 
 ## 2. Prerequisites & Secrets
 
-1. Obtain your Dynamic DNS password from [Namecheap](https://ap.www.namecheap.com/):
-   * **Domain List** → **Manage** → **Advanced DNS** → **Dynamic DNS** (toggle **ON** and copy the generated password).
-2. Ensure the subdomain (e.g. `ip`) is configured under **Advanced DNS** as an **A + Dynamic DNS Record** (pointing to your initial IP or `127.0.0.1`).
-3. Store runtime secrets on `ai-tools` under `/srv/namecheap-ddns/ddns.env`:
+1. Store runtime secrets on `ops` under `/srv/namecheap-ddns/ddns.env`:
 
 ```bash
 mkdir -p /srv/namecheap-ddns
@@ -39,7 +36,7 @@ The script checks your current public IP via `api.ipify.org` and compares it aga
 
 ### Schedule
 
-Edit crontab on `ai-tools`:
+Edit crontab on `ops`:
 
 ```bash
 crontab -e
@@ -48,7 +45,7 @@ crontab -e
 Add the job (running every 5 minutes):
 
 ```cron
-*/5 * * * * /opt/dev/homelab_repo/nodes/ai-tools/services/namecheap-ddns/update-namecheap-ddns.sh >> /var/log/namecheap-ddns.log 2>&1
+*/5 * * * * /opt/homelab-repo/nodes/ops/services/namecheap-ddns/update-namecheap-ddns.sh >> /var/log/namecheap-ddns.log 2>&1
 ```
 
 ---
@@ -57,6 +54,6 @@ Add the job (running every 5 minutes):
 
 | File | Purpose |
 |------|---------|
-| `nodes/ai-tools/services/namecheap-ddns/update-namecheap-ddns.sh` | Update script — queries IP and updates Namecheap |
-| `nodes/ai-tools/services/namecheap-ddns/ddns.env.example` | Template for required credentials |
+| `nodes/ops/services/namecheap-ddns/update-namecheap-ddns.sh` | Update script — queries IP and updates Namecheap |
+| `nodes/ops/services/namecheap-ddns/ddns.env.example` | Template for required credentials |
 | `/srv/namecheap-ddns/ddns.env` | Runtime secrets (**not in Git**) |

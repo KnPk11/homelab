@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
 # update-namecheap-ddns.sh
-# Version: 2.0
+# Version: 2.1
 #
 # Namecheap Dynamic DNS update script for keeping the WAN locator record
 # (e.g. ip.example.com) synchronised with your current public IPv4 address.
-# Designed to run via cron on ai-tools.
+# Designed to run via cron on ops (CT 112).
 # =============================================================================
 
 set -euo pipefail
@@ -100,11 +100,11 @@ for HOST in "${HOST_LIST[@]}"; do
   log "IP mismatch for $FULL_DOMAIN. Current DNS: '${CURRENT_DNS_IP:-<unresolved>}', Public IP: '$PUBLIC_IP'. Updating Namecheap..."
 
   UPDATE_URL="https://dynamicdns.park-your-domain.com/update?host=${HOST}&domain=${DOMAIN}&password=${PASSWORD}&ip=${PUBLIC_IP}"
-  RESPONSE=$(curl -fs --max-time 15 "$UPDATE_URL" 2>/dev/null || true)
+  RESPONSE=$(curl -sS --max-time 15 "$UPDATE_URL" 2>&1 || true)
 
-  if [[ "$RESPONSE" =~ "<ErrCount>0</ErrCount>" ]]; then
-    log "SUCCESS: Successfully updated $FULL_DOMAIN to $PUBLIC_IP"
+  if echo "$RESPONSE" | grep -q "<ErrCount>0</ErrCount>"; then
+    log "SUCCESS: Updated $FULL_DOMAIN to $PUBLIC_IP"
   else
-    log "WARNING: Namecheap update returned response: $RESPONSE"
+    log "ERROR: Failed to update $FULL_DOMAIN. Response: $RESPONSE"
   fi
 done

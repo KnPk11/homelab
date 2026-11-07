@@ -64,3 +64,9 @@ nodes:
     type: lxc
     description: Off-box auth logs (plaintext)
 
+  ops:
+    ip: 192.168.50.112
+    proxmox_id: 112
+    type: lxc
+    description: Lightweight always-on operations and background automation plane
+
