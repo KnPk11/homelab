@@ -17,7 +17,8 @@ Sanitised views of the Dashy control surfaces — public entrypoint vs private s
 *   **Networking:** MikroTik (RouterOS) + ASUS (Asuswrt-Merlin)
 *   **DNS:** AdGuard Home (Network-wide)
 *   **Ingress:** Caddy (Automated TLS)
-*   **AI:** Gemini CLI, Grok Build, OpenClaw, Hermes
+*   **GitOps:** Gitea (Private code & config hosting) + GitHub (Public blueprint)
+*   **AI & Agents:** Antigravity (CLI / IDE), Grok Build, OpenClaw, Hermes
 
 ---
 
@@ -36,7 +37,7 @@ flowchart TD
     end
 
     subgraph Compute["🖥️ Proxmox Hypervisor"]
-        Caddy["Reverse Proxy"]
+        Caddy["Reverse Proxy (CT 101)"]
         
         subgraph DirectPorts["Direct Port Forwards"]
             MediaMTX["MediaMTX"]
@@ -44,11 +45,14 @@ flowchart TD
             TalkHPB["Talk-HPB"]
         end
         
-        subgraph Services["Internal Services"]
-            L1["DNS, K8S, Pulse, AI tools"]
-            L2["Docker Services VM"]
-            L4["Hermes/OpenClaw VM"]
-            L3["Storage<br>(NAS)"]
+        subgraph Services["Internal Services & Workloads"]
+            direction TB
+            L1["Core Infra: DNS, Pulse, VPNs, PBS, Syslog"]
+            L5["Ops Plane: DDNS, Watch, Router Backups (CT 112)"]
+            L6["AI Tools Bastion (CT 105)"]
+            L2["Docker Services (VM 100) / Gitea"]
+            L4["Hermes / OpenClaw (VM 103)"]
+            L3["Storage / OMV (VM 101)"]
         end
     end
 
@@ -63,13 +67,13 @@ flowchart TD
 
     class WAN wanLayer;
     class VLAN_MIX,VLAN_LAN netLayer;
-    class Caddy,MediaMTX,AnySync,TalkHPB,L1,L2,L3,L4 compLayer;
+    class Caddy,MediaMTX,AnySync,TalkHPB,L1,L2,L3,L4,L5,L6 compLayer;
 ```
 
 ---
 
 ## 💿 Storage & NAS Directory Layout
-The following structure organizes data across the primary storage pool (typically mounted under `/mnt/pool` using a combination of LVM, ZFS, or MergerFS).
+The following structure organises data across the primary storage pool (typically mounted under `/mnt/pool` using a combination of LVM, ZFS, or MergerFS).
 
 | 📁 Root Directory | 📝 Purpose / Description | 📂 Key Subdirectories |
 | :--- | :--- | :--- |
@@ -101,7 +105,7 @@ By maintaining a highly structured set of Markdown notes, an AI Agent acts as th
 ---
 
 ## 📂 Repository Index
-The repository is organized following standard DevOps chapters. This structure also mirrors the centralized Obsidian Vault structure.
+The repository is organised following standard DevOps chapters. This structure also mirrors the centralised Obsidian Vault structure.
 
 - **[00_Infrastructure](./docs/00_Infrastructure/)**: Bare-metal specs, Inventory, and Hypervisor/OS setup guides.
 - **[01_Network](./docs/01_Network/)**: Routing logic, VLAN segmentation, and VPN configs.
