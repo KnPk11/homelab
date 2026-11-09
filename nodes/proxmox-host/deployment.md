@@ -27,7 +27,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 | [proxmox_snapshot.sh](scripts/proxmox_snapshot.sh) | Scheduled snapshots of VMs/CTs (`S-YYYY-MM-DD`, retention ~14 days). Daily cron: `0 2 * * * /usr/local/bin/proxmox_snapshot.sh` |
 | [firewall.sh](scripts/firewall.sh) | Applies Proxmox/cluster guest firewall definitions. Sources **`firewall.env`** from the same directory on the host (create from [firewall.env.example](scripts/firewall.env.example); do not commit real env). |
 | [SSH doorbell](../../shared/observability/ssh-doorbell/deployment.md) | PAM `open_session` → Homelab Watch on successful SSH. |
-| [thermal-safety-watchdog.sh](scripts/thermal-safety-watchdog.sh) | CPU package temp check every 30s via systemd timer (or cron). ≥92°C for 4 consecutive checks (~2m sustained) → Telegram alert + graceful guest/host shutdown. Reuses the doorbell's `/etc/ssh/telegram.env`. Test: `sudo WARN_TEMP=20 CRIT_TEMP=30 thermal-safety-watchdog.sh --dry-run` ×4. |
+| [thermal-safety-watchdog.sh](scripts/thermal-safety-watchdog.sh) | CPU package temp check every 30s via systemd timer (or cron). ≥90°C for 4 consecutive checks (~2m sustained) → Telegram alert + graceful guest/host shutdown. Reuses the doorbell's `/etc/ssh/telegram.env`. Test: `sudo WARN_TEMP=20 CRIT_TEMP=30 thermal-safety-watchdog.sh --dry-run` ×4. |
 
 ### Thermal watchdog (enable)
 

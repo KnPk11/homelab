@@ -35,7 +35,7 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # -----------------------------------------------------------------------------
 # Thermal thresholds in degrees Celsius
 WARN_TEMP="${WARN_TEMP:-80}"        # Threshold to log warning
-CRIT_TEMP="${CRIT_TEMP:-92}"        # Threshold to initiate emergency shutdown sequence
+CRIT_TEMP="${CRIT_TEMP:-90}"        # Threshold to initiate emergency shutdown sequence
 
 # Persistence requirements
 # Number of consecutive critical readings before triggering shutdown
