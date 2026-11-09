@@ -17,16 +17,16 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 Per-service guides cover `/srv/...` secrets, templates in the clone, and deploy/restart steps:
 
-*   [Caddy Reverse Proxy](services/Caddy/deployment.md) — `/srv/caddy/`
-*   [CrowdSec IPS](services/CrowdSec/deployment.md) — `/srv/crowdsec/`
-*   [Fail2Ban Monitor](services/Fail2Ban%20Monitor/deployment.md) — `/srv/fail2ban-monitor/`
+*   [Caddy Reverse Proxy](services/caddy/deployment.md) — `/srv/caddy/`
+*   [CrowdSec IPS](services/crowdsec/deployment.md) — `/srv/crowdsec/`
+*   [Fail2Ban Monitor](services/fail2ban-monitor/deployment.md) — `/srv/fail2ban-monitor/`
 *   [Web-compromise watch](../../shared/observability/web-compromise-watch/deployment.md) — Caddy uid shells → Homelab Watch
 *   [SSH doorbell](../../shared/observability/ssh-doorbell/deployment.md) — PAM successful SSH → Homelab Watch
 
 ## 3. Observability
 
-*   [Gatus Status Page](services/Gatus/deployment.md) — `/srv/gatus/`
+*   [Gatus Status Page](services/gatus/deployment.md) — `/srv/gatus/`
 
 ## 4. Dashboard
 
-*   [Dashy Homepage](services/Dashy/deployment.md) — static build served by Caddy from `/opt/dashy/dist`
+*   [Dashy Homepage](services/dashy/deployment.md) — static build served by Caddy from `/opt/dashy/dist`
