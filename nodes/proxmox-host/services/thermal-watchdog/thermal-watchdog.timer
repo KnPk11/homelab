@@ -1,0 +1,11 @@
+[Unit]
+Description=Run thermal safety watchdog every 30s
+
+[Timer]
+# Grace period after boot so a hot-reboot loop can still be interrupted
+OnBootSec=2min
+OnUnitActiveSec=30s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

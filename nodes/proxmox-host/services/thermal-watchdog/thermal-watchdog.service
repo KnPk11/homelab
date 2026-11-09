@@ -1,0 +1,7 @@
+[Unit]
+Description=Thermal safety watchdog (single check)
+Documentation=file:///opt/homelab-repo/nodes/proxmox-host/scripts/thermal-safety-watchdog.sh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/thermal-safety-watchdog.sh
