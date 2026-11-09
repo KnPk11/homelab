@@ -34,13 +34,13 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 # Configuration (thresholds may be overridden via environment for testing)
 # -----------------------------------------------------------------------------
 # Thermal thresholds in degrees Celsius
-WARN_TEMP="${WARN_TEMP:-75}"        # Threshold to log warning
-CRIT_TEMP="${CRIT_TEMP:-85}"        # Threshold to initiate emergency shutdown sequence
+WARN_TEMP="${WARN_TEMP:-80}"        # Threshold to log warning
+CRIT_TEMP="${CRIT_TEMP:-92}"        # Threshold to initiate emergency shutdown sequence
 
 # Persistence requirements
 # Number of consecutive critical readings before triggering shutdown
-# (e.g. 3 checks * 30 seconds = 90 seconds sustained temperature)
-REQUIRED_CONSECUTIVE_SAMPLES="${REQUIRED_CONSECUTIVE_SAMPLES:-3}"
+# (e.g. 4 checks * 30 seconds = 2 minutes sustained temperature)
+REQUIRED_CONSECUTIVE_SAMPLES="${REQUIRED_CONSECUTIVE_SAMPLES:-4}"
 
 # State file tracking consecutive critical checks in memory (lost on reboot)
 STATE_FILE="/run/thermal-safety-watchdog.state"
