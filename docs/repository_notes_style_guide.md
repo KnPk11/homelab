@@ -76,7 +76,7 @@ Use tables for comparing options or listing configuration parameters.
 | Feature | ✅ Enabled | Why it is enabled |
 | Legacy | ❌ Disabled | Why it is disabled |
 
-## 7. Data Sanitization
+## 7. Data Sanitisation
 Before committing, ensure all sensitive or personal information is replaced with generic placeholders.
 - **Format**: Use square brackets and uppercase for user-specific variables (e.g., `[DISK-UUID]`, `[PERSONAL-USER]`).
 - **Project/Repo Names**: Replace personal branding (e.g., "MyBrand") with generic terms like "Homelab" or "MyLab".
