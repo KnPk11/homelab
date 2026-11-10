@@ -6,7 +6,7 @@ This node (`lab-vm`, `192.168.50.91`, Proxmox VM 103) is the primary application
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and restart the respective services.
 
-If this machine ever suffers a catastrophic failure, follow the deployment guides below in this exact order to nuke-and-pave it back to a working state.
+If this machine ever suffers a catastrophic failure, follow the deployment guides below in order to restore it back to a working state.
 
 ---
 
@@ -21,60 +21,76 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
    ```bash
    sudo loginctl enable-linger k
    ```
-4. **Firewall Script:** Apply [`scripts/firewall.sh`](scripts/deployment.md).
 
 ---
 
-## 2. Paperclip Service
+## 2. Host Security & Firewall (UFW)
 
-App guide & reverse proxy: [docs/02_Services/paperclip/setup.md](../../docs/02_Services/paperclip/setup.md).
+The host firewall is managed via the tracked script [`scripts/ufw.sh`](scripts/ufw.sh).
 
-* **Runtime Path:** `/opt/paperclip/data/instances/default/` (owned by `k:k`).
-* **Secrets:** Decrypted directly from the repo using SOPS:
-  ```bash
-  # 1. Provision directories
-  sudo install -d -o k -g k /opt/paperclip /opt/paperclip/data /opt/paperclip/data/instances/default/secrets
+### 2.1 Firewall Installation & Deployment
 
-  # 2. Decrypt env and keys
-  sops -d nodes/lab-vm/services/paperclip/.env > /opt/paperclip/data/instances/default/.env
-  sops -d nodes/lab-vm/services/paperclip/secrets/master.key.secret | jq -r .data > /opt/paperclip/data/instances/default/secrets/master.key
-  sops -d nodes/lab-vm/services/paperclip/secrets/decision-signing.key.secret | jq -r .data > /opt/paperclip/data/instances/default/secrets/decision-signing.key
+1. Symlink the tracked firewall script into `/usr/local/bin/firewall`:
+   ```bash
+   sudo chmod +x /opt/homelab-repo/nodes/lab-vm/scripts/ufw.sh
+   sudo ln -sfn /opt/homelab-repo/nodes/lab-vm/scripts/ufw.sh /usr/local/bin/firewall
+   ```
 
-  # 3. Secure permissions & start
-  chmod 600 /opt/paperclip/data/instances/default/.env /opt/paperclip/data/instances/default/secrets/*
-  chown -R k:k /opt/paperclip/data/instances/default
-  sudo systemctl daemon-reload && sudo systemctl enable --now paperclip
-  ```
+2. Apply the firewall configuration:
+   ```bash
+   sudo firewall
+   ```
 
----
+### 2.2 Network Topology & Enforced Rules
 
-## 3. Hermes Agent Service
-
-App guide: [docs/02_Services/hermes/setup.md](../../docs/02_Services/hermes/setup.md).
-
-* **Runtime Path:** `/home/k/.hermes/` (owned by `k:k`).
-* **Secrets & Config:** Restored from `secrets_vault/configs_and_secrets/lab-vm/home/k/.hermes/` (`config.yaml`, `.env`, `auth.json`). Reference blueprint: [`services/hermes/hermes.reference.yaml`](services/hermes/hermes.reference.yaml).
-* **Systemd User Units:** Link tracked service units to `~/.config/systemd/user/`:
-  ```bash
-  mkdir -p /home/k/.config/systemd/user
-  ln -sf /opt/homelab-repo/nodes/lab-vm/services/hermes/hermes-gateway.service /home/k/.config/systemd/user/
-  ln -sf /opt/homelab-repo/nodes/lab-vm/services/hermes/hermes-dashboard.service /home/k/.config/systemd/user/
-  systemctl --user daemon-reload
-  systemctl --user enable --now hermes-gateway
-  ```
+- **Trusted Internal Zones:** Full access for Main LAN (`192.168.88.0/24`), Homelab LAN (`192.168.50.0/24`), and Docker internal subnet (`172.16.0.0/12`).
+- **k3s Worker Node Rules:**
+  - `8472/udp`: Flannel VXLAN overlay.
+  - `10250/tcp`: Kubelet API (from `192.168.50.96` and homelab LAN).
+  - `30000:32767/tcp`: Kubernetes NodePort services.
+- **Restricted VPN Access:** SSH (`22/tcp`) from VPN subnets (`10.5.0.0/24`, `10.6.0.0/24`, `10.8.0.0/24`, `100.64.0.0/10`).
 
 ---
 
-## 4. OpenClaw Service
+## 3. Workload & Service Routing
 
-App guide: [docs/02_Services/openclaw/setup.md](../../docs/02_Services/openclaw/setup.md).
+The services hosted on `lab-vm` are organised into dedicated service runbooks:
 
-* **Runtime Path:** `/home/k/.openclaw/` (owned by `k:k`).
-* **Secrets & Config:** Restored from `secrets_vault/configs_and_secrets/lab-vm/home/k/.openclaw/openclaw.json`. Reference blueprint: [`services/openclaw/openclaw.reference.json`](services/openclaw/openclaw.reference.json).
-* **Systemd User Unit:** Link tracked unit:
-  ```bash
-  mkdir -p /home/k/.config/systemd/user
-  ln -sf /opt/homelab-repo/nodes/lab-vm/services/openclaw/openclaw-gateway.service /home/k/.config/systemd/user/
-  systemctl --user daemon-reload
-  systemctl --user enable --now openclaw-gateway
-  ```
+| Service | Port(s) | Service Kind / Unit | Runtime / Secret Path | Runbook |
+| :--- | :--- | :--- | :--- | :--- |
+| **Paperclip** | `3100` | systemd system unit (`paperclip.service`, user `k`) | `/opt/paperclip/data/instances/default/` (SOPS) | [services/paperclip/deployment.md](services/paperclip/deployment.md) |
+| **Hermes Agent** | `9119` (Dashboard) | systemd user units (`hermes-gateway`, `hermes-dashboard`) | `/home/k/.hermes/` | [services/hermes/deployment.md](services/hermes/deployment.md) |
+| **OpenClaw Gateway** | `18789` | systemd user unit (`openclaw-gateway.service`) | `/home/k/.openclaw/` | [services/openclaw/deployment.md](services/openclaw/deployment.md) |
+
+---
+
+## 4. Disaster Recovery Order of Execution
+
+In a complete disaster recovery scenario, execute the deployment in this exact sequence:
+
+1. **System & Firewall:** Execute Universal Bootstrap, enable user linger for `k`, and deploy [`scripts/ufw.sh`](scripts/ufw.sh).
+2. **Paperclip Service:** Follow [Paperclip Deployment](services/paperclip/deployment.md) to decrypt SOPS secrets and start the system service.
+3. **Hermes Agent Service:** Follow [Hermes Deployment](services/hermes/deployment.md) to restore environment files and start user units.
+4. **OpenClaw Service:** Follow [OpenClaw Deployment](services/openclaw/deployment.md) to link gateway unit and start the daemon.
+
+---
+
+## 5. Health Verification
+
+Execute the following commands on `lab-vm` to verify host and service health:
+
+```bash
+# 1. Verify firewall rules
+sudo ufw status verbose
+
+# 2. Check Paperclip system service
+sudo systemctl status paperclip
+
+# 3. Check Hermes and OpenClaw user services
+systemctl --user status hermes-gateway hermes-dashboard openclaw-gateway
+
+# 4. Check local service HTTP endpoints
+curl -s http://127.0.0.1:3100/api/health
+curl -s -o /dev/null -w "Hermes Dashboard: %{http_code}\n" http://127.0.0.1:9119/
+curl -s -o /dev/null -w "OpenClaw Gateway: %{http_code}\n" http://127.0.0.1:18789/
+```
