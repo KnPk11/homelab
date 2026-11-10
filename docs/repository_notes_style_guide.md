@@ -106,3 +106,34 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 - **Docs First**: The primary repository focus is on sanitised documentation (`docs/`). Operational scripts and compose files are maintained but are secondary during the migration phase.
 - **Script History**: We intentionally maintain multiple versioned files (e.g., `Caddyfile_v1`, `Caddyfile_v2`) in the operational `nodes/` directories to artificially recreate a basic commit history when they are eventually pushed to source control.
 - **SOPS Integration**: Operational secret files in `nodes/` (`.env`, `.secret`, `.pwd`, `.json`) are encrypted in-place using **SOPS (Secrets OPerationS)** with per-node Age recipient keys defined in `.sops.yaml`. Live runtime host paths (such as `/srv/` or `/opt/scripts/`) hold the decrypted production files at deploy time.
+
+## 12. Node Bootstrap & Deployment Runbooks (`nodes/`)
+Operational guides under `nodes/` act as concrete disaster recovery runbooks. They bridge the gap between sanitised architecture (`docs/`) and host runtime reality.
+
+### 12.1 Canonical Headings & Ground Truth Metadata
+- **H1 Title**: Every node master guide MUST use the canonical hostname matching its directory: `# <hostname>: Master Bootstrap Guide`. Do NOT append arbitrary IP octets or VM IDs (e.g., avoid `# OMV-90` or `# Caddy-101`) to prevent collisions between IP addresses and Proxmox guest IDs.
+- **Metadata Callout**: Directly beneath the H1 title, include a standardised 1-line metadata block providing immediate context:
+  ```markdown
+  > **Hostname:** `reverse-proxy` | **IP:** `192.168.50.101` | **Proxmox:** CT 104 | **Type:** Proxmox LXC (Caddy / Ingress)
+  ```
+  *(For bare-metal nodes, use `**Proxmox:** Host (Hypervisor)` or `**Proxmox:** N/A (Bare-Metal)`).*
+
+### 12.2 Multi-Service Hubs vs Single-Purpose Appliances
+To prevent unnecessary nesting ceremony while keeping complex hosts organised, use the appropriate model based on node role:
+
+1. **Multi-Service Hubs** (`ops`, `docker-services`, `reverse-proxy`, `ai-tools`, `proxmox-host`):
+   - **Structure**: Two-Tier Hub & Spoke.
+   - The top-level `nodes/<node>/deployment.md` serves as the orchestrator and routing table.
+   - Individual services live in `nodes/<node>/services/<service>/deployment.md` covering ports, `/srv/<service>/` secrets, deploy commands, and verification commands.
+2. **Single-Purpose Appliances** (`pulse`, `pbs`, `vpns`, `nas`):
+   - **Structure**: Flattened Single-Runbook.
+   - The node *is* the service. The entire operational runbook lives directly in `nodes/<node>/deployment.md`.
+   - Do NOT create redundant `services/<app>/deployment.md` sub-folders.
+   - Operational checklists in `deployment.md` link to `docs/` at the bottom for architectural context without duplicating long explanatory text.
+
+### 12.3 Mandatory Master Guide Sections
+Every `nodes/<hostname>/deployment.md` must include:
+1. **System Bootstrap**: Link to the Universal Node Bootstrap Guide and staggered `auto_pull_repo.sh` crontab minute offset.
+2. **Secrets Inventory**: Explicit list of host-local `.env` files, SOPS keys, or firewall credentials required before services start.
+3. **Runbook / Services Table**: Actionable deployment commands or links to service runbooks.
+4. **Health Verification**: One-line status commands (`systemctl status`, `curl`, `docker compose ps`).
