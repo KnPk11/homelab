@@ -1,4 +1,6 @@
-# PBS-86 Master Bootstrap Guide
+# pbs: Master Bootstrap Guide
+
+> **Hostname:** `pbs` | **IP:** `192.168.50.86` | **Proxmox:** CT 109 | **Type:** Proxmox LXC (Proxmox Backup Server)
 
 This node (`pbs`, `192.168.50.86`, Proxmox CT 109) is the dedicated **Proxmox Backup Server** instance providing deduplicated backup storage for the cluster and workstations.
 

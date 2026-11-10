@@ -1,4 +1,6 @@
-# Syslog-89 Master Bootstrap Guide
+# syslog: Master Bootstrap Guide
+
+> **Hostname:** `syslog` | **IP:** `192.168.50.89` | **Proxmox:** CT 111 | **Type:** Proxmox LXC (Auth Store & Syslog)
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run the service deploy steps below.
 

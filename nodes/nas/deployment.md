@@ -1,4 +1,6 @@
-# OMV-90 Master Bootstrap Guide
+# nas: Master Bootstrap Guide
+
+> **Hostname:** `nas` | **IP:** `192.168.50.90` | **Proxmox:** VM 101 | **Type:** Proxmox VM (OpenMediaVault)
 
 This node (`nas`, `192.168.50.90`, Proxmox VM 101) is the primary **OpenMediaVault storage appliance** hosting ZFS/Btrfs datasets, SMB shares, and NFS mounts.
 

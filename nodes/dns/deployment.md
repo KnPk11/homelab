@@ -1,4 +1,6 @@
-# DNS-102 Master Bootstrap Guide
+# dns: Master Bootstrap Guide
+
+> **Hostname:** `dns` | **IP:** `192.168.50.102` | **Proxmox:** CT 106 | **Type:** Proxmox LXC (AdGuard Home)
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run the service deploy steps below.
 

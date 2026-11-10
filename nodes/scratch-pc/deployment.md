@@ -1,4 +1,6 @@
-# Scratch-PC-85 Master Bootstrap Guide
+# scratch-pc: Master Bootstrap Guide
+
+> **Hostname:** `scratch-pc` | **IP:** `192.168.50.85` | **Proxmox:** N/A (Bare-Metal) | **Type:** Bare-Metal Compact Workstation
 
 This node is a **bare-metal disposable dev workstation** (`scratch-pc`, `192.168.50.85`) dedicated to local web app prototyping, automated tests, and hosting self-contained services.
 

@@ -1,4 +1,6 @@
-# Ops-112 Master Bootstrap Guide
+# ops: Master Bootstrap Guide
+
+> **Hostname:** `ops` | **IP:** `192.168.50.112` | **Proxmox:** CT 112 | **Type:** Proxmox LXC (Operations Plane)
 
 This node (`ops`, `192.168.50.112`, Proxmox CT 112) is the dedicated **unattended operations and background automation plane**. It isolates periodic network monitoring, alerting dispatchers, and router backup captures from interactive development workstations.
 

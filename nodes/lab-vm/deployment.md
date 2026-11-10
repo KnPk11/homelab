@@ -1,4 +1,6 @@
-# Lab-VM-91 Master Bootstrap Guide
+# lab-vm: Master Bootstrap Guide
+
+> **Hostname:** `lab-vm` | **IP:** `192.168.50.91` | **Proxmox:** VM 103 | **Type:** Proxmox VM (Development & AI Agents)
 
 This node (`lab-vm`, `192.168.50.91`, Proxmox VM 103) is the primary application, developer, and AI agent workload host.
 

@@ -1,4 +1,6 @@
-# Proxmox-100 Master Bootstrap Guide
+# proxmox-host: Master Bootstrap Guide
+
+> **Hostname:** `proxmox-host` | **IP:** `192.168.50.100` | **Proxmox:** Host (Hypervisor) | **Type:** Bare-Metal (Lenovo Tiny)
 
 This node is the **Proxmox VE hypervisor** (host for LXCs/VMs). Tracked scripts live in Git; host-local secrets (e.g. firewall env) stay off the disposable clone.
 

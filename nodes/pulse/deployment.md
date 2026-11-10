@@ -1,4 +1,6 @@
-# Pulse-88 Master Bootstrap Guide
+# pulse: Master Bootstrap Guide
+
+> **Hostname:** `pulse` | **IP:** `192.168.50.88` | **Proxmox:** CT 107 | **Type:** Proxmox LXC (Pulse Monitoring)
 
 This node (`pulse`, `192.168.50.88`, Proxmox CT 107) is the **infrastructure monitoring appliance** hosting the Pulse dashboard.
 

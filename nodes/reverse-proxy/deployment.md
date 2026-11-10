@@ -1,4 +1,6 @@
-# Caddy-101 Master Bootstrap Guide
+# reverse-proxy: Master Bootstrap Guide
+
+> **Hostname:** `reverse-proxy` | **IP:** `192.168.50.101` | **Proxmox:** CT 104 | **Type:** Proxmox LXC (Caddy / Ingress)
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run the service deploy steps below.
 

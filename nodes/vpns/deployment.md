@@ -1,4 +1,6 @@
-# VPNs-87 Master Bootstrap Guide
+# vpns: Master Bootstrap Guide
+
+> **Hostname:** `vpns` | **IP:** `192.168.50.87` | **Proxmox:** CT 108 | **Type:** Proxmox LXC (Tailscale Subnet Router)
 
 This node (`vpns`, `192.168.50.87`, Proxmox CT 108) is the dedicated **remote access gateway and Tailscale subnet router**.
 

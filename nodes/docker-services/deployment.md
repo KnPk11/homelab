@@ -1,4 +1,6 @@
-# Deployment Strategy for docker-services
+# docker-services: Master Bootstrap Guide
+
+> **Hostname:** `docker-services` | **IP:** `192.168.50.95` | **Proxmox:** VM 100 | **Type:** Proxmox VM (Docker & Portainer)
 
 ## General model
 

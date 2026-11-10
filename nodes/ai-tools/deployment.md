@@ -1,4 +1,6 @@
-# AI-Tools-105 Master Bootstrap Guide
+# ai-tools: Master Bootstrap Guide
+
+> **Hostname:** `ai-tools` | **IP:** `192.168.50.105` | **Proxmox:** CT 105 | **Type:** Proxmox LXC (Management / AI tooling)
 
 This node is the **management / AI tooling** host. It holds the primary working copy of the GitOps repo under `/opt/dev/homelab_repo` (not only `/opt/homelab-repo`), runs central jobs such as secrets scrape and MikroTik config capture, and should stay isolated from general app workloads.
 
