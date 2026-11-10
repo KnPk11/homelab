@@ -61,8 +61,8 @@ Once the node is bootstrapped and pulling changes autonomously, return to the no
 
 Rolled out from **`ai-tools`**. Do **not** copy these into each `nodes/*/deployment.md` — the host lists live with the scripts.
 
-*   [SSH doorbell](../observability/ssh-doorbell/deployment.md) — PAM successful SSH on every Linux SSH host.
-*   [Weekly sweep](../observability/weekly-sweep/deployment.md) — Sunday timer. Reboot flags on the Linux sweep hosts, CrowdSec on reverse-proxy, DSTNAT from ai-tools, planted-file presence where a local list exists.
+*   [SSH doorbell](../../shared/observability/ssh-doorbell/deployment.md) — PAM successful SSH on every Linux SSH host.
+*   [Weekly sweep](../../shared/observability/weekly-sweep/deployment.md) — Sunday timer. Reboot flags on the Linux sweep hosts, CrowdSec on reverse-proxy, DSTNAT from ai-tools, planted-file presence where a local list exists.
 *   [Monthly audit](../../nodes/ai-tools/services/monthly-audit/deployment.md) — reminder timer on **ops** (CT 112). You unlock God Mode on **ai-tools** and run `--light` or `--deep`; Antigravity (`agy`) or Grok tags the snapshot; digest to Homelab Watch.
 *   [WAN saturation](../../nodes/ops/services/wan-saturation/deployment.md) — **ops** only. Minute poll of `pppoe-out1` via `mikrotik-backup`; Homelab Watch if RX/TX stay near the ISP circuit.
 

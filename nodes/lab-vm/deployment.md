@@ -12,7 +12,7 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 
 ## 1. System Bootstrap & User Linger
 
-1. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
+1. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
 2. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **36**:
    ```bash
    (crontab -l 2>/dev/null; echo '36 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1') | sort -u | crontab -

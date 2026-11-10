@@ -19,7 +19,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 1. System Bootstrap
 
-*   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** where it applies (this host may already be the Git source of truth rather than a pure pull-only node).
+*   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** where it applies (this host may already be the Git source of truth rather than a pure pull-only node).
 *   Clone or restore **`/opt/dev/homelab_repo`** (and remotes) as your working tree.
 *   **Operations Migration:** Unattended operations (DDNS, WAN saturation, MikroTik backups, and Homelab Watch reminders) run on the dedicated **[ops CT 112](../ops/deployment.md)** LXC.
 

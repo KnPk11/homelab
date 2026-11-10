@@ -6,7 +6,7 @@ Deterministic Sunday timer. **No LLM.** Telegram is fatter than the doorbells an
 - 🟠 **AMBER** — maintenance (reboot-required, expected dstnat unpublished). Monthly AI can still run.
 - 🟢 **green** — silent.
 
-Host lists live **here**, not in `nodes/*/deployment.md`. Same idea as the [SSH doorbell](../ssh-doorbell/deployment.md). Pointer from [universal node bootstrap](../../docs/universal-node-bootstrap.md) §5.
+Host lists live **here**, not in `nodes/*/deployment.md`. Same idea as the [SSH doorbell](../ssh-doorbell/deployment.md). Pointer from [universal node bootstrap](../../../docs/00_Infrastructure/universal-node-bootstrap.md) §5.
 
 | Check | Where | What |
 | :--- | :--- | :--- |

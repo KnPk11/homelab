@@ -10,7 +10,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 1. System Bootstrap
 
-*   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
+*   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 *   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **33** to stagger network load.
 
 ## 2. DNS Services

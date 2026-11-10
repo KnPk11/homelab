@@ -31,4 +31,4 @@ Debug: `--no-llm` writes `/var/lib/monthly-audit/latest` and stops before the mo
 
 Grok is `grok --prompt-file` with inline `--json-schema`, `--max-turns 8`, `--verbatim`, and tools denied so it cannot spend the turn on `read_file`.
 
-Playbook: [security-audit-playbook.md](../../../../docs/03_Maintenance/security-audit-playbook.md). Pointer: [universal node bootstrap](../../../../shared/docs/universal-node-bootstrap.md) §5.
+Playbook: [security-audit-playbook.md](../../../../docs/03_Maintenance/security-audit-playbook.md). Pointer: [universal node bootstrap](../../../../docs/00_Infrastructure/universal-node-bootstrap.md) §5.

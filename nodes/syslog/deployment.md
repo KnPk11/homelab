@@ -10,7 +10,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 1. System Bootstrap & Scripts
 
-*   Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
+*   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 *   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **41** to stagger network load.
 *   **LXC spec:** [Syslog Proxmox LXC](../../docs/02_Services/syslog/proxmox-lxc.md) — VMID, disk, IP, firewall groups.
 

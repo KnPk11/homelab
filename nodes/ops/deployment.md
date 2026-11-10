@@ -12,7 +12,7 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 
 ## 1. System Bootstrap & Scripts
 
-* Follow the **[Universal Node Bootstrap Guide](../../shared/docs/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
+* Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 * **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **39** to stagger network load.
   ```bash
   (crontab -l 2>/dev/null; echo "39 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
