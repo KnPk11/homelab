@@ -16,7 +16,7 @@ apk add git rsync
 
 ## 2. Clone the Repository
 
-Clone the public homelab repository into the standardized `/opt/homelab-repo` directory:
+Clone the public homelab repository into the standardised `/opt/homelab-repo` directory:
 
 ```bash
 git clone https://github.com/KnPk11/homelab.git /opt/homelab-repo

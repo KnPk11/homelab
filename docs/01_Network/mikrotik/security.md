@@ -226,7 +226,7 @@ MikroTik can detect and blacklist IPs after multiple failed attempts. This is hi
 
 ### Disable Unused Interfaces
 
-A "Physical Security" best practice. Disabling unused ports (`etherX`) prevents unauthorized devices (e.g., from a guest or intruder) from gaining immediate network access by plugging in a cable.
+A "Physical Security" best practice. Disabling unused ports (`etherX`) prevents unauthorised devices (e.g., from a guest or intruder) from gaining immediate network access by plugging in a cable.
 
 ### DNS Hardening
 

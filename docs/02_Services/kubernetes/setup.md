@@ -156,7 +156,7 @@ k8s.example.com {
 
 ### Deployment & Engine Overview
 
-The cluster utilizes **Headlamp** (`kubernetes-sigs/headlamp` v0.44.0), the official modern Kubernetes web UI maintained under **CNCF SIG-UI**:
+The cluster utilises **Headlamp** (`kubernetes-sigs/headlamp` v0.44.0), the official modern Kubernetes web UI maintained under **CNCF SIG-UI**:
 
 ```bash
 # Deployed via Helm into kubernetes-dashboard namespace

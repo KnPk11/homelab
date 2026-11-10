@@ -156,7 +156,7 @@ Gzip archives are **not** unpacked to disk; multi-file `*.tar.gz` snapshots are 
 Spark provides two distinct web services for real-time monitoring and historical analysis. They are intentionally designed to share identical UI layouts, DAG execution graphs, and task timelines:
 
 > [!NOTE]
-> **Read-Only Telemetry UI**: Both the Spark Live Web UI (port `4040`) and the persistent History Server (port `18080` / `spark.example.com`) are **100% read-only monitoring interfaces**. They display execution telemetry, task timelines, and DAG visualization graphs, but contain **zero** endpoints for job submission, code execution, or cluster configuration modification.
+> **Read-Only Telemetry UI**: Both the Spark Live Web UI (port `4040`) and the persistent History Server (port `18080` / `spark.example.com`) are **100% read-only monitoring interfaces**. They display execution telemetry, task timelines, and DAG visualisation graphs, but contain **zero** endpoints for job submission, code execution, or cluster configuration modification.
 
 ### 1. Ephemeral Driver Live UI (Port 4040)
 * **Type**: Embedded HTTP server inside the active PySpark driver JVM process.

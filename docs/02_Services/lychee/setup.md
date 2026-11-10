@@ -5,7 +5,7 @@
 
 ## 1. Description
 
-**Lychee** is a modern, high-performance photo management system backed by SQLite and FrankenPHP. It provides dynamic album organisation, public/unlisted link sharing, responsive square mosaic layouts, and server-side directory synchronization over existing NAS photo collections via read-only symlinks.
+**Lychee** is a modern, high-performance photo management system backed by SQLite and FrankenPHP. It provides dynamic album organisation, public/unlisted link sharing, responsive square mosaic layouts, and server-side directory synchronisation over existing NAS photo collections via read-only symlinks.
 
 
 ## 2. Configuration
@@ -23,7 +23,7 @@ docker exec lychee php artisan lychee:update_user [USERNAME] [PASSWORD]
 ```
 
 
-## 4. Directory Import (CLI Synchronization)
+## 4. Directory Import (CLI Synchronisation)
 
 To import photos directly from the read-only NAS mount into Lychee without duplicating files:
 

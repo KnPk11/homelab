@@ -58,5 +58,5 @@ If Portainer is managing only the local Docker engine, enabling SSH is unnecessa
 ### 3.3. Connection Modes
 
 Portainer supports two primary methods for managing remote environments:
-- **Agent Mode**: Utilizing the Portainer Agent container on the remote host (recommended for performance and feature support).
+- **Agent Mode**: Utilising the Portainer Agent container on the remote host (recommended for performance and feature support).
 - **Standalone Docker host via SSH**: Connecting directly to the Docker engine over an SSH tunnel.

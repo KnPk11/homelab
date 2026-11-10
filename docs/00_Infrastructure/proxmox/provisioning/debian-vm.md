@@ -32,7 +32,7 @@ Click **Create VM** and follow these tab-specific recommendations:
 ### 4. Disks
 - **Storage**: `local-lvm` (or your preferred thin pool).
 - **Disk Size**: 32GB is a good standard.
-- **SSD Emulation**: **Check this box** (Optimizes for flash storage).
+- **SSD Emulation**: **Check this box** (Optimises for flash storage).
 - **Discard**: **Check this box** (Crucial for reclaiming space).
 
 ### 5. CPU

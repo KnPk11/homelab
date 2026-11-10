@@ -40,7 +40,7 @@ Once the installation finishes, the system will reboot into a CLI login screen. 
 
 ## Post-Installation Setup
 
-### 1. Run Optimization Scripts
+### 1. Run Optimisation Scripts
 
 Instead of manually editing repository files, use the community "Proxmox VE Post Install" script (often referred to as the tteck scripts) to configure the system for home use.
 
@@ -109,7 +109,7 @@ Refresh your browser afterwards.
 ### Access Control
 
 - **Web UI 2FA**: Available but often unnecessary for homelabs if access is restricted to a trusted network.
-- **SSH Rate Limiting**: Can be configured on the Proxmox host, but typically redundant if your firewall already handles unauthorized access.
+- **SSH Rate Limiting**: Can be configured on the Proxmox host, but typically redundant if your firewall already handles unauthorised access.
 > [!NOTE]
 > Tailscale simplifies remote management of the Proxmox host.
 - **RBAC**: Proxmox supports granular user roles. Useful if multiple people access the environment.

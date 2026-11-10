@@ -8,7 +8,7 @@ This document provides a detailed inventory of the Proxmox Virtual Environment (
 ## Proxmox Host
 - **Host ([PVE-NAME]):** `[PVE-IP]`
   - Primary Hypervisor running Proxmox VE.
-  - Manages all virtualized compute and storage resources.
+  - Manages all virtualised compute and storage resources.
 
 ## Guest Nodes (VMs & LXCs)
 
@@ -17,7 +17,7 @@ The following table lists the core nodes currently provisioned on the hypervisor
 | IP Address | Name | Type | Description |
 | :--- | :--- | :--- | :--- |
 | `[IP].89` | **windows-89** | VM | Windows Testing / Sandbox Environment. |
-| `[IP].90` | **nas** | VM | OpenMediaVault — Centralized Storage & Backups. |
+| `[IP].90` | **nas** | VM | OpenMediaVault — Centralised Storage & Backups. |
 | `[IP].91` | **lab-vm** | VM | OpenClaw — Agentic AI Orchestration. |
 | `[IP].95` | **docker-services** | VM | Docker Host — Primary Application Stack. |
 | `[IP].101` | **reverse-proxy** | LXC | Reverse Proxy (Caddy) & Ingress Monitoring. |

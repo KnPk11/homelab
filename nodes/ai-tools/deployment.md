@@ -11,7 +11,7 @@ This node follows **Infrastructure as Intent**: prefer tracked scripts and docs 
 *   **Secrets Vault (`/opt/dev/secrets_vault/`)**:
     *   This directory contains raw runtime secrets (`.env` files, SSH keys, TLS certificates) scraped from nodes.
     *   It is excluded from Git to prevent accidental leaks of production credentials.
-    *   *Security Note: Do NOT schedule `scrape_configs_and_secrets.sh` in crontab anymore. Run it purely on-demand so you can immediately move the generated vault offline, minimizing the window that secrets sit on this AI host.*
+    *   *Security Note: Do NOT schedule `scrape_configs_and_secrets.sh` in crontab anymore. Run it purely on-demand so you can immediately move the generated vault offline, minimising the window that secrets sit on this AI host.*
 
 ---
 
