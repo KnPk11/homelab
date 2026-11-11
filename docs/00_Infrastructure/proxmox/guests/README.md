@@ -38,10 +38,12 @@ This directory contains the authoritative hardware provisioning and resource all
 
 > [!NOTE]
 > **Fleet DNS Architecture (Why not the router `192.168.50.1`?):**
-> 1. **Firewall Isolation:** Pointing containers to the MikroTik edge router (`192.168.50.1:53`) directs traffic into the router's restricted `input` firewall chain. Using internal AdGuard keeps query traffic inside the LAN switching fabric.
-> 2. **Local Name Resolution:** AdGuard Home (`192.168.50.102`) resolves private homelab split-DNS records and local rewrites, which edge router WAN forwarders cannot resolve.
-> 3. **High Availability Fallback:** Workload guests configure both `192.168.50.102` (Primary) and `1.1.1.1` (Secondary) so outbound resolution survives AdGuard container restarts or maintenance.
-> 4. **Loop Prevention:** CT 106 (`dns`) intentionally uses public upstreams (`1.1.1.1`, `9.9.9.9`) to prevent recursive lookup deadlocks.
+> 1. **Per-Device Attribution & Blocking:** Direct queries to AdGuard preserve client IP visibility. Using the router as primary proxies all queries through `192.168.50.1`, masking individual device metrics and breaking per-client blocklists.
+> 2. **Firewall Isolation:** Avoids routing container queries into the MikroTik edge router's restricted `input` firewall chain, keeping lookup traffic inside the local switching fabric.
+> 3. **Local Split-DNS Resolution:** Resolves private homelab domain rewrites directly via AdGuard Home (`192.168.50.102`), which edge router WAN forwarders cannot resolve.
+> 4. **Anti-Bypass DHCP Design:** Operating systems race or round-robin multiple DHCP DNS servers. Trusted LANs advertise AdGuard only so clients cannot silently bypass ad/tracker filtering.
+> 5. **Router-Side Safety Failover:** Network-wide outages are mitigated router-side via MikroTik's `CheckAdGuard` probe and the *AdGuard Failover Trap* NAT rule (`dstnat` redirecting `192.168.50.102:53` -> router upstream if CT 106 fails). Full details in [AdGuard DNS Architecture](../../../02_Services/adguard-home/setup.md#router-side-failover-when-adguard-is-down).
+> 6. **Guest Fallback & Loop Prevention:** Workload LXCs configure `192.168.50.102` (Primary) + `1.1.1.1` (Secondary) for maintenance resilience, whilst CT 106 (`dns`) uses public upstreams (`1.1.1.1`, `9.9.9.9`) to avoid recursive lookup deadlocks.
 
 ---
 
