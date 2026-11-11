@@ -6,15 +6,11 @@
 
 ## 1. Description
 
-OpenClaw is an agentic AI orchestration environment on the lab VM — skills, tools, and multi-step agent workflows beyond a single chat box.
+OpenClaw is an agentic AI orchestration environment — providing skills, tools, and multi-step agent workflows beyond a single chat box. On `lab-vm`, it is maintained as a user systemd service (currently in a dormant state; see [OpenClaw Host Deployment Guide](../../../nodes/lab-vm/services/openclaw/deployment.md)).
 
-## 2. Infrastructure Setup
+## 2. Installation Methods
 
-Please refer to the [Proxmox VM Spec](../../00_Infrastructure/lab-vm/proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
-
-## 3. Installation Methods
-
-### 3.1. Docker Compose
+### 2.1. Docker Compose
 
 **Repository**: [OpenClaw GitHub](https://github.com/openclaw/openclaw)
 
@@ -53,7 +49,7 @@ openclaw devices list --token [SECRET]
 openclaw devices approve [PENDING_REQUEST_ID] --token [SECRET]
 ```
 
-### 3.2. Bare Metal Setup
+### 2.2. Bare Metal Setup
 
 1. **Prerequisites**:
 
@@ -94,9 +90,9 @@ openclaw onboard --install-daemon
 > [!TIP]
 > **Dashboard Access**: Running the dashboard command from a terminal in VS Code allows access to `http://127.0.0.1:18789/#token=` without requiring explicit SSH tunnelling.
 
-## 4. Configuration
+## 3. Configuration
 
-### 4.1. Core Settings
+### 3.1. Core Settings
 
 Example `openclaw.json` configuration with multiple models:
 
@@ -131,7 +127,7 @@ openclaw config set agents.defaults.sandbox.mode off
 openclaw gateway restart
 ```
 
-### 4.2. Channels (Telegram Example)
+### 3.2. Channels (Telegram Example)
 
 > [!TIP]
 > **Telegram Security**: When configured with the `pairing` DM policy, unknown senders must be approved via a short code before their messages are processed. Refer to [this](https://docs.openclaw.ai/gateway/security) guide.
@@ -164,7 +160,7 @@ openclaw pairing approve telegram [PAIRING_CODE]
 }
 ```
 
-### 4.3. Network and Security
+### 3.3. Network and Security
 
 **Gateway Settings**:
 
@@ -184,7 +180,7 @@ openclaw pairing approve telegram [PAIRING_CODE]
 }
 ```
 
-## 5. Skills Management
+## 4. Skills Management
 
 Find pre-made skills on [ClawHub](https://clawhub.ai/).
 
@@ -200,7 +196,7 @@ clawhub install [SKILL_NAME]
 > [!TIP]
 > **Claw Docs:** [clawddocs](https://clawhub.ai/nicholasspisak/clawddocs) is a good starter skill to ensure OpenClaw know how to effectively configure itself.
 
-## 6. Updates and Maintenance
+## 5. Updates and Maintenance
 
 To check for updates:
 
@@ -210,7 +206,7 @@ openclaw update status
 
 If an update is available, re-run the initial setup method or utilise the update button in the Web UI under **Config**.
 
-## 7. Troubleshooting
+## 6. Troubleshooting
 
 - **Process Hanging**:
 
@@ -227,7 +223,7 @@ pkill -f openclaw && openclaw dashboard
 openclaw doctor --repair
 ```
 
-## 8. Multi-Node Setup (Experimental)
+## 7. Multi-Node Setup (Experimental)
 
 To pair a secondary node to the main gateway:
 
@@ -236,7 +232,7 @@ export OPENCLAW_GATEWAY_TOKEN="[SECRET]"
 openclaw node run --host [SERVICE-IP] --port 18789 --display-name "Homelab-Node"
 ```
 
-## 9. Resources
+## 8. Resources
 
 - [OpenClaw Linux Server Installation 2026](https://vpn07.com/en/blog/2026-openclaw-install-linux-ubuntu-debian-server-tutorial.html): Complete Ubuntu & Debian Tutorial - both methods of installation fail for me
 - **VPN/Subdomain Guide**: [2026 OpenClaw Install Tutorial](https://vpn07.com/en/blog/2026-openclaw-install-linux-ubuntu-debian-server-tutorial.html)

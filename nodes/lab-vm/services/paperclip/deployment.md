@@ -20,11 +20,13 @@ Paperclip is a self-hosted platform for orchestrating autonomous coding agents, 
    node -v   # Expect v24.x
    ```
 
-2. If Paperclip is not yet installed on the host, install the pinned release globally:
+2. If Paperclip is not yet installed on the host, install the latest stable release globally:
    ```bash
-   sudo npm install -g paperclipai@2026.1023.0
+   sudo npm install -g paperclipai@latest
    which paperclipai
    ```
+   > [!TIP]
+   > **Version Pinning:** Installing `@latest` ensures modern upstream agent compatibility. The verified working baseline release on this host is `paperclipai@2026.1023.0`. If a future `@latest` release introduces breaking upstream migrations, pin specifically to the verified release (`sudo npm install -g paperclipai@2026.1023.0`).
 
 3. Verify SOPS and age private keys are configured on `lab-vm`:
    ```bash

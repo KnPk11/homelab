@@ -17,7 +17,7 @@ The installed release is `paperclipai@2026.1023.0` on Node `v24.21.0`. The offic
 
    ```bash
    export PATH=/opt/node-v24/bin:$PATH
-   npm install -g paperclipai@2026.1023.0
+   npm install -g paperclipai@latest  # Verified working baseline: paperclipai@2026.1023.0
    ```
 
    npm 11 on Node 24 skips some dependency install scripts unless `--allow-scripts` is set. Claude Code still runs here without re-running those scripts. The `paperclipai` shim is `#!/usr/bin/env node`, so invoke it as `/opt/node-v24/bin/node /opt/node-v24/bin/paperclipai` or with `PATH=/opt/node-v24/bin` first. A login shell as `k` will otherwise pick Node 22 and fail with `env: ‘node’: No such file or directory`.
