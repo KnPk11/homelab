@@ -71,7 +71,7 @@ kubectl taint nodes k8s node-role.kubernetes.io/master=true:NoSchedule --overwri
 
 ### Benchmark Overview
 
-Multi-node CPU load balancing is verified using [`spark_benchmark.py`](file:///opt/dev/homelab_repo/nodes/k8s/services/spark/spark_benchmark.py), which executes unpruned trigonometric and SHA-512 cryptographic calculations across partitions with a `noop` stream sink.
+Multi-node CPU load balancing is verified using [`spark_benchmark.py`](../../../nodes/k8s/services/spark/spark_benchmark.py), which executes unpruned trigonometric and SHA-512 cryptographic calculations across partitions with a `noop` stream sink.
 
 | Workload | Cluster Topology | Execution Time | Performance Impact |
 | :--- | :--- | :--- | :--- |
@@ -127,7 +127,7 @@ TOKEN=$(kubectl create token spark -n spark --duration=24h)
 
 ### Security scan (Caddy + Fail2Ban + CrowdSec + MikroTik)
 
-Job: [`caddy_security_scan.py`](../../nodes/k8s/services/spark/caddy_security_scan.py) · runner: [`run_caddy_security_scan.sh`](../../nodes/k8s/services/spark/run_caddy_security_scan.sh)
+Job: [`caddy_security_scan.py`](../../../nodes/k8s/services/spark/caddy_security_scan.py) · runner: [`run_caddy_security_scan.sh`](../../../nodes/k8s/services/spark/run_caddy_security_scan.sh)
 
 | Source | What is scanned |
 | :--- | :--- |
@@ -173,7 +173,7 @@ Spark provides two distinct web services for real-time monitoring and historical
 
 The Spark cluster applies homelab hardening standards across network, pod execution, and proxy layers:
 
-1. **Kubernetes NetworkPolicy Isolation ([network-policy.yaml](file:///opt/dev/homelab_repo/nodes/k8s/services/spark/network-policy.yaml))**:
+1. **Kubernetes NetworkPolicy Isolation ([network-policy.yaml](../../../nodes/k8s/services/spark/network-policy.yaml))**:
    Applies an ingress NetworkPolicy in the `spark` namespace allowing executor pod ingress **only** from the driver host (`192.168.50.96`) and peer executor pods, blocking unneeded cluster probing.
    ```bash
    kubectl apply -f nodes/k8s/services/spark/network-policy.yaml

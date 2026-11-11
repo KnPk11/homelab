@@ -16,8 +16,8 @@ The thermal safety watchdog continuously monitors the CPU package temperature vi
 
 ## 2. Secrets & Dependencies
 
-* **Script:** [`../../scripts/thermal-safety-watchdog.sh`](../scripts/thermal-safety-watchdog.sh)
-* **Telegram Secrets:** Reuses the host-local `/etc/ssh/telegram.env` provisioned by the [SSH doorbell](../../../shared/observability/ssh-doorbell/deployment.md) (falling back to `/srv/homelab-watch/telegram.env`). Expects `BOT_TOKEN` and `CHAT_ID`.
+* **Script:** [`../../scripts/thermal-safety-watchdog.sh`](../../scripts/thermal-safety-watchdog.sh)
+* **Telegram Secrets:** Reuses the host-local `/etc/ssh/telegram.env` provisioned by the [SSH doorbell](../../../../shared/observability/ssh-doorbell/deployment.md) (falling back to `/srv/homelab-watch/telegram.env`). Expects `BOT_TOKEN` and `CHAT_ID`.
 
 ---
 

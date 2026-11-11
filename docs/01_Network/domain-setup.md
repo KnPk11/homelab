@@ -5,7 +5,7 @@
 
 This guide covers how to point your custom domain subdomains to your homelab using CNAME records and the MikroTik DDNS service.
 
-**WAN locator (recommended):** keep a Namecheap Dynamic DNS **A** record at `ip.[DOMAIN]`, updated every 30 minutes. That record does not depend on `mynetname.net`. WireGuard should use `ip.[DOMAIN]:51821`. See [Namecheap DDNS on ai-tools](../../nodes/ai-tools/services/namecheap-ddns/deployment.md).
+**WAN locator (recommended):** keep a Namecheap Dynamic DNS **A** record at `ip.[DOMAIN]`, updated every 30 minutes. That record does not depend on `mynetname.net`. WireGuard should use `ip.[DOMAIN]:51821`. See [Namecheap DDNS on ops](../../nodes/ops/services/namecheap-ddns/deployment.md).
 
 ## 1. Prerequisites
 - A domain registered with Namecheap.

@@ -4,11 +4,11 @@
 > #Telegram #Antigravity #Grok #AiAgent #AiTools #RemoteAccess
 >
 > **Host:** `ai-tools` | **Runtime:** `/opt/telegram-terminal`  
-> **Docs:** [Architecture & Setup](../../../docs/02_Services/telegram-terminal/setup.md) · [Security Model](../../../docs/02_Services/telegram-terminal/security.md)
+> **Docs:** [Architecture & Setup](../../../../docs/02_Services/telegram-terminal/setup.md) · [Security Model](../../../../docs/02_Services/telegram-terminal/security.md)
 
 ## 1. Overview
 
-Operational bootstrap runbook for the headless Telegram daemon bridging mobile devices to Antigravity (`agy`) and Grok (`grok`) on `ai-tools`. Full feature documentation, mobile ergonomics, and command reference live in the [service setup guide](../../../docs/02_Services/telegram-terminal/setup.md).
+Operational bootstrap runbook for the headless Telegram daemon bridging mobile devices to Antigravity (`agy`) and Grok (`grok`) on `ai-tools`. Full feature documentation, mobile ergonomics, and command reference live in the [service setup guide](../../../../docs/02_Services/telegram-terminal/setup.md).
 
 ## 2. Deployment & Recovery
 

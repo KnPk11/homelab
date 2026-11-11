@@ -26,7 +26,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 2. Services on this node
 
-*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape_configs_and_secrets.sh) — on-demand scraper sweeping remote `/srv` secrets into central vault.
+*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape_configs_and_secrets.sh) — on-demand scraper sweeping remote `/srv` secrets into central vault (script header documents vault layout and `PATH_SWEEPS`).
 *   [God Mode + Git SSH key TTL unlock](services/ai-ssh-key/deployment.md) — passphrase-unlock `id_ed25519_ai` (lab) and `id_ed25519` (GitHub; formerly `svc_automation`) into ssh-agent with a **2h TTL** auto-unload watchdog.
 *   [SOPS + age (Master vs node keys)](services/sops-key/deployment.md) — Master Admin key in RAM on this host; per-node age keys on appliance boxes. Not the same as God Mode SSH.
 *   [Monthly Audit](services/monthly-audit/deployment.md) — interactive snapshot audit run by the AI agent on-demand.
@@ -34,5 +34,4 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 3. Related shared tooling
 
-*   [Secrets scraper](../../shared/scripts/scrape_secrets.sh) — header documents vault layout and `PATH_SWEEPS`.
 *   Homelab node secrets model: [docker-services deployment](../docker-services/deployment.md).
