@@ -7,6 +7,9 @@
 
 `web-compromise-watch` is a host-level intrusion detection daemon designed to catch reverse shell spawns or unauthorised interactive execution. On `reverse-proxy`, it monitors process execution specifically under the Caddy service account:
 
+> [!NOTE]
+> **Why this node has a dedicated runbook:** Unlike general developer hosts (`lab-vm`, `scratch-pc`) that utilise the shared fallback rollout, `reverse-proxy` runs a custom profile locked strictly to Caddy UID `999` with aggressive shell detection (`sh`, `bash`, `python`) and maintains its own in-repo SOPS-encrypted `telegram.env`.
+
 * **Monitored UID:** `999` (`caddy`).
 * **Monitored Binaries:** `sh`, `bash`, `dash`, `nc`, `ncat`, `netcat`, `socat`, `python`, `python3`, `perl`.
 * **Scan Interval:** Every 10 seconds via `/proc` process table polling.

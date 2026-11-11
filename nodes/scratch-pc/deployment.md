@@ -94,6 +94,15 @@ Filename        Type        Size (KiB)    Priority    Role
 * **Eurostar Price Tracker (`eurostar-tracker`)**: Port `5000`, systemd unit `eurostar-tracker.service`.
 * **Markpress Preview Server (`markpress`)**: Port `8010`, systemd unit `markpress.service` (located in `/opt/web-apps-private/markpress`).
 
+### 4.1 Host Observability & Security Daemons
+
+Shared fleet daemons deployed on `scratch-pc` via central rollout scripts. Because they inherit credentials directly from `/etc/ssh/telegram.env` and utilise generic fallback profiles, they do not require local sub-service stub directories in Git:
+
+| Service | Type | Scope on `scratch-pc` | Runbook |
+| :--- | :--- | :--- | :--- |
+| **SSH Doorbell** | Observability | PAM `sshd` login alerts to Homelab Watch | [deployment.md](../../shared/observability/ssh-doorbell/deployment.md) |
+| **Web-Compromise Watch** | Security | Process scan for reverse shells (`nc`, `socat`) on any UID | [deployment.md](../../shared/observability/web-compromise-watch/deployment.md) |
+
 ---
 
 ## 5. Firewall & Network

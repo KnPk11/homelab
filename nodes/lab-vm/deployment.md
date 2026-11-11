@@ -63,6 +63,15 @@ The services hosted on `lab-vm` are organised into dedicated service runbooks:
 | **Hermes Agent** | `9119` (Dashboard) | systemd user units (`hermes-gateway`, `hermes-dashboard`) | `/home/k/.hermes/` | [services/hermes/deployment.md](services/hermes/deployment.md) |
 | **OpenClaw Gateway** | `18789` | systemd user unit (`openclaw-gateway.service`) | `/home/k/.openclaw/` | [services/openclaw/deployment.md](services/openclaw/deployment.md) |
 
+### 3.1 Host Observability & Security Daemons
+
+Shared fleet daemons deployed on `lab-vm` via central rollout scripts. Because they inherit credentials directly from `/etc/ssh/telegram.env` and utilise generic fallback profiles, they do not require local sub-service stub directories in Git:
+
+| Service | Type | Scope on `lab-vm` | Runbook |
+| :--- | :--- | :--- | :--- |
+| **SSH Doorbell** | Observability | PAM `sshd` login alerts to Homelab Watch | [deployment.md](../../shared/observability/ssh-doorbell/deployment.md) |
+| **Web-Compromise Watch** | Security | Process scan for reverse shells (`nc`, `socat`) on any UID | [deployment.md](../../shared/observability/web-compromise-watch/deployment.md) |
+
 ---
 
 ## 4. Disaster Recovery Order of Execution

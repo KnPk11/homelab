@@ -7,6 +7,9 @@
 
 `web-compromise-watch` provides host-level intrusion detection tailored for the container plane (`docker-services`). It operates two complementary monitoring daemons:
 
+> [!NOTE]
+> **Why this node has a dedicated runbook:** Unlike general developer hosts (`lab-vm`, `scratch-pc`) that run only basic exec checks, `docker-services` runs a dual-daemon setup (Docker cgroup exec watch + real-time Docker socket port baseline tracking) and maintains its own in-repo SOPS-encrypted `telegram.env`.
+
 1. **Execution Watcher (`exec-watch.service`)**:
    * Scans `/proc` every 10 seconds for processes matching the `docker` cgroup regex.
    * Restricts alerts strictly to interactive reverse-shell utilities: `nc`, `ncat`, `netcat`, `socat` (avoiding false alarms on routine container shell entry).
