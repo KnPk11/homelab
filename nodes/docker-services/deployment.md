@@ -139,7 +139,7 @@ All services hosted on `docker-services` are catalogued below:
 | **Tube-Sync** | `127.0.0.1:4848` | `services/tube-sync/docker-compose.yml` | `/srv/tubesync/config` | [docs/02_Services/tube-sync](../../docs/02_Services/tube-sync/setup.md) |
 | **Uptime Kuma** | `3003:3001` | `services/uptime-kuma/docker-compose.yml` | `/srv/uptime-kuma/data` | [docs/02_Services/uptime-kuma](../../docs/02_Services/uptime-kuma/setup.md) |
 | **Vaultwarden** | `9103:80`, `caddy_public` | `services/vaultwarden/docker-compose.yml` | `/srv/vaultwarden/.env`, `vaultwarden_admin_token.secret` | [docs/02_Services/vaultwarden](../../docs/02_Services/vaultwarden/setup.md) |
-| **Web-Compromise Watch** | Internal observability daemon | `services/web-compromise-watch/telegram.env` | `/srv/web-compromise-watch/telegram.env` | [shared/observability](../../shared/observability/web-compromise-watch/deployment.md) |
+| **Web-Compromise Watch** | Internal observability daemon | `services/web-compromise-watch/telegram.env` | `/srv/web-compromise-watch/telegram.env` | [services/web-compromise-watch](services/web-compromise-watch/deployment.md) |
 | **WebDAV** | `8084:80` | `services/webdav/docker-compose.yml` | `/srv/webdav/config.yaml`, `webdav_password.secret` | [docs/02_Services/webdav](../../docs/02_Services/webdav/setup.md) |
 | **What's Up Docker** | `3001:3001` | `services/whats-up-docker/docker-compose.yml` | `/srv/whats-up-docker/.env` | [docs/02_Services/whats-up-docker](../../docs/02_Services/whats-up-docker/setup.md) |
 | **yt-dlp WebUI** | `127.0.0.1:3033` | `services/yt-dlp-webui/docker-compose.yml` | `/srv/yt-dlp-webui/config` | [docs/02_Services/yt-dlp-webui](../../docs/02_Services/yt-dlp-webui/setup.md) |
