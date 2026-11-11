@@ -22,7 +22,17 @@ This node follows **Infrastructure as Intent**: prefer tracked scripts and docum
 
 ---
 
-## 2. Memory & Tiered Swap Architecture (`zram` + `/swapfile`)
+## 2. System Bootstrap & GitOps
+
+* Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
+* **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **45**:
+  ```bash
+  (crontab -l 2>/dev/null; echo "45 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
+  ```
+
+---
+
+## 3. Memory & Tiered Swap Architecture (`zram` + `/swapfile`)
 
 `scratch-pc` is constrained by ~1.88 GiB of physical RAM and relatively slow eMMC flash storage. Under memory-heavy multi-agent workloads (such as Paperclip running its web server, embedded PostgreSQL, and spawning multiple OpenCode agent processes), memory pressure historically caused severe eMMC swap thrashing, 100% I/O wait, and complete host lockouts.
 
@@ -73,7 +83,7 @@ Filename        Type        Size (KiB)    Priority    Role
 
 ---
 
-## 3. Example Services Hosted on this Node
+## 4. Example Services Hosted on this Node
 
 * **Pulse Agent**: Homelab metrics and telemetry reporting agent.
 * **System Usage Stats (`sys-stats`)**: Port `10482`, systemd service `ocstats.service`. Real-time telemetry dashboard for `scratch-pc` reverse-proxied via `https://sys-stats.example.com`.
@@ -86,14 +96,14 @@ Filename        Type        Size (KiB)    Priority    Role
 
 ---
 
-## 4. Firewall & Network
+## 5. Firewall & Network
 
 * Managed via [`scripts/ufw.sh`](scripts/ufw.sh).
 * Reverse proxy routes through LAN Caddy (`reverse-proxy`, `192.168.50.101`).
 
 ---
 
-## 5. Storage & Automated Backups to OpenMediaVault (PBS Protected)
+## 6. Storage & Automated Backups to OpenMediaVault (PBS Protected)
 
 Because `scratch-pc` is physical hardware not directly snapshotted by Proxmox Backup Server (PBS), stateful app data is automatically backed up to OpenMediaVault (`192.168.50.90` / VM 101):
 * **NFS Automount**: `192.168.50.90:/files` mounted at `/mnt/nas` via systemd automount in `/etc/fstab`.
