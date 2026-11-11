@@ -1,4 +1,4 @@
-# Lab-VM: Proxmox VM Spec
+# lab-vm: Proxmox VM Spec
 
 > [!NOTE]
 > #Proxmox #VM #Infrastructure #LabVM #AI #Development
@@ -8,7 +8,8 @@ This document details the specific Proxmox Virtual Machine (QEMU VM 103) configu
 ## Provisioning Details
 
 - **Guest Type**: Proxmox QEMU VM
-- **OS Type**: Linux 6.x / Debian 13 (64-bit)
+- **VMID**: `103`
+- **OS Type**: Linux 6.x / Debian 13 (`l26`)
 - **QEMU Guest Agent**: ✅ Enabled
 
 ### Resource Allocation
@@ -19,9 +20,10 @@ This document details the specific Proxmox Virtual Machine (QEMU VM 103) configu
 | VM Name | `lab-vm` |
 | OS Type | Linux (`l26`) |
 | CPU Cores | 4 cores (`cpu: host`) |
-| RAM | 4096 MB (4 GB, Ballooning: 2048 MB) |
-| Disk | 32 GB SSD (`virtio-scsi-single`, IOThread, Discard) |
+| RAM | 6144 MB (6 GB, Ballooning: 4096 MB) |
+| Root Disk (`scsi0`) | 64 GB SSD (`local-lvm`, discard=on, iothread=1, ssd=1) |
 | Storage Pool | `local-lvm` |
+| SCSI Controller | `virtio-scsi-single` |
 | QEMU Agent | Enabled |
 
 ### Network Configuration
@@ -33,20 +35,21 @@ This document details the specific Proxmox Virtual Machine (QEMU VM 103) configu
 
 ## Setup Steps
 
-1. **Create VM**: Follow the standard Proxmox VM creation wizard or execute via CLI on the Proxmox host:
+1. **Create VM**: Execute via CLI on the Proxmox host:
    ```bash
    qm create 103 \
      --name lab-vm \
      --ostype l26 \
      --cores 4 \
      --cpu host \
-     --memory 4096 \
-     --balloon 2048 \
+     --memory 6144 \
+     --balloon 4096 \
      --scsihw virtio-scsi-single \
-     --scsi0 local-lvm:32,discard=on,iothread=1,ssd=1 \
+     --scsi0 local-lvm:64,discard=on,iothread=1,ssd=1 \
      --net0 virtio,bridge=vmbr0,firewall=1 \
      --agent 1 \
      --onboot 1
    ```
-2. **Install OS**: Install Debian 13 / Linux server ISO.
-3. **Guest Agent**: Ensure `qemu-guest-agent` is installed and running inside the VM (`systemctl enable --now qemu-guest-agent`).
+2. **Install OS**: Install Debian 13 standard server.
+3. **Guest Agent**: Ensure `qemu-guest-agent` is installed and running (`systemctl enable --now qemu-guest-agent`).
+4. **GitOps Runbook**: Proceed to [lab-vm Deployment Guide](../../../../nodes/lab-vm/deployment.md).

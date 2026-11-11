@@ -17,6 +17,7 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
   ```bash
   (crontab -l 2>/dev/null; echo "39 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
   ```
+* **LXC spec:** [Ops Proxmox LXC](../../docs/00_Infrastructure/proxmox/guests/ops.md) — VMID, disk, IP, firewall groups.
 * **Universal VS Code Workspace:**
   To support the standard multi-folder [`home.code-workspace`](../../shared/vscode/home.code-workspace) with clean Git scanning:
   ```bash

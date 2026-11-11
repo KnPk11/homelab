@@ -5,7 +5,7 @@
 
 ## 1. Description
 
-Node-level security architecture, SSH key privilege separation, and context boundary principles for autonomous AI agents running on the `ai-tools` Proxmox LXC ([Proxmox LXC Spec](proxmox-lxc.md)).
+Node-level security architecture, SSH key privilege separation, and context boundary principles for autonomous AI agents running on the `ai-tools` Proxmox LXC ([Proxmox LXC Spec](../00_Infrastructure/proxmox/guests/ai-tools.md)).
 
 ## 2. Access Strategy
 

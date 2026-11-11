@@ -10,6 +10,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 1. System Bootstrap & Scripts
 
+*   **Proxmox LXC Spec:** Review container allocation in **[Proxmox LXC Spec](../../docs/00_Infrastructure/proxmox/guests/reverse-proxy.md)** (CT 104, 2 cores, 1 GB RAM).
 *   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 *   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **32** to stagger network load.
 *   **Process Logs Script:** Tracked script — cron may point at the repo path directly:

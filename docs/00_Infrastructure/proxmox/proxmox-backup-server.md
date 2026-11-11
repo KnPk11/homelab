@@ -7,7 +7,7 @@
 
 ### 1. Provision LXC Container
 For Proxmox container creation specs, resource sizing, mount points, and `pct create` parameters, refer to:
-- **[PBS Proxmox LXC Spec](pbs-lxc.md)**
+- **[PBS Proxmox LXC Spec](guests/pbs.md)**
 
 Once LXC 109 is created, start the container:
 ```bash

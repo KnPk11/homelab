@@ -8,8 +8,9 @@ This node (`docker-services`, `192.168.50.95`, Proxmox VM 100) serves as the pri
 
 ## 1. System Bootstrap & GitOps Model
 
-1. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
-2. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **48**:
+1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/proxmox/guests/docker-services.md)** (VM 100, 8 cores, 8 GB RAM).
+2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
+3. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **48**:
    ```bash
    (crontab -l 2>/dev/null; echo '48 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1') | sort -u | crontab -
    ```

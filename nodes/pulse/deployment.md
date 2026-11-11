@@ -12,6 +12,7 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 
 ## 1. System Bootstrap
 
+* **Proxmox LXC Spec:** Review container allocation in **[Proxmox LXC Spec](../../docs/00_Infrastructure/proxmox/guests/pulse.md)** (CT 107, 2 cores, 1 GB RAM).
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
 * **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **37**:
   ```bash

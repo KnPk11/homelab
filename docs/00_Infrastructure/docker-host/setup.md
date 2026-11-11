@@ -5,7 +5,7 @@
 
 ## Provisioning Setup
 
-Please refer to the [Proxmox VM Spec](proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
+Please refer to the [Proxmox VM Spec](../proxmox/guests/docker-services.md) for the specific resource allocation and provisioning details for this node.
 
 ## Installation
 

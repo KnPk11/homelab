@@ -84,6 +84,6 @@ proxmox-backup-manager status
 
 ## 6. Related Documentation & Services
 
-* [PBS Proxmox LXC Sizing Spec](../../docs/00_Infrastructure/proxmox/pbs-lxc.md)
+* [PBS Proxmox LXC Spec](../../docs/00_Infrastructure/proxmox/guests/pbs.md)
 * [PBS Architecture & Retention Guide](../../docs/00_Infrastructure/proxmox/proxmox-backup-server.md)
 * [SSH Doorbell](../../shared/observability/ssh-doorbell/deployment.md) — PAM `sshd` login alert to Homelab Watch

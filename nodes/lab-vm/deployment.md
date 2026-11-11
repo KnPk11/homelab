@@ -12,7 +12,7 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 
 ## 1. System Bootstrap & User Linger
 
-1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/lab-vm/proxmox-vm.md)** (VM 103, 4 cores, 4 GB RAM).
+1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/proxmox/guests/lab-vm.md)** (VM 103, 4 cores, 6 GB RAM).
 2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
 3. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **36**:
    ```bash

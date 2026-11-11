@@ -50,5 +50,5 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 
 ## 3. Related Documentation
 
-*   [OpenMediaVault VM Provisioning & Storage Pass-through](../../docs/00_Infrastructure/openmediavault/proxmox-vm.md)
+*   [NAS Proxmox VM Spec & Storage Pass-through](../../docs/00_Infrastructure/proxmox/guests/nas.md)
 *   [OpenMediaVault Post-Install Configuration](../../docs/00_Infrastructure/openmediavault/setup.md)

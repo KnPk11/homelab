@@ -10,7 +10,7 @@
 
 ### Infrastructure Setup
 
-Please refer to the [Proxmox VM Spec](proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
+Please refer to the [Proxmox VM Spec](../proxmox/guests/nas.md) for the specific resource allocation and provisioning details for this node.
 
 ### Initial OMV Installation
 

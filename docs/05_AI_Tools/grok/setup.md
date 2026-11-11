@@ -9,7 +9,7 @@ Grok CLI (`grok`) is xAI's terminal-based coding and infrastructure agent deploy
 
 ## 2. Infrastructure Setup
 
-Please refer to the [Proxmox LXC Spec](../proxmox-lxc.md) for the specific resource allocation and provisioning details for this node, and [AI Node Security](../security.md) for SSH key management.
+Please refer to the [Proxmox LXC Spec](../../00_Infrastructure/proxmox/guests/ai-tools.md) for the specific resource allocation and provisioning details for this node, and [AI Node Security](../security.md) for SSH key management.
 
 ## 3. Installation & Usage
 

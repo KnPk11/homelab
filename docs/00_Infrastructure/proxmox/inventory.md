@@ -12,18 +12,22 @@ This document provides a detailed inventory of the Proxmox Virtual Environment (
 
 ## Guest Nodes (VMs & LXCs)
 
-The following table lists the core nodes currently provisioned on the hypervisor.
+For detailed hardware, CPU, RAM, and disk allocation specifications, refer to the [Proxmox Guest Allocation Matrix](guests/README.md).
 
-| IP Address | Name | Type | Description |
-| :--- | :--- | :--- | :--- |
-| `[IP].89` | **windows-89** | VM | Windows Testing / Sandbox Environment. |
-| `[IP].90` | **nas** | VM | OpenMediaVault — Centralised Storage & Backups. |
-| `[IP].91` | **lab-vm** | VM | OpenClaw — Agentic AI Orchestration. |
-| `[IP].95` | **docker-services** | VM | Docker Host — Primary Application Stack. |
-| `[IP].101` | **reverse-proxy** | LXC | Reverse Proxy (Caddy) & Ingress Monitoring. |
-| `[IP].102` | **dns** | LXC | AdGuard Home — Network-wide DNS. |
-| `[IP].105` | **ai-tools** | LXC | AI Tools & Management Automation Node. |
-| `[IP].110` | **interview** | LXC | Disposable Postgres practice environment. |
+| Hostname | ID | Type | Primary Role | Hardware Spec |
+| :--- | :--- | :--- | :--- | :--- |
+| **`docker-services`** | VM 100 | VM | Primary Docker & Portainer Application Stack | [guests/docker-services.md](guests/docker-services.md) |
+| **`nas`** | VM 101 | VM | OpenMediaVault — Storage & NFS Shares | [guests/nas.md](guests/nas.md) |
+| **`lab-vm`** | VM 103 | VM | Agent Workloads & Paperclip Platform | [guests/lab-vm.md](guests/lab-vm.md) |
+| **`reverse-proxy`** | CT 104 | LXC | Caddy Reverse Proxy & Ingress Monitoring | [guests/reverse-proxy.md](guests/reverse-proxy.md) |
+| **`ai-tools`** | CT 105 | LXC | AI Tools & Management Automation Node | [guests/ai-tools.md](guests/ai-tools.md) |
+| **`dns`** | CT 106 | LXC | AdGuard Home DNS & Local Resolution | [guests/dns.md](guests/dns.md) |
+| **`pulse`** | CT 107 | LXC | Pulse Multi-Host Monitoring Daemon | [guests/pulse.md](guests/pulse.md) |
+| **`vpns`** | CT 108 | LXC | Tailscale & WireGuard Subnet Routers | [guests/vpns.md](guests/vpns.md) |
+| **`pbs`** | CT 109 | LXC | Proxmox Backup Server Node | [guests/pbs.md](guests/pbs.md) |
+| **`k8s`** | CT 110 | LXC | Lightweight Single-Node k3s Kubernetes | [guests/k8s.md](guests/k8s.md) |
+| **`syslog`** | CT 111 | LXC | Centralised Off-Box Auth Log Collector | [guests/syslog.md](guests/syslog.md) |
+| **`ops`** | CT 112 | LXC | Operations, DDNS & Background Automation Plane | [guests/ops.md](guests/ops.md) |
 
 ## Network Segmentation
 
