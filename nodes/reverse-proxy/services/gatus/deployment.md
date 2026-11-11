@@ -14,8 +14,9 @@ Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same appr
 
 ### Deployment Strategy
 
-1. **Clone the repository** to `/opt/homelab-repo`.
-2. **Create the secrets file**:
+> **Prerequisite:** Node must be bootstrapped via the [reverse-proxy Master Guide](../../deployment.md) so `/opt/homelab-repo` is present and syncing.
+
+1. **Create the secrets file**:
    ```bash
    sudo mkdir -p /srv/gatus
    sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/gatus/gatus.env.example /srv/gatus/gatus.env
@@ -24,7 +25,7 @@ Network topology (node IPs) is defined inline in `deploy_gatus.sh` — same appr
    # Telegram: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID
    # (same values as /etc/ssh/telegram.env)
    ```
-3. **Run the deploy script**:
+2. **Run the deploy script**:
    ```bash
    sudo /opt/homelab-repo/nodes/reverse-proxy/services/gatus/deploy_gatus.sh
    ```

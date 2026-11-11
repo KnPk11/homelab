@@ -29,8 +29,9 @@ The `media` login name is `media`. After that login, Caddy sets `X-Auth-User` to
 
 ### Deployment Strategy
 
-1. **Clone the repository** to `/opt/homelab-repo` on the node.
-2. **Create the secrets file** under the service directory:
+> **Prerequisite:** Node must be bootstrapped via the [reverse-proxy Master Guide](../../deployment.md) so `/opt/homelab-repo` is present and syncing.
+
+1. **Create the secrets file** under the service directory:
    ```bash
    sudo mkdir -p /srv/caddy
    sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile.env.example /srv/caddy/caddy.env
@@ -38,11 +39,11 @@ The `media` login name is `media`. After that login, Caddy sets `X-Auth-User` to
    # edit /srv/caddy/caddy.env with real DOMAIN_NAME, hashes, IPV6_PREFIX
    ```
    (If you still keep an encrypted `caddy.env` in-repo during migration, decrypt into `/srv/caddy/caddy.env` instead — strip any leftover IP keys; they are no longer read.)
-3. **Experimental config** (optional) — keep only under `/srv/caddy/`:
+2. **Experimental config** (optional) — keep only under `/srv/caddy/`:
    ```bash
    sudo touch /srv/caddy/Caddyfile.experimental
    ```
-4. **Inject secrets into systemd** (network IPs are not env vars anymore):
+3. **Inject secrets into systemd** (network IPs are not env vars anymore):
    ```bash
    sudo mkdir -p /etc/systemd/system/caddy.service.d/
    sudo tee /etc/systemd/system/caddy.service.d/override.conf <<'EOF'
@@ -50,11 +51,11 @@ The `media` login name is `media`. After that login, Caddy sets `X-Auth-User` to
    EnvironmentFile=/srv/caddy/caddy.env
    EOF
    ```
-5. **Symlink tracked Caddyfile only**:
+4. **Symlink tracked Caddyfile only**:
    ```bash
    sudo ln -sfn /opt/homelab-repo/nodes/reverse-proxy/services/caddy/Caddyfile /srv/caddy/Caddyfile
    ```
-6. **Apply**:
+5. **Apply**:
    ```bash
    sudo systemctl daemon-reload
    sudo systemctl restart caddy

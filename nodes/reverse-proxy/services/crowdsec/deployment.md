@@ -19,15 +19,16 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
 
 ### Deployment Strategy
 
-1. **Clone the repository** to `/opt/homelab-repo`.
-2. **Create the secrets file**:
+> **Prerequisite:** Node must be bootstrapped via the [reverse-proxy Master Guide](../../deployment.md) so `/opt/homelab-repo` is present and syncing.
+
+1. **Create the secrets file**:
    ```bash
    sudo mkdir -p /srv/crowdsec
    sudo cp /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/crowdsec.env.example /srv/crowdsec/crowdsec.env
    sudo chmod 600 /srv/crowdsec/crowdsec.env
    # edit /srv/crowdsec/crowdsec.env with real API keys / MikroTik credentials
    ```
-3. **Run the deploy script**:
+2. **Run the deploy script**:
    ```bash
    sudo /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/deploy_crowdsec.sh
    ```

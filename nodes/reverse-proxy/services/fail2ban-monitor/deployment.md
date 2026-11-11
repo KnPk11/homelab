@@ -17,8 +17,9 @@ The widget reads **only** `banned-history.jsonl` over a rolling 24h window. Fail
 
 ### Deployment Strategy
 
-1. **Clone the repository** to `/opt/homelab-repo`.
-2. **Run the deploy script**:
+> **Prerequisite:** Node must be bootstrapped via the [reverse-proxy Master Guide](../../deployment.md) so `/opt/homelab-repo` is present and syncing.
+
+1. **Run the deploy script**:
    ```bash
    sudo "/opt/homelab-repo/nodes/reverse-proxy/services/fail2ban-monitor/deploy_fail2ban.sh"
    ```
