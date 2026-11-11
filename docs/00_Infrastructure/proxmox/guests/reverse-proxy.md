@@ -49,6 +49,7 @@ This document details the specific Proxmox LXC Container (CT 104) configuration 
      --rootfs local-lvm:16 \
      --net0 name=eth0,bridge=vmbr0,firewall=1,gw=192.168.50.1,ip=192.168.50.101/24 \
      --nameserver "192.168.50.102 1.1.1.1" \
+     --ssh-public-keys /root/.ssh/authorized_keys \
      --onboot 1
    ```
 2. **Attach Log Mountpoint**:

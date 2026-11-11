@@ -47,6 +47,7 @@ This document details the specific Proxmox LXC Container (CT 108) configuration 
      --unprivileged 1 \
      --rootfs local-lvm:8 \
      --net0 name=eth0,bridge=vmbr0,firewall=1,ip=dhcp \
+     --ssh-public-keys /root/.ssh/authorized_keys \
      --onboot 1
    ```
 2. **Configure TUN Device Passthrough**:

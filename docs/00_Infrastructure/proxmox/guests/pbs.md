@@ -48,6 +48,7 @@ This document details the specific Proxmox LXC Container (CT 109) configuration 
      --unprivileged 1 \
      --rootfs local-lvm:8 \
      --net0 name=eth0,bridge=vmbr0,firewall=1,gw=192.168.50.1,ip=192.168.50.86/24 \
+     --ssh-public-keys /root/.ssh/authorized_keys \
      --onboot 1
    ```
 2. **Attach Storage Mountpoints**:

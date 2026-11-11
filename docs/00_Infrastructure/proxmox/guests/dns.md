@@ -48,6 +48,7 @@ This document details the specific Proxmox LXC Container (CT 106) configuration 
      --rootfs local-lvm:8 \
      --net0 name=eth0,bridge=vmbr0,firewall=1,gw=192.168.50.1,ip=192.168.50.102/24 \
      --nameserver "1.1.1.1 9.9.9.9" \
+     --ssh-public-keys /root/.ssh/authorized_keys \
      --onboot 1
    ```
 2. **GitOps Runbook**: Proceed to [dns Deployment Guide](../../../../nodes/dns/deployment.md).

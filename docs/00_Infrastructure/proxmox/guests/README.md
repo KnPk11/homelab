@@ -31,6 +31,11 @@ This directory contains the authoritative hardware provisioning and resource all
 | **111** | `syslog` | `192.168.50.89` | 1 | 1 GB (512 MB) | 8 GB (+ 4 GB logs) | Centralised Syslog / Loki | [syslog.md](syslog.md) |
 | **112** | `ops` | `192.168.50.112` | 1 | 512 MB (512 MB) | 4 GB SSD | Automation & DDNS Plane | [ops.md](ops.md) |
 
+> [!TIP]
+> **LXC Provisioning Defaults**:
+> - **SSH Public Keys**: All container creation commands include `--ssh-public-keys /root/.ssh/authorized_keys` to automatically propagate the hypervisor's management keys into `/root/.ssh/authorized_keys` inside the newly spawned container for immediate passwordless SSH access.
+> - **Filesystem ACLs**: Standard POSIX ACLs (`acl=1`) are enabled by default on all ext4 and ZFS storage pools (`local-lvm`, `local-zfs`).
+
 ---
 
 ## 3. Related Documentation
