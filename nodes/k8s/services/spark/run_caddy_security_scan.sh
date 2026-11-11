@@ -22,7 +22,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOB="${SCRIPT_DIR}/caddy_security_scan.py"
-[[ -f /opt/spark/caddy_security_scan.py ]] && JOB=/opt/spark/caddy_security_scan.py
+[[ -f /opt/de-portfolio/spark/caddy_security_scan.py ]] && JOB=/opt/de-portfolio/spark/caddy_security_scan.py
+[[ -f /opt/spark/caddy_security_scan.py && ! -f "$JOB" ]] && JOB=/opt/spark/caddy_security_scan.py
 
 SSH_CFG="${SSH_CFG:-/opt/homelab-repo/shared/ssh/config}"
 [[ -f "$SSH_CFG" ]] || SSH_CFG=/opt/dev/homelab_repo/shared/ssh/config

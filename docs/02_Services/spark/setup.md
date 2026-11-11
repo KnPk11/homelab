@@ -71,7 +71,7 @@ kubectl taint nodes k8s node-role.kubernetes.io/master=true:NoSchedule --overwri
 
 ### Benchmark Overview
 
-Multi-node CPU load balancing is verified using [`spark_benchmark.py`](../../../nodes/k8s/services/spark/spark_benchmark.py), which executes unpruned trigonometric and SHA-512 cryptographic calculations across partitions with a `noop` stream sink.
+Multi-node CPU load balancing is verified using `spark_benchmark.py` (maintained in `/opt/de-portfolio/spark/`), which executes unpruned trigonometric and SHA-512 cryptographic calculations across partitions with a `noop` stream sink.
 
 | Workload | Cluster Topology | Execution Time | Performance Impact |
 | :--- | :--- | :--- | :--- |
@@ -127,7 +127,7 @@ TOKEN=$(kubectl create token spark -n spark --duration=24h)
 
 ### Security scan (Caddy + Fail2Ban + CrowdSec + MikroTik)
 
-Job: [`caddy_security_scan.py`](../../../nodes/k8s/services/spark/caddy_security_scan.py) · runner: [`run_caddy_security_scan.sh`](../../../nodes/k8s/services/spark/run_caddy_security_scan.sh)
+Job: `caddy_security_scan.py` (maintained in `/opt/de-portfolio/spark/`) · runner: [`run_caddy_security_scan.sh`](../../../nodes/k8s/services/spark/run_caddy_security_scan.sh)
 
 | Source | What is scanned |
 | :--- | :--- |

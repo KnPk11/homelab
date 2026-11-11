@@ -58,10 +58,11 @@ Unified analytics engine utilised for processing reverse-proxy and firewall logs
   * Network Policy: [`services/spark/network-policy.yaml`](services/spark/network-policy.yaml) (restricts ingress to driver host `192.168.50.96` and inter-executor pods)
   * Executor Pod Template: [`services/spark/executor-pod-template.yaml`](services/spark/executor-pod-template.yaml) (enforces non-root execution and worker anti-affinity)
 * **Batch Analytics Dispatchers:**
-  * [Caddy Geo Map Dispatcher](services/spark/run_caddy_geo_map.sh) (`caddy_geo_map.py`) — processes Caddy access logs to map incoming traffic geography.
-  * [Caddy Security Scan Dispatcher](services/spark/run_caddy_security_scan.sh) (`caddy_security_scan.py`) — identifies exploit probes and anomalous HTTP user agents.
-  * [MikroTik Log Insights Dispatcher](services/spark/run_mikrotik_insights.sh) (`mikrotik_log_insights.py`) — extracts firewall drops and connection spikes.
-  * [Spark Performance Benchmark](services/spark/spark_benchmark.py) — synthetic workload to benchmark executor compute throughput.
+  The distributed data pipelines are authored and maintained in the Data Engineering Portfolio repository (`/opt/de-portfolio/spark/`), submitted to Kubernetes via the tracked shell dispatchers below:
+  * [Caddy Geo Map Dispatcher](services/spark/run_caddy_geo_map.sh) — submits `caddy_geo_map.py` to map incoming reverse-proxy traffic geography.
+  * [Caddy Security Scan Dispatcher](services/spark/run_caddy_security_scan.sh) — submits `caddy_security_scan.py` to identify exploit probes and anomalous HTTP user agents.
+  * [MikroTik Log Insights Dispatcher](services/spark/run_mikrotik_insights.sh) — executes `mikrotik_log_insights.py` to analyse firewall drops and connection spikes.
+  * **Throughput Benchmark** — submits `spark_benchmark.py` from `/opt/de-portfolio/spark/` to test distributed executor throughput and memory pressure.
 
 ---
 

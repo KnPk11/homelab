@@ -26,6 +26,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOB_PY="${SCRIPT_DIR}/caddy_geo_map.py"
+[[ -f /opt/de-portfolio/spark/caddy_geo_map.py ]] && JOB_PY=/opt/de-portfolio/spark/caddy_geo_map.py
 [[ -f /opt/spark/caddy_geo_map.py && ! -f "$JOB_PY" ]] && JOB_PY=/opt/spark/caddy_geo_map.py
 
 REVERSE_PROXY_HOST="${REVERSE_PROXY_HOST:-reverse-proxy}"

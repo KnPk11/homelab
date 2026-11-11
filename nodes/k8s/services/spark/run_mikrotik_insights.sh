@@ -9,7 +9,8 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JOB="${SCRIPT_DIR}/mikrotik_log_insights.py"
-[[ -f /opt/spark/mikrotik_log_insights.py ]] && JOB=/opt/spark/mikrotik_log_insights.py
+[[ -f /opt/de-portfolio/spark/mikrotik_log_insights.py ]] && JOB=/opt/de-portfolio/spark/mikrotik_log_insights.py
+[[ -f /opt/spark/mikrotik_log_insights.py && ! -f "$JOB" ]] && JOB=/opt/spark/mikrotik_log_insights.py
 
 LOGS_ROOT="${LOGS_ROOT:-/mnt/caddy-logs}"
 OUT="${OUT:-/tmp/mikrotik-insights}"
