@@ -13,13 +13,19 @@ Hermes is an AI agent management and dashboard system executed as user-level sys
 
 ---
 
-## 2. Prerequisites
+## 2. Prerequisites & Initial Installation
 
-1. Ensure user lingering is enabled:
+1. Ensure user lingering is enabled so user systemd services persist across logouts:
    ```bash
    sudo loginctl enable-linger k
    ```
-2. Verify Python virtual environment exists:
+
+2. If Hermes is not yet installed on the host, run the official installer as user `k`:
+   ```bash
+   curl -sSL https://hermes.nousresearch.com/install.sh | bash
+   ```
+
+3. Verify Python virtual environment exists:
    ```bash
    /home/k/.hermes/hermes-agent/venv/bin/python --version
    ```

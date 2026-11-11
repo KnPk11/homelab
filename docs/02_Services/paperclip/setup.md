@@ -69,13 +69,14 @@ Type=simple
 User=k
 Group=k
 WorkingDirectory=/opt/paperclip
+EnvironmentFile=-/opt/paperclip/data/instances/default/.env
 Environment=HOME=/home/k
 Environment=PATH=/usr/local/bin:/usr/bin:/bin
-Environment=PAPERCLIP_PUBLIC_URL=https://paperclip.[DOMAIN]
 Environment=PAPERCLIP_UPDATE_CHECK=0
 Environment=PAPERCLIP_NO_BROWSER=1
 Environment=OPENCODE_ALLOW_ALL_MODELS=true
 Environment=PAPERCLIP_OPENCODE_PRINT_LOGS=true
+Environment=PLAYWRIGHT_BROWSERS_PATH=/home/k/.cache/ms-playwright
 ExecStart=/usr/bin/node /usr/bin/paperclipai run --data-dir /opt/paperclip/data
 Restart=on-failure
 RestartSec=5

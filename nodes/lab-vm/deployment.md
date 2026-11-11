@@ -12,12 +12,13 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 
 ## 1. System Bootstrap & User Linger
 
-1. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
-2. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **36**:
+1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/lab-vm/proxmox-vm.md)** (VM 103, 4 cores, 4 GB RAM).
+2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
+3. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **36**:
    ```bash
    (crontab -l 2>/dev/null; echo '36 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1') | sort -u | crontab -
    ```
-3. **User Process Linger:** Required for user-level systemd daemons (`hermes`, `openclaw`) to persist across terminal logouts:
+4. **User Process Linger:** Required for user-level systemd daemons (`hermes`, `openclaw`) to persist across terminal logouts:
    ```bash
    sudo loginctl enable-linger k
    ```

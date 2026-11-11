@@ -1,9 +1,9 @@
-# OpenClaw: Proxmox VM Spec
+# Lab-VM: Proxmox VM Spec
 
 > [!NOTE]
-> #Proxmox #VM #Infrastructure #OpenClaw #AI
+> #Proxmox #VM #Infrastructure #LabVM #AI #Development
 
-This document details the specific Proxmox Virtual Machine (QEMU VM 103) configuration for the OpenClaw service (`lab-vm`).
+This document details the specific Proxmox Virtual Machine (QEMU VM 103) configuration for the application, developer, and AI agent workload host (`lab-vm`).
 
 ## Provisioning Details
 

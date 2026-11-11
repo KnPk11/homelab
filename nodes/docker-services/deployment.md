@@ -149,6 +149,8 @@ All services hosted on `docker-services` are catalogued below:
 
 ### 6.1 Airflow Service
 
+> Architectural Reference: [docs/02_Services/airflow](../../docs/02_Services/airflow/setup.md)
+
 1. Restore secret files under `/srv/airflow/.secrets/` (`airflow_fernet_key.secret`, `airflow_jwt_secret.secret`) and `/srv/airflow/.env` (from `airflow.env`).
 2. Build the custom image locally on the Docker host:
    ```bash
@@ -157,6 +159,8 @@ All services hosted on `docker-services` are catalogued below:
 3. Deploy the stack in Portainer using the compose file in the repository (`docker-compose.yml` references `custom_airflow:3.0.4` directly without `build:` so Portainer's read-only runner does not attempt in-container builds).
 
 ### 6.2 DBT Service
+
+> Architectural Reference: [docs/02_Services/dbt](../../docs/02_Services/dbt/setup.md)
 
 1. Place secrets on the host:
    ```bash

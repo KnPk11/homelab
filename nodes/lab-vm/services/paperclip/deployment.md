@@ -7,20 +7,26 @@
 Paperclip is a self-hosted platform for orchestrating autonomous coding agents, operating on Node 24 with embedded PostgreSQL.
 
 - **Runtime Path:** `/opt/paperclip/data/instances/default/` (owned by `k:k`)
-- **System Unit:** `/etc/systemd/system/paperclip.service`
+- **System Unit:** [`paperclip.service`](paperclip.service) (`/etc/systemd/system/paperclip.service`)
 - **Secrets Management:** In-place encryption using SOPS (`.env`, `secrets/*.secret`)
 - **Architectural Reference:** [docs/02_Services/paperclip](../../../../docs/02_Services/paperclip/setup.md)
 
 ---
 
-## 2. Prerequisites
+## 2. Prerequisites & Initial Installation
 
-1. Ensure Node 24 and Paperclip are installed globally:
+1. Verify Node 24 is available:
    ```bash
-   which paperclipai
-   node -v
+   node -v   # Expect v24.x
    ```
-2. Verify SOPS and age private keys are configured on `lab-vm`:
+
+2. If Paperclip is not yet installed on the host, install the pinned release globally:
+   ```bash
+   sudo npm install -g paperclipai@2026.1023.0
+   which paperclipai
+   ```
+
+3. Verify SOPS and age private keys are configured on `lab-vm`:
    ```bash
    sops --version
    ```
@@ -47,7 +53,12 @@ Paperclip is a self-hosted platform for orchestrating autonomous coding agents, 
    chown -R k:k /opt/paperclip/data/instances/default
    ```
 
-4. Reload systemd and start the service:
+4. Install the tracked systemd service unit:
+   ```bash
+   sudo cp /opt/homelab-repo/nodes/lab-vm/services/paperclip/paperclip.service /etc/systemd/system/paperclip.service
+   ```
+
+5. Reload systemd and start the service:
    ```bash
    sudo systemctl daemon-reload
    sudo systemctl enable --now paperclip

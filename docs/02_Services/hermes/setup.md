@@ -12,15 +12,16 @@ Hermes is an AI agent dashboard and management system utilised for orchestrating
 ### Deployment Environment
 
 - **Host**: Proxmox VE
-- **Platform**: Bare-metal Ubuntu VM (OpenClaw VM - `.91`)
+- **Platform**: Debian 13 VM (`lab-vm` - `192.168.50.91`, VM 103)
 - **Method**: Official Hermes installation script
+- **GitOps Runbook**: [Hermes Host Deployment Guide](../../../nodes/lab-vm/services/hermes/deployment.md)
 
 ### Initial Setup
 
 The service was installed utilising the standard installation procedure for Linux environments.
 
 ```bash
-# Executed on the OpenClaw VM
+# Executed on lab-vm under user k
 curl -sSL https://hermes.nousresearch.com/install.sh | bash
 ```
 
@@ -59,9 +60,9 @@ API keys are stored securely within the `~/.hermes/.env` file and managed via th
 To verify the service is running and accessible:
 
 ```bash
-# Check service status on the VM
-systemctl --user status hermes-dashboard.service
+# Check service status on lab-vm
+systemctl --user status hermes-gateway.service hermes-dashboard.service
 
-# Test internal connectivity
-curl -I http://[OPENCLAW-IP]:9119
+# Test internal dashboard connectivity
+curl -I http://127.0.0.1:9119
 ```

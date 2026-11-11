@@ -13,13 +13,19 @@ OpenClaw is an agentic AI orchestration environment executed as a persistent use
 
 ---
 
-## 2. Prerequisites
+## 2. Prerequisites & Initial Installation
 
 1. Ensure user lingering is enabled so user systemd services persist across logouts:
    ```bash
    sudo loginctl enable-linger k
    ```
-2. Verify Node.js 22 and OpenClaw CLI are installed:
+
+2. If OpenClaw is not yet installed on the host, run the official installer as user `k`:
+   ```bash
+   curl -fsSL https://openclaw.ai/install.sh | bash
+   ```
+
+3. Verify Node.js 22 and OpenClaw CLI are installed:
    ```bash
    node -v
    which openclaw

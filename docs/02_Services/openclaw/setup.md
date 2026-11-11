@@ -10,7 +10,7 @@ OpenClaw is an agentic AI orchestration environment on the lab VM — skills, to
 
 ## 2. Infrastructure Setup
 
-Please refer to the [Proxmox LXC Spec](proxmox-lxc.md) for the specific resource allocation and provisioning details for this node.
+Please refer to the [Proxmox VM Spec](../../00_Infrastructure/lab-vm/proxmox-vm.md) for the specific resource allocation and provisioning details for this node.
 
 ## 3. Installation Methods
 
