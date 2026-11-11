@@ -13,6 +13,10 @@ Hardening, ACLs, and firewall notes: [security.md](security.md).
 
 ## 2. Installation (Native)
 
+> [!TIP]
+> **Unprivileged Proxmox LXC Containers**:
+> Unprivileged containers do not have access to `/dev/net/tun` by default. Ensure device passthrough is configured on the Proxmox hypervisor (`/etc/pve/lxc/<id>.conf`) before starting `tailscaled`. See the [vpns Proxmox LXC Spec](../../00_Infrastructure/proxmox/guests/vpns.md).
+
 1. **Install Tailscale**
 
    ```bash
