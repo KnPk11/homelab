@@ -121,19 +121,28 @@ Operational guides under `nodes/` act as concrete disaster recovery runbooks. Th
 ### 12.2 Multi-Service Hubs vs Single-Purpose Appliances
 To prevent unnecessary nesting ceremony while keeping complex hosts organised, use the appropriate model based on node role:
 
-1. **Multi-Service Hubs** (`ops`, `docker-services`, `reverse-proxy`, `ai-tools`, `proxmox-host`):
+1. **Multi-Service Hubs** (`ops`, `docker-services`, `reverse-proxy`, `ai-tools`, `proxmox-host`, `lab-vm`, `k8s`):
    - **Structure**: Two-Tier Hub & Spoke.
    - The top-level `nodes/<node>/deployment.md` serves as the orchestrator and routing table.
    - Individual services live in `nodes/<node>/services/<service>/deployment.md` covering ports, `/srv/<service>/` secrets, deploy commands, and verification commands.
-2. **Single-Purpose Appliances** (`pulse`, `pbs`, `vpns`, `nas`):
+2. **Single-Purpose Appliances** (`pulse`, `pbs`, `vpns`, `nas`, `dns`, `syslog`):
    - **Structure**: Flattened Single-Runbook.
    - The node *is* the service. The entire operational runbook lives directly in `nodes/<node>/deployment.md`.
    - Do NOT create redundant `services/<app>/deployment.md` sub-folders.
    - Operational checklists in `deployment.md` link to `docs/` at the bottom for architectural context without duplicating long explanatory text.
 
-### 12.3 Mandatory Master Guide Sections
-Every `nodes/<hostname>/deployment.md` must include:
+### 12.3 Mandatory Master Guide Sections (`nodes/<hostname>/deployment.md`)
+Every master node guide must include:
 1. **System Bootstrap**: Link to the Universal Node Bootstrap Guide and staggered `auto_pull_repo.sh` crontab minute offset.
 2. **Secrets Inventory**: Explicit list of host-local `.env` files, SOPS keys, or firewall credentials required before services start.
 3. **Runbook / Services Table**: Actionable deployment commands or links to service runbooks.
 4. **Health Verification**: One-line status commands (`systemctl status`, `curl`, `docker compose ps`).
+
+### 12.4 Tier-2 Service Runbooks (`nodes/<node>/services/<service>/deployment.md`)
+Service-specific runbooks on multi-service hubs must follow these rules:
+1. **Prerequisite Callout**: Explicitly state that the host OS must already be bootstrapped:
+   ```markdown
+   > **Prerequisite:** Host bootstrapped via the [<hostname> Master Guide](../../deployment.md).
+   ```
+2. **No Redundant Host Actions**: Never duplicate host OS bootstrap instructions (e.g. installing base `git`/`rsync`, cloning `/opt/homelab-repo`, or setting up `auto_pull_repo.sh`).
+3. **Focus Areas**: Focus exclusively on service-specific concerns: port mappings, systemd units or compose definitions, decryption of `/srv/<service>/` secrets, service restart, and live endpoint verification.
