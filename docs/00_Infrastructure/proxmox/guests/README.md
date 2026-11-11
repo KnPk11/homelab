@@ -36,6 +36,13 @@ This directory contains the authoritative hardware provisioning and resource all
 > - **SSH Public Keys**: All container creation commands include `--ssh-public-keys /root/.ssh/authorized_keys` to automatically propagate the hypervisor's management keys into `/root/.ssh/authorized_keys` inside the newly spawned container for immediate passwordless SSH access.
 > - **Filesystem ACLs**: Standard POSIX ACLs (`acl=1`) are enabled by default on all ext4 and ZFS storage pools (`local-lvm`, `local-zfs`).
 
+> [!NOTE]
+> **Fleet DNS Architecture (Why not the router `192.168.50.1`?):**
+> 1. **Firewall Isolation:** Pointing containers to the MikroTik edge router (`192.168.50.1:53`) directs traffic into the router's restricted `input` firewall chain. Using internal AdGuard keeps query traffic inside the LAN switching fabric.
+> 2. **Local Name Resolution:** AdGuard Home (`192.168.50.102`) resolves private homelab split-DNS records and local rewrites, which edge router WAN forwarders cannot resolve.
+> 3. **High Availability Fallback:** Workload guests configure both `192.168.50.102` (Primary) and `1.1.1.1` (Secondary) so outbound resolution survives AdGuard container restarts or maintenance.
+> 4. **Loop Prevention:** CT 106 (`dns`) intentionally uses public upstreams (`1.1.1.1`, `9.9.9.9`) to prevent recursive lookup deadlocks.
+
 ---
 
 ## 3. Related Documentation
