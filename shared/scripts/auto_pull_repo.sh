@@ -41,8 +41,8 @@ sync_repo() {
 
     cd "$repo_dir" || return 1
 
-    # Check for dirty working tree
-    if [[ -n "$(git status --porcelain)" ]] && [[ "$FORCE" != "true" ]]; then
+    # Check for dirty working tree (ignoring untracked files)
+    if [[ -n "$(git status --porcelain -uno)" ]] && [[ "$FORCE" != "true" ]]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] Uncommitted changes detected in $repo_dir on $(hostname). Skipping sync to prevent data loss."
         return 0
     fi

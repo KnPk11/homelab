@@ -43,7 +43,6 @@ ALL_NODES=(
     "pulse"
     "vpns"
     "pbs"
-    "syslog"
 )
 
 STATUS_ONLY=false
@@ -108,7 +107,7 @@ sync_node() {
     local node="$1"
     echo "─── Syncing $node ───"
     
-    local remote_cmd="/opt/homelab-repo/shared/scripts/auto_pull_repo.sh $FORCE_FLAG"
+    local remote_cmd="if [ ! -d /opt/homelab-repo/.git ]; then echo '[SKIP] /opt/homelab-repo is not a Git repository on $node'; exit 0; fi; /opt/homelab-repo/shared/scripts/auto_pull_repo.sh $FORCE_FLAG"
     local output
     if ! output=$(ssh "${SSH_OPTS[@]}" "$node" "$remote_cmd" 2>&1); then
         echo "[ERROR] Failed to run sync on $node:" >&2
