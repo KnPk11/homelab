@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# sync_nodes.sh
+# sync-nodes.sh
 # Version: 1.0
 # Date: 2026-11-12
 #
@@ -8,19 +8,19 @@
 # homelab nodes from ai-tools over SSH.
 #
 # Usage:
-#   sync_nodes.sh [OPTIONS] <node1> [node2...]
-#   sync_nodes.sh [OPTIONS] all
+#   sync-nodes.sh [OPTIONS] <node1> [node2...]
+#   sync-nodes.sh [OPTIONS] all
 #
 # Options:
 #   -s, --status   Check current git commit on nodes without pulling.
-#   -f, --force    Pass --force to auto_pull_repo.sh (resets dirty working trees).
+#   -f, --force    Pass --force to auto-pull-repo.sh (resets dirty working trees).
 #   -h, --help     Show this help message.
 #
 # Examples:
-#   sync_nodes.sh ops
-#   sync_nodes.sh docker-services k8s lab-vm
-#   sync_nodes.sh all
-#   sync_nodes.sh --status all
+#   sync-nodes.sh ops
+#   sync-nodes.sh docker-services k8s lab-vm
+#   sync-nodes.sh all
+#   sync-nodes.sh --status all
 # =============================================================================
 set -euo pipefail
 
@@ -107,7 +107,7 @@ sync_node() {
     local node="$1"
     echo "─── Syncing $node ───"
     
-    local remote_cmd="if [ ! -d /opt/homelab-repo/.git ]; then echo '[SKIP] /opt/homelab-repo is not a Git repository on $node'; exit 0; fi; /opt/homelab-repo/shared/scripts/auto_pull_repo.sh $FORCE_FLAG"
+    local remote_cmd="if [ ! -d /opt/homelab-repo/.git ]; then echo '[SKIP] /opt/homelab-repo is not a Git repository on $node'; exit 0; fi; if [ -e /opt/homelab-repo/shared/scripts/auto-pull-repo.sh ]; then /opt/homelab-repo/shared/scripts/auto-pull-repo.sh $FORCE_FLAG; else /opt/homelab-repo/shared/scripts/auto_pull_repo.sh $FORCE_FLAG; fi"
     local output
     if ! output=$(ssh "${SSH_OPTS[@]}" "$node" "$remote_cmd" 2>&1); then
         echo "[ERROR] Failed to run sync on $node:" >&2

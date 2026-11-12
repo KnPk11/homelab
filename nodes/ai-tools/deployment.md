@@ -26,7 +26,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 
 ## 2. Services on this node
 
-*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape_configs_and_secrets.sh) — on-demand scraper sweeping remote `/srv` secrets into central vault (script header documents vault layout and `PATH_SWEEPS`).
+*   [Configs & secrets scraper](services/configs-and-secrets-backup/scrape-configs-and-secrets.sh) — on-demand scraper sweeping remote `/srv` secrets into central vault (script header documents vault layout and `PATH_SWEEPS`).
 *   [God Mode + Git SSH key TTL unlock](services/ai-ssh-key/deployment.md) — passphrase-unlock `id_ed25519_ai` (lab) and `id_ed25519` (GitHub; formerly `svc_automation`) into ssh-agent with a **2h TTL** auto-unload watchdog.
 *   [SOPS + age (Master vs node keys)](services/sops-key/deployment.md) — Master Admin key in RAM on this host; per-node age keys on appliance boxes. Not the same as God Mode SSH.
 *   [Monthly Audit](services/monthly-audit/deployment.md) — interactive snapshot audit run by the AI agent on-demand.
@@ -37,7 +37,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   [Herdr AI Multiplexer](../../docs/05_AI_Tools/herdr/setup.md) — Modern AI-native terminal workspace manager (`/usr/local/bin/herdr`). Coordinates persistent sessions, layout topologies, and multi-agent workflows (`agy`, `grok`, `claude`) with automatic snapshot state recovery (`herdr server stop`).
 *   [Termux & tmux Terminal Persistence](../../docs/05_AI_Tools/termux/setup.md) — Traditional terminal persistence via `tmux` and mobile Android access via Termux over SSH.
 *   [SSH Key Management & Mobile Access](../../docs/00_Infrastructure/ssh-key-management.md) — Centralised SSH key standard, covering host access, God Mode unlock TTLs, and mobile `id_ed25519_termux` key deployment.
-*   [Fleet GitOps Synchroniser (`sync-nodes`)](../../shared/scripts/sync_nodes.sh) — On-demand SSH dispatch tool (`/usr/local/bin/sync-nodes`) to immediately check (`-s`) and pull GitOps updates across target homelab nodes without waiting for cron.
+*   [Fleet GitOps Synchroniser (`sync-nodes`)](../../shared/scripts/sync-nodes.sh) — On-demand SSH dispatch tool (`/usr/local/bin/sync-nodes`) to immediately check (`-s`) and pull GitOps updates across target homelab nodes without waiting for cron.
 
 ## 4. Related shared tooling
 

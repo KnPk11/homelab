@@ -6,7 +6,7 @@ This document serves as the primary instruction set for all AI agents (Antigravi
 We are currently in the **Documentation & Sanitisation Phase**.
 
 1.  **Docs First**: The immediate priority is migrating and sanitising documentation from `docs_temp/` to `docs/`.
-2.  **Sanitisation Protocol**: All files in `docs/` MUST be sanitised (domains, IPs, secrets) according to the [Style Guide](./docs/repository_notes_style_guide.md).
+2.  **Sanitisation Protocol**: All files in `docs/` MUST be sanitised (domains, IPs, secrets) according to the [Style Guide](./docs/style-guide.md).
 3.  **Scripts Second**: Operational scripts and configurations in the `nodes/` directory are to be organised but **NOT** pushed to public source control yet. They will be handled in the next phase using **SOPS** for secret management.
 
 ## 📂 Deployment & History Strategy
@@ -46,7 +46,7 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 
 ## 🎨 Standards & Conventions
 All documentation must adhere to the formatting and linguistic rules defined in:
-👉 **[Homelab Documentation Style Guide](./docs/repository_notes_style_guide.md)**
+👉 **[Homelab Documentation Style Guide](./docs/style-guide.md)**
 
 ---
 *Last Updated: Tuesday, July 21, 2026*

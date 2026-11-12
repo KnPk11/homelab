@@ -146,3 +146,17 @@ Service-specific runbooks on multi-service hubs must follow these rules:
    ```
 2. **No Redundant Host Actions**: Never duplicate host OS bootstrap instructions (e.g. installing base `git`/`rsync`, cloning `/opt/homelab-repo`, or GitOps sync tooling).
 3. **Focus Areas**: Focus exclusively on service-specific concerns: port mappings, systemd units or compose definitions, decryption of `/srv/<service>/` secrets, service restart, and live endpoint verification.
+
+## 13. File & Directory Naming Conventions
+
+To maintain strict uniformity across the repository:
+
+### 13.1 Directory Naming
+- **Documentation Categories (`docs/XX_PascalCase`)**: Top-level documentation directories use a 2-digit index followed by an underscore and `PascalCase` (e.g. `00_Infrastructure`, `01_Network`, `02_Services`, `05_AI_Tools`). This functions as an ordered chapter index in file navigators.
+- **Node Directories (`nodes/<hostname>/`)**: Strictly lowercase `kebab-case` matching the canonical RFC 1123 hostname (e.g. `ai-tools`, `docker-services`, `scratch-pc`).
+- **Service Directories**: All service directories across `docs/` and `nodes/` strictly use lowercase `kebab-case` (e.g. `adguard-home`, `telegram-terminal`, `configs-and-secrets-backup`).
+
+### 13.2 File Naming
+- **Markdown Files**: All documentation files must strictly use lowercase `kebab-case.md` (e.g. `style-guide.md`, `universal-node-bootstrap.md`, `ssh-key-management.md`, `setup.md`, `deployment.md`).
+- **Shell Scripts**: All operational and shared scripts must strictly use lowercase `kebab-case.sh` (e.g. `auto-pull-repo.sh`, `sync-nodes.sh`, `ai-key-unlock.sh`, `deploy-app.sh`).
+

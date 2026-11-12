@@ -44,20 +44,20 @@ sync-nodes all
 sync-nodes --force ops
 ```
 
-### Node Pull Script (`auto_pull_repo.sh` v2.0)
-When executed (either via `sync-nodes` over SSH or manually on the host), `/opt/homelab-repo/shared/scripts/auto_pull_repo.sh` enforces safety checks:
+### Node Pull Script (`auto-pull-repo.sh` v2.0)
+When executed (either via `sync-nodes` over SSH or manually on the host), `/opt/homelab-repo/shared/scripts/auto-pull-repo.sh` enforces safety checks:
 - **Non-Destructive Fast-Forward**: Performs a clean `git merge --ff-only` rather than an arbitrary hard reset.
-- **Dirty Tree Protection**: Checks `git status --porcelain`. If uncommitted changes exist (e.g. during live debugging), it logs a warning and skips the pull to prevent data loss.
+- **Dirty Tree Protection**: Checks `git status --porcelain -uno`. If uncommitted changes to tracked files exist, it logs a warning and skips the pull to prevent data loss.
 - **Change Detection**: Compares `HEAD` against `origin/main` and only touches files if remote commits exist.
 - **Authoring Guard**: Hard-refuses to run on `ai-tools` to protect active development checkouts.
 
 > [!NOTE]
 > **No Crontab Entry Required**:
-> Background cron jobs for `auto_pull_repo.sh` are decommissioned across all nodes. This prevents silent divergence, eliminates background API polling churn, and ensures code is only updated on appliances when deliberately deployed.
+> Background cron jobs for `auto-pull-repo.sh` are decommissioned across all nodes. This prevents silent divergence, eliminates background API polling churn, and ensures code is only updated on appliances when deliberately deployed.
 
 ### Repository Scope & Deployment Rationale
 
-`auto_pull_repo.sh` manages specific repositories based on their execution model:
+`auto-pull-repo.sh` manages specific repositories based on their execution model:
 
 | Repository | Auto-Pull Enabled? | Rationale |
 | :--- | :--- | :--- |
