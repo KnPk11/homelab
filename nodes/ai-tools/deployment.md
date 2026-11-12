@@ -37,6 +37,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   [Herdr AI Multiplexer](../../docs/05_AI_Tools/herdr/setup.md) — Modern AI-native terminal workspace manager (`/usr/local/bin/herdr`). Coordinates persistent sessions, layout topologies, and multi-agent workflows (`agy`, `grok`, `claude`) with automatic snapshot state recovery (`herdr server stop`).
 *   [Termux & tmux Terminal Persistence](../../docs/05_AI_Tools/termux/setup.md) — Traditional terminal persistence via `tmux` and mobile Android access via Termux over SSH.
 *   [SSH Key Management & Mobile Access](../../docs/00_Infrastructure/ssh-key-management.md) — Centralised SSH key standard, covering host access, God Mode unlock TTLs, and mobile `id_ed25519_termux` key deployment.
+*   [Fleet GitOps Synchroniser (`sync-nodes`)](../../shared/scripts/sync_nodes.sh) — On-demand SSH dispatch tool (`/usr/local/bin/sync-nodes`) to immediately check (`-s`) and pull GitOps updates across target homelab nodes without waiting for cron.
 
 ## 4. Related shared tooling
 
