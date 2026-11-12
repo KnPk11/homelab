@@ -9,7 +9,7 @@ A dedicated, daemonised Telegram bridge for both **Antigravity CLI ([`agy`](file
 
 It provides complete remote control over your AI coding agents from your mobile phone—supporting natural conversational turns, dynamic engine switching between Google Antigravity and xAI Grok, interactive model and effort selectors, workspace switching, implementation planning, and file exchange without VPN or SSH connection drops.
 
-Antigravity Remote Control is another option for that phone access. It does not work well: it always asks for permissions, and each prompt stalls the turn. Phone access settled on this wrapper and a [persistent Termux session](../../01_Network/termux-persistent-ssh.md). Security considerations, threat boundaries, and hardening live in [security.md](security.md).
+Antigravity Remote Control is another option for that phone access. It does not work well: it always asks for permissions, and each prompt stalls the turn. Phone access settled on this wrapper and a [persistent Herdr session](../../05_AI_Tools/herdr/setup.md). Security considerations, threat boundaries, and hardening live in [security.md](security.md).
 
 ## 2. Architecture & Mobile Ergonomics
 

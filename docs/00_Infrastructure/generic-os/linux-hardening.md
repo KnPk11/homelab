@@ -9,6 +9,8 @@ Guidelines and procedures for securing Linux-based systems in the homelab.
 
 ### SSH Hardening
 
+> See [Fleet SSH Access & Key Management Guide](../ssh-key-management.md) for key generation standards, per-device isolation, and privilege archetypes.
+
 If the system is exposed to the WAN, implement the following:
 
 - Use passkey-encrypted SSH keys.

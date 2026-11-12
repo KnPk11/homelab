@@ -14,6 +14,7 @@ We utilise a **multi-key** model so privileges stay separated:
 1. **Job / automation keys** (passwordless where appropriate): e.g. MikroTik config capture via `svc_backup`, other read-only jobs. **Not** for interactive git or God Mode.
 2. **God Mode key** — `~/.ssh/id_ed25519_ai` (comment `svc_ai`): passphrase-protected. Privileged SSH across the homelab (MikroTik `svc_ai`, LXC/VM accounts that trust this key). **Not** left loaded permanently.
 3. **Git SSH key** — `~/.ssh/id_ed25519` (comment `git`): passphrase-protected. **GitHub only** (`git@github.com`).
+4. **Client / Handset keys**: Generated per-device (`id_ed25519_phone`, `id_ed25519_laptop`) for inbound SSH; private keys are never copied across devices. See [Fleet SSH Key Management Guide](../00_Infrastructure/ssh-key-management.md).
 
 ### Unlock Bundle (ai-tools)
 
