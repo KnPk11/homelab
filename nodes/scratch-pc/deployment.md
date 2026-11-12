@@ -25,10 +25,6 @@ This node follows **Infrastructure as Intent**: prefer tracked scripts and docum
 ## 2. System Bootstrap & GitOps
 
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
-* **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **45**:
-  ```bash
-  (crontab -l 2>/dev/null; echo "45 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
-  ```
 
 ---
 

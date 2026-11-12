@@ -4,7 +4,7 @@
 
 This node (`k8s`, `192.168.50.96`, Proxmox CT 110) is the dedicated **Kubernetes control plane** running a lightweight, hardened single-node `k3s` distribution. It orchestrates distributed analytics jobs (such as Apache Spark) across dedicated worker nodes (`lab-vm` and `scratch-pc`) and provides cluster management interfaces.
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configuration directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and apply manifests using `kubectl`.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configuration directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and apply manifests using `kubectl`.
 
 **Secrets are not in Git.** Encryption keys, kubeconfigs, and runtime secrets live under `/srv/k8s/` or `/srv/spark/` (or are decrypted on-demand via SOPS). After a nuke-and-pave, restore the node's age key from the central secrets vault before decrypting runtime credentials.
 
@@ -13,10 +13,6 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 ## 1. System Bootstrap & Provisioning
 
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
-* **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **39** to stagger network load:
-  ```bash
-  (crontab -l 2>/dev/null; echo "39 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/homelab_autopull.log 2>&1") | sort -u | crontab -
-  ```
 * **LXC Spec:** [k8s Proxmox LXC](../../docs/00_Infrastructure/proxmox/guests/k8s.md) — VMID 110, unprivileged container with nesting, keyctl, and AppArmor unconfined.
 * **k3s Control Plane Initialisation:** Execute the tracked provisioning script [`scripts/setup_k3s.sh`](scripts/setup_k3s.sh) to deploy k3s `v1.30.2+k3s1` with TLS SAN, external IP, secrets encryption, and audit logging:
   ```bash

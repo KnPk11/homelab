@@ -22,50 +22,38 @@ Clone the public homelab repository into the standardised `/opt/homelab-repo` di
 git clone https://github.com/KnPk11/homelab.git /opt/homelab-repo
 ```
 
-## 3. Enable GitOps Automation (Cron & On-Demand)
+## 3. GitOps Synchronisation Model (On-Demand Dispatch)
 
-We use a shared script (`auto_pull_repo.sh`) to ensure target nodes track `origin/main` safely.
+The homelab operates on a **deliberate, on-demand GitOps model** rather than background cron polling. Updates are authored and pushed to GitHub from **`ai-tools`**, then fanned out across the fleet on-demand via the `sync-nodes` utility.
 
-> [!IMPORTANT]
-> **Authoring Node Exclusion (`ai-tools`)**:
-> Never schedule `auto_pull_repo.sh` on **`ai-tools`**. As the central development and authoring workstation (`/opt/dev/homelab_repo`), `ai-tools` is guarded automatically by the script to prevent overwriting active development branches or uncommitted work.
-
-### Safe Auto-Pull Behaviour (`auto_pull_repo.sh` v2.0)
-- **Non-Destructive Fast-Forward**: Performs a clean `git merge --ff-only` rather than an arbitrary hard reset.
-- **Dirty Tree Protection**: Checks `git status --porcelain`. If uncommitted changes exist (e.g. during live debugging), it logs a warning and skips the pull, preserving your work.
-- **Change Detection**: Compares `HEAD` against `origin/main` and only touches the filesystem if remote commits exist.
-- **Force Mode (`--force`)**: If you explicitly need to discard local changes and snap strictly to remote, pass `--force`.
-
-### Setting Up the Scheduled Cronjob (Target Nodes Only)
-To prevent all nodes from hitting GitHub at the exact same second, **stagger execution minutes**. Check the node's specific `deployment.md` playbook for its assigned minute offset:
-
-1. Open the crontab editor:
-   ```bash
-   crontab -e
-   ```
-2. Add the following entry (replacing `XX` with the node's assigned minute):
-   ```bash
-   XX * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1
-   ```
-
-### On-Demand Fleet Synchronisation (`sync-nodes`)
-Rather than waiting up to an hour for background cron ticks, you can dispatch immediate synchronisation directly from **`ai-tools`** over SSH using the `sync-nodes` utility (symlinked from `shared/scripts/sync_nodes.sh`):
+### Fleet Dispatcher (`sync-nodes`)
+From **`ai-tools`**, dispatch immediate repository pulls across target nodes over SSH:
 
 ```bash
-# Check current git commit status across nodes without pulling:
+# Check current git commit status across all nodes without pulling:
 sync-nodes --status all
-sync-nodes --status ops docker-services
 
-# Immediately pull updates to specific nodes:
+# Pull updates to specific nodes:
 sync-nodes ops
 sync-nodes docker-services k8s lab-vm
 
-# Immediately pull updates across all online fleet nodes:
+# Synchronise all online fleet nodes at once:
 sync-nodes all
 
 # Force reset nodes with dirty trees (if required):
 sync-nodes --force ops
 ```
+
+### Node Pull Script (`auto_pull_repo.sh` v2.0)
+When executed (either via `sync-nodes` over SSH or manually on the host), `/opt/homelab-repo/shared/scripts/auto_pull_repo.sh` enforces safety checks:
+- **Non-Destructive Fast-Forward**: Performs a clean `git merge --ff-only` rather than an arbitrary hard reset.
+- **Dirty Tree Protection**: Checks `git status --porcelain`. If uncommitted changes exist (e.g. during live debugging), it logs a warning and skips the pull to prevent data loss.
+- **Change Detection**: Compares `HEAD` against `origin/main` and only touches files if remote commits exist.
+- **Authoring Guard**: Hard-refuses to run on `ai-tools` to protect active development checkouts.
+
+> [!NOTE]
+> **No Crontab Entry Required**:
+> Background cron jobs for `auto_pull_repo.sh` are decommissioned across all nodes. This prevents silent divergence, eliminates background API polling churn, and ensures code is only updated on appliances when deliberately deployed.
 
 ### Repository Scope & Deployment Rationale
 

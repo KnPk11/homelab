@@ -4,7 +4,7 @@
 
 This node is the dedicated **Proxmox Backup Server (PBS)** instance providing deduplicated, compressed, and encrypted backups for the Proxmox cluster and client workstations.
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run deployment steps.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and re-run deployment steps.
 
 **Secrets are not in Git.** Real configuration files, TLS certificates, and datastore definitions live under `/etc/proxmox-backup/`. After a nuke-and-pave, restore those from the secrets vault before services will work.
 
@@ -13,10 +13,6 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 ## 1. System Bootstrap
 
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
-* **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **38**:
-  ```bash
-  (crontab -l 2>/dev/null; echo "38 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
-  ```
 
 ---
 

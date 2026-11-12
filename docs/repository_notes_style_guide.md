@@ -133,7 +133,7 @@ To prevent unnecessary nesting ceremony while keeping complex hosts organised, u
 
 ### 12.3 Mandatory Master Guide Sections (`nodes/<hostname>/deployment.md`)
 Every master node guide must include:
-1. **System Bootstrap**: Link to the Universal Node Bootstrap Guide and staggered `auto_pull_repo.sh` crontab minute offset.
+1. **System Bootstrap**: Link to the Universal Node Bootstrap Guide and on-demand GitOps synchronisation (`sync-nodes`).
 2. **Secrets Inventory**: Explicit list of host-local `.env` files, SOPS keys, or firewall credentials required before services start.
 3. **Runbook / Services Table**: Actionable deployment commands or links to service runbooks.
 4. **Health Verification**: One-line status commands (`systemctl status`, `curl`, `docker compose ps`).
@@ -144,5 +144,5 @@ Service-specific runbooks on multi-service hubs must follow these rules:
    ```markdown
    > **Prerequisite:** Host bootstrapped via the [<hostname> Master Guide](../../deployment.md).
    ```
-2. **No Redundant Host Actions**: Never duplicate host OS bootstrap instructions (e.g. installing base `git`/`rsync`, cloning `/opt/homelab-repo`, or setting up `auto_pull_repo.sh`).
+2. **No Redundant Host Actions**: Never duplicate host OS bootstrap instructions (e.g. installing base `git`/`rsync`, cloning `/opt/homelab-repo`, or GitOps sync tooling).
 3. **Focus Areas**: Focus exclusively on service-specific concerns: port mappings, systemd units or compose definitions, decryption of `/srv/<service>/` secrets, service restart, and live endpoint verification.

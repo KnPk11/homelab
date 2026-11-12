@@ -4,7 +4,7 @@
 
 This node is the dedicated **remote access gateway and Tailscale subnet router**, advertising LAN subnets (`192.168.50.0/24` and `192.168.88.0/24`) without requiring port forwards on the WAN.
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run deployment steps.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and re-run deployment steps.
 
 **Secrets are not in Git.** The Tailscale machine cryptographic identity lives under `/var/lib/tailscale/tailscaled.state`. After a nuke-and-pave, restore that state file (or re-authenticate with a Tailscale auth key) before services will work.
 
@@ -14,10 +14,6 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 
 * **Proxmox LXC Spec:** Review container allocation in **[Proxmox LXC Spec](../../docs/00_Infrastructure/proxmox/guests/vpns.md)** (CT 108, 1 core, 1 GB RAM, TUN passthrough).
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
-* **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **17**:
-  ```bash
-  (crontab -l 2>/dev/null; echo "17 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
-  ```
 
 ---
 

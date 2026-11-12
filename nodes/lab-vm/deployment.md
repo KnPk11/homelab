@@ -4,7 +4,7 @@
 
 This node (`lab-vm`, `192.168.50.91`, Proxmox VM 103) is the primary application, developer, and AI agent workload host.
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and restart the respective services.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and restart the respective services.
 
 If this machine ever suffers a catastrophic failure, follow the deployment guides below in order to restore it back to a working state.
 
@@ -14,11 +14,7 @@ If this machine ever suffers a catastrophic failure, follow the deployment guide
 
 1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/proxmox/guests/lab-vm.md)** (VM 103, 4 cores, 6 GB RAM).
 2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
-3. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **36**:
-   ```bash
-   (crontab -l 2>/dev/null; echo '36 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1') | sort -u | crontab -
-   ```
-4. **User Process Linger:** Required for user-level systemd daemons (`hermes`, `openclaw`) to persist across terminal logouts:
+3. **User Process Linger:** Required for user-level systemd daemons (`hermes`, `openclaw`) to persist across terminal logouts:
    ```bash
    sudo loginctl enable-linger k
    ```
@@ -78,10 +74,10 @@ Shared fleet daemons deployed on `lab-vm` via central rollout scripts. Because t
 
 In a complete disaster recovery scenario, execute the deployment in this exact sequence:
 
-1. **System & Firewall:** Execute Universal Bootstrap, enable user linger for `k`, and deploy [`scripts/ufw.sh`](scripts/ufw.sh).
-2. **Paperclip Service:** Follow [Paperclip Deployment](services/paperclip/deployment.md) to decrypt SOPS secrets and start the system service.
-3. **Hermes Agent Service:** Follow [Hermes Deployment](services/hermes/deployment.md) to restore environment files and start user units.
-4. **OpenClaw Service:** Follow [OpenClaw Deployment](services/openclaw/deployment.md) to link gateway unit and start the daemon.
+4. **System & Firewall:** Execute Universal Bootstrap, enable user linger for `k`, and deploy [`scripts/ufw.sh`](scripts/ufw.sh).
+5. **Paperclip Service:** Follow [Paperclip Deployment](services/paperclip/deployment.md) to decrypt SOPS secrets and start the system service.
+6. **Hermes Agent Service:** Follow [Hermes Deployment](services/hermes/deployment.md) to restore environment files and start user units.
+7. **OpenClaw Service:** Follow [OpenClaw Deployment](services/openclaw/deployment.md) to link gateway unit and start the daemon.
 
 ---
 

@@ -13,14 +13,6 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 ## 1. System Bootstrap & Scripts
 
 *   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps where appropriate.
-*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **35** to stagger network load (between OMV `:34` and OpenClaw `:36`).
-*   Deploy tracked scripts from the clone, for example:
-    ```bash
-    REPO=/opt/homelab-repo/nodes/proxmox-host/scripts
-    sudo chmod +x "$REPO/proxmox_snapshot.sh" "$REPO/firewall.sh"
-    # Optional stable names:
-    # sudo ln -sfn "$REPO/proxmox_snapshot.sh" /usr/local/bin/proxmox_snapshot.sh
-    ```
 
 ## 2. Services & Host Scripts
 

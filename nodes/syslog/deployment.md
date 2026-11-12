@@ -2,7 +2,7 @@
 
 > **Hostname:** `syslog` | **IP:** `192.168.50.89` | **Proxmox:** CT 111 | **Type:** Proxmox LXC (Auth Store & Syslog)
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run the service deploy steps below.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and re-run the service deploy steps below.
 
 **Secrets are not in Git.** Homelab Watch env lives under `/srv/homelab-watch/` (and `/etc/ssh/telegram.env`) so the clone at `/opt/homelab-repo` stays disposable. After a nuke-and-pave you must restore those from the secrets vault before `auth-watch` will Telegram — a bare `git pull` is not enough.
 
@@ -11,7 +11,6 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 ## 1. System Bootstrap & Scripts
 
 *   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
-*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **41** to stagger network load.
 *   **LXC spec:** [Syslog Proxmox LXC](../../docs/00_Infrastructure/proxmox/guests/syslog.md) — VMID, disk, IP, firewall groups.
 
 ## 2. Off-box auth

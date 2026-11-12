@@ -10,11 +10,7 @@ This node (`docker-services`, `192.168.50.95`, Proxmox VM 100) serves as the pri
 
 1. **Proxmox VM Provisioning:** Review resource allocation in **[Proxmox VM Spec](../../docs/00_Infrastructure/proxmox/guests/docker-services.md)** (VM 100, 8 cores, 8 GB RAM).
 2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
-3. **Cron Offset:** Stagger `auto_pull_repo.sh` at minute **48**:
-   ```bash
-   (crontab -l 2>/dev/null; echo '48 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1') | sort -u | crontab -
-   ```
-3. **GitOps Clone (`/opt/homelab-repo`):** Holds tracked compose files, templates, and deployment scripts only. It is strictly disposable (`auto_pull_repo.sh` may hard-reset it).
+3. **GitOps Clone (`/opt/homelab-repo`):** Holds tracked compose files, templates, and deployment scripts only. It is strictly disposable and updated on-demand via `sync-nodes`.
 4. **Runtime Secrets (`/srv/<service>/`):** Live as real files on the host only. Never commit decrypted secret files or create reverse-symlinks pointing back into the clone.
 5. **Host Scripts (`/opt/scripts/...`):** Host-level operational scripts (e.g. UFW, Kopia) with dedicated runtime configuration.
 6. **Compose `${VAR}` Interpolation:** Set environment variables in Portainer stack definitions or keep a host-local `.env` **only under `/srv/<service>/`** when running compose with that project directory.

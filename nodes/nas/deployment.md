@@ -4,7 +4,7 @@
 
 This node (`nas`, `192.168.50.90`, Proxmox VM 101) is the primary **OpenMediaVault storage appliance** hosting ZFS/Btrfs datasets, SMB shares, and NFS mounts.
 
-This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, pull them on the server (`auto_pull_repo.sh`), and re-run service deployment steps.
+This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configurations directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and re-run service deployment steps.
 
 **Secrets are not in Git.** Host-local firewall configurations (`firewall.env`) and storage credentials live outside the disposable GitOps clone. After a nuke-and-pave, restore those from the secrets vault before services will work.
 
@@ -13,10 +13,6 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 ## 1. System Bootstrap & Scripts
 
 *   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
-*   **Cron Offset:** Set the `auto_pull_repo.sh` cronjob to run at minute **34** to stagger network load:
-    ```bash
-    (crontab -l 2>/dev/null; echo "34 * * * * /opt/homelab-repo/shared/scripts/auto_pull_repo.sh >> /var/log/auto_pull.log 2>&1") | sort -u | crontab -
-    ```
 
 ---
 
