@@ -32,6 +32,12 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   [Monthly Audit](services/monthly-audit/deployment.md) — interactive snapshot audit run by the AI agent on-demand.
 *   [Telegram Terminal](services/telegram-terminal/deployment.md) — Headless mobile terminal wrapper for bash and Antigravity (`agy`) agents via Telegram long-polling.
 
-## 3. Related shared tooling
+## 3. Terminal & Agent Workspace Tooling
+
+*   [Herdr AI Multiplexer](../../docs/05_AI_Tools/herdr/setup.md) — Modern AI-native terminal workspace manager (`/usr/local/bin/herdr`). Coordinates persistent sessions, layout topologies, and multi-agent workflows (`agy`, `grok`, `claude`) with automatic snapshot state recovery (`herdr server stop`).
+*   [Termux & tmux Terminal Persistence](../../docs/05_AI_Tools/termux/setup.md) — Traditional terminal persistence via `tmux` and mobile Android access via Termux over SSH.
+*   [SSH Key Management & Mobile Access](../../docs/00_Infrastructure/ssh-key-management.md) — Centralised SSH key standard, covering host access, God Mode unlock TTLs, and mobile `id_ed25519_termux` key deployment.
+
+## 4. Related shared tooling
 
 *   Homelab node secrets model: [docker-services deployment](../docker-services/deployment.md).
