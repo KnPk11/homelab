@@ -22,7 +22,7 @@ This document details the specific Proxmox LXC Container (CT 107) configuration 
 | CPU Cores | 2 cores |
 | RAM | 1024 MB (1 GB) |
 | Swap | 512 MB |
-| Root Disk (`rootfs`) | 8 GB SSD (`local-lvm`) |
+| Root Disk (`rootfs`) | 12 GB SSD (`local-lvm`) |
 | Unprivileged | Yes (`unprivileged: 1`) |
 | Nesting | Yes (`nesting=1`) |
 
@@ -44,7 +44,7 @@ This document details the specific Proxmox LXC Container (CT 107) configuration 
      --swap 512 \
      --features nesting=1 \
      --unprivileged 1 \
-     --rootfs local-lvm:8 \
+     --rootfs local-lvm:12 \
      --net0 name=eth0,bridge=vmbr0,firewall=1,gw=192.168.50.1,ip=192.168.50.88/24 \
      --ssh-public-keys /root/.ssh/authorized_keys \
      --onboot 1
