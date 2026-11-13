@@ -11,7 +11,7 @@ services:
     env_file:
       - ${VAULTWARDEN_ENV_PATH:-/srv/vaultwarden/.env}
     environment:
-      - DOMAIN=https://${VAULTWARDEN_DOMAIN:-vaultwarden.example.com}
+      # DOMAIN comes from /srv/vaultwarden/.env via env_file (avoid Git SOPS .env interpolation)
       - TZ=Europe/London
       # --- Networking & Proxy ---
       - WEBSOCKET_ENABLED=true

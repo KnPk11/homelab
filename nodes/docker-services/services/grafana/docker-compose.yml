@@ -10,8 +10,7 @@ services:
     env_file:
       - ${GRAFANA_ENV_PATH:-/srv/grafana/.env}
     environment:
-      - GF_SERVER_ROOT_URL=${GF_SERVER_ROOT_URL:-https://grafana.example.com}
-      - GF_SERVER_DOMAIN=${GF_SERVER_DOMAIN:-grafana.example.com}
+      # Domain & root URL come from /srv/grafana/.env via env_file (avoid Git SOPS .env interpolation)
       - GF_SERVER_ENFORCE_DOMAIN=true
       - GF_SECURITY_COOKIE_SECURE=true
       - GF_SECURITY_COOKIE_SAMESITE=strict

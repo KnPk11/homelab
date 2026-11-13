@@ -17,7 +17,6 @@ services:
       - PHOTOPRISM_DATABASE_SERVER=photoprism_db:3306
       - PHOTOPRISM_DATABASE_NAME=photoprism
       - PHOTOPRISM_DATABASE_USER=photoprism
-      - PHOTOPRISM_DATABASE_PASSWORD=${PHOTOPRISM_DATABASE_PASSWORD}
       - PHOTOPRISM_DATABASE_PASSWORD_FILE=/run/secrets/photoprism_database_password
       - PHOTOPRISM_WORKERS=2
       - PUID=1000

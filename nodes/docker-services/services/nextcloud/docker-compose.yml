@@ -155,8 +155,7 @@ services:
       - ${NC_ENV_PATH:-/srv/nextcloud/.env}
     environment:
       - TALK_PORT=3478
-      - NC_DOMAIN=${NC_DOMAIN:-nextcloud.example.com}  # Nextcloud domain
-      - TALK_HOST=${TALK_HOST:-talk-hpb.example.com}   # Subdomain for signaling
+      # NC_DOMAIN and TALK_HOST come from /srv/nextcloud/.env via env_file (avoid Git SOPS .env interpolation)
       - TZ=Europe/London
     security_opt:
       - no-new-privileges:true  # Prevents gaining root if compromised

@@ -12,7 +12,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - WEBUI_URL=https://${OPENWEBUI_DOMAIN:-ai.example.com}
+      # WEBUI_URL comes from /srv/open-webui/.env via env_file (avoid Git SOPS .env interpolation)
       - WEBUI_AUTH=true # enable login system
       # - LMSTUDIO_API_BASE=http://192.168.50.39:1234/v1  # replace with your GPU PC IP + LM Studio port
       - ENABLE_OPENAI_API=true

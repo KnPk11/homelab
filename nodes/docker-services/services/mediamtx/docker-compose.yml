@@ -9,7 +9,7 @@ services:
       - ${MEDIAMTX_ENV_PATH:-/srv/mediamtx/.env}
     environment:
       - MTX_RTSPTRANSPORTS=tcp
-      - MTX_WEBRTCADDITIONALHOSTS=${MEDIAMTX_DOMAIN:-mediamtx.example.com}
+      # MTX_WEBRTCADDITIONALHOSTS comes from /srv/mediamtx/.env via env_file (avoid Git SOPS .env interpolation)
       - MTX_LOGDESTINATIONS=stdout,file
       - MTX_LOGFILE=/logs/mediamtx.log
     ports:
