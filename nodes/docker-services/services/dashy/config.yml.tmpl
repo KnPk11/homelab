@@ -212,12 +212,11 @@ sections:
         url: https://ai.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: OpenClaw
-        description: Self-hosted agentic AI orchestration and automation
-        icon: fas fa-robot
-        url: https://openclaw.${HOMELAB_DOMAIN}
+      - title: Paperclip
+        description: Self-hosted coding agent orchestration & management
+        icon: fas fa-paperclip
+        url: https://paperclip.${HOMELAB_DOMAIN}
         statusCheck: true
-        # statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
       - title: Hermes
         description: AI agent dashboard and orchestration for LLM workflows
@@ -244,6 +243,14 @@ sections:
         url: https://login.tailscale.com/login?next_url=%2Fadmin%2Fmachines
         statusCheck: true
 
+      - title: Kubernetes
+        description: Headlamp — K8s cluster & workload management
+        icon: fas fa-cubes
+        url: https://k8s.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403,404,405'
+
       - title: Vaultwarden
         description: Self-hosted password manager
         icon: fas fa-key
@@ -263,6 +270,12 @@ sections:
         url: https://privatebin.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: Gitea
+        description: Self-hosted Git service & repository hosting
+        icon: fab fa-git-alt
+        url: https://gitea.${HOMELAB_DOMAIN}
+        statusCheck: true
+
       - title: Nextcloud
         description: Personal cloud storage
         icon: fas fa-cloud
@@ -278,8 +291,9 @@ sections:
       - title: Copyparty
         description: Portable file server & web UI
         icon: fas fa-folder-open
-        url: https://copyparty.${HOMELAB_DOMAIN}=
+        url: https://media.${HOMELAB_DOMAIN}
         statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
       - title: Photoprism
         description: Photo management
@@ -287,10 +301,10 @@ sections:
         url: https://photoprism.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: Immich
-        description: Self-hosted photo and video backup
+      - title: Lychee
+        description: Photo gallery & album management
         icon: fas fa-images
-        url: https://immich.${HOMELAB_DOMAIN}
+        url: https://lychee.${HOMELAB_DOMAIN}
         statusCheck: true
 
       - title: Jellyfin
@@ -414,7 +428,7 @@ sections:
         statusCheck: true
 
       - title: Kubernetes
-        description: K8s Cluster & Workload Management
+        description: Headlamp — K8s cluster & workload management
         icon: fas fa-cubes
         url: https://k8s.${HOMELAB_DOMAIN}
         statusCheck: true
@@ -498,10 +512,10 @@ sections:
         url: https://ai.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: OpenClaw
-        description: Self-hosted agentic AI orchestration and automation
-        icon: fas fa-robot
-        url: https://openclaw.${HOMELAB_DOMAIN}
+      - title: Paperclip
+        description: Self-hosted coding agent orchestration & management
+        icon: fas fa-paperclip
+        url: https://paperclip.${HOMELAB_DOMAIN}
         statusCheck: true
 
       - title: Hermes
@@ -547,12 +561,6 @@ sections:
         url: https://nextcloud.${HOMELAB_DOMAIN}
         statusCheck: true
 
-      - title: Immich
-        description: Self-hosted photo and video backup
-        icon: fas fa-images
-        url: https://immich.${HOMELAB_DOMAIN}
-        statusCheck: true
-
       - title: Jellyfin
         description: Media server
         icon: fas fa-film
@@ -565,6 +573,12 @@ sections:
         url: https://photoprism.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: Lychee
+        description: Photo gallery & album management
+        icon: fas fa-images
+        url: https://lychee.${HOMELAB_DOMAIN}
+        statusCheck: true
+
       - title: FileBrowser Quantum
         description: Browse and manage files
         icon: fas fa-folder
@@ -574,8 +588,9 @@ sections:
       - title: Copyparty
         description: Portable file server & web UI
         icon: fas fa-folder-open
-        url: https://copyparty.${HOMELAB_DOMAIN}=
+        url: https://media.${HOMELAB_DOMAIN}
         statusCheck: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
   - name: Downloaders
     displayData:
@@ -623,12 +638,6 @@ sections:
         url: https://airflow.${HOMELAB_DOMAIN}/
         statusCheck: true
 
-      - title: dbt
-        description: Data transformation lineage & documentation
-        icon: fas fa-database
-        url: https://dbt.${HOMELAB_DOMAIN}
-        statusCheck: true
-
       - title: Apache Spark
         description: Distributed data processing & job monitoring
         icon: fas fa-bolt
@@ -652,4 +661,10 @@ sections:
         description: Share text snippets securely
         icon: fas fa-sticky-note
         url: https://privatebin.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Gitea
+        description: Self-hosted Git service & repository hosting
+        icon: fab fa-git-alt
+        url: https://gitea.${HOMELAB_DOMAIN}
         statusCheck: true
