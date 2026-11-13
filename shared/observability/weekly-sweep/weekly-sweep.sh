@@ -126,7 +126,7 @@ PY
 }
 
 check_dstnat() {
-  local ident="${ROUTER_SSH_IDENTITY:-$HOME/.ssh/id_ed25519_mt_backup}"
+  local ident="${ROUTER_SSH_IDENTITY:-${HOME:-/root}/.ssh/id_ed25519_mt_backup}"
   local user="${ROUTER_SSH_USER:-svc_backup}"
   local rhost="${ROUTER_SSH_HOST:-192.168.88.1}"
   if [[ ! -f "$ident" ]]; then

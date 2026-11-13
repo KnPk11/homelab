@@ -15,7 +15,7 @@ if [[ -z "$CHECKS" ]]; then
   auto=()
   [[ -d /etc/pve ]] && auto+=(reboot)
   case "$THIS_HOST" in
-    reverse-proxy|docker-services|lab-vm|scratch-pc|dns|k8s|nas|pbs|pulse|vpns|ai-tools)
+    reverse-proxy|docker-services|lab-vm|scratch-pc|dns|k8s|nas|pbs|pulse|vpns|ai-tools|ops)
       auto+=(reboot) ;;
   esac
   command -v cscli >/dev/null 2>&1 && auto+=(crowdsec)
