@@ -24,6 +24,10 @@
 # =============================================================================
 set -euo pipefail
 
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SSH_CFG="${SSH_CFG:-$REPO_DIR/shared/ssh/config}"
+
 # Shared agent env from ai-key-unlock
 if [[ -f "${HOME}/.ssh/ai-key-agent.sh" ]]; then
     # shellcheck disable=SC1091
@@ -86,6 +90,9 @@ if [[ ${#TARGET_NODES[@]} -eq 0 ]]; then
 fi
 
 SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=5 -o LogLevel=ERROR)
+if [[ -f "$SSH_CFG" ]]; then
+    SSH_OPTS=(-F "$SSH_CFG" "${SSH_OPTS[@]}")
+fi
 
 check_status() {
     local node="$1"

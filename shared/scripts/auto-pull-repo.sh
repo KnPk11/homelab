@@ -41,8 +41,13 @@ sync_repo() {
 
     cd "$repo_dir" || return 1
 
+    local is_dirty=false
+    if [[ -n "$(git status --porcelain -uno)" ]]; then
+        is_dirty=true
+    fi
+
     # Check for dirty working tree (ignoring untracked files)
-    if [[ -n "$(git status --porcelain -uno)" ]] && [[ "$FORCE" != "true" ]]; then
+    if [[ "$is_dirty" == "true" ]] && [[ "$FORCE" != "true" ]]; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] [WARN] Uncommitted changes detected in $repo_dir on $(hostname). Skipping sync to prevent data loss."
         return 0
     fi
@@ -54,13 +59,13 @@ sync_repo() {
     local_sha=$(git rev-parse HEAD)
     remote_sha=$(git rev-parse "origin/$branch")
 
-    if [[ "$local_sha" == "$remote_sha" ]]; then
+    if [[ "$local_sha" == "$remote_sha" ]] && { [[ "$FORCE" != "true" ]] || [[ "$is_dirty" == "false" ]]; }; then
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] [OK] $repo_dir on $(hostname) is already up to date (${local_sha:0:7})."
         return 0
     fi
 
     if [[ "$FORCE" == "true" ]]; then
-        git reset --hard "origin/$branch"
+        git reset --hard "origin/$branch" >/dev/null
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] [RESET] $repo_dir on $(hostname) force-reset to origin/$branch (${remote_sha:0:7})."
     else
         if git merge --ff-only "origin/$branch" >/dev/null 2>&1; then
@@ -72,6 +77,8 @@ sync_repo() {
     fi
 }
 
-sync_repo "/opt/homelab-repo" "main"
-sync_repo "/opt/de-portfolio" "main"
+rc=0
+sync_repo "/opt/homelab-repo" "main" || rc=1
+sync_repo "/opt/de-portfolio" "main" || rc=1
+exit "$rc"
 
