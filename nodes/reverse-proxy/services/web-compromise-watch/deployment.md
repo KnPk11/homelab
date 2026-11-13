@@ -1,6 +1,6 @@
 # Web-Compromise Watch Deployment
 
-> **Node:** [reverse-proxy](../../deployment.md) (`192.168.50.101`) | **Service Kind:** systemd service (`exec-watch.service`)  
+> **Node:** [reverse-proxy](../../deployment.md) (`192.168.50.101`) | **Service Kind:** systemd service (`web-compromise-exec-watch.service`)  
 > **Prerequisite:** Host bootstrapped via the [reverse-proxy Master Guide](../../deployment.md).
 
 ## 1. Overview & Scope on reverse-proxy
@@ -25,7 +25,7 @@
 | `nodes/reverse-proxy/services/web-compromise-watch/telegram.env` | In-repo SOPS-encrypted Telegram bot token and chat ID |
 | `/srv/homelab-watch/telegram.env` | Runtime secret credentials (mode `600`, not in Git) |
 | `/srv/web-compromise-watch/exec-watch.env` | Host-specific execution filter configuration (mode `600`) |
-| `/etc/systemd/system/exec-watch.service` | Production systemd unit |
+| `/etc/systemd/system/web-compromise-exec-watch.service` | Production systemd unit |
 
 ---
 
@@ -43,9 +43,9 @@
    ```bash
    sudo /opt/homelab-repo/shared/observability/web-compromise-watch/deploy.sh
    ```
-   *(This generates `/srv/web-compromise-watch/exec-watch.env` for `reverse-proxy`, copies the binary to `/usr/local/sbin/web-compromise-exec-watch`, and enables `exec-watch.service`).*
+   *(This generates `/srv/web-compromise-watch/exec-watch.env` for `reverse-proxy`, copies the binary to `/usr/local/sbin/web-compromise-exec-watch`, and enables `web-compromise-exec-watch.service`).*
 
 3. **Verify Service Health:**
    ```bash
-   sudo systemctl status exec-watch.service
+   sudo systemctl status web-compromise-exec-watch.service
    ```

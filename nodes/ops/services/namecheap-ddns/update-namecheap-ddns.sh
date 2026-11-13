@@ -30,7 +30,7 @@ source "$ENV_FILE"
 # Required variables
 DOMAIN="${DOMAIN:-}"
 PASSWORD="${PASSWORD:-}"
-LOGFILE="${LOGFILE:-$HOME/namecheap-ddns.log}"
+LOGFILE="${LOGFILE:-}"
 
 # Default hosts to update (e.g. 'ip')
 if [[ -z "${HOSTS:-}" ]]; then

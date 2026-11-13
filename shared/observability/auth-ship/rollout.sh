@@ -18,6 +18,7 @@ DEFAULT_HOSTS=(
   pbs
   k8s
   scratch-pc
+  ops
 )
 
 HOSTS=("${DEFAULT_HOSTS[@]}")

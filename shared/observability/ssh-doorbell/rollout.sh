@@ -29,6 +29,7 @@ DEFAULT_HOSTS=(
   k8s
   scratch-pc
   syslog
+  ops
 )
 
 HOSTS=("${DEFAULT_HOSTS[@]}")

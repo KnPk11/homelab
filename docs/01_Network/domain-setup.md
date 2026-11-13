@@ -129,8 +129,8 @@ sudo apt install dnsutils
 ```
 
 ### 2. Configuration
-1. Update the custom DDNS updater script (e.g., `update-ddns.sh`) with your subdomain keys.
+1. Update the custom DDNS updater script (e.g., `update-namecheap-ddns.sh`) with your subdomain keys.
 2. Set the script to run via `crontab`:
 ```bash
-*/10 * * * * /[PATH-TO-SCRIPT]/update-ddns.sh
+*/10 * * * * /[PATH-TO-SCRIPT]/update-namecheap-ddns.sh
 ```

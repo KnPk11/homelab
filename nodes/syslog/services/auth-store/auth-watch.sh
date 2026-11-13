@@ -56,7 +56,7 @@ PY
   fi
 fi
 
-HOSTS="${AUTH_WATCH_HOSTS:-proxmox-host,docker-services,nas,lab-vm,reverse-proxy,ai-tools,dns,pulse,vpns,pbs,k8s,scratch-pc}"
+HOSTS="${AUTH_WATCH_HOSTS:-proxmox-host,docker-services,nas,lab-vm,reverse-proxy,ai-tools,dns,pulse,vpns,pbs,k8s,scratch-pc,ops}"
 IFS=',' read -r -a arr <<< "$HOSTS"
 for h in "${arr[@]}"; do
   h="${h// /}"

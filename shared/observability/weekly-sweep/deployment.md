@@ -23,7 +23,7 @@ Host lists live **here**, not in `nodes/*/deployment.md`. Same idea as the [SSH 
 | `proxmox-host` | reboot, planted files |
 | `reverse-proxy` | reboot, crowdsec, planted files |
 | `docker-services` | reboot, planted files |
-| `dns`, `k8s`, `lab-vm`, `nas`, `pbs`, `pulse`, `scratch-pc`, `vpns` | reboot, planted files |
+| `dns`, `k8s`, `lab-vm`, `nas`, `ops`, `pbs`, `pulse`, `scratch-pc`, `vpns` | reboot, planted files |
 
 Timers run **on each box**. They do not use God Mode (`ai-key-unlock`). DSTNAT uses `~/.ssh/id_ed25519_mt_backup` like MikroTik capture.
 

@@ -56,16 +56,22 @@ declare -A NODES=(
     ["docker-services"]="192.168.50.95"
     ["nas"]="192.168.50.90"
     ["lab-vm"]="192.168.50.91"
+    ["k8s"]="192.168.50.96"
+    ["scratch-pc"]="192.168.50.85"
     ["ops"]="192.168.50.112"
 )
 PATH_SWEEPS=(
     "reverse-proxy:/srv"
     "dns:/srv"
     "ops:/srv"
+    "k8s:/srv"
+    "lab-vm:/srv"
+    "scratch-pc:/srv"
     "docker-services:/srv"
     "docker-services:/opt/scripts/Security"
     # Public web-apps clone (story-cards/.env; other apps may add .env later)
     "lab-vm:/opt/web-apps"
+    "scratch-pc:/opt/web-apps"
     "nas:/opt/scripts/Security"
     "proxmox-host:/opt/scripts/Security"
     # Kopia client config + password (next to backup scripts)
@@ -128,6 +134,12 @@ else
     echo "WARNING: SSH_AUTH_SOCK unset — passphrase-protected keys will fail (run ai-key-unlock)."
 fi
 
+# Verify God Mode SSH works BEFORE purging the existing backup directory.
+if ! require_root_ssh "proxmox-host" "${NODES["proxmox-host"]}"; then
+    echo "Aborting before purging $BACKUP_DIR." >&2
+    exit 1
+fi
+
 echo "Purging previous backups in $BACKUP_DIR..."
 rm -rf "$BACKUP_DIR"
 mkdir -p "$BACKUP_DIR"
@@ -143,33 +155,38 @@ done
 HOMELAB_IP="${NODES["docker-services"]}"
 OPENCLAW_IP="${NODES["lab-vm"]}"
 
-echo "Backing up /home/k/.openclaw on lab-vm..."
-DEST="$(vault_path "lab-vm" "/home/k/.openclaw")"
-mkdir -p "$DEST"
-ssh_root "$OPENCLAW_IP" "cat /home/k/.openclaw/openclaw.json" \
-    > "$DEST/openclaw.json" 2>/dev/null || true
+pull_remote_file() {
+    local ip="$1" remote_file="$2" local_dest="$3"
+    local tmp
+    tmp="$(mktemp)"
+    if ssh_root "$ip" "test -f \"$remote_file\" && cat \"$remote_file\"" > "$tmp" 2>/dev/null && [[ -s "$tmp" ]]; then
+        mkdir -p "$(dirname "$local_dest")"
+        mv "$tmp" "$local_dest"
+    else
+        rm -f "$tmp"
+    fi
+}
 
-echo "Backing up /home/k/.hermes on lab-vm..."
-DEST="$(vault_path "lab-vm" "/home/k/.hermes")"
-mkdir -p "$DEST"
-ssh_root "$OPENCLAW_IP" "cat /home/k/.hermes/config.yaml" \
-    > "$DEST/config.yaml" 2>/dev/null || true
-ssh_root "$OPENCLAW_IP" "cat /home/k/.hermes/.env" \
-    > "$DEST/.env" 2>/dev/null || true
-ssh_root "$OPENCLAW_IP" "cat /home/k/.hermes/auth.json" \
-    > "$DEST/auth.json" 2>/dev/null || true
+if require_root_ssh "lab-vm" "$OPENCLAW_IP"; then
+    echo "Backing up /home/k/.openclaw on lab-vm..."
+    DEST="$(vault_path "lab-vm" "/home/k/.openclaw")"
+    pull_remote_file "$OPENCLAW_IP" "/home/k/.openclaw/openclaw.json" "$DEST/openclaw.json"
 
-echo "Backing up /opt/paperclip on lab-vm..."
-DEST="$(vault_path "lab-vm" "/opt/paperclip/data/instances/default")"
-mkdir -p "$DEST/secrets"
-ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/.env" \
-    > "$DEST/.env" 2>/dev/null || true
-ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/config.json" \
-    > "$DEST/config.json" 2>/dev/null || true
-ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/secrets/master.key" \
-    > "$DEST/secrets/master.key" 2>/dev/null || true
-ssh_root "$OPENCLAW_IP" "cat /opt/paperclip/data/instances/default/secrets/decision-signing.key" \
-    > "$DEST/secrets/decision-signing.key" 2>/dev/null || true
+    echo "Backing up /home/k/.hermes on lab-vm..."
+    DEST="$(vault_path "lab-vm" "/home/k/.hermes")"
+    pull_remote_file "$OPENCLAW_IP" "/home/k/.hermes/config.yaml" "$DEST/config.yaml"
+    pull_remote_file "$OPENCLAW_IP" "/home/k/.hermes/.env" "$DEST/.env"
+    pull_remote_file "$OPENCLAW_IP" "/home/k/.hermes/auth.json" "$DEST/auth.json"
+
+    echo "Backing up /opt/paperclip on lab-vm..."
+    DEST="$(vault_path "lab-vm" "/opt/paperclip/data/instances/default")"
+    pull_remote_file "$OPENCLAW_IP" "/opt/paperclip/data/instances/default/.env" "$DEST/.env"
+    pull_remote_file "$OPENCLAW_IP" "/opt/paperclip/data/instances/default/config.json" "$DEST/config.json"
+    pull_remote_file "$OPENCLAW_IP" "/opt/paperclip/data/instances/default/secrets/master.key" "$DEST/secrets/master.key"
+    pull_remote_file "$OPENCLAW_IP" "/opt/paperclip/data/instances/default/secrets/decision-signing.key" "$DEST/secrets/decision-signing.key"
+else
+    echo "Warning: skipped lab-vm explicit files (root SSH to lab-vm failed)"
+fi
 
 # AnyType self-host (docker-services) — YAML/identity not matched by env/secret globs.
 # PATH_SWEEPS already gets /srv/anytype-sync-logic/.env (+ .env.override if present).

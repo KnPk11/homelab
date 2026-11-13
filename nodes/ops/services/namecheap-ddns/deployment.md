@@ -23,7 +23,6 @@ cat << 'SEC' > /srv/namecheap-ddns/ddns.env
 DOMAIN="yourdomain.com"
 PASSWORD="your_namecheap_ddns_password"
 HOSTS="ip"
-LOGFILE="$HOME/namecheap-ddns.log"
 SEC
 chmod 600 /srv/namecheap-ddns/ddns.env
 ```

@@ -21,6 +21,8 @@ Successful `sshd` login → Homelab Watch. `session optional` on `/etc/pam.d/ssh
 | `pbs` | Backups |
 | `k8s` | k3s |
 | `scratch-pc` | Least-trusted workstation — still has SSH |
+| `syslog` | Off-box auth logs |
+| `ops` | Operations & automation LXC |
 
 Logic lives only here. **Do not copy this into `nodes/`.** `rollout.sh` loops `DEFAULT_HOSTS` (the table above) and runs `deploy.sh` on each box — that creates `/usr/local/sbin/ssh-telegram-notify` → this directory in the clone. New machine: add it to `DEFAULT_HOSTS` in `rollout.sh`.
 

@@ -20,6 +20,9 @@ Then LLM → Homelab Watch. God Mode stays loaded for your usual TTL; pass `--lo
 `--llm agy` or `--llm grok` is **required** (no default). Antigravity runs `agy --print --mode plan --sandbox --json-schema`. Optional `AUDIT_MODEL` in `/etc/default/monthly-audit`. Do not use `agy --dangerously-skip-permissions`.
 
 ```bash
+# Symlink tracked script into /usr/local/sbin on ai-tools:
+sudo ln -sfn /opt/dev/homelab_repo/nodes/ai-tools/services/monthly-audit/monthly-audit.sh /usr/local/sbin/monthly-audit
+
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh
 monthly-audit --light --llm agy
 monthly-audit --light --llm grok

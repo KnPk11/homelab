@@ -29,6 +29,11 @@ if ! docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
 fi
 
 # 3. Execute atomic gitea dump inside the container
+cleanup() {
+    docker exec -u git "$CONTAINER_NAME" rm -f "$TEMP_DUMP" >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
 echo "Running atomic 'gitea dump' inside container '${CONTAINER_NAME}'..."
 docker exec -u git -w /tmp "$CONTAINER_NAME" gitea dump \
     --work-path /data/gitea \
@@ -40,10 +45,11 @@ DEST_FILE="$BACKUP_ROOT/gitea_dump_${TIMESTAMP}.zip"
 
 echo "Copying dump archive to $DEST_FILE..."
 docker cp "${CONTAINER_NAME}:${TEMP_DUMP}" "$DEST_FILE"
-chmod 644 "$DEST_FILE"
+chmod 600 "$DEST_FILE"
 
 # Clean up temp file inside container
-docker exec -u git "$CONTAINER_NAME" rm -f "$TEMP_DUMP"
+cleanup
+trap - EXIT
 
 # 5. Prune backups older than 7 days
 echo "Pruning snapshots older than 7 days in $BACKUP_ROOT..."

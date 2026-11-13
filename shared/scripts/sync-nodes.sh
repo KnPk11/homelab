@@ -47,6 +47,7 @@ ALL_NODES=(
     "pulse"
     "vpns"
     "pbs"
+    "syslog"
 )
 
 STATUS_ONLY=false

@@ -21,6 +21,7 @@ CHECKS[nas]=reboot
 CHECKS[pbs]=reboot
 CHECKS[pulse]=reboot
 CHECKS[vpns]=reboot
+CHECKS[ops]=reboot
 
 if [[ -f "$MANIFEST" ]]; then
   while IFS=$'\t' read -r host path; do

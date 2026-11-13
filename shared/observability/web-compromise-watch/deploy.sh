@@ -78,10 +78,10 @@ EOF
 write_exec_env
 
 ln -sfn "$REPO_DIR/telegram-send.sh" /usr/local/sbin/homelab-watch-send
-ln -sfn "$REPO_DIR/exec-watch.sh" /usr/local/sbin/web-compromise-exec-watch
-ln -sfn "$REPO_DIR/docker-events-watch.py" /usr/local/sbin/web-compromise-docker-events
-install -m 644 "$REPO_DIR/exec-watch.service" /etc/systemd/system/web-compromise-exec-watch.service
-install -m 644 "$REPO_DIR/docker-events-watch.service" /etc/systemd/system/web-compromise-docker-events.service
+ln -sfn "$REPO_DIR/web-compromise-exec-watch.sh" /usr/local/sbin/web-compromise-exec-watch
+ln -sfn "$REPO_DIR/web-compromise-docker-events.py" /usr/local/sbin/web-compromise-docker-events
+install -m 644 "$REPO_DIR/web-compromise-exec-watch.service" /etc/systemd/system/web-compromise-exec-watch.service
+install -m 644 "$REPO_DIR/web-compromise-docker-events.service" /etc/systemd/system/web-compromise-docker-events.service
 
 systemctl daemon-reload
 systemctl enable --now web-compromise-exec-watch.service
