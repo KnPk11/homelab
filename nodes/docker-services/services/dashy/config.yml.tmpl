@@ -218,6 +218,13 @@ sections:
         url: https://paperclip.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: OpenClaw
+        description: Self-hosted agentic AI orchestration and automation
+        icon: fas fa-robot
+        url: https://openclaw.${HOMELAB_DOMAIN}
+        statusCheck: true
+        # statusCheckAcceptCodes: '200,204,301,302,307,401,403'
+
       - title: Hermes
         description: AI agent dashboard and orchestration for LLM workflows
         icon: fas fa-brain
@@ -301,9 +308,15 @@ sections:
         url: https://photoprism.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: Immich
+        description: Self-hosted photo and video backup
+        icon: fas fa-images
+        url: https://immich.${HOMELAB_DOMAIN}
+        statusCheck: true
+
       - title: Lychee
         description: Photo gallery & album management
-        icon: fas fa-images
+        icon: fas fa-image
         url: https://lychee.${HOMELAB_DOMAIN}
         statusCheck: true
 
@@ -518,6 +531,12 @@ sections:
         url: https://paperclip.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: OpenClaw
+        description: Self-hosted agentic AI orchestration and automation
+        icon: fas fa-robot
+        url: https://openclaw.${HOMELAB_DOMAIN}
+        statusCheck: true
+
       - title: Hermes
         description: AI agent dashboard and orchestration for LLM workflows
         icon: fas fa-brain
@@ -561,6 +580,12 @@ sections:
         url: https://nextcloud.${HOMELAB_DOMAIN}
         statusCheck: true
 
+      - title: Immich
+        description: Self-hosted photo and video backup
+        icon: fas fa-images
+        url: https://immich.${HOMELAB_DOMAIN}
+        statusCheck: true
+
       - title: Jellyfin
         description: Media server
         icon: fas fa-film
@@ -575,7 +600,7 @@ sections:
 
       - title: Lychee
         description: Photo gallery & album management
-        icon: fas fa-images
+        icon: fas fa-image
         url: https://lychee.${HOMELAB_DOMAIN}
         statusCheck: true
 
@@ -636,6 +661,12 @@ sections:
         description: Workflow orchestration & scheduling
         icon: fas fa-project-diagram
         url: https://airflow.${HOMELAB_DOMAIN}/
+        statusCheck: true
+
+      - title: dbt
+        description: Data transformation lineage & documentation
+        icon: fas fa-database
+        url: https://dbt.${HOMELAB_DOMAIN}
         statusCheck: true
 
       - title: Apache Spark
