@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run_mikrotik_insights.sh
+# run-mikrotik-insights.sh
 # Version: 1.0
 # Date: 2026-08-11
 #

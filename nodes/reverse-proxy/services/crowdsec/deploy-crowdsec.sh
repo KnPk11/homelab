@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_crowdsec.sh
+# deploy-crowdsec.sh
 # Version: 1.4
 # Date: 2026-09-01
 #
@@ -8,7 +8,7 @@
 # /srv/crowdsec/crowdsec.env secrets) and restart CrowdSec services.
 #
 # Usage:
-#   sudo ./deploy_crowdsec.sh
+#   sudo ./deploy-crowdsec.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/crowdsec/crowdsec.env"

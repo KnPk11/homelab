@@ -19,7 +19,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 | Component | Type | Schedule / Trigger | Runbook |
 | :--- | :--- | :--- | :--- |
 | **Thermal Safety Watchdog** | Service / Timer | Every 30s (`systemd`) | [deployment.md](services/thermal-watchdog/deployment.md) |
-| **Guest Snapshots** | Script | Daily at 02:00 (`cron`) | `0 2 * * * /usr/local/bin/proxmox_snapshot.sh` |
+| **Guest Snapshots** | Script | Daily at 02:00 (`cron`) | `0 2 * * * /usr/local/bin/proxmox-snapshot.sh` |
 | **Cluster Firewall** | Script | On boot / network change | [`scripts/firewall.sh`](scripts/firewall.sh) *(see below)* |
 | **SSH Doorbell** | Observability | PAM `sshd` login | [deployment.md](../../shared/observability/ssh-doorbell/deployment.md) |
 | **Intel TCO Hardware Watchdog** | Hardware | Autonomous PCH reset | [intel-hardware-watchdog.md](../../docs/00_Infrastructure/proxmox/intel-hardware-watchdog.md) |

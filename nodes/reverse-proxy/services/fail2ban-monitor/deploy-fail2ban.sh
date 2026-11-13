@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_fail2ban.sh
+# deploy-fail2ban.sh
 # Version: 1.3
 # Date: 2026-08-29
 #
@@ -8,7 +8,7 @@
 # CrowdSec action + ban monitor script, restart fail2ban and fail2ban-monitor.
 #
 # Usage:
-#   sudo ./deploy_fail2ban.sh
+#   sudo ./deploy-fail2ban.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 

@@ -127,7 +127,7 @@ TOKEN=$(kubectl create token spark -n spark --duration=24h)
 
 ### Security scan (Caddy + Fail2Ban + CrowdSec + MikroTik)
 
-Job: `caddy_security_scan.py` (maintained in `/opt/de-portfolio/spark/`) · runner: [`run_caddy_security_scan.sh`](../../../nodes/k8s/services/spark/run_caddy_security_scan.sh)
+Job: `caddy_security_scan.py` (maintained in `/opt/de-portfolio/spark/`) · runner: [`run-caddy-security-scan.sh`](../../../nodes/k8s/services/spark/run-caddy-security-scan.sh)
 
 | Source | What is scanned |
 | :--- | :--- |
@@ -139,10 +139,10 @@ Point at reverse-proxy layout (`/mnt/logs` or a staged copy) so both live and ro
 
 ```bash
 # Live SMB/NFS mount of reverse-proxy logs:
-LOGS_ROOT=/mnt/logs ./nodes/k8s/services/spark/run_caddy_security_scan.sh --skip-stage
+LOGS_ROOT=/mnt/logs ./nodes/k8s/services/spark/run-caddy-security-scan.sh --skip-stage
 
 # Or stage current+archive via rsync (from a host that can SSH reverse-proxy):
-./nodes/k8s/services/spark/run_caddy_security_scan.sh
+./nodes/k8s/services/spark/run-caddy-security-scan.sh
 # → stages to /var/spark/logs-root, then:
 # python3 … --logs-root /var/spark/logs-root
 ```

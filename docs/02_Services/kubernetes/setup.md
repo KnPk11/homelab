@@ -13,7 +13,7 @@ K3s is a lightweight, fully CNCF-certified Kubernetes distribution packaged as a
 * **Control Plane Host**: `[CONTROL-PLANE-HOST]` (`[CONTROL-PLANE-IP]`)
 * **Worker Nodes**: Compute / worker nodes running the `k3s` agent
 * **Storage Location**: `/srv/k8s/`
-* **Provisioning Script**: `nodes/k8s/scripts/setup_k3s.sh`
+* **Provisioning Script**: `nodes/k8s/scripts/setup-k3s.sh`
 * **Dashboard Admin Manifest**: `nodes/k8s/services/dashboard/dashboard-admin.yaml`
 * **Reverse Proxy**: Caddy → NodePort (apps + Headlamp UI)
 
@@ -34,7 +34,7 @@ On the dedicated control-plane host (`[CONTROL-PLANE-IP]`):
 
 ```bash
 # Run version-controlled hardened setup script
-/opt/dev/homelab_repo/nodes/k8s/scripts/setup_k3s.sh
+/opt/dev/homelab_repo/nodes/k8s/scripts/setup-k3s.sh
 ```
 
 ### Worker Node Join (Multi-Node Compute)
@@ -60,7 +60,7 @@ cat /srv/k8s/data/server/node-token
 
 ## 4. Cluster Security Hardening & Controls
 
-The k3s control plane enables these hardening layers via `setup_k3s.sh`:
+The k3s control plane enables these hardening layers via `setup-k3s.sh`:
 
 - **Secrets Encryption at Rest (`--secrets-encryption`)**: All Kubernetes `Secret` objects stored under `/srv/k8s/data/server/db/` are encrypted using keys under `/srv/k8s/data/server/cred/encryption-config.json`.
 - **Strict Kubeconfig File Permissions (`--write-kubeconfig-mode=600`)**: Restricts `/etc/rancher/k3s/k3s.yaml` to mode `600` (`root:root`), so unprivileged host users cannot read cluster credentials.

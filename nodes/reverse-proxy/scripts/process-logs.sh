@@ -8,7 +8,7 @@
 # Must be run as root; usually via cron.
 #
 # Usage:
-#   sudo ./process_logs.sh
+#   sudo ./process-logs.sh
 # =============================================================================
 set -euo pipefail
 shopt -s nullglob

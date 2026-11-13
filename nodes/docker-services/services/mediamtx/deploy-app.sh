@@ -1,13 +1,13 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.1
 # Date: 2026-07-10
 #
 # Deploy MediaMTX config from repo templates with local secrets.
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/mediamtx/.env"

@@ -51,17 +51,17 @@ sudo apt update
 
 ### 5.1 Block Spacing & Lists
 - **Blank Lines**: ALWAYS include exactly one blank line between descriptive text and a code block to ensure clean parsing and readability.
-- **List Alignment**: When a code block is inside a list, ensure the code block fences (```) are aligned with the first character of the text in the list item, preceded by a blank line.
+- **List Alignment**: When a code block is inside a list, ensure the code block fences (`` ``` ``) are aligned with the first character of the text in the list item, preceded by a blank line.
   - **Numbered Lists (`1. `)**: Use exactly **3 spaces** of indentation.
   - **Bulleted Lists (`- `)**: Use exactly **2 spaces** of indentation.
   - *Example*:
-    ```markdown
+    ````markdown
     1. **Step Name**
        
        ```bash
        command-here
        ```
-    ```
+    ````
 
 ### 5.2 List Spacing (Compact vs. Loose)
 - **Compact Lists**: For simple lists of short items or single sentences, do NOT include blank lines between items. This maintains a clean and professional look.

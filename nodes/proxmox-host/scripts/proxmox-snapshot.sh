@@ -8,7 +8,7 @@
 # PATH set for cron; include-RAM off by default.
 #
 # Usage:
-#   0 2 * * * /path/to/proxmox_snapshot.sh   # daily 02:00
+#   0 2 * * * /path/to/proxmox-snapshot.sh   # daily 02:00
 # =============================================================================
 set -e
 

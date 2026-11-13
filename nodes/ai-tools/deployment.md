@@ -6,12 +6,12 @@ This node is the **management / AI tooling** host. It holds the primary working 
 
 This node follows **Infrastructure as Intent**: prefer tracked scripts and docs in Git; keep real secrets and generated exports out of the remote repository.
 
-**Secrets are not in Git.** Central vault: `/opt/dev/secrets_vault/`. Per-node secrets live on each host under `/srv/…` or `/opt/scripts/…` and are pulled here by `nodes/ai-tools/services/configs-and-secrets-backup/scrape_configs_and_secrets.sh`. After a nuke-and-pave of this host, restore the vault (and any local keys/SSH config) before relying on scrape/cron jobs.
+**Secrets are not in Git.** Central vault: `/opt/dev/secrets_vault/`. Per-node secrets live on each host under `/srv/…` or `/opt/scripts/…` and are pulled here by `nodes/ai-tools/services/configs-and-secrets-backup/scrape-configs-and-secrets.sh`. After a nuke-and-pave of this host, restore the vault (and any local keys/SSH config) before relying on scrape/cron jobs.
 
 *   **Secrets Vault (`/opt/dev/secrets_vault/`)**:
     *   This directory contains raw runtime secrets (`.env` files, SSH keys, TLS certificates) scraped from nodes.
     *   It is excluded from Git to prevent accidental leaks of production credentials.
-    *   *Security Note: Do NOT schedule `scrape_configs_and_secrets.sh` in crontab anymore. Run it purely on-demand so you can immediately move the generated vault offline, minimising the window that secrets sit on this AI host.*
+    *   *Security Note: Do NOT schedule `scrape-configs-and-secrets.sh` in crontab anymore. Run it purely on-demand so you can immediately move the generated vault offline, minimising the window that secrets sit on this AI host.*
 
 ---
 

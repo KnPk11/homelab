@@ -9,7 +9,7 @@
 #
 # Usage:
 #   sudo kopia-backup [data|srv|docker|maintenance]
-#   sudo /opt/scripts/Backups/Kopia/homelab_backup_kopia.sh ...
+#   sudo /opt/scripts/Backups/Kopia/homelab-backup-kopia.sh ...
 # =============================================================================
 set -euo pipefail
 umask 0002
@@ -44,7 +44,7 @@ fi
 
 if [[ ! -f "$KOPIA_CONFIG_FILE" ]]; then
   log "ERROR: missing $KOPIA_CONFIG_FILE"
-  log "Restore config + .kopia-password from secrets vault, or run initialise_repository.sh once."
+  log "Restore config + .kopia-password from secrets vault, or run initialise-repository.sh once."
   exit 1
 fi
 

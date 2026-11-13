@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# scrape_configs_and_secrets.sh
+# scrape-configs-and-secrets.sh
 # Version: 2.15
 # Date: 2026-10-31
 #
@@ -9,7 +9,7 @@
 # Move vault offline after the run.
 #
 # Usage:
-#   ai-key-unlock && ./scrape_configs_and_secrets.sh
+#   ai-key-unlock && ./scrape-configs-and-secrets.sh
 # =============================================================================
 set -euo pipefail
 

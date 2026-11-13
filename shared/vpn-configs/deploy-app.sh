@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.1
 # Date: 2026-07-26
 #
@@ -8,7 +8,7 @@
 # for Portainer/consumers (source tree is outside Git).
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 set -euo pipefail
 

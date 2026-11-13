@@ -107,7 +107,7 @@ ai-key-unlock
 # ensure agent is loaded in this shell
 source ~/.ssh/ai-key-agent.sh
 
-/opt/dev/homelab_repo/nodes/ai-tools/services/configs-and-secrets-backup/scrape_configs_and_secrets.sh
+/opt/dev/homelab_repo/nodes/ai-tools/services/configs-and-secrets-backup/scrape-configs-and-secrets.sh
 ```
 
 - **Output:** `/opt/dev/secrets_vault/configs_and_secrets/` (layout mirrors remote paths).
@@ -145,7 +145,7 @@ Runs on **docker-services**. Scripts are tracked in Git and symlinked under `/op
 
 | Path | Role |
 | :--- | :--- |
-| `/opt/scripts/Backups/Kopia/homelab_backup_kopia.sh` | Backup runner (symlink) |
+| `/opt/scripts/Backups/Kopia/homelab-backup-kopia.sh` | Backup runner (symlink) |
 | `/opt/scripts/Backups/Kopia/config/main-repo.config` | Client config (secret) |
 | `/opt/scripts/Backups/Kopia/config/main-repo.config.kopia-password` | Repo password (secret) |
 | `/opt/scripts/Backups/Kopia/global.kopiaignore` | Exclusion list |
@@ -165,23 +165,23 @@ Runs on **docker-services**. Scripts are tracked in Git and symlinked under `/op
 Stop Docker only if you need consistent volume snapshots for write-heavy stacks (recommended for a full `docker` pass):
 
 ```bash
-sudo /opt/homelab-repo/nodes/docker-services/scripts/docker_ctl.sh stop
+sudo /opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh stop
 
 sudo kopia-backup data
 sudo kopia-backup srv
 sudo kopia-backup docker
 sudo kopia-backup maintenance
 
-sudo /opt/homelab-repo/nodes/docker-services/scripts/docker_ctl.sh start
+sudo /opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh start
 ```
 
 If scripts are installed as documented:
 
 ```bash
-sudo docker_ctl.sh stop    # if that name is on PATH
+sudo docker-ctl.sh stop    # if that name is on PATH
 sudo kopia-backup srv
 # …
-sudo docker_ctl.sh start
+sudo docker-ctl.sh start
 ```
 
 Then copy or sync the **repository** on the NAS to offline/offsite media and spot-check in Kopia UI or CLI.

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# prune_vscode_server.sh
+# prune-vscode-server.sh
 # Version: 1.0
 # Date: 2026-08-12
 #
@@ -22,9 +22,9 @@
 #   - Cached .vsix installer files and temporary directories (--prune-cache)
 #
 # Usage (run on the node itself, e.g. via cron or ansible):
-#   ./prune_vscode_server.sh              # dry-run
-#   ./prune_vscode_server.sh --apply
-#   ./prune_vscode_server.sh --apply --all
+#   ./prune-vscode-server.sh              # dry-run
+#   ./prune-vscode-server.sh --apply
+#   ./prune-vscode-server.sh --apply --all
 # =============================================================================
 set -euo pipefail
 
@@ -144,7 +144,7 @@ def running_commits() -> set[str]:
         cmd = raw.replace(b"\0", b" ").decode("utf-8", "ignore")
         if not cmd:
             continue
-        if "python" in cmd.split(" ", 1)[0] and "prune_vscode_server" in cmd:
+        if "python" in cmd.split(" ", 1)[0] and ("prune-vscode-server" in cmd or "prune_vscode_server" in cmd):
             continue
         if any(k in cmd for k in ("vscode-server", "cursor-server", "code-server", "vscode")):
             for m in re.finditer(r"([0-9a-f]{40})", cmd):

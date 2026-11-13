@@ -17,7 +17,7 @@ A step-by-step runbook for migrating Docker, containerd, and data directories fr
 ### Stop Docker
 
 ```bash
-/data/scripts/Utilities/docker_ctl.sh stop
+/opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh stop
 ```
 
 ### Clean Up (Optional but Recommended)
@@ -137,7 +137,7 @@ df -h
 ## Phase 6: Restart & Verify
 
 ```bash
-/data/scripts/Utilities/docker_ctl.sh start
+/opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh start
 ```
 
 Verify containers start correctly and volumes are accessible.

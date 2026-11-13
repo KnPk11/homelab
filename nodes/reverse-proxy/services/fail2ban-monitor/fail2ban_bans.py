@@ -8,7 +8,7 @@ Date: 2026-08-29
 HTTP widget of bans in a rolling 24h window.
 
 CrowdSec `cscli alerts list` defaults to 50 rows, and Fail2Ban/CrowdSec logs
-are truncated nightly by process_logs.sh. Neither is a reliable 24h source.
+are truncated nightly by process-logs.sh. Neither is a reliable 24h source.
 This process appends each observed ban to a JSONL history file and serves
 only that file, filtered to the last 24 hours.
 

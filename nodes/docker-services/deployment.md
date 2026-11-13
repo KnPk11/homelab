@@ -76,13 +76,13 @@ Host-local firewall rules are managed via the tracked script [`scripts/ufw.sh`](
 
 ## 3. Host Utilities & Maintenance
 
-- **Docker Service Lifecycle (`scripts/docker_ctl.sh`):**
+- **Docker Service Lifecycle (`scripts/docker-ctl.sh`):**
   Stops or starts Docker socket, daemon, and containerd cleanly for host maintenance without triggering systemd auto-restarts:
   ```bash
-  sudo /opt/homelab-repo/nodes/docker-services/scripts/docker_ctl.sh stop
-  sudo /opt/homelab-repo/nodes/docker-services/scripts/docker_ctl.sh start
+  sudo /opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh stop
+  sudo /opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh start
   ```
-- **Network Wait Helper (`scripts/wait_for_network.sh`):**
+- **Network Wait Helper (`scripts/wait-for-network.sh`):**
   Blocks execution until `ens18` receives static IP `192.168.50.95`. Utilised in systemd unit startup sequences.
 - **Web-Compromise Watchdog:**
   Monitors Docker daemon socket events and `/proc` cgroups for unauthorised reverse shells or privileged container creation. See **[Web Compromise Watch Guide](../../shared/observability/web-compromise-watch/deployment.md)**.
@@ -167,28 +167,28 @@ All services hosted on `docker-services` are catalogued below:
    ```
 2. Render profiles configuration:
    ```bash
-   sudo /opt/homelab-repo/nodes/docker-services/services/dbt/deploy_app.sh
+   sudo /opt/homelab-repo/nodes/docker-services/services/dbt/deploy-app.sh
    ```
 3. Deploy the stack in Portainer using the compose file in the repository.
 
 ### 6.3 Other Services with Deploy Scripts
 
-The following services utilise a local `deploy_app.sh` script to render configuration templates into `/srv/<service>/` before starting containers:
+The following services utilise a local `deploy-app.sh` script to render configuration templates into `/srv/<service>/` before starting containers:
 
 | Service | Deploy Script | Secret / Environment Location |
 | :--- | :--- | :--- |
-| **Dashy** | `services/dashy/deploy_app.sh` | `/srv/dashy/dashy.env` |
-| **Dozzle** | `services/dozzle/deploy_app.sh` | `/srv/dozzle/dozzle.env` |
-| **Glances** | `services/glances/deploy_app.sh` | `/srv/glances/glances.pwd`, `glances_influx_token.secret` |
-| **Grafana** | `services/grafana/deploy_app.sh` | `/srv/grafana/.env`, `grafana_password.secret` |
-| **MediaMTX** | `services/mediamtx/deploy_app.sh` | `/srv/mediamtx/.env` |
-| **Nextcloud** | `services/nextcloud/deploy_app.sh` | `/srv/nextcloud/.env`, `nextcloud_mysql_password.secret` |
-| **PrivateBin** | `services/privatebin/deploy_app.sh` | `/srv/privatebin/.env` |
+| **Dashy** | `services/dashy/deploy-app.sh` | `/srv/dashy/dashy.env` |
+| **Dozzle** | `services/dozzle/deploy-app.sh` | `/srv/dozzle/dozzle.env` |
+| **Glances** | `services/glances/deploy-app.sh` | `/srv/glances/glances.pwd`, `glances_influx_token.secret` |
+| **Grafana** | `services/grafana/deploy-app.sh` | `/srv/grafana/.env`, `grafana_password.secret` |
+| **MediaMTX** | `services/mediamtx/deploy-app.sh` | `/srv/mediamtx/.env` |
+| **Nextcloud** | `services/nextcloud/deploy-app.sh` | `/srv/nextcloud/.env`, `nextcloud_mysql_password.secret` |
+| **PrivateBin** | `services/privatebin/deploy-app.sh` | `/srv/privatebin/.env` |
 
 Execute any required deploy script from the repository:
 ```bash
 cd /opt/homelab-repo/nodes/docker-services/services/<service>
-sudo ./deploy_app.sh
+sudo ./deploy-app.sh
 ```
 
 ---

@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.2
 # Date: 2026-07-10
 #
@@ -8,7 +8,7 @@
 # (docker-services host).
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/dashy/dashy.env"

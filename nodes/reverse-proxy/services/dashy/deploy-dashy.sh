@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_dashy.sh
+# deploy-dashy.sh
 # Version: 1.1
 # Date: 2026-07-19
 #
@@ -8,7 +8,7 @@
 # (pre-built dist SCP'd from ai-tools or rebuilt locally).
 #
 # Usage:
-#   sudo ./deploy_dashy.sh
+#   sudo ./deploy-dashy.sh
 # =============================================================================
 set -euo pipefail
 

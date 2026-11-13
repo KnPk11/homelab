@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# deploy_adguard.sh
+# deploy-adguard.sh
 # Version: 1.1
 # Date: 2026-07-10
 #
@@ -8,7 +8,7 @@
 # then install live config under /srv/adguard/.
 #
 # Usage:
-#   sudo ./deploy_adguard.sh
+#   sudo ./deploy-adguard.sh
 # =============================================================================
 set -e
 

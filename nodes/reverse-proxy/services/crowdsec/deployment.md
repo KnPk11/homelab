@@ -2,16 +2,16 @@
 
 ## Configuration Templates
 
-CrowdSec configs (e.g. `config.yaml`, bouncers) do not read a `.env` at runtime. We render them into `/etc/crowdsec/` with `envsubst` via `deploy_crowdsec.sh`.
+CrowdSec configs (e.g. `config.yaml`, bouncers) do not read a `.env` at runtime. We render them into `/etc/crowdsec/` with `envsubst` via `deploy-crowdsec.sh`.
 
-Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline in `deploy_crowdsec.sh` — same approach as the UFW scripts. Secrets live under **`/srv/crowdsec/`** so the GitOps clone stays disposable. Templates and the deploy script stay in the repo.
+Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline in `deploy-crowdsec.sh` — same approach as the UFW scripts. Secrets live under **`/srv/crowdsec/`** so the GitOps clone stays disposable. Templates and the deploy script stay in the repo.
 
 ### Layout
 
 | Path | Role |
 | :--- | :--- |
 | `.../crowdsec/*.yaml` (repo) | Tracked templates (`$VAR` placeholders) |
-| `.../crowdsec/deploy_crowdsec.sh` | Inline network vars; sources secrets; renders → `/etc/crowdsec/` |
+| `.../crowdsec/deploy-crowdsec.sh` | Inline network vars; sources secrets; renders → `/etc/crowdsec/` |
 | `.../crowdsec/crowdsec.env.example` | Secrets template (API keys, MikroTik credentials, Telegram) |
 | `.../crowdsec/http.yaml` | Telegram notification template (`TELEGRAM_*` via envsubst) |
 | `.../crowdsec/profiles.yaml` | Ban profiles; `http_default` notifications enabled |
@@ -30,7 +30,7 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
    ```
 2. **Run the deploy script**:
    ```bash
-   sudo /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/deploy_crowdsec.sh
+   sudo /opt/homelab-repo/nodes/reverse-proxy/services/crowdsec/deploy-crowdsec.sh
    ```
 
    This will:
@@ -38,7 +38,7 @@ Network topology (LAPI URL, trusted subnet, MikroTik address) is defined inline 
    - Inject inline network vars + secrets into YAML templates via `envsubst`
    - Restart `crowdsec`, firewall bouncer, and MikroTik bouncer (if present)
 
-To change LAPI bind, trusted subnet, or MikroTik address, edit the topology block at the top of `deploy_crowdsec.sh` and re-run the script.
+To change LAPI bind, trusted subnet, or MikroTik address, edit the topology block at the top of `deploy-crowdsec.sh` and re-run the script.
 
 ### Allowlist (`my-trusted-ips`)
 
@@ -62,4 +62,4 @@ TMPDIR=/tmp cscli notifications test http_default
 (`cscli` as root needs `TMPDIR=/tmp` or the HTTP plugin fails on `/tmp/user/0`.) The CrowdSec service itself already registered `http_default` at start.
 
 > [!NOTE]
-> Do **not** symlink rendered YAML into `/etc/crowdsec/` from the repo. Always use `deploy_crowdsec.sh` after template or secret changes.
+> Do **not** symlink rendered YAML into `/etc/crowdsec/` from the repo. Always use `deploy-crowdsec.sh` after template or secret changes.

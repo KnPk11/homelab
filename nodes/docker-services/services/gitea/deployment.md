@@ -13,7 +13,7 @@ Gitea is deployed on `docker-services` (`192.168.50.95`) as a hardened Docker Co
 1. Decrypt runtime environment file on the host:
    ```bash
    cd /opt/homelab-repo/nodes/docker-services/services/gitea
-   sudo ./deploy_app.sh
+   sudo ./deploy-app.sh
    ```
 2. Deploy or update stack in Portainer:
    - **Name**: `gitea`

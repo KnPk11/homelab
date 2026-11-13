@@ -9,7 +9,7 @@
 # After create, run: sudo kopia-backup maintenance
 #
 # Usage:
-#   sudo ./initialise_repository.sh
+#   sudo ./initialise-repository.sh
 # =============================================================================
 set -euo pipefail
 
@@ -36,4 +36,4 @@ kopia repository create filesystem \
 chmod 600 "$CONFIG_FILE" "${CONFIG_FILE}.kopia-password" 2>/dev/null || true
 
 echo "Done. Password file (if created): ${CONFIG_FILE}.kopia-password"
-echo "Back this directory up via scrape_configs_and_secrets (PATH_SWEEPS includes /opt/scripts/Backups/Kopia)."
+echo "Back this directory up via scrape-configs-and-secrets.sh (PATH_SWEEPS includes /opt/scripts/Backups/Kopia)."

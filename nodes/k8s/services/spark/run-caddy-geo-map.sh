@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run_caddy_geo_map.sh
+# run-caddy-geo-map.sh
 # Version: 1.1
 # Date: 2026-08-12
 #

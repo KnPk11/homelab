@@ -57,7 +57,7 @@ pct enter <CT_ID>                 # shell
 systemctl status pulse
 journalctl -u pulse -f
 /opt/pulse/bin/pulse version
-apt-get install -y rsync          # Required for scrape_configs_and_secrets.sh
+apt-get install -y rsync          # Required for scrape-configs-and-secrets.sh
 ```
 
 ### Update server (in-CT)

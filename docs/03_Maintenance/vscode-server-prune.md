@@ -7,8 +7,8 @@ Remote-SSH leaves old `~/.vscode-server` builds (~600–700 MB each). Small di
 
 ## Script
 
-**Source (repo):** `shared/scripts/prune_vscode_server.sh`  
-**On nodes (until GitOps deploys it):** `/usr/local/sbin/prune_vscode_server.sh`
+**Source (repo):** `shared/scripts/prune-vscode-server.sh`  
+**On nodes (until GitOps deploys it):** `/usr/local/sbin/prune-vscode-server.sh`
 
 Universal **on-host** cleaner (run on the machine itself — not multi-SSH).
 
@@ -20,10 +20,10 @@ Universal **on-host** cleaner (run on the machine itself — not multi-SSH).
 
 ```bash
 # dry-run
-sudo /usr/local/sbin/prune_vscode_server.sh --keep-extra 1
+sudo /usr/local/sbin/prune-vscode-server.sh --keep-extra 1
 
 # apply (typical weekly)
-sudo /usr/local/sbin/prune_vscode_server.sh --apply --keep-extra 1 --all
+sudo /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 1 --all
 ```
 
 `--all` also dedupes extensions, prunes old logs/history, and clears VSIX cache.
@@ -35,7 +35,7 @@ sudo /usr/local/sbin/prune_vscode_server.sh --apply --keep-extra 1 --all
 Installed as **root**, every **3 days at 03:00** (before the PBS guest backup window):
 
 ```cron
-0 3 */3 * * /usr/local/sbin/prune_vscode_server.sh --apply --keep-extra 1 --all >> /var/log/prune-vscode-server.log 2>&1
+0 3 */3 * * /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 1 --all >> /var/log/prune-vscode-server.log 2>&1
 ```
 
 Log: `/var/log/prune-vscode-server.log`

@@ -1,13 +1,13 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.1
 # Date: 2026-07-10
 #
 # Template PrivateBin conf.php using /srv/privatebin/.env (not the GitOps clone).
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/privatebin/.env"

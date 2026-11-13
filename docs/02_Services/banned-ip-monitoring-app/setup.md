@@ -65,7 +65,7 @@ sudo systemctl enable --now fail2ban-monitor
 > [!WARNING]
 > **History looks truncated at ~50 bans**: CrowdSec `cscli alerts list` defaults to `--limit 50`. The monitor must ingest with `--limit 0` into `/srv/fail2ban-monitor/banned-history.jsonl`. If that file is missing or the service is down, the widget cannot reconstruct a full 24h window from the CLI alone.
 >
-> **CrowdSec/Fail2Ban logs empty after midnight**: `process_logs.sh` truncates `/var/log/fail2ban.log` and `/var/log/crowdsec.log` nightly. That is expected and is why the widget uses the JSONL history file instead of those logs.
+> **CrowdSec/Fail2Ban logs empty after midnight**: `process-logs.sh` truncates `/var/log/fail2ban.log` and `/var/log/crowdsec.log` nightly. That is expected and is why the widget uses the JSONL history file instead of those logs.
 
 ## 4. Security
 

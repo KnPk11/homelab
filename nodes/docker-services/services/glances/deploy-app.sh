@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.2
 # Date: 2026-07-10
 #
@@ -8,7 +8,7 @@
 # (Influx token .secret and optional glances.pwd).
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 set -euo pipefail
 

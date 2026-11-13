@@ -8,6 +8,6 @@
    ```
 4. Run the deployment script to render templates and copy files to `/srv/dozzle`:
    ```bash
-   ./deploy_app.sh
+   ./deploy-app.sh
    ```
 5. The `docker-compose.yml` stack should be orchestrated and deployed via Portainer directly from this repository.

@@ -189,4 +189,4 @@ chmod -R 755 /mnt/logs
 ### Log Rotation
 
 > [!TIP]
-> **Log Processing**: Use the `process_logs.sh` script to automatically move rotated Caddy logs and rotate large syslogs. It also creates a snapshot of currently active logs. It is recommended to schedule this to run daily via cron.
+> **Log Processing**: Use the `process-logs.sh` script to automatically move rotated Caddy logs and rotate large syslogs. It also creates a snapshot of currently active logs. It is recommended to schedule this to run daily via cron.

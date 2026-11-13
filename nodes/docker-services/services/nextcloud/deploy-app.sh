@@ -1,13 +1,13 @@
 #!/bin/bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.0
 # Date: 2026-07-02
 #
 # Template Nextcloud config.php (and related files) using .env variables into /srv/nextcloud/.
 #
 # Usage:
-#   sudo ./deploy_app.sh   # run from the nextcloud service directory
+#   sudo ./deploy-app.sh   # run from the nextcloud service directory
 # =============================================================================
 if [ ! -f ".env" ]; then
     echo "Error: .env file not found. Please create one from .env.example."

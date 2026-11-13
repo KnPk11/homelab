@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# deploy_gatus.sh
+# deploy-gatus.sh
 # Version: 1.4
 # Date: 2026-07-27
 #
@@ -8,7 +8,7 @@
 # and restart the gatus service.
 #
 # Usage:
-#   sudo ./deploy_gatus.sh
+#   sudo ./deploy-gatus.sh
 # =============================================================================
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 ENV_FILE="/srv/gatus/gatus.env"

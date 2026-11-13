@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # =============================================================================
-# deploy_app.sh
+# deploy-app.sh
 # Version: 1.0
 # Date: 2026-10-31
 #
 # Decrypt Gitea environment file and provision /srv/gitea/.
 #
 # Usage:
-#   sudo ./deploy_app.sh
+#   sudo ./deploy-app.sh
 # =============================================================================
 set -euo pipefail
 

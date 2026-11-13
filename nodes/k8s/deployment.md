@@ -14,9 +14,9 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 
 * Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link this node to GitOps.
 * **LXC Spec:** [k8s Proxmox LXC](../../docs/00_Infrastructure/proxmox/guests/k8s.md) — VMID 110, unprivileged container with nesting, keyctl, and AppArmor unconfined.
-* **k3s Control Plane Initialisation:** Execute the tracked provisioning script [`scripts/setup_k3s.sh`](scripts/setup_k3s.sh) to deploy k3s `v1.30.2+k3s1` with TLS SAN, external IP, secrets encryption, and audit logging:
+* **k3s Control Plane Initialisation:** Execute the tracked provisioning script [`scripts/setup-k3s.sh`](scripts/setup-k3s.sh) to deploy k3s `v1.30.2+k3s1` with TLS SAN, external IP, secrets encryption, and audit logging:
   ```bash
-  bash /opt/homelab-repo/nodes/k8s/scripts/setup_k3s.sh
+  bash /opt/homelab-repo/nodes/k8s/scripts/setup-k3s.sh
   ```
 
 ---
@@ -55,9 +55,9 @@ Unified analytics engine utilised for processing reverse-proxy and firewall logs
   * Executor Pod Template: [`services/spark/executor-pod-template.yaml`](services/spark/executor-pod-template.yaml) (enforces non-root execution and worker anti-affinity)
 * **Batch Analytics Dispatchers:**
   The distributed data pipelines are authored and maintained in the Data Engineering Portfolio repository (`/opt/de-portfolio/spark/`), submitted to Kubernetes via the tracked shell dispatchers below:
-  * [Caddy Geo Map Dispatcher](services/spark/run_caddy_geo_map.sh) — submits `caddy_geo_map.py` to map incoming reverse-proxy traffic geography.
-  * [Caddy Security Scan Dispatcher](services/spark/run_caddy_security_scan.sh) — submits `caddy_security_scan.py` to identify exploit probes and anomalous HTTP user agents.
-  * [MikroTik Log Insights Dispatcher](services/spark/run_mikrotik_insights.sh) — executes `mikrotik_log_insights.py` to analyse firewall drops and connection spikes.
+  * [Caddy Geo Map Dispatcher](services/spark/run-caddy-geo-map.sh) — submits `caddy_geo_map.py` to map incoming reverse-proxy traffic geography.
+  * [Caddy Security Scan Dispatcher](services/spark/run-caddy-security-scan.sh) — submits `caddy_security_scan.py` to identify exploit probes and anomalous HTTP user agents.
+  * [MikroTik Log Insights Dispatcher](services/spark/run-mikrotik-insights.sh) — executes `mikrotik_log_insights.py` to analyse firewall drops and connection spikes.
   * **Throughput Benchmark** — submits `spark_benchmark.py` from `/opt/de-portfolio/spark/` to test distributed executor throughput and memory pressure.
 
 ---

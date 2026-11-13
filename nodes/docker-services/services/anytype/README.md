@@ -78,7 +78,7 @@ After major upstream `git pull` / compose renames: `docker compose config` and r
 
 ## Secrets management
 
-`nodes/ai-tools/services/configs-and-secrets-backup/scrape_configs_and_secrets.sh` backs up:
+`nodes/ai-tools/services/configs-and-secrets-backup/scrape-configs-and-secrets.sh` backs up:
 
 | Path | Why |
 |------|-----|

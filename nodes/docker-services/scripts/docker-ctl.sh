@@ -1,6 +1,6 @@
 #!/bin/bash
 # =============================================================================
-# docker_ctl.sh
+# docker-ctl.sh
 # Version: 1.1
 # Date: 2026-06-23
 #
@@ -8,7 +8,7 @@
 # Stopping the socket first prevents systemd auto-restarts via the API.
 #
 # Usage:
-#   ./docker_ctl.sh {stop|start}
+#   ./docker-ctl.sh {stop|start}
 # =============================================================================
 # Define services
 SERVICES="docker.socket docker containerd"

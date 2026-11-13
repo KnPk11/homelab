@@ -13,7 +13,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   **Proxmox LXC Spec:** Review container allocation in **[Proxmox LXC Spec](../../docs/00_Infrastructure/proxmox/guests/reverse-proxy.md)** (CT 104, 2 cores, 1 GB RAM).
 *   Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install prerequisites and link this node to GitOps.
 *   **Process Logs Script:** Tracked script — cron may point at the repo path directly:
-    `0 0 * * * /opt/homelab-repo/nodes/reverse-proxy/scripts/process_logs.sh`
+    `0 0 * * * /opt/homelab-repo/nodes/reverse-proxy/scripts/process-logs.sh`
 
 ## 2. Reverse Proxy & Security
 
@@ -31,4 +31,4 @@ Per-service guides cover `/srv/...` secrets, templates in the clone, and deploy/
 
 ## 4. Dashboard
 
-*   [Dashy Homepage](services/dashy/deployment.md) — static build served by Caddy from `/opt/dashy/dist`
+*   [Dashy Homepage](services/dashy/deployment.md) — static build served by Caddy from `/srv/dashy/dist`

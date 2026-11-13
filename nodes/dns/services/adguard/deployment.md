@@ -10,7 +10,7 @@ Secrets live under **`/srv/adguard/`** so the GitOps clone stays disposable. The
 | :--- | :--- |
 | `.../adguard/AdGuardHome.template.yaml` | Tracked template (`{{ADGUARD_PASSWORD_HASH}}`, IPs, domain) |
 | `.../adguard/adguard.env.example` | Template only |
-| `.../adguard/deploy_adguard.sh` | Injects secrets → live YAML + restarts service |
+| `.../adguard/deploy-adguard.sh` | Injects secrets → live YAML + restarts service |
 | `/srv/adguard/adguard.env` | Real secrets (not in clone) |
 | `/srv/adguard/AdGuardHome.yaml` | Live config (written by deploy + AdGuard UI) |
 | `/srv/adguard/AdGuardHome` | Binary |
@@ -28,7 +28,7 @@ Secrets live under **`/srv/adguard/`** so the GitOps clone stays disposable. The
 
 2. Run the deployment script:
    ```bash
-   sudo /opt/homelab-repo/nodes/dns/services/adguard/deploy_adguard.sh
+   sudo /opt/homelab-repo/nodes/dns/services/adguard/deploy-adguard.sh
    ```
 
 ## Updating Configuration

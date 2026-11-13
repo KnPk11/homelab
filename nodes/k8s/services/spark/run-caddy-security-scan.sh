@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# run_caddy_security_scan.sh
+# run-caddy-security-scan.sh
 # Version: 1.0
 # Date: 2026-08-11
 #
@@ -13,10 +13,10 @@
 #     archive/{caddy,fail2ban,crowdsec,mikrotik}/   # *.log.gz streamed, not unpacked
 #
 # Usage:
-#   ./run_caddy_security_scan.sh
-#   ./run_caddy_security_scan.sh --skip-stage
-#   LOGS_ROOT=/mnt/logs ./run_caddy_security_scan.sh --skip-stage   # SMB mount
-#   ./run_caddy_security_scan.sh --skip-geo
+#   ./run-caddy-security-scan.sh
+#   ./run-caddy-security-scan.sh --skip-stage
+#   LOGS_ROOT=/mnt/logs ./run-caddy-security-scan.sh --skip-stage   # SMB mount
+#   ./run-caddy-security-scan.sh --skip-geo
 # =============================================================================
 set -euo pipefail
 
