@@ -90,6 +90,17 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  - name: Ops
+    group: Infrastructure
+    url: "icmp://${OPS_NODE_IP}"
+    interval: 30s
+    alerts: *homelab-watch
+    ui:
+      hide-url: true
+      hide-hostname: true
+    conditions:
+      - "[CONNECTED] == true"
+
   - name: Pulse
     group: Infrastructure
     url: "icmp://${PULSE_NODE_IP}"
