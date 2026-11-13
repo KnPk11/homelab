@@ -1,0 +1,26 @@
+# Helm values for Headlamp (headlamp/headlamp v0.44.0) in kubernetes-dashboard.
+config:
+  unsafeUseServiceAccountToken: false
+
+service:
+  type: NodePort
+  nodePort: 30443
+
+# Allow Headlamp to run on the tainted control-plane node (k8s CT 110) so the
+# web UI remains operational when external worker nodes are disabled/dormant.
+tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists

@@ -212,3 +212,30 @@ kubectl get netpol -n spark
 # Check node CPU & memory load
 kubectl top nodes
 ```
+
+---
+
+## 9. Worker SMB Log Mount (`/mnt/caddy-logs`)
+
+Worker nodes (`lab-vm` and `scratch-pc`) mount `//192.168.50.101/logs` read-only at `/mnt/caddy-logs` using host-bound encrypted credentials (`/etc/credstore.encrypted/smb-logs`) decrypted at runtime via `systemd` `LoadCredentialEncrypted`.
+
+* **Tracked files:**
+  * [`nodes/k8s/services/spark/mount-caddy-logs.sh`](../../../nodes/k8s/services/spark/mount-caddy-logs.sh) — waits for an active IPv4 route and TCP `445` reachability (preventing `mount error(101): Network is unreachable` under `allow-hotplug` DHCP) and retries transient CIFS failures.
+  * [`nodes/k8s/services/spark/mnt-caddy-logs.service`](../../../nodes/k8s/services/spark/mnt-caddy-logs.service) — systemd oneshot unit (`TimeoutStartSec=90`).
+  * [`nodes/k8s/services/spark/deploy-caddy-logs-mount.sh`](../../../nodes/k8s/services/spark/deploy-caddy-logs-mount.sh) — idempotent installer for `/usr/local/sbin/mount-caddy-logs.sh` and `/etc/systemd/system/mnt-caddy-logs.service`.
+
+```bash
+# Provision host-bound SMB credential once on a fresh worker (do not commit plaintext)
+systemd-creds encrypt --name=smb-logs - /etc/credstore.encrypted/smb-logs <<'EOF'
+username=<SMB_USER>
+password=<SMB_PASSWORD>
+EOF
+chmod 600 /etc/credstore.encrypted/smb-logs
+
+# Deploy mount helper and enable/start on an active worker
+/opt/homelab-repo/nodes/k8s/services/spark/deploy-caddy-logs-mount.sh --enable
+
+# Keep disabled on dormant workers (start on demand with: systemctl start mnt-caddy-logs)
+/opt/homelab-repo/nodes/k8s/services/spark/deploy-caddy-logs-mount.sh --disable
+```
+

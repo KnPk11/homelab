@@ -27,11 +27,11 @@ The cluster decouples control plane scheduling from heavy compute execution:
 
 | Hostname | Role | IP Address | Infrastructure Type | Scheduling Policy |
 | :--- | :--- | :--- | :--- | :--- |
-| **`k8s`** | Control Plane | `192.168.50.96` | Proxmox LXC (CT 110) | Tainted (`NoSchedule`) for worker jobs; hosts API & dispatchers |
-| **`lab-vm`** | Compute Worker | `192.168.50.91` | Proxmox VM (VM 103) | Untainted compute worker for Spark executors |
-| **`scratch-pc`** | Auxiliary Worker | `192.168.50.85` | Bare-Metal Workstation | Burst compute worker for intensive batch analytics |
+| **`k8s`** | Control Plane | `192.168.50.96` | Proxmox LXC (CT 110) | Tainted (`NoSchedule`) for worker jobs; hosts API, system add-ons, & Headlamp |
+| **`lab-vm`** | Compute Worker *(Dormant)* | `192.168.50.91` | Proxmox VM (VM 103) | `k3s-agent` disabled while Spark is idle; untainted when joined |
+| **`scratch-pc`** | Auxiliary Worker *(Dormant)* | `192.168.50.85` | Bare-Metal Workstation | `k3s-agent` disabled due to RAM limits; burst worker when joined |
 
-To join worker nodes to this control plane, retrieve the node token from `/var/lib/rancher/k3s/server/node-token` and run the K3s agent installer on each worker node pointing to `https://192.168.50.96:6443`.
+To join worker nodes to this control plane, retrieve the node token from `/var/lib/rancher/k3s/server/node-token` and run the K3s agent installer on each worker node pointing to `https://192.168.50.96:6443` (or run `systemctl enable --now k3s-agent` on previously provisioned workers).
 
 ---
 
@@ -40,6 +40,7 @@ To join worker nodes to this control plane, retrieve the node token from `/var/l
 ### Headlamp Dashboard
 
 A web-based UI for monitoring cluster state, workloads, and namespaces:
+* **Helm Values:** [`services/dashboard/headlamp-values.yaml`](services/dashboard/headlamp-values.yaml) (NodePort `30443` + control-plane tolerations/affinity so Headlamp remains scheduled on `k8s` CT 110)
 * **Admin & Headlamp RBAC:** [`services/dashboard/dashboard-admin.yaml`](services/dashboard/dashboard-admin.yaml)
 * Deployed in the `kubernetes-dashboard` namespace with ClusterRole permissions.
 
@@ -53,6 +54,10 @@ Unified analytics engine utilised for processing reverse-proxy and firewall logs
 * **Security & Scheduling Manifests:**
   * Network Policy: [`services/spark/network-policy.yaml`](services/spark/network-policy.yaml) (restricts ingress to driver host `192.168.50.96` and inter-executor pods)
   * Executor Pod Template: [`services/spark/executor-pod-template.yaml`](services/spark/executor-pod-template.yaml) (enforces non-root execution and worker anti-affinity)
+* **Worker SMB Log Mount (`/mnt/caddy-logs`):**
+  * Mount Helper: [`services/spark/mount-caddy-logs.sh`](services/spark/mount-caddy-logs.sh) — mounts `//192.168.50.101/logs` read-only via `systemd-creds` (`/etc/credstore.encrypted/smb-logs`) and waits cleanly for DHCP routing and SMB port `445` readiness before invoking `mount.cifs`.
+  * Systemd Unit: [`services/spark/mnt-caddy-logs.service`](services/spark/mnt-caddy-logs.service)
+  * Installer: [`services/spark/deploy-caddy-logs-mount.sh`](services/spark/deploy-caddy-logs-mount.sh) (supports `--enable` / `--disable`; kept disabled on dormant workers when Spark analytics jobs are idle).
 * **Batch Analytics Dispatchers:**
   The distributed data pipelines are authored and maintained in the Data Engineering Portfolio repository (`/opt/de-portfolio/spark/`), submitted to Kubernetes via the tracked shell dispatchers below:
   * [Caddy Geo Map Dispatcher](services/spark/run-caddy-geo-map.sh) — submits `caddy_geo_map.py` to map incoming reverse-proxy traffic geography.

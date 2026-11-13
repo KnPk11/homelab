@@ -159,14 +159,13 @@ k8s.example.com {
 The cluster utilises **Headlamp** (`kubernetes-sigs/headlamp` v0.44.0), the official modern Kubernetes web UI maintained under **CNCF SIG-UI**:
 
 ```bash
-# Deployed via Helm into kubernetes-dashboard namespace
+# Deployed via Helm into kubernetes-dashboard namespace using tracked values
+# (includes control-plane tolerations + affinity so Headlamp runs on k8s CT 110 even when workers are dormant)
 helm repo add headlamp https://kubernetes-sigs.github.io/headlamp/
 KUBECONFIG=/etc/rancher/k3s/k3s.yaml helm upgrade --install headlamp headlamp/headlamp \
   --namespace kubernetes-dashboard \
   --create-namespace \
-  --set service.type=NodePort \
-  --set service.nodePort=30443 \
-  --set config.unsafeUseServiceAccountToken=false
+  -f /opt/homelab-repo/nodes/k8s/services/dashboard/headlamp-values.yaml
 ```
 
 ### Deploy admin identity & cluster role bindings

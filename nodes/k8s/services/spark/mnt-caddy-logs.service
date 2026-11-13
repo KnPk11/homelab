@@ -1,0 +1,18 @@
+[Unit]
+Description=Mount reverse-proxy Caddy/security logs (CIFS, encrypted credentials)
+Documentation=file:///usr/local/sbin/mount-caddy-logs.sh
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/credstore.encrypted/smb-logs
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Decrypts host-bound credential into $CREDENTIALS_DIRECTORY (tmpfs, not durable disk)
+LoadCredentialEncrypted=smb-logs:/etc/credstore.encrypted/smb-logs
+ExecStart=/usr/local/sbin/mount-caddy-logs.sh
+ExecStop=/bin/umount /mnt/caddy-logs
+TimeoutStartSec=90
+
+[Install]
+WantedBy=multi-user.target
