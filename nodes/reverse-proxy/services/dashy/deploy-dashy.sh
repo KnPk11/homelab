@@ -51,4 +51,4 @@ echo "Reloading Caddy..."
 systemctl reload caddy
 
 echo "Deployment complete! Dashy is served as static files by Caddy."
-echo "Visit: https://home.\$DOMAIN_NAME"
+echo "Visit: https://home.${HOMELAB_DOMAIN}"

@@ -18,7 +18,7 @@ Sanitised views of the Dashy control surfaces — public entrypoint vs private s
 *   **DNS:** AdGuard Home (Network-wide)
 *   **Ingress:** Caddy (Automated TLS)
 *   **GitOps:** Gitea (Private code & config hosting) + GitHub (Public blueprint)
-*   **AI & Agents:** Antigravity (CLI / IDE), Grok Build, OpenClaw, Hermes
+*   **AI & Agents:** Antigravity (CLI / IDE), Grok Build, Paperclip, OpenClaw, Hermes
 
 ---
 
@@ -37,7 +37,7 @@ flowchart TD
     end
 
     subgraph Compute["🖥️ Proxmox Hypervisor"]
-        Caddy["Reverse Proxy (CT 101)"]
+        Caddy["Reverse Proxy (CT 104)"]
         
         subgraph DirectPorts["Direct Port Forwards"]
             MediaMTX["MediaMTX"]
@@ -47,11 +47,11 @@ flowchart TD
         
         subgraph Services["Internal Services & Workloads"]
             direction TB
-            L1["Core Infra: DNS, Pulse, VPNs, PBS, Syslog"]
+            L1["Core Infra: DNS, K8s, Pulse, VPNs, PBS, Syslog"]
             L5["Ops Plane: DDNS, Watch, Router Backups (CT 112)"]
             L6["AI Tools Bastion (CT 105)"]
             L2["Docker Services (VM 100) / Gitea"]
-            L4["Hermes / OpenClaw (VM 103)"]
+            L4["Paperclip / Hermes / OpenClaw (VM 103)"]
             L3["Storage / OMV (VM 101)"]
         end
     end

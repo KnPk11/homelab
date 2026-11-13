@@ -112,6 +112,8 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
+  # lab-vm (192.168.50.91 — Paperclip, Hermes & OpenClaw); name kept to preserve
+  # the infrastructure_openclaw badge endpoint slug and SQLite uptime history.
   - name: OpenClaw
     group: Infrastructure
     url: "icmp://${OPENCLAW_NODE_IP}"

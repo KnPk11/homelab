@@ -131,7 +131,7 @@ sections:
         statusCheck: false
 
       - title: Proxmox
-        description: Virtualization Hypervisor
+        description: Virtualisation Hypervisor
         icon: fas fa-layer-group
         url: https://${PROXMOX_IP}:8006
         statusCheck: false
@@ -327,7 +327,7 @@ sections:
         statusCheck: true
 
       - title: Syncthing
-        description: Continuous file synchronization
+        description: Continuous file synchronisation
         icon: fas fa-sync
         url: https://syncthing.${HOMELAB_DOMAIN}
         statusCheck: true
@@ -343,6 +343,20 @@ sections:
         icon: fas fa-project-diagram
         url: https://airflow.${HOMELAB_DOMAIN}/
         statusCheck: true
+
+      - title: dbt
+        description: Data transformation lineage & documentation
+        icon: fas fa-database
+        url: https://dbt.${HOMELAB_DOMAIN}
+        statusCheck: true
+
+      - title: Apache Spark
+        description: Distributed data processing & job monitoring
+        icon: fas fa-bolt
+        url: https://spark.${HOMELAB_DOMAIN}
+        statusCheck: true
+        statusCheckAllowInsecure: true
+        statusCheckAcceptCodes: '200,204,301,302,307,401,403,404,405'
 
       - title: Pinchflat
         description: YouTube archiving
@@ -381,7 +395,7 @@ sections:
 
       - title: Email me
         icon: fas fa-envelope
-        url: "mailto:mx8mlayqw@mozmail.com"
+        url: "mailto:${DASHY_EMAIL}"
         target: newtab
 
 
@@ -410,7 +424,7 @@ sections:
         statusCheck: false
 
       - title: Proxmox
-        description: Virtualization Hypervisor
+        description: Virtualisation Hypervisor
         icon: fas fa-layer-group
         url: https://${PROXMOX_IP}:8006
         statusCheck: false
@@ -564,7 +578,7 @@ sections:
         statusCheckAcceptCodes: '200,204,301,302,307,401,403'
 
       - title: Syncthing
-        description: Continuous file synchronization
+        description: Continuous file synchronisation
         icon: fas fa-sync
         url: https://syncthing.${HOMELAB_DOMAIN}
         statusCheck: true
