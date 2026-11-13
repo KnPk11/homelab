@@ -12,7 +12,7 @@ This node (`docker-services`, `192.168.50.95`, Proxmox VM 100) serves as the pri
 2. **Universal Bootstrap:** Follow the **[Universal Node Bootstrap Guide](../../docs/00_Infrastructure/universal-node-bootstrap.md)** to install base prerequisites and link GitOps.
 3. **GitOps Clone (`/opt/homelab-repo`):** Holds tracked compose files, templates, and deployment scripts only. It is strictly disposable and updated on-demand via `sync-nodes`.
 4. **Runtime Secrets (`/srv/<service>/`):** Live as real files on the host only. Never commit decrypted secret files or create reverse-symlinks pointing back into the clone.
-5. **Host Scripts (`/opt/scripts/...`):** Host-level operational scripts (e.g. UFW, Kopia) with dedicated runtime configuration.
+5. **Host Scripts (`/opt/scripts/...`):** Host-level operational scripts (e.g. UFW) with dedicated runtime configuration.
 6. **Compose `${VAR}` Interpolation:** Set environment variables in Portainer stack definitions or keep a host-local `.env` **only under `/srv/<service>/`** when running compose with that project directory.
 
 ### Secret Naming Conventions
@@ -32,7 +32,7 @@ This node (`docker-services`, `192.168.50.95`, Proxmox VM 100) serves as the pri
 1. Pull the GitOps repository to `/opt/homelab-repo`.
 2. Restore secret files under `/srv/<service>/` from the secrets vault (or recreate from `*.example` files).
 3. Run service deployment scripts where required (`dashy`, `privatebin`, `mediamtx`, `dbt`, `nextcloud`, `dozzle`, `glances`, `grafana`, `gitea`).
-4. Re-apply host firewall rules ([`scripts/ufw.sh`](scripts/ufw.sh)) and configure Kopia backups.
+4. Re-apply host firewall rules ([`scripts/ufw.sh`](scripts/ufw.sh)).
 5. Deploy or update Portainer stacks from compose files in `nodes/docker-services/services/`.
 
 ---
@@ -93,7 +93,7 @@ Host-local firewall rules are managed via the tracked script [`scripts/ufw.sh`](
 
 | Backup Target | Type | Runbook / Script | Destination |
 | :--- | :--- | :--- | :--- |
-| **Kopia Backups** | Client filesystem snapshot | [scripts/kopia/deployment.md](scripts/kopia/deployment.md) | OMV NFS (`/mnt/nas/Apps/Kopia/homelab-backup`) |
+| **Kopia Backups (Archived)** | Client filesystem snapshot (retired) | [archive/scripts/kopia](../../archive/scripts/kopia/deployment.md) | OMV NFS (`/mnt/nas/Apps/Kopia/homelab-backup`) |
 | **Gitea Repositories** | Atomic dump (`gitea dump`) | [services/gitea/deployment.md](services/gitea/deployment.md) | OMV NFS (`/mnt/nas/Apps/gitea_backups`) |
 | **GitHub Mirroring** | Gickup bare repo sync | [services/github-backup/deployment.md](services/github-backup/deployment.md) | OMV NFS (`/mnt/nas/Apps/github_backups`) |
 
@@ -206,7 +206,4 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
 # 3. Verify internal connectivity to Portainer
 curl -kI https://127.0.0.1:9443
-
-# 4. Check Kopia repository status
-sudo kopia --config-file /opt/scripts/Backups/Kopia/config/main-repo.config repository status
 ```

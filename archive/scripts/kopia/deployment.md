@@ -1,4 +1,6 @@
-# Kopia backups (docker-services)
+# Kopia backups (docker-services — ARCHIVED)
+
+> **Archived:** Kopia backups were retired on `docker-services` on `2026-11-13`. If reviving Kopia later, initialise a fresh config and repository credentials rather than relying on legacy paths.
 
 Tracked scripts live in Git; **client config + password stay on the host** under `/opt/scripts/Backups/Kopia/config/` (not in the clone).
 

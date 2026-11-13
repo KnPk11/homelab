@@ -10,7 +10,7 @@ Operator playbook for **backing up and restoring** the homelab, plus light clean
 | Layer                          | What                                          | Where it lives                              |
 | :----------------------------- | :-------------------------------------------- | :------------------------------------------ |
 | **Guests**                     | VMs/CTs                                       | Proxmox Backup Server & offline storage     |
-| **App data (docker-services)** | `/srv`, `/data`, Docker volumes via **Kopia** | NAS & offline storage                       |
+| **App data (docker-services)** | `/srv`, `/data`, Docker volumes via **Kopia** (archived) | NAS & offline storage                       |
 | **Media (NAS)**                | Large media libraries                         | Offline storage via SMB (excluded from PBS) |
 | **Logs**                       | reverse-proxy `/mnt/logs`                     | Offline storage via SMB (excluded from PBS) |
 | **Configs & secrets**          | Live `/srv` envs, keys, node configs          | On-demand scrape into `secrets_vault`       |
@@ -139,9 +139,9 @@ Includes secrets; not human-readable:
 
 Download from **Files** in Winbox/WebFig and store offline.
 
-## 🐳 6. Docker host — Kopia (inactive)
+## 🐳 6. Docker host — Kopia (archived / inactive)
 
-Runs on **docker-services**. Scripts are tracked in Git and symlinked under `/opt/scripts/Backups/Kopia/`. Repository data sits on the NAS; **client config and password stay on the host** (not in Git).
+Previously ran on **docker-services**. Retired scripts and docs are archived under `archive/scripts/kopia/`. If revived, initialise fresh host credentials under `/opt/scripts/Backups/Kopia/config/` rather than reusing legacy config.
 
 | Path | Role |
 | :--- | :--- |
@@ -258,7 +258,7 @@ Large media libraries from the NAS VM are **not** synced.
 
 ## 📎 Appendix A: Kopia exclusions
 
-Tracked ignore file: `nodes/docker-services/scripts/kopia/global.kopiaignore` (symlinked into the runtime dir). Keep this appendix and the live ignore list in sync when you change policy.
+Archived ignore file: `archive/scripts/kopia/global.kopiaignore` (previously symlinked into the runtime dir). Keep this appendix and any future ignore list in sync if Kopia is revived.
 
 ### Example ignore patterns
 

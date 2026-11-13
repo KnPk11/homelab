@@ -74,8 +74,6 @@ PATH_SWEEPS=(
     "scratch-pc:/opt/web-apps"
     "nas:/opt/scripts/Security"
     "proxmox-host:/opt/scripts/Security"
-    # Kopia client config + password (next to backup scripts)
-    "docker-services:/opt/scripts/Backups/Kopia"
 )
 
 # Vault path = <host> + absolute search path (strip leading /).
