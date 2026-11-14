@@ -1,0 +1,11 @@
+/srv/mediamtx/logs/mediamtx.log {
+	su k k
+	weekly
+	maxsize 20M
+	rotate 5
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+}

@@ -37,10 +37,10 @@ cleanup_old_snapshots() {
     # Real format:
     #   `-> S-2026-05-01    2026-05-01 ... description
     #   `-> current                             You are here!
-    # Snapshot name is in field $2. We only want our S-YYYY-MM-DD ones.
+    # Snapshot name is in field $2. Match S-YYYY-MM-DD and any optional _N suffix (e.g. _2).
     local snaps
     snaps=$($type listsnapshot "$vmid" 2>/dev/null | \
-            awk 'NF >= 2 && $2 ~ /^S-[0-9]{4}-[0-9]{2}-[0-9]{2}$/ { print $2 }') || true
+            awk 'NF >= 2 && $2 ~ /^S-[0-9]{4}-[0-9]{2}-[0-9]{2}(_[0-9]+)?$/ { print $2 }') || true
 
     if [ -z "$snaps" ]; then
         log "    [i] No S- snapshots found (or none matching our naming)."
@@ -48,9 +48,9 @@ cleanup_old_snapshots() {
     fi
 
     for snap in $snaps; do
-        # Convert S-YYYY-MM-DD to YYYYMMDD for comparison
+        # Strip optional _N suffix, then convert S-YYYY-MM-DD to YYYYMMDD for comparison
         local snap_date_str
-        snap_date_str=$(echo "$snap" | cut -d'-' -f2-4 | tr -d '-')
+        snap_date_str=$(echo "${snap%%_*}" | cut -d'-' -f2-4 | tr -d '-')
 
         if [[ "$snap_date_str" =~ ^[0-9]{8}$ ]] && [ "$snap_date_str" -lt "$cutoff_date" ]; then
             log "    [!] Snapshot $snap is older than $RETENTION_DAYS days (~14 days). Deleting..."

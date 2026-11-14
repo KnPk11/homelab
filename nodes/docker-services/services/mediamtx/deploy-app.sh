@@ -38,4 +38,9 @@ if [ -f "$SCRIPT_DIR/mediamtx.yml" ]; then
     envsubst < "$SCRIPT_DIR/mediamtx.yml" | sudo tee "$DEST_DIR/mediamtx.yml" > /dev/null
 fi
 
+if [ -f "$SCRIPT_DIR/logrotate-mediamtx" ]; then
+    echo "Installing logrotate config to /etc/logrotate.d/mediamtx..."
+    sudo install -m 644 "$SCRIPT_DIR/logrotate-mediamtx" /etc/logrotate.d/mediamtx
+fi
+
 echo "Deployment complete. Secrets stay in $DEST_DIR (not the GitOps clone)."
