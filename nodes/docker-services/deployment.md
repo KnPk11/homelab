@@ -83,7 +83,7 @@ Host-local firewall rules are managed via the tracked script [`scripts/ufw.sh`](
   sudo /opt/homelab-repo/nodes/docker-services/scripts/docker-ctl.sh start
   ```
 - **Network Wait Helper (`scripts/wait-for-network.sh`):**
-  Blocks execution until `ens18` receives static IP `192.168.50.95`. Utilised in systemd unit startup sequences.
+  Blocks execution until `ens18` receives static IP `192.168.50.95`. Installed via the tracked systemd drop-in [`scripts/docker-service-override.conf`](scripts/docker-service-override.conf) at `/etc/systemd/system/docker.service.d/override.conf`.
 - **Web-Compromise Watchdog:**
   Monitors Docker daemon socket events and `/proc` cgroups for unauthorised reverse shells or privileged container creation. See **[Web Compromise Watch Guide](../../shared/observability/web-compromise-watch/deployment.md)**.
 
