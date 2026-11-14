@@ -30,17 +30,23 @@ sudo /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 1 --all
 
 ## Cron Setup
 
-**Only** installed on **scratch-pc** (throwaway / safe testing box). Do **not** enable this on production LXCs or lab-vm unless intentionally expanded later.
+Scheduled as **root** every **3 days at 03:00** (before the PBS guest backup window) on **`scratch-pc`**, **`ai-tools`**, and **`ops`**:
 
-Installed as **root**, every **3 days at 03:00** (before the PBS guest backup window):
+- **`scratch-pc`** (crontab) and **`ai-tools`** (`/etc/cron.d/prune-vscode-server` via [`nodes/ai-tools/scripts/deploy-hygiene.sh`](../../nodes/ai-tools/scripts/deploy-hygiene.sh)):
 
 ```cron
-0 3 */3 * * /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 1 --all >> /var/log/prune-vscode-server.log 2>&1
+0 3 */3 * * root /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 1 --all >> /var/log/prune-vscode-server.log 2>&1
 ```
 
-Log: `/var/log/prune-vscode-server.log`
+- **`ops`** (`/etc/cron.d/prune-vscode-server` via [`nodes/ops/scripts/deploy-hygiene.sh`](../../nodes/ops/scripts/deploy-hygiene.sh) — uses `--keep-extra 0` for the 3.9 GB root disk):
 
-Manual one-offs on other hosts are fine; no fleet-wide cron.
+```cron
+0 3 */3 * * root /usr/local/sbin/prune-vscode-server.sh --apply --keep-extra 0 --all >> /var/log/prune-vscode-server.log 2>&1
+```
+
+Log: `/var/log/prune-vscode-server.log` (rotated on `ai-tools` and `ops` via `/etc/logrotate.d/`).
+
+Manual one-offs on other hosts are fine; keep automated schedules limited to hosts with recurring VS Code Remote-SSH churn.
 
 ## Notes
 

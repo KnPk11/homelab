@@ -1,0 +1,13 @@
+/var/log/namecheap-ddns.log
+/var/log/capture-mikrotik-config.log
+/var/log/prune-vscode-server.log {
+	weekly
+	rotate 8
+	maxsize 5M
+	compress
+	delaycompress
+	missingok
+	notifempty
+	copytruncate
+	create 0640 root adm
+}

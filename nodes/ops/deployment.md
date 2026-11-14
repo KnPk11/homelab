@@ -36,3 +36,4 @@ This node operates on a strict **Infrastructure as Intent** methodology. Do not 
 | [Monthly Audit Reminder](services/monthly-audit-reminder/deployment.md) | Every Sunday 09:00 (timer) | Scheduled notification to trigger audit runs |
 | [WAN Saturation](services/wan-saturation/deployment.md) | Every minute (timer) | Monitors `pppoe-out1` saturation via router telemetry |
 | [MikroTik Config Capture](services/mikrotik-config/deployment.md) | Every 3 hours (cron) | Pushes RouterOS exports to private Gitea via `svc_backup` |
+| [Disk & Log Hygiene](scripts/deploy-hygiene.sh) | Every 3 days (`cron.d`) + `logrotate` | Prunes stale VS Code Server builds (`--keep-extra 0`) and rotates `ops` cron logs |

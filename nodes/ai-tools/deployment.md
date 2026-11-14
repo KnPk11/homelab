@@ -31,6 +31,7 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 *   [SOPS + age (Master vs node keys)](services/sops-key/deployment.md) — Master Admin key in RAM on this host; per-node age keys on appliance boxes. Not the same as God Mode SSH.
 *   [Monthly Audit](services/monthly-audit/deployment.md) — interactive snapshot audit run by the AI agent on-demand.
 *   [Telegram Terminal](services/telegram-terminal/deployment.md) — Headless mobile terminal wrapper for bash and Antigravity (`agy`) agents via Telegram long-polling.
+*   [Disk & Log Hygiene](scripts/deploy-hygiene.sh) — schedules `prune-vscode-server.sh` (`--keep-extra 1`), rotates TTL/prune logs (`/etc/logrotate.d/ai-tools-cron`), and caps `systemd-journald` at `200M`.
 
 ## 3. Terminal & Agent Workspace Tooling
 
