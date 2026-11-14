@@ -105,6 +105,9 @@ services:
 
   minio:
     <<: *hardening
+    # Pinned via upstream .env; Docker Hub rejects anonymous minio/minio queries (401).
+    labels:
+      wud.watch: "false"
     deploy:
       resources:
         limits:

@@ -68,7 +68,7 @@ If you need to configure Jellyfin with a certificate for direct port forwarding:
 > 
 > ```yml
 >   jellyfin:
->     image: lscr.io/linuxserver/jellyfin:10.10.7
+>     image: ghcr.io/linuxserver/jellyfin:10.10.7
 >     volumes:
 >       - /data/certs:/certs:ro # Manually mounted certificate for port-binded setup
 >     ports: # Port-binded setup
