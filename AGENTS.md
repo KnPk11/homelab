@@ -2,36 +2,30 @@
 
 This document serves as the primary instruction set for all AI agents (Antigravity, Grok, OpenCode) and any human contributors. It defines the current project phase, deployment philosophy, and technical standards.
 
-## 🚀 Current Project Phase: Documentation Migration
-We are currently in the **Documentation & Sanitisation Phase**.
+## 🚀 Repository Model: GitOps & Documentation
+This repository (`github.com:KnPk11/homelab.git`) is live across the homelab fleet via on-demand GitOps (`sync-nodes` → `auto-pull-repo.sh`).
 
-1.  **Docs First**: The immediate priority is migrating and sanitising documentation from `docs_temp/` to `docs/`.
-2.  **Sanitisation Protocol**: All files in `docs/` MUST be sanitised (domains, IPs, secrets) according to the [Style Guide](./docs/style-guide.md).
-3.  **Scripts Second**: Operational scripts and configurations in the `nodes/` directory are to be organised but **NOT** pushed to public source control yet. They will be handled in the next phase using **SOPS** for secret management.
+1. **Sanitised Documentation (`docs/`)**: All files in `docs/` MUST be sanitised (public domains, public IPs, secrets, host secrets paths) according to the [Style Guide](./docs/style-guide.md).
+2. **Infrastructure as Intent (`nodes/` & `shared/`)**: Operational scripts, Compose stacks, systemd units, and concrete node runbooks live in `nodes/` and `shared/`. Do not edit tracked files directly on target nodes; commit on `ai-tools`, push to `main`, and sync via `sync-nodes`.
+3. **Git History**: Use normal Git commits for versioning. Do NOT create duplicate `_v1`/`_v2` script or config copies alongside active files.
 
-## 📂 Deployment & History Strategy
+## 📂 Deployment & Secrets Strategy
 
-### 1. Script Versioning
-We are intentionally maintaining multiple versions of operational files (e.g., `Caddyfile_v1`, `Caddyfile_v2`).
-- **Goal**: This is a deliberate strategy to allow for the reconstruction of a basic commit history when we eventually move these scripts to a Git repository.
-- **Rule**: Do NOT delete legacy versions of files in the `nodes/` directory unless explicitly instructed.
-
-### 2. Secrets Management (SOPS + age)
-- **Active System**: SOPS with node-scoped `age` keys is active across all 10 nodes.
+### 1. Secrets Management (SOPS + `age` & Runtime-Only Vault)
+- **Active System**: SOPS with `age` keys is configured in [`.sops.yaml`](./.sops.yaml) for key-bearing appliance nodes (`proxmox-host`, `docker-services`, `nas`, `lab-vm`, `reverse-proxy`, `ai-tools`, `dns`, `pulse`, `vpns`, `pbs`). Nodes without a local `age` key (`ops`, `k8s`, `scratch-pc`, `syslog`) fall back to the Master Admin recipient or keep credentials out of Git in `/srv/<service>/`.
 - **Security Architecture**:
-  - God Mode SSH and SOPS age are different unlocks. See [`nodes/ai-tools/services/sops-key/deployment.md`](./nodes/ai-tools/services/sops-key/deployment.md).
-  - Appliance nodes keep a private age key on disk (`/root/.config/sops/age/keys.txt`) so services can decrypt after reboot.
+  - God Mode SSH and SOPS `age` are separate unlocks. See [`nodes/ai-tools/services/sops-key/deployment.md`](./nodes/ai-tools/services/sops-key/deployment.md).
+  - Key-bearing appliance nodes keep a private `age` key at `/root/.config/sops/age/keys.txt` so services can decrypt after reboot.
   - `.sops.yaml` wraps `nodes/<host>/…` secrets for **that node plus the Master Admin** public key. A node key cannot open another node’s files.
-  - `ai-tools` does **not** keep a standing node `keys.txt`; the path is a symlink to the Master key in RAM. Decrypt here with `sops-key-unlock` (15-min TTL).
-  - AI agents on `ai-tools` can ENCRYPT secrets, but CANNOT DECRYPT secrets for other nodes (or anything) unless the Master key is unlocked.
-  - Human admins unlock the Master Admin key into RAM on `ai-tools` via `sops-key-unlock`.
+  - `ai-tools` does **not** keep a standing node `keys.txt`; the path symlinks to the Master key in RAM (`sops-key-unlock`, 15-min TTL).
+  - AI agents on `ai-tools` can ENCRYPT secrets, but CANNOT DECRYPT secrets unless the Master key is unlocked by a human admin.
 - **Secret File Types**:
-  - **Environment Variables (`.env`)**: SOPS-encrypted in Git. Output to `/srv/<service>/.env` at deploy time. Note that internal RFC 1918 IP addresses used in firewall scripts are NOT classified as secrets and are committed in plain text (per `.agents/AGENTS.md` §3). The SOPS encryption for firewall `.env` files has been removed; SOPS remains active for genuine secrets (passwords, API keys, domain names, tokens).
-  - **Standalone Secret Files (`.secret`, `.pwd`, `.json`)**: Single-value credentials (e.g. `gcp-creds.json`, `airflow_fernet_key.secret`, `glances.pwd`, `vaultwarden_admin_token.secret`) are SOPS-encrypted in Git and tracked.
-  - **Third-Party Static Assets (VPN Profiles)**: Bulk raw WireGuard/OpenVPN `.conf` profiles reside in `/opt/dev/secrets_vault/vpn-configs/` (outside Git) and are backed up to offline vault storage via `scrape-configs-and-secrets.sh`.
+  - **Environment Variables (`.env`)**: SOPS-encrypted in Git where tracked, or stored runtime-only under `/srv/<service>/` (and backed up off-repo via `scrape-configs-and-secrets.sh`). Note that internal RFC 1918 IP addresses used in firewall scripts are NOT classified as secrets and are committed in plain text (per [`.agents/AGENTS.md`](./.agents/AGENTS.md) §3).
+  - **Standalone Secret Files (`.secret`, `.pwd`, `.json`)**: Single-value credentials (e.g. `gcp-creds.json`, `airflow_fernet_key.secret`, `glances.pwd`, `vaultwarden_admin_token.secret`) are SOPS-encrypted in Git where tracked.
+  - **Third-Party Static Assets (VPN Profiles)**: Bulk raw WireGuard/OpenVPN `.conf` profiles reside outside Git (`/opt/dev/secrets_vault/vpn-configs/` and `/srv/vpns/`) and are backed up off-repo via `scrape-configs-and-secrets.sh`.
 - **File Permission Rules**:
-  - **In Git (`/opt/homelab-repo/`)**: Files maintain standard Git permissions (`644` for files, `755` for scripts). No permission locking scripts run on the repo directory.
-  - **In Live Runtime (`/srv/` / `/opt/scripts/Security/`)**: Decrypted files receive strict `600` permissions upon deployment (except `glances.pwd`, `mediamtx/.env`, and `nextcloud_hpb_secrets.env` which receive `644` for unprivileged container processes).
+  - **In Git (`/opt/homelab-repo/`)**: Files keep standard Git permissions (`644` for files, `755` for scripts).
+  - **In Live Runtime (`/srv/<service>/`)**: Decrypted/runtime secret files receive `600` permissions upon deployment (except `glances.pwd`, `mediamtx/.env`, and `nextcloud_hpb_secrets.env`, which use `644` for unprivileged container processes).
 - **Configuration File Secret Strategy**:
   1. **Primary Strategy (Default)**: Extract sensitive values into `.env` files (encrypted with SOPS) and use `${VAR}` substitution inside `.yml` / `.yaml` application configs. Keep config files clean and unencrypted in Git.
   2. **Fallback Strategy**: For applications that do not support environment variable substitution, use SOPS `encrypted_regex` to encrypt specific YAML fields in-place.
@@ -47,6 +41,3 @@ We are intentionally maintaining multiple versions of operational files (e.g., `
 ## 🎨 Standards & Conventions
 All documentation must adhere to the formatting and linguistic rules defined in:
 👉 **[Homelab Documentation Style Guide](./docs/style-guide.md)**
-
----
-*Last Updated: Tuesday, July 21, 2026*

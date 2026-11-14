@@ -6,10 +6,10 @@ The following rules dictate how the homelab repository is structured and managed
 - The `nodes/` directory is strictly for Infrastructure as Code (Docker Compose, systemd configs, deployment scripts).
 - Custom application source code (web apps, data pipelines) MUST live in the `projects/` directory. They should never be mixed with node configurations.
 
-## 2. Secrets Management (Nested Private Repositories)
-- Passwords, API keys, and VPN configurations (`.env`, `*.conf`) are NOT encrypted with SOPS. 
-- Instead, sensitive directories (e.g., `nodes/docker-services/secrets/`) are added to the root `.gitignore`.
-- These directories act as standalone nested Git repositories that push to completely separate, private GitHub repositories for automated backup.
+## 2. Secrets Management (SOPS + `age` & Runtime-Only Secrets)
+- Tracked secrets (`.env`, `.secret`, `.pwd`, `.json`) MUST be encrypted with **SOPS + `age`** using [`.sops.yaml`](../.sops.yaml) before committing; never commit plaintext secrets or `.env.dec` / `.raw` files.
+- Runtime-only secrets that are intentionally kept outside Git (such as raw VPN `.conf` profiles or host-only `/srv/<service>/*.env` files) reside on target hosts under `/srv/<service>/` (or `/opt/dev/secrets_vault/` on `ai-tools`) and are backed up off-repo via `scrape-configs-and-secrets.sh`.
+- See [`AGENTS.md`](../AGENTS.md) and [`nodes/ai-tools/services/sops-key/deployment.md`](../nodes/ai-tools/services/sops-key/deployment.md) for key-unlock and permission rules.
 
 ## 3. Safe Information
 - Internal RFC1918 IP addresses (e.g., `192.168.50.x`) and standard host usernames (e.g., `k`, `root`) are considered safe and SHOULD be tracked in the public repository (e.g., in `shared/ssh/config` or markdown documentation).

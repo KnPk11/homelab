@@ -103,9 +103,9 @@ Prefer keeping extended testing and verification notes to ensure configurations 
 - **Exception**: If the security section is very small and simple, it may be included within the `setup.md` file to avoid unnecessary file clutter.
 
 ## 11. Project Workflow & Secrets
-- **Docs First**: The primary repository focus is on sanitised documentation (`docs/`). Operational scripts and compose files are maintained but are secondary during the migration phase.
-- **Script History**: We intentionally maintain multiple versioned files (e.g., `Caddyfile_v1`, `Caddyfile_v2`) in the operational `nodes/` directories to artificially recreate a basic commit history when they are eventually pushed to source control.
-- **SOPS Integration**: Operational secret files in `nodes/` (`.env`, `.secret`, `.pwd`, `.json`) are encrypted in-place using **SOPS (Secrets OPerationS)** with per-node Age recipient keys defined in `.sops.yaml`. Live runtime host paths (such as `/srv/` or `/opt/scripts/`) hold the decrypted production files at deploy time.
+- **Documentation & GitOps Alignment**: Architecture guides in `docs/` stay sanitised (`[DOMAIN]`, `[HOST-IP]`, placeholders), while operational scripts, Compose stacks, and host runbooks live in `nodes/` and deploy via GitOps (`sync-nodes`).
+- **Script History**: Use Git commit history for versioning operational scripts and configs rather than keeping duplicate `_v1` / `_v2` copies alongside active files.
+- **SOPS Integration**: Tracked operational secret files in `nodes/` (`.env`, `.secret`, `.pwd`, `.json`) are encrypted in-place using **SOPS (Secrets OPerationS)** with per-node `age` recipient keys (and Master Admin fallback) defined in `.sops.yaml`. Live runtime paths under `/srv/<service>/` hold the decrypted files at deploy time.
 
 ## 12. Node Bootstrap & Deployment Runbooks (`nodes/`)
 Operational guides under `nodes/` act as concrete disaster recovery runbooks. They bridge the gap between sanitised architecture (`docs/`) and host runtime reality.

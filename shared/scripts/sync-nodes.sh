@@ -115,7 +115,7 @@ sync_node() {
     local node="$1"
     echo "─── Syncing $node ───"
     
-    local remote_cmd="if [ ! -d /opt/homelab-repo/.git ]; then echo '[SKIP] /opt/homelab-repo is not a Git repository on $node'; exit 0; fi; if [ -e /opt/homelab-repo/shared/scripts/auto-pull-repo.sh ]; then /opt/homelab-repo/shared/scripts/auto-pull-repo.sh $FORCE_FLAG; else /opt/homelab-repo/shared/scripts/auto_pull_repo.sh $FORCE_FLAG; fi"
+    local remote_cmd="if [ ! -d /opt/homelab-repo/.git ]; then echo '[SKIP] /opt/homelab-repo is not a Git repository on $node'; exit 0; fi; /opt/homelab-repo/shared/scripts/auto-pull-repo.sh $FORCE_FLAG"
     local output
     if ! output=$(ssh "${SSH_OPTS[@]}" "$node" "$remote_cmd" 2>&1); then
         echo "[ERROR] Failed to run sync on $node:" >&2

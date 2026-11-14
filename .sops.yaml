@@ -29,6 +29,6 @@ creation_rules:
   - path_regex: nodes/pbs/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1scvtgz068fe48zjwpzape0y9p8r3pyynrcw3xlwc8afsyvusry8s2chuk4"
 
-  # Default fallback for any other file in the repository
+  # Default fallback (Master Admin only; covers nodes without local age keys: ops, k8s, scratch-pc, syslog)
   - path_regex: .*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895"
