@@ -23,9 +23,9 @@ Network topology (backend node IPs and trusted LAN CIDRs) is **hardcoded in the 
 | `WUD_HASH` | Basic-auth hash for WUD |
 | `IPV6_PREFIX` | Trusted IPv6 prefix in private-only matchers |
 | `MEDIA_PASS_HASH` | bcrypt hash for the `media` site login |
-| `MEDIA_IDP_HEADER` | Header name sent to copyparty only after that login |
+| `MEDIA_IDP_HEADER` | Header name sent to copyparty with the owner or pub identity |
 
-The `media` login name is `media`. After that login, Caddy sets `X-Auth-User` to `owner` for a private or VPN address and to `pub` for any other address. Playback of a media file does not use this login.
+The `media` login name is `media`. Home LAN (`192.168.88.0/24`, `192.168.50.0/24`), WireGuard (`10.5.0.0/24`, `10.6.0.0/24`, `10.8.0.0/24`), Tailscale (`100.64.0.0/10` and `fd7a:115c:a1e0::/48`), and the house IPv6 prefix skip that login and are sent as `owner`. Any other address must pass the login and is sent as `pub`. Playback of a media file does not use this login.
 
 ### Deployment Strategy
 

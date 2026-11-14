@@ -281,7 +281,7 @@ media.{$DOMAIN_NAME} {
 
     # Playback links stay public. Streaming players GET and range-read the file
     # without credentials. The UI, directory listings, and uploads do not match
-    # this and fall through to Basic auth.
+    # this and fall through to the login rules below.
     @public_media {
         method GET HEAD
         path_regexp (?i)\.(mp3|mp4|m4a|aac|flac|ogg|opus|wav|mkv|webm|mov|avi|m4v|jpg|jpeg|png|gif|webp)$
@@ -303,19 +303,17 @@ media.{$DOMAIN_NAME} {
         }
     }
 
-    # Private ranges and VPNs. 10/8 covers the WireGuard nets, 100.64/10 is
-    # Tailscale, fc00::/7 is IPv6 ULA (including Tailscale), and IPV6_PREFIX
-    # is this house. The shared login name is media. A trusted client is
-    # owner. Everyone else who passes Basic auth is pub.
+    # Home LAN, homelab, and VPNs. These addresses skip Basic auth. Caddy
+    # still sends X-Auth-User owner and the IdP header, so copyparty treats
+    # them as owner. 192.168.88.0/24 is the house LAN, 192.168.50.0/24 is the
+    # homelab, 10.5/10.6/10.8 are WireGuard, 100.64/10 and fd7a:115c:a1e0::/48
+    # are Tailscale, and IPV6_PREFIX is this house. Any other address must
+    # pass Basic auth and is user pub.
     @trusted_client {
-        remote_ip 10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 127.0.0.0/8 169.254.0.0/16 100.64.0.0/10 fc00::/7 fe80::/10 ::1 {$IPV6_PREFIX}
+        remote_ip 192.168.88.0/24 192.168.50.0/24 10.5.0.0/24 10.6.0.0/24 10.8.0.0/24 100.64.0.0/10 fd7a:115c:a1e0::/48 {$IPV6_PREFIX}
     }
 
     handle @trusted_client {
-        basic_auth {
-            media {$MEDIA_PASS_HASH}
-        }
-
         reverse_proxy 192.168.50.85:3923 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
