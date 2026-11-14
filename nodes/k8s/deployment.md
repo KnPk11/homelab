@@ -6,7 +6,7 @@ This node (`k8s`, `192.168.50.96`, Proxmox CT 110) is the dedicated **Kubernetes
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked configuration directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and apply manifests using `kubectl`.
 
-**Secrets are not in Git.** Encryption keys, kubeconfigs, and runtime secrets live under `/srv/k8s/` or `/srv/spark/` (or are decrypted on-demand via SOPS). After a nuke-and-pave, restore the node's age key from the central secrets vault before decrypting runtime credentials.
+**Plaintext secrets are not stored in Git.** Tracked [`services/spark/spark.env`](services/spark/spark.env) is SOPS-encrypted for the Master Admin `age` key (decrypt from `ai-tools` after `sops-key-unlock`); cluster/k3s runtime state and `systemd-creds` (`/etc/credstore.encrypted/smb-logs`) live on the host under `/srv/k8s/`, `/srv/spark/`, and `/etc/credstore.encrypted/`.
 
 ---
 

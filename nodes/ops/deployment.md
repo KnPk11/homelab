@@ -6,7 +6,7 @@ This node (`ops`, `192.168.50.112`, Proxmox CT 112) is the dedicated **unattende
 
 This node operates on a strict **Infrastructure as Intent** methodology. Do not edit tracked config directly on the server. Instead, push updates to Git, synchronise the node from `ai-tools` (`sync-nodes <node>`), and re-run service deployment steps.
 
-**Secrets are not in Git.** Real `.env` files live under `/srv/<service>/` (e.g. `/srv/namecheap-ddns/ddns.env`, `/srv/homelab-watch/telegram.env`). After a nuke-and-pave, restore those from the secrets vault before services will work.
+**Secrets are decrypted into `/srv/<service>/` (`0600`).** Git tracks SOPS-encrypted `nodes/ops/services/homelab-watch/telegram.env` and `nodes/ops/services/namecheap-ddns/ddns.env` (encrypted with the Master Admin `age` key). After a nuke-and-pave, unlock Master SOPS on `ai-tools` (`sops-key-unlock`) and deploy `/srv/namecheap-ddns/ddns.env` and `/srv/homelab-watch/telegram.env` before services run.
 
 ---
 

@@ -14,17 +14,13 @@ WireGuard clients use `ip.[DOMAIN]:51821` as their endpoint. Because this record
 
 ## 2. Prerequisites & Secrets
 
-1. Store runtime secrets on `ops` under `/srv/namecheap-ddns/ddns.env`:
+Runtime file: `/srv/namecheap-ddns/ddns.env` (mode `600`). Git holds `ddns.env.example` and the SOPS-encrypted `ddns.env` (Master Admin key fallback). Decrypt from `ai-tools` (`sops-key-unlock`) and copy to `ops`:
 
 ```bash
-mkdir -p /srv/namecheap-ddns
-chmod 700 /srv/namecheap-ddns
-cat << 'SEC' > /srv/namecheap-ddns/ddns.env
-DOMAIN="yourdomain.com"
-PASSWORD="your_namecheap_ddns_password"
-HOSTS="ip"
-SEC
-chmod 600 /srv/namecheap-ddns/ddns.env
+install -d -m 700 /srv/namecheap-ddns
+# From ai-tools after unlocking Master key:
+sops -d /opt/dev/homelab_repo/nodes/ops/services/namecheap-ddns/ddns.env \
+  | ssh ops 'cat > /srv/namecheap-ddns/ddns.env && chmod 600 /srv/namecheap-ddns/ddns.env'
 ```
 
 ---
@@ -55,4 +51,5 @@ Add the job (running every 5 minutes):
 |------|---------|
 | `nodes/ops/services/namecheap-ddns/update-namecheap-ddns.sh` | Update script — queries IP and updates Namecheap |
 | `nodes/ops/services/namecheap-ddns/ddns.env.example` | Template for required credentials |
-| `/srv/namecheap-ddns/ddns.env` | Runtime secrets (**not in Git**) |
+| `nodes/ops/services/namecheap-ddns/ddns.env` | SOPS-encrypted credentials (Master Admin key) |
+| `/srv/namecheap-ddns/ddns.env` | Decrypted runtime secrets (`600`) |
