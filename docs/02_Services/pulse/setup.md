@@ -50,6 +50,14 @@ Caddy **308s HTTP → HTTPS**. If the snippet uses `http://pulse.example.com`, t
 
 Uninstall: `bash /var/lib/pulse-agent/install.sh --uninstall`.
 
+### Physical disk health (SMART) & HDD spindown
+
+By default, Pulse polls Proxmox physical disks every **5 minutes**, which triggers `pvs` disk reads and stops `hd-idle` from spinning down idle HDDs (e.g. a 10-minute idle timeout).
+
+Under **Settings → Infrastructure → `<node>` → Manage → Advanced monitoring**, either:
+- Set **Monitor physical disk health (SMART)** → **Poll every** to **`1 hour`** (maximum UI option) so idle HDDs can spin down between polls, **or**
+- Disable it completely if you rely on uninterrupted HDD standby.
+
 ## 4. Day-2 ops
 
 ```bash
