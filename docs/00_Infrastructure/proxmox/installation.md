@@ -12,8 +12,9 @@
 
 ### BIOS Checklist (Mini PC / Lenovo ThinkCentre)
 
+- **BIOS Update First**: Update BIOS/firmware (e.g. manufacturer USB ISO or `fwupdmgr`) **before** setting BIOS options or installing Proxmox, as flashes can reset NVRAM to defaults.
 - **Virtualisation & I/O**: `Intel VT-x` / `AMD-V`, `VT-d` / `IOMMU` **Enabled**; Storage Mode **AHCI**.
-- **Boot & Security**: `Secure Boot` **Disabled**; `Security Chip 2.0 (TPM 2.0)` **Enabled**; `Device Guard`, `Absolute Persistence Module` **Disabled** *(not `Permanently Disabled`)*; `Intel SIPP` default.
+- **Boot & Security**: `Secure Boot`, `Fast Boot` **Disabled**; `Security Chip 2.0 (TPM 2.0)` **Enabled**; `Device Guard`, `Absolute Persistence Module` **Disabled** *(not `Permanently Disabled`)*; `Intel SIPP` default; put **internal NVMe/SSD (`proxmox`) first** in boot order after install *(use **`F12`** for one-time USB boot)*.
 - **Power & Cooling**: `After Power Loss` **Power On**; `Enhanced Power Saving Mode` **Disabled** *(for Wake on LAN)*; `C1E`, `C-States`, `Turbo Mode`, `DPTF` **Enabled**; `Intelligent Cooling` **Better Acoustic** or **Better Thermal**.
 
 ## Installation Configuration
