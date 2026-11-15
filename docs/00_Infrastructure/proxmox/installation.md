@@ -77,20 +77,9 @@ Instead of manually editing repository files, use the community "Proxmox VE Post
 
 ### 3. Dark Theme
 
-SSH and run this:
+Proxmox VE includes a built-in dark theme (following your OS/browser preference by default):
 
-```bash
-bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh) install
-```
-
-Refresh your browser afterwards.
-
-> [!NOTE]
-> To uninstall the script:
-> 
-> ```bash
-> bash <(curl -s https://raw.githubusercontent.com/Weilbyte/PVEDiscordDark/master/PVEDiscordDark.sh) uninstall
-> ```
+- Click your username in the top-right corner (`root@pam`) → **Color Theme** → select **Proxmox Dark** (or **Default (auto)**).
 
 ## Architecture Decisions
 
