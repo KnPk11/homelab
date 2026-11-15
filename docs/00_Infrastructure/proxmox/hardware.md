@@ -104,6 +104,21 @@ df -h
 sudo swapon --show
 ```
 
+### NVMe Controller Hangs & APST (`nvme_core.default_ps_max_latency_us=0`)
+
+Consumer NVMe drives (notably Phison E12 models such as the `PNY CS3030`) can suffer controller timeouts or PCIe lockups under Autonomous Power State Transitions (APST) or live extended self-tests (`nvme-reset-wq` stuck in `D`-state, `/sys/class/nvme/nvme0/state` reporting `dead`). Some controllers also resume an incomplete `smartctl -t long` across power resets, which can trigger GRUB `failure reading sector` errors on reboot until the self-test finishes.
+
+1. **Disable NVMe APST deep power states** in `/etc/default/grub`:
+   ```ini
+   GRUB_CMDLINE_LINUX_DEFAULT="quiet nvme_core.default_ps_max_latency_us=0"
+   ```
+   Apply and verify:
+   ```bash
+   update-grub
+   ```
+2. **Avoid live extended self-tests on root NVMe:** Run `smartctl -t long` offline (for instance, in a USB-NVMe enclosure) rather than against an actively mounted Proxmox root NVMe.
+3. **If a drive hangs mid-test and fails to boot:** Let the firmware self-test finish in an external enclosure (`smartctl -d sntrealtek -a /dev/sdX`), clear any EFI dirty bit (`fsck.vfat -a`) and replay/check the root journal (`e2fsck -p -f` via loop device without activating a colliding `pve` VG), then reinstall into the host.
+
 ## Proxmox NIC Hang (Intel i219-V / Realtek)
 
 Common on Lenovo Tiny units and other mini-PCs. The network link drops under heavy load, showing `Detected Hardware Unit Hang` in `dmesg`.

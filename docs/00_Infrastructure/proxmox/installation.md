@@ -82,6 +82,27 @@ Proxmox VE includes a built-in dark theme (following your OS/browser preference 
 
 - Click your username in the top-right corner (`root@pam`) → **Color Theme** → select **Proxmox Dark** (or **Default (auto)**).
 
+### 4. Headless Boot (GRUB USB / Menu Hang)
+
+On some Lenovo ThinkCentre / UEFI systems, GRUB's graphical menu (`gfxterm`) and countdown timer can stall at the blue boot screen when booting headless without a USB keyboard or hub attached.
+
+- In `/etc/default/grub`, set:
+  ```text
+  GRUB_TIMEOUT=0
+  GRUB_RECORDFAIL_TIMEOUT=0
+  GRUB_TERMINAL=console
+  ```
+- Apply with `update-grub`, then power-cycle headless to confirm it boots straight into Proxmox without a keyboard connected.
+
+### 5. Disk Health Check (Before Deploying Services)
+
+Before creating VMs, LXCs, or migrating critical workloads onto an existing or second-hand drive, verify SSD/NVMe health:
+
+- **SMART counters:** Run `smartctl -a /dev/<disk>` and check `Critical Warning` (`0x00`), `Available Spare`, `Percentage Used`, and `Media and Data Integrity Errors` (`0`).
+- **Non-destructive verification:** Read-only sequential pass (`dd if=/dev/<disk> of=/dev/null bs=4M iflag=direct status=progress`) while watching `dmesg` for I/O errors, or run `smartctl -t long /dev/<disk>` **offline** (for example via an external USB-NVMe enclosure before installing Proxmox). Avoid destructive write tests (`badblocks -w`) on SSDs as they cause needless flash wear.
+  > [!WARNING]
+  > Avoid running `smartctl -t long` on a live mounted root NVMe — see [NVMe Controller Hangs & APST](hardware.md#nvme-controller-hangs--apst-nvme_coredefault_ps_max_latency_us0) for controller lockup details, the `nvme_core.default_ps_max_latency_us=0` workaround, and recovery steps.
+
 ## Architecture Decisions
 
 ### Docker Strategy: VM vs. LXC?
