@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # UFW Firewall Setup Script – Scratch PC
-# Version: 1.0
-# Date: 2026-08-04
 #
 # UFW setup for scratch-pc (.85): trusted LANs, Docker, and k3s cluster access.
 #

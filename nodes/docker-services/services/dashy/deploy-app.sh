@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.2
-# Date: 2026-07-10
 #
 # Render Dashy config.yml from template using /srv/dashy/dashy.env secrets
 # (docker-services host).

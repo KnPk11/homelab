@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # deploy.sh — web-compromise-watch (shared; run on the target host)
-# Version: 1.1
-# Date: 2026-09-02
 # =============================================================================
 set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.1
-# Date: 2026-06-25
 #
 # Render Dozzle users.yml from dozzle.env and install under /srv/dozzle/.
 #

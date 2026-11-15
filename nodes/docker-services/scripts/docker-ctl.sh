@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # docker-ctl.sh
-# Version: 1.1
-# Date: 2026-06-23
 #
 # Stop or start Docker stack services (socket, daemon, containerd) for maintenance.
 # Stopping the socket first prevents systemd auto-restarts via the API.

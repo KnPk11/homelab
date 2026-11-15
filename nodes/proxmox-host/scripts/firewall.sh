@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # firewall.sh
-# Version: 1.9
-# Date: 2026-08-11
 #
 # Proxmox host/cluster firewall management (cluster.fw aliases + guest rules).
 # Run on the Proxmox host (pve1). Topology inline; canonical ref inventory.yml.

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # run-caddy-security-scan.sh
-# Version: 1.0
-# Date: 2026-08-11
 #
 # Stage Caddy (current + archive) + Fail2Ban + CrowdSec + MikroTik logs,
 # then run full-accuracy geo security scan.

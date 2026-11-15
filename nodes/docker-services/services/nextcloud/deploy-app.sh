@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.1
-# Date: 2026-11-13
 #
 # Template Nextcloud config.php (and related files) using /srv/nextcloud/.env.
 #

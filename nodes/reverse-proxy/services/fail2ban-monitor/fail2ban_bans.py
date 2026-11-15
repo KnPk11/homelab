@@ -2,8 +2,6 @@
 """
 Fail2Ban & CrowdSec Intrusion Monitor
 =============================================================================
-Version 5.0
-Date: 2026-08-29
 
 HTTP widget of bans in a rolling 24h window.
 

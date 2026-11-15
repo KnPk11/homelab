@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # deploy-adguard.sh
-# Version: 1.1
-# Date: 2026-07-10
 #
 # Render AdGuardHome.yaml from template + /srv/adguard/adguard.env secrets,
 # then install live config under /srv/adguard/.

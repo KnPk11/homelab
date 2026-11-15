@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # sync-nodes.sh
-# Version: 1.0
-# Date: 2026-11-12
 #
 # Fleet GitOps Synchroniser — triggers on-demand repository pulls across
 # homelab nodes from ai-tools over SSH.

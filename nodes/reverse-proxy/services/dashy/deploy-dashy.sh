@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-dashy.sh
-# Version: 1.1
-# Date: 2026-07-19
 #
 # Deploy static Dashy on reverse-proxy: envsubst conf.yml into /srv/dashy/
 # (pre-built dist SCP'd from ai-tools or rebuilt locally).

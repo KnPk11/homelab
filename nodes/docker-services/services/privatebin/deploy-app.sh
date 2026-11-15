@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.1
-# Date: 2026-07-10
 #
 # Template PrivateBin conf.php using /srv/privatebin/.env (not the GitOps clone).
 #

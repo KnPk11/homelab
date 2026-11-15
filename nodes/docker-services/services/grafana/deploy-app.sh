@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.2
-# Date: 2026-11-13
 #
 # Symlink non-secret Grafana/Loki/Promtail configs into /srv/grafana/ and
 # verify host-local secret files exist there (never symlink from Git clone).

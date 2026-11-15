@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # Proxmox Scheduled Snapshot Script
-# Version: 1.3
-# Date: 2026-07-22
 #
 # Scheduled snapshots for all VMs and CTs (name S-YYYY-MM-DD) with retention.
 # PATH set for cron; include-RAM off by default.

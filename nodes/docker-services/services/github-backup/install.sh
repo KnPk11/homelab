@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # install.sh
-# Version: 1.0
 # Description: Install GitHub backup script, configuration, service, and timer
 # =============================================================================
 set -euo pipefail

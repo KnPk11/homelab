@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # ai-key-ttl-watchdog.sh
-# Version: 1.2
-# Date: 2026-07-16
 #
 # Cron watchdog: if the key bundle has been unlocked longer than its TTL
 # (default 2h from unlock), unload all managed keys from ssh-agent.

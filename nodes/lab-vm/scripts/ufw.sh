@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # UFW Firewall Setup Script
-# Version: 2.2
-# Date: 2026-08-04
 #
 # UFW setup for lab-vm / OpenClaw (.91): trusted LANs + restricted VPN SSH + k3s worker rules.
 #

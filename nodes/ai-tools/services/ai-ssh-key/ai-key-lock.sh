@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # ai-key-lock.sh
-# Version: 1.2
-# Date: 2026-07-16
 #
 # Unload managed SSH keys from ssh-agent immediately (God Mode + GitHub if
 # present). Does not kill ssh-agent.

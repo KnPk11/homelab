@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Thermal Safety Watchdog & Emergency Graceful Shutdown
-# Version: 1.1
 # Location: nodes/proxmox-host/scripts/thermal-safety-watchdog.sh
 #
 # Purpose:

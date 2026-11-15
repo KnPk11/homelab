@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.1
-# Date: 2026-07-10
 #
 # Deploy MediaMTX config from repo templates with local secrets.
 #

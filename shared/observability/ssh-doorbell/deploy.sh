@@ -2,8 +2,6 @@
 # =============================================================================
 # deploy.sh — SSH doorbell (shared; nodes/*/services/ssh-doorbell/deploy.sh
 # is a relative symlink here)
-# Version: 1.1
-# Date: 2026-09-01
 # =============================================================================
 set -euo pipefail
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"

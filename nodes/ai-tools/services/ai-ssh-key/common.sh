@@ -1,7 +1,5 @@
 # =============================================================================
 # common.sh
-# Version: 1.2
-# Date: 2026-07-20
 #
 # Shared helpers for God Mode AI + Git SSH key TTL tooling.
 # Sourced by unlock / lock / status / watchdog — not executed directly.

@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-fail2ban.sh
-# Version: 1.3
-# Date: 2026-08-29
 #
 # Deploy Fail2Ban jail.local (inline HOMELAB_SUBNETS via envsubst), symlink
 # CrowdSec action + ban monitor script, restart fail2ban and fail2ban-monitor.

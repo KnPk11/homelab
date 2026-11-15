@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # sops-key-lock.sh
-# Version: 1.0
-# Date: 2026-07-21
 #
 # Lock/wipe the Master Admin age key from RAM (/dev/shm) and remove agent env files.
 #

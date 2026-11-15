@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # run-caddy-geo-map.sh
-# Version: 1.1
-# Date: 2026-08-12
 #
 # Stage or mount Caddy logs and run the Spark geo-map job.
 #

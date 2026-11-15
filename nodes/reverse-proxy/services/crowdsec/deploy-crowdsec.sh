@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-crowdsec.sh
-# Version: 1.4
-# Date: 2026-09-01
 #
 # Render CrowdSec + bouncer configs via envsubst (inline network topology +
 # /srv/crowdsec/crowdsec.env secrets) and restart CrowdSec services.

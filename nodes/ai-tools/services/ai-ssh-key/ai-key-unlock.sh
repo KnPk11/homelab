@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # ai-key-unlock.sh
-# Version: 1.2
-# Date: 2026-07-16
 #
 # Unlock passphrase-protected SSH keys into ssh-agent for a limited TTL:
 #   - ~/.ssh/id_ed25519_ai  — God Mode (MikroTik / LXCs / VMs)

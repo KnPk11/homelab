@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # update-namecheap-ddns.sh
-# Version: 2.1
 #
 # Namecheap Dynamic DNS update script for keeping the WAN locator record
 # (e.g. ip.example.com) synchronised with your current public IPv4 address.

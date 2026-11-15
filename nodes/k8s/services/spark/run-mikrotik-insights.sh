@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # run-mikrotik-insights.sh
-# Version: 1.0
-# Date: 2026-08-11
 #
 # Run MikroTik log insights against SMB-mounted reverse-proxy logs.
 # =============================================================================

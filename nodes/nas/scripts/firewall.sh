@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # OMV Firewall Rules Generator
-# Version: 1.3
-# Date: 2026-07-27
 #
 # Generate OMV firewall rules (iptables JSON) and apply via omv-rpc/omv-salt.
 #

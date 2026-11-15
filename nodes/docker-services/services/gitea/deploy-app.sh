@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.0
-# Date: 2026-10-31
 #
 # Decrypt Gitea environment file and provision /srv/gitea/.
 #

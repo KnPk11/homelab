@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.1
-# Date: 2026-07-26
 #
 # Copy centralised VPN profiles from secrets_vault into /srv/vpn-configs
 # for Portainer/consumers (source tree is outside Git).

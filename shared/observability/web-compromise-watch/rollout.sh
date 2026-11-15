@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # rollout.sh — web-compromise-watch on hosts that serve HTTP
-# Version: 1.0
-# Date: 2026-09-02
 #
 # Default set is not all of inventory.yml — only boxes with a public/lab web
 # surface. Override: --hosts a,b,c

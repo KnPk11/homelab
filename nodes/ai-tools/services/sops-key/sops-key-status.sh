@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # sops-key-status.sh
-# Version: 1.0
-# Date: 2026-07-21
 #
 # Report whether the SOPS Master Admin age key is unlocked in RAM and remaining TTL.
 #

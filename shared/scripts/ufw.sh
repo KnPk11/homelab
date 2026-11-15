@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Default Homelab UFW Firewall Setup Script
-# Version: 1.2
-# Date: 2026-08-04
 #
 # Default homelab UFW baseline for new hosts / scratch-pc (LAN/VPN/Docker trust zones).
 # Optional overrides: shared/scripts/ufw.env if present.

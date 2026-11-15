@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # github-backup.sh
-# Version: 1.0
 # Description: Automated GitHub backup runner using Gickup to OMV NFS storage
 # =============================================================================
 set -euo pipefail

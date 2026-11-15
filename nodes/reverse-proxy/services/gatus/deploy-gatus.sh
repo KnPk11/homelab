@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-gatus.sh
-# Version: 1.4
-# Date: 2026-07-27
 #
 # Render Gatus config.yaml (inline node IPs + /srv/gatus/gatus.env secrets)
 # and restart the gatus service.

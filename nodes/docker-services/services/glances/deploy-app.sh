@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # deploy-app.sh
-# Version: 1.2
-# Date: 2026-07-10
 #
 # Render glances.conf; secrets under /srv/glances/ only
 # (Influx token .secret and optional glances.pwd).

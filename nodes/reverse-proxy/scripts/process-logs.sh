@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # Unified Log Manager
-# Version: 2.2
-# Date: 2026-07-10
 #
 # Unified log manager for the reverse-proxy (Caddy) LXC: rotation, archival, retention.
 # Must be run as root; usually via cron.

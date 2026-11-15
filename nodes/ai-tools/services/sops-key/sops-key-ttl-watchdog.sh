@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # sops-key-ttl-watchdog.sh
-# Version: 1.0
-# Date: 2026-07-21
 #
 # Cron watchdog: wipe expired SOPS Master Admin key from RAM when TTL elapses.
 #

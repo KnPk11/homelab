@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # auto-pull-repo.sh
-# Version: 2.0
-# Date: 2026-11-12
 #
 # Safely synchronises /opt/homelab-repo and /opt/de-portfolio with origin/main.
 # Protects against silent data loss:

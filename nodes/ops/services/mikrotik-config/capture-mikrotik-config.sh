@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # capture-mikrotik-config.sh
-# Version: 2.0
-# Date: 2026-11-07
 #
 # capture-mikrotik-config.sh — Exports MikroTik RouterOS config via SSH
 # and pushes changes directly to the private Gitea repository (/srv/mikrotik-config).

@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # rollout.sh — install SSH doorbell on every inventory Linux host
-# Version: 1.0
-# Date: 2026-09-01
 #
 # Host list is DEFAULT_HOSTS below (no per-node copies in Git). Run from ai-tools:
 #   ./rollout.sh

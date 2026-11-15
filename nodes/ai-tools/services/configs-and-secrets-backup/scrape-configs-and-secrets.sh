@@ -1,8 +1,6 @@
 #!/bin/bash
 # =============================================================================
 # scrape-configs-and-secrets.sh
-# Version: 2.15
-# Date: 2026-10-31
 #
 # Centralised live-node configs & secrets backup into secrets_vault (rsync, no SOPS).
 # Requires God Mode SSH (ai-key-unlock). ON DEMAND ONLY — not for cron.

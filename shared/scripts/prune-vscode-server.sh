@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
 # prune-vscode-server.sh
-# Version: 1.0
-# Date: 2026-08-12
 #
 # Universal on-host cleaner for VS Code Remote-SSH residue under
 # ~/.vscode-server (and /root + /home/* when run as root).
