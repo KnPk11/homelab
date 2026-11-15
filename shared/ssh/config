@@ -24,7 +24,7 @@ Host mikrotik-backup
     IdentitiesOnly yes
 
 # Homelab Nodes (God Mode Key)
-Host proxmox-host
+Host pve1
     HostName 192.168.50.100
     User root
     IdentityFile ~/.ssh/id_ed25519_ai

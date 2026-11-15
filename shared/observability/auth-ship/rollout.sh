@@ -6,7 +6,7 @@ REPO="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
 REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/auth-ship/deploy.sh"
 DEFAULT_HOSTS=(
-  proxmox-host
+  pve1
   docker-services
   nas
   lab-vm

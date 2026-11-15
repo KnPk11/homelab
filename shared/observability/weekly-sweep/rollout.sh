@@ -9,7 +9,7 @@ MANIFEST="${MANIFEST:-$HOME/.config/ops-local/manifest.json}"
 THIS=$(hostname -s 2>/dev/null || true)
 
 declare -A CHECKS
-CHECKS[proxmox-host]=reboot
+CHECKS[pve1]=reboot
 CHECKS[reverse-proxy]=reboot,crowdsec
 CHECKS[docker-services]=reboot
 CHECKS[ai-tools]=dstnat,reboot

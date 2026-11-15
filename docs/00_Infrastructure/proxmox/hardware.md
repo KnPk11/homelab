@@ -147,17 +147,17 @@ iface vmbr0 inet static
 
 ### Auto-Heal Script
 
-The auto-heal script is tracked in Git under [`nodes/proxmox-host/scripts/fix-network.sh`](../../../nodes/proxmox-host/scripts/fix-network.sh) and symlinked on the Proxmox host.
+The auto-heal script is tracked in Git under [`nodes/pve1/scripts/fix-network.sh`](../../../nodes/pve1/scripts/fix-network.sh) and symlinked on the Proxmox host.
 
 1. **Deploy Symlink & Permissions**:
    ```bash
-   chmod +x /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh
-   ln -sfn /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh /usr/local/bin/fix-network.sh
+   chmod +x /opt/homelab-repo/nodes/pve1/scripts/fix-network.sh
+   ln -sfn /opt/homelab-repo/nodes/pve1/scripts/fix-network.sh /usr/local/bin/fix-network.sh
    ```
 
 2. **Schedule via Crontab**:
    ```text
-   * * * * * /opt/homelab-repo/nodes/proxmox-host/scripts/fix-network.sh
+   * * * * * /opt/homelab-repo/nodes/pve1/scripts/fix-network.sh
    ```
 
 ### Verification & Testing

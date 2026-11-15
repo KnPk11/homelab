@@ -121,7 +121,7 @@ Operational guides under `nodes/` act as concrete disaster recovery runbooks. Th
 ### 12.2 Multi-Service Hubs vs Single-Purpose Appliances
 To prevent unnecessary nesting ceremony while keeping complex hosts organised, use the appropriate model based on node role:
 
-1. **Multi-Service Hubs** (`ops`, `docker-services`, `reverse-proxy`, `ai-tools`, `proxmox-host`, `lab-vm`, `k8s`):
+1. **Multi-Service Hubs** (`ops`, `docker-services`, `reverse-proxy`, `ai-tools`, `pve1`, `lab-vm`, `k8s`):
    - **Structure**: Two-Tier Hub & Spoke.
    - The top-level `nodes/<node>/deployment.md` serves as the orchestrator and routing table.
    - Individual services live in `nodes/<node>/services/<service>/deployment.md` covering ports, `/srv/<service>/` secrets, deploy commands, and verification commands.

@@ -12,7 +12,7 @@ This repository (`github.com:KnPk11/homelab.git`) is live across the homelab fle
 ## 📂 Deployment & Secrets Strategy
 
 ### 1. Secrets Management (SOPS + `age` & Runtime-Only Vault)
-- **Active System**: SOPS with `age` keys is configured in [`.sops.yaml`](./.sops.yaml) for key-bearing appliance nodes (`proxmox-host`, `docker-services`, `nas`, `lab-vm`, `reverse-proxy`, `ai-tools`, `dns`, `pulse`, `vpns`, `pbs`). Nodes without a local `age` key (`ops`, `k8s`, `scratch-pc`, `syslog`) fall back to the Master Admin recipient or keep credentials out of Git in `/srv/<service>/`.
+- **Active System**: SOPS with `age` keys is configured in [`.sops.yaml`](./.sops.yaml) for key-bearing appliance nodes (`pve1`, `docker-services`, `nas`, `lab-vm`, `reverse-proxy`, `ai-tools`, `dns`, `pulse`, `vpns`, `pbs`). Nodes without a local `age` key (`ops`, `k8s`, `scratch-pc`, `syslog`) fall back to the Master Admin recipient or keep credentials out of Git in `/srv/<service>/`.
 - **Security Architecture**:
   - God Mode SSH and SOPS `age` are separate unlocks. See [`nodes/ai-tools/services/sops-key/deployment.md`](./nodes/ai-tools/services/sops-key/deployment.md).
   - Key-bearing appliance nodes keep a private `age` key at `/root/.config/sops/age/keys.txt` so services can decrypt after reboot.

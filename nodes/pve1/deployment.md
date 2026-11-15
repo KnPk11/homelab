@@ -1,6 +1,6 @@
-# proxmox-host: Master Bootstrap Guide
+# pve1: Master Bootstrap Guide
 
-> **Hostname:** `proxmox-host` | **IP:** `192.168.50.100` | **Proxmox:** Host (Hypervisor) | **Type:** Bare-Metal (Lenovo Tiny)
+> **Hostname:** `pve1` | **IP:** `192.168.50.100` | **Proxmox:** Host (Hypervisor) | **Type:** Bare-Metal (Lenovo Tiny)
 
 This node is the **Proxmox VE hypervisor** (host for LXCs/VMs). Tracked scripts live in Git; host-local secrets (e.g. firewall env) stay off the disposable clone.
 
@@ -33,12 +33,12 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 ### Firewall secrets (host-local)
 
 ```bash
-# On proxmox-host, next to the script (or after symlink layout you prefer):
-sudo cp /opt/homelab-repo/nodes/proxmox-host/scripts/firewall.env.example \
-  /opt/homelab-repo/nodes/proxmox-host/scripts/firewall.env
-sudo chmod 600 /opt/homelab-repo/nodes/proxmox-host/scripts/firewall.env
+# On pve1, next to the script (or after symlink layout you prefer):
+sudo cp /opt/homelab-repo/nodes/pve1/scripts/firewall.env.example \
+  /opt/homelab-repo/nodes/pve1/scripts/firewall.env
+sudo chmod 600 /opt/homelab-repo/nodes/pve1/scripts/firewall.env
 # edit firewall.env — then:
-sudo /opt/homelab-repo/nodes/proxmox-host/scripts/firewall.sh
+sudo /opt/homelab-repo/nodes/pve1/scripts/firewall.sh
 ```
 
 > Prefer moving `firewall.env` out of the clone later (same pattern as UFW on `.95`) if you want the GitOps tree fully free of host secrets.

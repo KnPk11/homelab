@@ -40,7 +40,7 @@ Manual “Add node” is easy to get wrong (self-signed TLS; Close without Save)
 
 **Preferred:** Pulse UI → **Settings → Infrastructure → Install on a host** (type **pve**). Run the generated command **as root on the Proxmox host**, not inside the CT. That writes `nodes.enc`. Tokens are one-shot — regenerate from the UI.
 
-**Firewall:** PVE must allow this CT to **TCP 8006** (`nodes/proxmox-host/scripts/firewall.sh`, alias `pulse-monitor`). Guest FW: `ssh-adm`, ping, **`proxy-back`** only (Caddy). No direct LAN/VPN to the Pulse port.
+**Firewall:** PVE must allow this CT to **TCP 8006** (`nodes/pve1/scripts/firewall.sh`, alias `pulse-monitor`). Guest FW: `ssh-adm`, ping, **`proxy-back`** only (Caddy). No direct LAN/VPN to the Pulse port.
 
 ### Unified agent on the Proxmox host
 
@@ -127,6 +127,6 @@ Do not set critical days to `1` unless you want a Telegram burst from every gues
 
 ## 7. Related
 
-- Firewall: `nodes/proxmox-host/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
+- Firewall: `nodes/pve1/scripts/firewall.sh`, `firewall.env.example` (`PULSE_MONITOR_IP`)
 - Private notes: `docs_private/services/public-homepage-and-host-monitoring.md`
 - Upstream: [Install](https://github.com/rcourtman/Pulse/blob/main/docs/INSTALL.md), [Configuration](https://github.com/rcourtman/Pulse/blob/main/docs/CONFIGURATION.md)

@@ -9,7 +9,7 @@ Successful `sshd` login → Homelab Watch. `session optional` on `/etc/pam.d/ssh
 
 | Host | Why |
 | :--- | :--- |
-| `proxmox-host` | Hypervisor |
+| `pve1` | Hypervisor |
 | `reverse-proxy` | Internet-facing LXC |
 | `docker-services` | App VM |
 | `nas` | Storage |
@@ -37,6 +37,6 @@ sudo /opt/homelab-repo/shared/observability/ssh-doorbell/rollout.sh --hosts scra
 sudo /opt/homelab-repo/shared/observability/ssh-doorbell/deploy.sh
 ```
 
-Telegram secret stays runtime (`/etc/ssh/telegram.env` or `/srv/homelab-watch/telegram.env`). The SOPS copy on `proxmox-host` is optional restore material, not a second script.
+Telegram secret stays runtime (`/etc/ssh/telegram.env` or `/srv/homelab-watch/telegram.env`). The SOPS copy on `pve1` is optional restore material, not a second script.
 
 **Message shape:** known LAN (`192.168.50.0/24`, `192.168.88.0/24`) and VPN (`10.5.0.0/24` WireGuard, `100.64.0.0/10` Tailscale) send one line prefixed `🏠`. Anything else (WAN, odd RFC1918, IPv6, empty `PAM_RHOST`) keeps the multiline block prefixed `🚨`. No local timestamp — Telegram already stamps the message. Optional reverse-DNS label on compact lines if AdGuard has a name (DHCP reservations). CIDRs match CrowdSec `my-trusted-ips` / UFW; edit `ssh-telegram-notify` if a range moves. Does not query MikroTik from PAM.

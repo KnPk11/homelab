@@ -3,7 +3,7 @@
 > [!NOTE]
 > #Proxmox #Infrastructure #Hardware #Virtualization #Inventory
 
-This directory contains the authoritative hardware provisioning and resource allocation specifications for all virtualised guests (VMs and LXC containers) hosted on the Proxmox VE hypervisor (`proxmox-host`, `192.168.50.100`).
+This directory contains the authoritative hardware provisioning and resource allocation specifications for all virtualised guests (VMs and LXC containers) hosted on the Proxmox VE hypervisor (`pve1`, `192.168.50.100`).
 
 ---
 

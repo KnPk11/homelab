@@ -14,7 +14,7 @@ REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/ssh-doorbell/deploy.sh"
 
 # Every inventory Linux SSH host (skip Windows). Keep in sync with inventory.yml.
 DEFAULT_HOSTS=(
-  proxmox-host
+  pve1
   docker-services
   nas
   lab-vm

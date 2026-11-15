@@ -38,7 +38,7 @@ ALL_NODES=(
     "k8s"
     "lab-vm"
     "scratch-pc"
-    "proxmox-host"
+    "pve1"
     "nas"
     "reverse-proxy"
     "dns"

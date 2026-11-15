@@ -91,7 +91,7 @@ Inside the `pbs` LXC (`[PBS-IP]`):
    ```
 
 ### 5. Proxmox VE Storage Integration
-On `proxmox-host` (`[PROXMOX-HOST-IP]`), register both PBS storage endpoints:
+On `pve1` (`[PROXMOX-HOST-IP]`), register both PBS storage endpoints:
 
 ```bash
 pvesm add pbs pbs-linux \

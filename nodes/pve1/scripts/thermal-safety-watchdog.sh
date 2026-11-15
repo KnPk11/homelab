@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # Thermal Safety Watchdog & Emergency Graceful Shutdown
-# Location: nodes/proxmox-host/scripts/thermal-safety-watchdog.sh
+# Location: nodes/pve1/scripts/thermal-safety-watchdog.sh
 #
 # Purpose:
 #   Continuously monitors Intel CPU package temperature via sysfs.

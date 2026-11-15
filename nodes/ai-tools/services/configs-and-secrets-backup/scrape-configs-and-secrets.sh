@@ -47,7 +47,7 @@ require_root_ssh() {
 }
 
 declare -A NODES=(
-    ["proxmox-host"]="192.168.50.100"
+    ["pve1"]="192.168.50.100"
     ["pulse"]="192.168.50.88"
     ["reverse-proxy"]="192.168.50.101"
     ["dns"]="192.168.50.102"
@@ -71,7 +71,7 @@ PATH_SWEEPS=(
     "lab-vm:/opt/web-apps"
     "scratch-pc:/opt/web-apps"
     "nas:/opt/scripts/Security"
-    "proxmox-host:/opt/scripts/Security"
+    "pve1:/opt/scripts/Security"
 )
 
 # Vault path = <host> + absolute search path (strip leading /).
@@ -131,7 +131,7 @@ else
 fi
 
 # Verify God Mode SSH works BEFORE purging the existing backup directory.
-if ! require_root_ssh "proxmox-host" "${NODES["proxmox-host"]}"; then
+if ! require_root_ssh "pve1" "${NODES["pve1"]}"; then
     echo "Aborting before purging $BACKUP_DIR." >&2
     exit 1
 fi
@@ -250,7 +250,7 @@ fi
 
 # Proxmox VE host settings & PBS keys — one entry per standalone (unclustered) node.
 # Each node has its own /etc/pve, so every host must be listed here and in NODES.
-PVE_HOSTS=("proxmox-host")
+PVE_HOSTS=("pve1")
 
 # rsync only top-level files matching the given glob(s) from a remote dir into the vault.
 # Usage: pve_rsync_matching <host> <ip> <remote_dir> <glob> [<glob>...]

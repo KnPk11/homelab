@@ -1,7 +1,7 @@
 # Thermal Safety Watchdog Deployment
 
-> **Location:** `nodes/proxmox-host/services/thermal-watchdog/deployment.md`  
-> **Node:** `proxmox-host` (`pve1`, `192.168.50.100`)
+> **Location:** `nodes/pve1/services/thermal-watchdog/deployment.md`  
+> **Node:** `pve1` (`192.168.50.100`)
 
 ## 1. Overview & Architecture
 
@@ -25,7 +25,7 @@ The thermal safety watchdog continuously monitors the CPU package temperature vi
 
 1. Link the script to PATH:
    ```bash
-   REPO=/opt/homelab-repo/nodes/proxmox-host
+   REPO=/opt/homelab-repo/nodes/pve1
    sudo chmod +x "$REPO/scripts/thermal-safety-watchdog.sh"
    sudo ln -sfn "$REPO/scripts/thermal-safety-watchdog.sh" /usr/local/bin/thermal-safety-watchdog.sh
    ```

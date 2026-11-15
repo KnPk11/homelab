@@ -1,5 +1,5 @@
 creation_rules:
-  - path_regex: nodes/proxmox-host/.*
+  - path_regex: nodes/pve1/.*
     age: "age1kr7vgr0zfnfkxrll08vdnheezfyd8nxdsv8suays42q5jfwedc9qn6c895,age1q30qfyjrc0zkvdm4783c5t4qta08zsenx8h9vfwfhay682czpaaqsyvjs8"
 
   - path_regex: nodes/docker-services/.*

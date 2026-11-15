@@ -54,7 +54,7 @@ ai-key-lock   # also sops-key-lock if used
 
 Host columns follow [inventory.yml](../../inventory.yml); they are **examples of coverage**, not a closed list — new nodes inherit the same check types for their role. **Updates snapshot** (§5.1) covers four *kinds* of updates (router, OS, Docker images, native services), not a single `apt` pass.
 
-| Check | proxmox-host | docker-services | nas | lab-vm | reverse-proxy | ai-tools | dns | pulse | vpns | pbs | MikroTik |
+| Check | pve1 | docker-services | nas | lab-vm | reverse-proxy | ai-tools | dns | pulse | vpns | pbs | MikroTik |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | Updates snapshot | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● | ● |
 | Lynis | ○ | ● | ● | ● | ● | ● | ● | ● | ● | ● | — |
@@ -72,7 +72,7 @@ Host columns follow [inventory.yml](../../inventory.yml); they are **examples of
 ```bash
 ai-key-unlock && source ~/.ssh/ai-key-agent.sh && ai-key-status
 
-for h in proxmox-host docker-services nas lab-vm reverse-proxy dns ai-tools pulse vpns pbs; do
+for h in pve1 docker-services nas lab-vm reverse-proxy dns ai-tools pulse vpns pbs; do
   ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" 'hostname' && echo "OK $h" || echo "FAIL $h"
 done
 ssh -o BatchMode=yes -o ConnectTimeout=5 router '/system resource print' | head
@@ -166,7 +166,7 @@ done'
 **Pass:** only documented internet paths; mgmt (SSH, PVE UI, Winbox, SMB) not on WAN; isolation consistent with §5.5. Authority may be Proxmox-only (empty guest UFW is OK if baseline says so).
 
 ```bash
-ssh proxmox-host 'pve-firewall status 2>/dev/null; ls /etc/pve/firewall/ 2>/dev/null | head'
+ssh pve1 'pve-firewall status 2>/dev/null; ls /etc/pve/firewall/ 2>/dev/null | head'
 ssh [HOST] 'sudo ufw status verbose 2>/dev/null || echo no-ufw'
 # Also: nodes/*/scripts/*firewall* or ufw.sh vs live; OMV UI on nas if used
 ```

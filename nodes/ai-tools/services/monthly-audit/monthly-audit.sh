@@ -29,7 +29,7 @@ SNAP_ROOT=/var/lib/monthly-audit
 PRIVATE_DOCS=/opt/dev/docs_private/security
 
 LIGHT_HOSTS=(
-  proxmox-host docker-services nas lab-vm reverse-proxy dns
+  pve1 docker-services nas lab-vm reverse-proxy dns
   pulse vpns pbs k8s scratch-pc syslog ops
 )
 LYNIS_HOSTS=(
@@ -132,7 +132,7 @@ ssh_cmd() {
 }
 
 need_unlock() {
-  if ! ssh_cmd proxmox-host 'hostname' >/dev/null 2>&1; then
+  if ! ssh_cmd pve1 'hostname' >/dev/null 2>&1; then
     echo "monthly-audit: God Mode not usable. Run: ai-key-unlock && source ~/.ssh/ai-key-agent.sh" >&2
     exit 1
   fi

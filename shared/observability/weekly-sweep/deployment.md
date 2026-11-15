@@ -20,7 +20,7 @@ Host lists live **here**, not in `nodes/*/deployment.md`. Same idea as the [SSH 
 | Host | Checks |
 | :--- | :--- |
 | `ai-tools` | dstnat, reboot |
-| `proxmox-host` | reboot, planted files |
+| `pve1` | reboot, planted files |
 | `reverse-proxy` | reboot, crowdsec, planted files |
 | `docker-services` | reboot, planted files |
 | `dns`, `k8s`, `lab-vm`, `nas`, `ops`, `pbs`, `pulse`, `scratch-pc`, `vpns` | reboot, planted files |
