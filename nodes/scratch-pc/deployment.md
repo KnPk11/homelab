@@ -118,3 +118,23 @@ Because `scratch-pc` is physical hardware not directly snapshotted by Proxmox Ba
   - Backs up other web app files (e.g. `.env` files, encrypted `secrets.sops.env`, media and images (`uploads/`), `metadata.json`, `pending/`).
 * **Systemd Timer**: `scratch-apps-backup.timer` triggers `scratch-apps-backup.service` every 4 hours (`Persistent=true`).
 
+---
+
+## 7. Kernel & Headless Boot (`/etc/default/grub` & USB Quirk)
+
+On bare-metal `CherryTrail` hardware, `/etc/default/grub` keeps `intel_idle.max_cstate=1` for stability, keeps `usbcore.autosuspend=-1`, and disables GRUB's graphical menu wait for headless reboots:
+
+```ini
+GRUB_TIMEOUT=0
+GRUB_RECORDFAIL_TIMEOUT=0
+GRUB_TERMINAL=console
+GRUB_CMDLINE_LINUX_DEFAULT="intel_idle.max_cstate=1 quiet usbcore.autosuspend=-1"
+```
+
+Apply changes with `update-grub`.
+
+> [!IMPORTANT]
+> **CherryTrail Hardware Quirks (`YT8.2x64.001` BIOS / `8086:22b5` xHCI):**
+> - **USB 3.0 Port Enumeration:** The built-in `Realtek RTL8152` NIC (`usb 1-3`) and internal 4-port hub (`usb 1-4`) fail to enumerate (`can't set config #2, error -110` / `unable to enumerate USB device`) at boot unless an active USB **data** device (e.g. a wireless mouse nano-dongle or USB flash drive; a 5V-only USB device is not sufficient) is plugged into the **USB 3.0 port (`1-2`)**. Once booted and Ethernet is up, the dongle can be unplugged — since AC power-loss auto-boot does not work anyway (see below), it is only needed temporarily during initial boot (unless you want unattended OS reboots to recover without re-inserting one).
+> - **AC Power-Loss Recovery:** In BIOS (`Advanced` → `Chipset Configuration` → `Miscellaneous` → `State After G3`), `S0` (Power On) is already set, but auto power-on after AC power loss does not function reliably on this hardware. Expect manual power-on after mains outages.
+
