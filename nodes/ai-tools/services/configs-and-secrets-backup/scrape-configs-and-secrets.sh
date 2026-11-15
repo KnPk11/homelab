@@ -248,7 +248,73 @@ else
     echo "Warning: skipped Pulse tree (root SSH to pulse failed)"
 fi
 
+# Proxmox VE host settings & PBS keys — one entry per standalone (unclustered) node.
+# Each node has its own /etc/pve, so every host must be listed here and in NODES.
+PVE_HOSTS=("proxmox-host")
 
+# rsync only top-level files matching the given glob(s) from a remote dir into the vault.
+# Usage: pve_rsync_matching <host> <ip> <remote_dir> <glob> [<glob>...]
+pve_rsync_matching() {
+    local host="$1" ip="$2" src="$3"
+    shift 3
+    local dest pattern
+    local filters=()
+    for pattern in "$@"; do
+        filters+=(--include="/$pattern")
+    done
+    dest="$(vault_path "$host" "$src")"
+    mkdir -p "$dest"
+    rsync -avz -e "$RSYNC_RSH" \
+        "${filters[@]}" \
+        --exclude='*' \
+        "root@$ip:$src/" "$dest/" || \
+        echo "Warning: rsync failed for $src on $host"
+}
+
+backup_pve_host() {
+    local host="$1"
+    local ip="${NODES[$host]:-}"
+    if [[ -z "$ip" ]]; then
+        echo "Warning: $host is in PVE_HOSTS but has no IP in NODES — skipped"
+        return 0
+    fi
+    if ! require_root_ssh "$host" "$ip"; then
+        echo "Warning: skipped Proxmox host settings (root SSH to $host failed)"
+        return 0
+    fi
+    echo "Backing up Proxmox host settings & keys on $host..."
+
+    # PBS encryption key & storage token secrets
+    pve_rsync_matching "$host" "$ip" /etc/pve/priv/storage '*'
+    # Storage definitions & scheduled backup jobs
+    pve_rsync_matching "$host" "$ip" /etc/pve storage.cfg jobs.cfg
+    # Cluster & per-guest firewall rules (skips *.fw.bak* copies)
+    pve_rsync_matching "$host" "$ip" /etc/pve/firewall '*.fw'
+    # Guest configs — needed to rebuild CT 109 (PBS) if PBS itself is lost
+    pve_rsync_matching "$host" "$ip" /etc/pve/lxc '*.conf'
+    pve_rsync_matching "$host" "$ip" /etc/pve/qemu-server '*.conf'
+
+    # Custom systemd NIC link rules (not present on every host)
+    if ssh_root "$ip" "test -d /usr/local/lib/systemd/network"; then
+        pve_rsync_matching "$host" "$ip" /usr/local/lib/systemd/network '*.link'
+    fi
+
+    # Host-local mounts, network, spindown, SMART, and root cron jobs
+    local remote_file
+    for remote_file in \
+        /etc/fstab \
+        /etc/network/interfaces \
+        /etc/default/hd-idle \
+        /etc/smartd.conf \
+        /var/spool/cron/crontabs/root
+    do
+        pull_remote_file "$ip" "$remote_file" "$(vault_path "$host" "$remote_file")"
+    done
+}
+
+for pve_host in "${PVE_HOSTS[@]}"; do
+    backup_pve_host "$pve_host" || true
+done
 
 chmod -R 600 "$BACKUP_DIR"
 find "$BACKUP_DIR" -type d -exec chmod 700 {} +
