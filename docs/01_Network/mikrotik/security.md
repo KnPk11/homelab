@@ -24,7 +24,7 @@ This relies on logical firewall rules to separate the homelab from the trusted L
 | Concern | Control |
 |---------|---------|
 | Guest/IoT SSID + main SSID on same Asus uplink | Trunk on `ether2`: untagged main + tagged VLAN 10 |
-| Guest frames leaking to `ether5` / `sfp1` | VLAN filtering + guest only `tagged=bridge,ether2` |
+| Guest frames leaking to `sfp1` | VLAN filtering + guest only `tagged=bridge,ether2` |
 | Guest/lab → private subnets at IP layer | Firewall **Untrusted** isolate (unchanged) |
 | Homelab vs main LAN | Separate **`homelab-bridge`** (physical ports), not VLAN filtering |
 

@@ -3,9 +3,9 @@
 > [!NOTE]
 > #MikroTik #Segmentation #Bridge #Firewall
 
-## Uniting `ether3` and `ether4` (The Homelab Switch)
+## Uniting `ether3`, `ether4`, and `ether5` (The Homelab Switch)
 
-To make `ether3` and `ether4` talk to each other while sharing the `[HOMELAB-GW]` gateway, create a **separate bridge** (physical switch for the lab).
+To make `ether3`, `ether4`, and `ether5` talk to each other while sharing the `[HOMELAB-GW]` gateway, create a **separate bridge** (physical switch for the lab).
 
 ### Create the New Bridge
 
@@ -13,7 +13,7 @@ To make `ether3` and `ether4` talk to each other while sharing the `[HOMELAB-GW]
 
 ### Move Ports
 
-1. **Bridge** → **Ports**: remove `ether3` / `ether4` from `bridge`.
+1. **Bridge** → **Ports**: remove `ether3`, `ether4`, and `ether5` from `bridge`.
 2. Add them to `homelab-bridge`.
 
 ### Address + DHCP
@@ -45,7 +45,7 @@ Put the lab (and guest VLAN) on **Untrusted**:
 ## Bridge VLAN filtering (Guest + Asus trunk)
 
 > [!IMPORTANT]
-> `vlan-filtering=yes` on main `bridge`. Without this, `/interface bridge vlan` is only partly enforced and Guest VLAN frames can flood onto other bridge ports (e.g. `ether5`, `sfp1`). Firewall isolation still applies to **routed** traffic; filtering hardens **L2**.
+> `vlan-filtering=yes` on main `bridge`. Without this, `/interface bridge vlan` is only partly enforced and Guest VLAN frames can flood onto other bridge ports (e.g. `sfp1`). Firewall isolation still applies to **routed** traffic; filtering hardens **L2**.
 
 ### Topology (why this is needed)
 
@@ -58,9 +58,9 @@ Guest SSID ── VLAN 10 ───┘
 | Path | Role |
 |------|------|
 | `ether2` | Trunk to Asus: **untagged** main LAN + **tagged** VLAN 10 (guest) |
-| `ether5`, `sfp1` | Access ports: main LAN only (untagged / PVID 1) |
+| `sfp1` | Access port: main LAN only (untagged / PVID 1) |
 | `guest-vlan` | VLAN interface on `bridge`, `vlan-id=10`, list **Untrusted** |
-| `homelab-bridge` | Separate bridge (ether3/4) — **not** affected by main-bridge filtering |
+| `homelab-bridge` | Separate bridge (`ether3`–`ether5`) — **not** affected by main-bridge filtering |
 
 Asus must tag the guest (and any IoT-as-guest) SSID as **VLAN 10**. If both networks leave the AP untagged, MikroTik cannot separate them.
 
@@ -77,9 +77,6 @@ Asus must tag the guest (and any IoT-as-guest) SSID as **VLAN 10**. If both netw
 set [find where bridge=bridge and interface=ether2] \
     pvid=1 frame-types=admit-all \
     comment="Trunk to Asus AP (untagged main + VLAN 10 guest)"
-set [find where bridge=bridge and interface=ether5] \
-    pvid=1 frame-types=admit-only-untagged-and-priority-tagged \
-    comment="Main LAN access"
 set [find where bridge=bridge and interface=sfp1] \
     pvid=1 frame-types=admit-only-untagged-and-priority-tagged \
     comment="Main LAN access"
@@ -88,8 +85,8 @@ set [find where bridge=bridge and interface=sfp1] \
 /interface bridge vlan
 # Main LAN (untagged / PVID 1) — CPU + all main ports
 add bridge=bridge comment="Main LAN (untagged)" \
-    untagged=bridge,ether2,ether5,sfp1 vlan-ids=1
-# Guest — tagged on CPU + Asus trunk only (no ether5/sfp1)
+    untagged=bridge,ether2,sfp1 vlan-ids=1
+# Guest — tagged on CPU + Asus trunk only (no sfp1)
 add bridge=bridge comment="Guest VLAN" \
     tagged=bridge,ether2 vlan-ids=10
 
@@ -104,7 +101,7 @@ If a row already exists, use `set [find ...]` instead of `add`.
 1. Manage the router from **homelab** (`[HOMELAB-GW]` / `192.168.50.1`) or another path that does **not** depend on the main-bridge port you might mis-tag.  
 2. Set **port PVIDs / frame-types** and **bridge vlan** rows first.  
 3. Enable **`vlan-filtering=yes` last**.  
-4. Verify: main Wi‑Fi DHCP, guest Wi‑Fi DHCP on guest subnet, guest cannot reach main LAN / lab private ranges, `ether5`/`sfp1` do not carry VLAN 10.
+4. Verify: main Wi‑Fi DHCP, guest Wi‑Fi DHCP on guest subnet, guest cannot reach main LAN / lab private ranges, `sfp1` does not carry VLAN 10.
 
 ### What this does *not* replace
 

@@ -29,6 +29,11 @@ Host proxmox-host
     User root
     IdentityFile ~/.ssh/id_ed25519_ai
 
+Host pve2
+    HostName 192.168.50.110
+    User root
+    IdentityFile ~/.ssh/id_ed25519_ai
+
 Host docker-services
     HostName 192.168.50.95
     User root

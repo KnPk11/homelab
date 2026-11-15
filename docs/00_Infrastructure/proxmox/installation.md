@@ -25,6 +25,7 @@
 Follow the on-screen prompts to configure the base system:
 - **Target Drive**: Select the target drive.
     - *Note*: `EXT4` is a standard, reliable choice for single-drive setups. Use ZFS if you plan on using RAID.
+    - *Tip (`Options` → `minfree` & `swapsize`)*: Leave `swapsize` at default (`8 GB` cap on 32 GB RAM hosts). On larger single drives (e.g. 1 TB), consider setting `minfree` to e.g. `100` GB to leave unallocated `VFree` space in the `pve` VG — `local-lvm` (`pve/data`) cannot be shrunk once allocated, whereas `VFree` can be extended online in small increments (`lvextend -r -L +20G pve/root` or `lvextend -L +20G pve/data`) as needed.
 - **Location**: Set your Country, Time zone, and Keyboard Layout.
 - **Credentials**:
     - **Password**: Set a strong root password.
