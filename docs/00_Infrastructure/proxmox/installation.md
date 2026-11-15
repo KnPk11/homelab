@@ -12,7 +12,8 @@
 
 ### BIOS Checklist (Mini PC / Lenovo ThinkCentre)
 
-- **BIOS Update First**: Update BIOS/firmware (e.g. manufacturer USB ISO or `fwupdmgr`) **before** setting BIOS options or installing Proxmox, as flashes can reset NVRAM to defaults.
+- **BIOS Update First**: Update BIOS/firmware (e.g. manufacturer USB package or `fwupdmgr`) **before** setting BIOS options or installing Proxmox, as flashes can reset NVRAM to defaults.
+    - *USB Package Tip (Windows + Rufus)*: Download the **USB Drive Package** (`.zip`) from the manufacturer's BIOS/UEFI page, format the USB drive in Rufus (**Boot selection**: `Non bootable`, **Partition scheme**: `MBR`, **File system**: `Large FAT32` — Windows Explorer hides FAT32 above 32 GB), extract the `.zip` contents directly to the root of the drive (not into a subfolder), and boot it via **`F12`** (with `Secure Boot` disabled).
 - **Virtualisation & I/O**: `Intel VT-x` / `AMD-V`, `VT-d` / `IOMMU` **Enabled**; Storage Mode **AHCI**.
 - **Boot & Security**: `Secure Boot`, `Fast Boot` **Disabled**; `Security Chip 2.0 (TPM 2.0)` **Enabled**; `Device Guard`, `Absolute Persistence Module` **Disabled** *(not `Permanently Disabled`)*; `Intel SIPP` default; put **internal NVMe/SSD (`proxmox`) first** in boot order after install *(use **`F12`** for one-time USB boot)*.
 - **Power & Cooling**: `After Power Loss` **Power On**; `Enhanced Power Saving Mode` **Disabled** *(for Wake on LAN)*; `C1E`, `C-States`, `Turbo Mode`, `DPTF` **Enabled**; `Intelligent Cooling` **Better Acoustic** or **Better Thermal**.
