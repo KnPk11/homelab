@@ -21,8 +21,14 @@ If this machine ever suffers a catastrophic failure, follow the guides below in 
 | **Thermal Safety Watchdog** | Service / Timer | Every 30s (`systemd`) | [deployment.md](services/thermal-watchdog/deployment.md) |
 | **Guest Snapshots** | Script | Daily at 02:00 (`cron`) | `0 2 * * * /usr/local/bin/proxmox-snapshot.sh` |
 | **Cluster Firewall** | Script | On boot / network change | [`scripts/firewall.sh`](scripts/firewall.sh) *(see below)* |
+| **HDD Spindown (`hd-idle`)** | Service (`systemd`) | 10 min idle (`sda` PBS HDD) | `/etc/default/hd-idle` (`-i 600 -c ata`) |
 | **SSH Doorbell** | Observability | PAM `sshd` login | [deployment.md](../../shared/observability/ssh-doorbell/deployment.md) |
 | **Intel TCO Hardware Watchdog** | Hardware | Autonomous PCH reset | [intel-hardware-watchdog.md](../../docs/00_Infrastructure/proxmox/intel-hardware-watchdog.md) |
+
+> [!NOTE]
+> **Host Settings Backup**
+>
+> Do not use third-party Proxmox `/etc` backup scripts. Host-local configs and PBS keys (`/etc/pve/priv/storage/`, `storage.cfg`, `jobs.cfg`, `firewall/*.fw`, guest `.conf` files, `50-pmx-nic*.link`, `fstab`, `interfaces`, `hd-idle`, `smartd.conf`, and root crontab) are backed up on-demand by [`scrape-configs-and-secrets.sh`](../ai-tools/services/configs-and-secrets-backup/scrape-configs-and-secrets.sh).
 
 ### Firewall secrets (host-local)
 

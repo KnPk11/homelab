@@ -243,6 +243,14 @@ When taking an offline copy of verified PBS data:
 3. Prefer **mirror** with deletion on the destination.
 4. Optionally count files/dirs before and after sync (PBS trees are large because of `.chunks`).
 
+### Proxmox host settings (no third-party backup scripts)
+
+Do not use third-party Proxmox host-backup repositories or blind `/etc` / `pmxcfs` tarball restores, even when rebuilding the same machine. Restoring an old `/etc` archive over a fresh Proxmox install risks stale disk UUIDs and mismatched point-release configs. Instead, Proxmox host recovery relies on:
+
+1. A clean Proxmox VE USB install ([Proxmox Installation](../00_Infrastructure/proxmox/installation.md)).
+2. Git-tracked host scripts ([Proxmox Host Bootstrap](../../nodes/proxmox-host/deployment.md)).
+3. The `proxmox-host` section of `scrape-configs-and-secrets.sh` (PBS keys/tokens, `storage.cfg`, `jobs.cfg`, `firewall/*.fw`, guest `.conf` files, `.link` rules, `fstab`, `interfaces`, `hd-idle`, `smartd.conf`, and root crontab), paired with an offline copy of the PBS encryption key.
+
 ## 📜 8. Logs (optional)
 
 - Sync or backup logs over **SMB** to offsite storage.
