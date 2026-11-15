@@ -10,6 +10,12 @@
 - **Secure Boot**: Disable secure boot in the BIOS for best compatibility.
 - **Boot**: Insert the USB into the target machine and boot from it via the BIOS/UEFI boot menu.
 
+### BIOS Checklist (Mini PC / Lenovo ThinkCentre)
+
+- **Virtualisation & I/O**: `Intel VT-x` / `AMD-V`, `VT-d` / `IOMMU` **Enabled**; Storage Mode **AHCI**.
+- **Boot & Security**: `Secure Boot` **Disabled**; `Security Chip 2.0 (TPM 2.0)` **Enabled**; `Device Guard`, `Absolute Persistence Module` **Disabled** *(not `Permanently Disabled`)*; `Intel SIPP` default.
+- **Power & Cooling**: `After Power Loss` **Power On**; `Enhanced Power Saving Mode` **Disabled** *(for Wake on LAN)*; `C1E`, `C-States`, `Turbo Mode`, `DPTF` **Enabled**; `Intelligent Cooling` **Better Acoustic** or **Better Thermal**.
+
 ## Installation Configuration
 
 > [!WARNING]
