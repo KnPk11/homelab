@@ -197,6 +197,10 @@ curl -fsS https://paperclip.[DOMAIN]/api/health
 
 `deploymentMode` is `authenticated` and `deploymentExposure` is `private`. The UI is served as HTML on `/`.
 
+## Guides & Resources
+
+- [paperclipai/companies](https://github.com/paperclipai/companies#superpowers-dev-shop): Catalogue of ready-made Paperclip company templates. The **Superpowers Dev Shop** entry is a pre-built dev team with workflow skills (spec-first planning, TDD, reviews).
+
 ## Troubleshooting
 
 - **Onboarding Wizard Locked to Claude/OpenAI:** Navigate directly to `https://paperclip.[DOMAIN]/KHO/agents/all` and save any other adapter (such as Grok Build, OpenCode, or Hermes) to dismiss the onboarding lock (see [Section 6](#6-first-login-and-the-onboarding-caveat)).
