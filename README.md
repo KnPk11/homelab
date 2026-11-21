@@ -11,8 +11,8 @@ Sanitised views of the Dashy control surfaces — public entrypoint vs private s
 | ![Public Dashy landing page](docs/assets/screenshots/dashy-public-landing.jpg) | ![Private Dashy service catalogue](docs/assets/screenshots/dashy-private-catalogue.jpg) |
 
 ## ⚙️ Tech Stack
-*   **Compute:** Lenovo M70Q Tiny + Raspberry Pi 5
-*   **Hypervisor:** Proxmox VE
+*   **Compute:** 2× Lenovo ThinkCentre M70q Tiny (`pve1` at `192.168.50.100`; `pve2` at `192.168.50.110` — M70q Gen 2, Intel Core i5-11400T 12 threads, 31 GiB RAM, 1 TB NVMe), plus a tiny Intel Atom PC (`scratch-pc`) for light vibe-coded web services and online media sharing
+*   **Hypervisor:** Proxmox VE (two standalone, unclustered nodes — `pve1` and `pve2`, Proxmox VE 9.2)
 *   **Storage:** OpenMediaVault (SMB/NFS)
 *   **Networking:** MikroTik (RouterOS) + ASUS (Asuswrt-Merlin)
 *   **DNS:** AdGuard Home (Network-wide)
@@ -23,7 +23,7 @@ Sanitised views of the Dashy control surfaces — public entrypoint vs private s
 ---
 
 ## 🏗️ The Architecture
-My lab is built on a **Defence-in-Depth** philosophy, utilising a dual-router physical isolation strategy and a Proxmox hypervisor layer.
+My lab is built on a **Defence-in-Depth** philosophy, utilising a dual-router physical isolation strategy and two standalone (unclustered) Proxmox VE hypervisors (`pve1` at `192.168.50.100` and `pve2` at `192.168.50.110`). Workload placement across the two hosts is kept flexible and subject to change. Both nodes are identically wired into GitOps (`/opt/homelab-repo`, `sync-nodes.sh`), parameterised `pve-firewall`, Proxmox Backup Server (`pbs-linux`/`pbs-windows`), Pulse, and observability (`ssh-doorbell`, `auth-ship`, `weekly-sweep`).
 
 ```mermaid
 flowchart TD
@@ -36,7 +36,7 @@ flowchart TD
         VLAN_LAN["VLAN: Trusted LAN"]
     end
 
-    subgraph Compute["🖥️ Proxmox Hypervisor"]
+    subgraph Compute["🖥️ Proxmox Hypervisors (pve1 & pve2 — Unclustered)"]
         Caddy["Reverse Proxy (CT 104)"]
         
         subgraph DirectPorts["Direct Port Forwards"]
@@ -91,7 +91,7 @@ The following structure organises data across the primary storage pool (typicall
 ---
 
 ## 📖 Project History & Intention
-What began in 2014 as a humble Raspberry Pi download server has evolved over a decade into a comprehensive, self-hosted private cloud. Driven by a desire to bypass third-party cloud services, ensure data privacy, and learn modern architectures, this project documents continuous iteration. From early experiments with bare-metal setups and basic port forwarding, the infrastructure has matured through containerisation (Docker), network segmentation (MikroTik/VLANs), and enterprise-grade hypervisors (Proxmox). Today, it serves as a robust playground for deploying everything from self-hosted media servers and personal productivity apps, to experimenting with local LLMs and agentic AI automations.
+What began as a brief 2014 Raspberry Pi download server experiment — soon put aside — restarted in earnest in Spring 2025 with a Raspberry Pi 5 (now powered off) and has since evolved into a comprehensive, self-hosted private cloud. Driven by a desire to bypass third-party cloud services, ensure data privacy, and learn modern architectures, this project documents continuous iteration. From early experiments with bare-metal setups and basic port forwarding, the infrastructure has matured through containerisation (Docker), network segmentation (MikroTik/VLANs), and enterprise-grade hypervisors (Proxmox). Today, it serves as a robust playground for deploying everything from self-hosted media servers and personal productivity apps, to experimenting with local LLMs and agentic AI automations.
 
 ---
 
