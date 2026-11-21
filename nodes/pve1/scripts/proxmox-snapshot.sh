@@ -67,6 +67,14 @@ log "--- Starting Automated Snapshots (Safe Mode: ${SLEEP_DELAY}s delay) ---"
 VMS=$(qm list | awk 'NR>1 {print $1}')
 for vmid in $VMS; do
     log "[+] Processing VM $vmid..."
+
+    # Skip parked/fallback VMs (stopped with explicit onboot: 0)
+    if qm status "$vmid" 2>/dev/null | grep -q "status: stopped" && \
+       grep -q "^onboot: 0" "/etc/pve/qemu-server/${vmid}.conf" 2>/dev/null; then
+        log "    [i] VM $vmid is stopped with onboot: 0 (parked fallback). Skipping snapshot."
+        cleanup_old_snapshots "$vmid" "qm"
+        continue
+    fi
     
     # Check if snapshot already exists
     if qm listsnapshot $vmid | grep -q "$SNAP_NAME"; then
