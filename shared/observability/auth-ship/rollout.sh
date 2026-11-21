@@ -7,6 +7,7 @@ SSH_CFG="${SSH_CFG:-$REPO/shared/ssh/config}"
 REMOTE_DEPLOY="/opt/homelab-repo/shared/observability/auth-ship/deploy.sh"
 DEFAULT_HOSTS=(
   pve1
+  pve2
   docker-services
   nas
   lab-vm

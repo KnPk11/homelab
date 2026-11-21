@@ -10,6 +10,7 @@ THIS=$(hostname -s 2>/dev/null || true)
 
 declare -A CHECKS
 CHECKS[pve1]=reboot
+CHECKS[pve2]=reboot
 CHECKS[reverse-proxy]=reboot,crowdsec
 CHECKS[docker-services]=reboot
 CHECKS[ai-tools]=dstnat,reboot
