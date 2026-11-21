@@ -3,38 +3,80 @@
 # firewall.sh
 #
 # Proxmox host/cluster firewall management (cluster.fw aliases + guest rules).
-# Run on the Proxmox host (pve1). Topology inline; canonical ref inventory.yml.
+# Works on any standalone Proxmox host (pve1, pve2, ...). Topology inline;
+# canonical ref inventory.yml. Optional host overrides: firewall.env beside script.
 #
 # Usage:
-#   sudo ./firewall.sh
+#   sudo ./firewall.sh [--node <pve-node>] [--local-only]
+#
+# Options:
+#   --node <name>   Target /etc/pve/nodes/<name>/host.fw (default: hostname -s)
+#   --local-only    Only write <vmid>.fw for guests present on target host
+#   -h, --help      Show this help message
 # =============================================================================
 set -e
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+PVE_NODE="${PVE_NODE:-$(hostname -s)}"
+LOCAL_ONLY=false
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --node)
+            PVE_NODE="$2"
+            shift 2
+            ;;
+        --local-only)
+            LOCAL_ONLY=true
+            shift
+            ;;
+        -h|--help)
+            sed -n '2,15p' "$0" | sed 's/^# //' | sed 's/^#//'
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+
+if [ -f "$SCRIPT_DIR/firewall.env" ]; then
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/firewall.env"
+fi
+
 # ── Network Topology ─────────────────────────────────────────────
 # Canonical IP reference: inventory.yml & shared/ssh/config
 # Subnets
-MAIN_LAN="192.168.88.0/24"
-IOT_LAN="192.168.101.0/24"
-HOMELAB_LAN="192.168.50.0/24"
-VPN_NET="10.5.0.0/24"
-WIN11_VM="192.168.50.84"
-SCRATCH_PC="192.168.50.85"
-OMV_IP="192.168.50.90"
-LAB_VM_IP="192.168.50.91"
-REVERSE_PROXY_IP="192.168.50.101"
-DNS_IP="192.168.50.102"
-AITOOLS_IP="192.168.50.105"
-PULSE_MONITOR_IP="192.168.50.88"
-VPNS_IP="192.168.50.87"
-PBS_IP="192.168.50.86"
-K8S_IP="192.168.50.96"
-SYSLOG_IP="192.168.50.89"
-OPS_IP="192.168.50.112"
+MAIN_LAN="${MAIN_LAN:-192.168.88.0/24}"
+IOT_LAN="${IOT_LAN:-192.168.101.0/24}"
+HOMELAB_LAN="${HOMELAB_LAN:-192.168.50.0/24}"
+VPN_NET="${VPN_NET:-10.5.0.0/24}"
+PVE1_IP="${PVE1_IP:-192.168.50.100}"
+PVE2_IP="${PVE2_IP:-192.168.50.110}"
+WIN11_VM="${WIN11_VM:-192.168.50.84}"
+SCRATCH_PC="${SCRATCH_PC:-192.168.50.85}"
+OMV_IP="${OMV_IP:-192.168.50.90}"
+LAB_VM_IP="${LAB_VM_IP:-192.168.50.91}"
+REVERSE_PROXY_IP="${REVERSE_PROXY_IP:-192.168.50.101}"
+DNS_IP="${DNS_IP:-192.168.50.102}"
+AITOOLS_IP="${AITOOLS_IP:-192.168.50.105}"
+PULSE_MONITOR_IP="${PULSE_MONITOR_IP:-192.168.50.88}"
+VPNS_IP="${VPNS_IP:-192.168.50.87}"
+PBS_IP="${PBS_IP:-192.168.50.86}"
+K8S_IP="${K8S_IP:-192.168.50.96}"
+SYSLOG_IP="${SYSLOG_IP:-192.168.50.89}"
+OPS_IP="${OPS_IP:-192.168.50.112}"
 
 # File Paths
 CLUSTER_FW="/etc/pve/firewall/cluster.fw"
-PVE1_FW="/etc/pve/nodes/pve1/host.fw"
+HOST_FW="/etc/pve/nodes/${PVE_NODE}/host.fw"
+
+if [ ! -d "/etc/pve/nodes/${PVE_NODE}" ]; then
+    echo "[!] Error: /etc/pve/nodes/${PVE_NODE} does not exist. Pass --node <name>." >&2
+    exit 1
+fi
 
 # Guest Configs
 FW_HOMELAB="/etc/pve/firewall/100.fw"
@@ -56,18 +98,30 @@ FW_OPS="/etc/pve/firewall/112.fw"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_DIR="/root/firewall-backups/$TIMESTAMP"
 
-echo "--- Initializing Firewall Update ---"
+echo "--- Initializing Firewall Update (node: $PVE_NODE) ---"
 
 # 0. Backup existing config
 echo "[+] Creating backups in $BACKUP_DIR..."
 mkdir -p "$BACKUP_DIR"
-for f in "$CLUSTER_FW" "$PVE1_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_WINDOWS" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S" "$FW_SYSLOG" "$FW_OPS"; do
+for f in "$CLUSTER_FW" "$HOST_FW" "$FW_HOMELAB" "$FW_OMV" "$FW_WINDOWS" "$FW_OPENCLAW" "$FW_CADDY" "$FW_AI_TOOLS" "$FW_DNS" "$FW_PULSE" "$FW_VPNS" "$FW_PBS" "$FW_MINI_K8S" "$FW_SYSLOG" "$FW_OPS"; do
     [ -f "$f" ] && cp "$f" "$BACKUP_DIR/"
 done
 
+write_guest_fw() {
+    local vmid="$1"
+    local dest="$2"
+    local label="$3"
+    if [ "$LOCAL_ONLY" = true ] && [ ! -f "/etc/pve/qemu-server/${vmid}.conf" ] && [ ! -f "/etc/pve/lxc/${vmid}.conf" ]; then
+        cat >/dev/null
+        return 0
+    fi
+    cat > "$dest"
+    echo "[+] Generated rules for Guest $vmid ($label)."
+}
+
 # 1. Datacenter Config (cluster.fw)
 # Defines Aliases and Security Groups used by everyone
-cat <<EOC > $CLUSTER_FW
+cat <<EOC > "$CLUSTER_FW"
 [OPTIONS]
 enable: 1
 
@@ -78,6 +132,8 @@ homelab-lan $HOMELAB_LAN  # Homelab Subnet (Intermediate Trust)
 vpn-net $VPN_NET          # Primary VPN Subnet
 # Note: External VMs/devices need an alias here so they can be referenced as a "-source" in rules.
 # Proxmox guests (like Guest 100 on .95) don't need aliases here; their rules are applied via their specific ID.fw file.
+pve1 $PVE1_IP             # Primary Proxmox Host (.100)
+pve2 $PVE2_IP             # Secondary Proxmox Host (.110)
 win11-vm $WIN11_VM       # Windows 11 VM
 scratch-pc $SCRATCH_PC   # Scratch Dev Workstation (.85)
 open-media-vault $OMV_IP # OMV Storage VM
@@ -179,8 +235,8 @@ EOC
 
 echo "[+] Updated Datacenter Aliases and Groups."
 
-# 2. Node Config (pve1/host.fw)
-cat <<EOC > $PVE1_FW
+# 2. Node Config (<node>/host.fw)
+cat <<EOC > "$HOST_FW"
 [OPTIONS]
 enable: 1
 log_level_in: err
@@ -199,10 +255,10 @@ GROUP ssh-adm
 IN DROP -log nolog
 EOC
 
-echo "[+] Updated pve1 Node rules"
+echo "[+] Updated $PVE_NODE Node rules ($HOST_FW)."
 
 # 3. Guest 100: Homelab VM (.95)
-cat <<EOC > $FW_HOMELAB
+write_guest_fw 100 "$FW_HOMELAB" "Homelab" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -221,10 +277,8 @@ IN ACCEPT -p tcp -dport 8091 -source vpn-net -log nolog
 IN ACCEPT -p tcp -dport 8091 -source homelab-lan -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 100 (Homelab)."
-
 # 4. Guest 101: Open-Media-Vault VM (.90)
-cat <<EOC > $FW_OMV
+write_guest_fw 101 "$FW_OMV" "OMV" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -243,10 +297,8 @@ IN ACCEPT -p tcp -dport 443 -source vpn-net -log nolog
 IN ACCEPT -source win11-vm -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 101 (OMV)."
-
 # 5. Guest 102: windows VM — RDP from trusted LANs
-cat <<EOC > $FW_WINDOWS
+write_guest_fw 102 "$FW_WINDOWS" "windows / RDP" <<EOC
 [OPTIONS]
 enable: 1
 policy_in: DROP
@@ -259,10 +311,8 @@ IN ACCEPT -p tcp -dport 3389 -source homelab-lan -log nolog # RDP from Homelab L
 IN ACCEPT -p tcp -dport 3389 -source main-lan -log nolog # RDP from Main LAN
 EOC
 
-echo "[+] Generated rules for Guest 102 (windows / RDP)."
-
 # 6. Guest 103: Openclaw / lab-vm (.91) — k3s worker
-cat <<EOC > $FW_OPENCLAW
+write_guest_fw 103 "$FW_OPENCLAW" "Openclaw / k3s worker" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -277,10 +327,8 @@ IN ACCEPT -p tcp -dport 10250 -source k8s -log nolog # k3s kubelet
 IN ACCEPT -p tcp -dport 3100 -source vpn-net -log nolog # Paperclip Web UI from VPN
 EOC
 
-echo "[+] Generated rules for Guest 103 (Openclaw / k3s worker)."
-
 # 7. Guest 104: Caddy LXC (.101)
-cat <<EOC > $FW_CADDY
+write_guest_fw 104 "$FW_CADDY" "Caddy Proxy" <<EOC
 [OPTIONS]
 enable: 1
 macfilter: 1
@@ -295,10 +343,8 @@ GROUP ping-trusted
 GROUP crowdsec-svc
 EOC
 
-echo "[+] Generated rules for Guest 104 (Caddy Proxy)."
-
 # 8. Guest 105: AI Tools (Me)
-cat <<EOC > $FW_AI_TOOLS
+write_guest_fw 105 "$FW_AI_TOOLS" "AI Toolbox" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -316,10 +362,8 @@ IN ACCEPT -p udp -dport 22000 -source vpn-net -log nolog
 IN ACCEPT -p udp -dport 21027 -source vpn-net -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 105 (AI Toolbox)."
-
 # 9. Guest 106: DNS LXC (.102)
-cat <<EOC > $FW_DNS
+write_guest_fw 106 "$FW_DNS" "DNS" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -334,12 +378,10 @@ IN ACCEPT -p tcp -dport 3000 -source main-lan -log nolog
 IN ACCEPT -p tcp -dport 3000 -source vpn-net -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 106 (DNS)."
-
 # 10. Guest 107: Pulse monitoring LXC (.88)
 # ssh-adm + ping; UI only through Caddy (GROUP proxy-back → reverse-proxy).
 # No broad :7655 from main-lan/vpn/homelab-lan — use https://pulse.<domain>.
-cat <<EOC > $FW_PULSE
+write_guest_fw 107 "$FW_PULSE" "Pulse" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -351,10 +393,8 @@ IN ACCEPT -source homelab-lan -p tcp -dport 7655 -log nolog
 IN ACCEPT -source main-lan -p tcp -dport 7655 -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 107 (Pulse)."
-
 # 11. Guest 108: VPN / Tailscale LXC (.87)
-cat <<EOC > $FW_VPNS
+write_guest_fw 108 "$FW_VPNS" "vpns / Tailscale" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -364,10 +404,8 @@ GROUP ping-trusted
 GROUP tailscale-wg   # UDP 41641 for Tailscale direct connections
 EOC
 
-echo "[+] Generated rules for Guest 108 (vpns / Tailscale)."
-
 # 12. Guest 109: Proxmox Backup Server LXC (.86)
-cat <<EOC > $FW_PBS
+write_guest_fw 109 "$FW_PBS" "PBS" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -375,16 +413,14 @@ enable: 1
 GROUP ssh-adm
 GROUP ping-trusted
 
-# PBS API / Web UI (default port); pve1 is inside homelab-lan
+# PBS API / Web UI (default port); pve1/pve2 are inside homelab-lan
 IN ACCEPT -p tcp -dport 8007 -source main-lan -log nolog
 IN ACCEPT -p tcp -dport 8007 -source vpn-net -log nolog
 IN ACCEPT -p tcp -dport 8007 -source homelab-lan -log nolog
 EOC
 
-echo "[+] Generated rules for Guest 109 (PBS)."
-
 # 13. Guest 110: k8s LXC (.96) — k3s control plane
-cat <<EOC > $FW_MINI_K8S
+write_guest_fw 110 "$FW_MINI_K8S" "k8s / k3s master" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -415,10 +451,8 @@ IN ACCEPT -p tcp -dport 30000:32767 -source homelab-lan -log nolog # k3s NodePor
 
 EOC
 
-echo "[+] Generated rules for Guest 110 (k8s / k3s master)."
-
 # 15. Guest 111: syslog / auth Loki LXC (.89)
-cat <<EOC > $FW_SYSLOG
+write_guest_fw 111 "$FW_SYSLOG" "syslog / auth Loki" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -429,10 +463,8 @@ GROUP auth-log-svc
 GROUP file-svc
 EOC
 
-echo "[+] Generated rules for Guest 111 (syslog / auth Loki)."
-
 # 16. Guest 112: ops automation plane (.112)
-cat <<EOC > $FW_OPS
+write_guest_fw 112 "$FW_OPS" "ops automation plane" <<EOC
 [OPTIONS]
 enable: 1
 
@@ -440,8 +472,6 @@ enable: 1
 GROUP ssh-adm
 GROUP ping-trusted
 EOC
-
-echo "[+] Generated rules for Guest 112 (ops automation plane)."
 
 # 17. Apply / Restart Service
 

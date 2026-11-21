@@ -39,6 +39,7 @@ ALL_NODES=(
     "lab-vm"
     "scratch-pc"
     "pve1"
+    "pve2"
     "nas"
     "reverse-proxy"
     "dns"
