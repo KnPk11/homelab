@@ -228,3 +228,11 @@ To verify the auto-heal trigger works when the network is actually "lost":
 
 > [!TIP]
 > The log should show an entry stating the ARP check failed and the NIC was restarted.
+
+## Late Shutdown Hang / Slow Power-Off (ThinkCentre Tiny)
+
+On Lenovo ThinkCentre Tiny hosts (`pve1` and `pve2`), `systemctl poweroff` can stall or stay powered on (~13W draw) **after** networking, Proxmox guests, LVM monitoring (`lvm2-monitor` / `dm-event`), and filesystems have already stopped cleanly.
+
+- **Observed behaviour in `journalctl -b -1`:** Logs stop cleanly at `systemd-shutdown[1]: Syncing filesystems and block devices.` → `systemd-journald: Journal stopped`, meaning the delay occurs afterwards inside late `systemd-shutdown` teardown or kernel ACPI S5 power-off (no further disk logs are written past that point).
+- **Data safety:** Once `Journal stopped` has been reached (or after explicitly stopping guests with `qm shutdown` + `sync`), root filesystems have already been synced and remounted read-only — cutting AC power after waiting a couple of minutes has booted cleanly without journal orphan errors.
+- **To diagnose live (if ever needed):** Attach a monitor during `systemctl poweroff` and temporarily remove `quiet` from `GRUB_CMDLINE_LINUX_DEFAULT` to see the exact kernel/teardown line where it pauses.
