@@ -112,8 +112,11 @@ Telegram **minimum severity is critical**. Pulse notifies on the **first fire on
 | Critical days | **2** | First fire is already critical, so a missed night reaches Telegram. |
 | Fresh hours | **24** | Recovery view: last backup is still fresh. |
 | Stale hours | **48** | Recovery view: last backup is stale. Does **not** drive Telegram. |
+| Alert on orphaned backups | **Disabled** (`alertOrphaned: false`) | Stops `backup-subject:ext-...` false positives when the same VMID exists on two non-clustered nodes (e.g. a parked stopped fallback on `pve1` alongside the live VM on `pve2`), which otherwise fire and `active_retired` (`resource-removed`) every poll cycle, bypassing cooldown. |
 
 Do not set critical days to `1` unless you want a Telegram burst from every guest while it waits its turn in the nightly job. After changing thresholds, an **already-open** backup-age alert will not re-page; it notifies again only after it resolves and re-fires.
+
+**Flapping protection (`/etc/pulse/alerts.json`):** `flappingEnabled: true` (`flappingWindowSeconds: 300`, `flappingThreshold: 5`, `flappingCooldownMinutes: 15`) is enabled as a guardrail against any future fire/retire notification loops. Note that `schedule.cooldown` (`5` minutes) is global across all alert types; for non-flapping stale backups, Pulse already notifies only once per open occurrence while `schedule.escalation.enabled` is `false`.
 
 **Patrol:** leave it in the Pulse UI (or turn auto-on-alert patrol off). Do not send Patrol to Telegram. The configured model `stepfun-ai/step-3.7-flash` returned **410 Gone** (EOL 2026-08-28); pick a live model if you still want UI analysis.
 
