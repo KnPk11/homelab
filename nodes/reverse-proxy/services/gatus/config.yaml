@@ -34,9 +34,13 @@ alerting:
 
 endpoints:
   # --- Infrastructure ---
+  # Quad9. 1.1.1.1 answers most echoes in ~4ms, then drops one about every
+  # 11 minutes and Gatus records that miss as a 10s timeout, which pulls the
+  # public 1h response-time badge up to ~400ms and the 24h uptime badge down
+  # to ~96%. Keep the name so the infrastructure_internet history stays.
   - name: Internet
     group: Infrastructure
-    url: "icmp://1.1.1.1"
+    url: "icmp://9.9.9.9"
     interval: 30s
     alerts: &homelab-watch
       - type: custom
